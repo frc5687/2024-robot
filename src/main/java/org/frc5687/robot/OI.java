@@ -53,8 +53,10 @@ public class OI extends OutliersProxy {
 
     public void initializeButtons(
         DriveTrain drivetrain,
-        Shooter shooter
+        Shooter shooter,
+        Intake intake
     ) {
+        _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter));
     }
 

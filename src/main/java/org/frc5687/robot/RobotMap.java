@@ -24,6 +24,8 @@ public class RobotMap {
                         public static final int SOUTH_WEST_ROTATION = 6;
                         public static final int SOUTH_WEST_TRANSLATION = 7;
 
+                        public static final int INTAKE = 8;
+
                         public static final int LEFT_SHOOTER = 9;
                         public static final int RIGHT_SHOOTER = 10;
                 }

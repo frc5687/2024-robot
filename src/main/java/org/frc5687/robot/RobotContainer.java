@@ -30,6 +30,7 @@ public class RobotContainer extends OutliersContainer {
     // private LightsExample _lights;
     private DriveTrain _driveTrain;
     private Shooter _shooter;
+    private Intake _intake;
     // private EndEffector _endEffector;
     // private CubeShooter _cubeShooter;
     // private Arm _arm;
@@ -70,11 +71,11 @@ public class RobotContainer extends OutliersContainer {
 
         _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor, _imu);
         _shooter = new Shooter(this);
+        _intake = new Intake(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, /*_endEffector,*/ _oi));
 
-
-        _oi.initializeButtons(_driveTrain, _shooter);
+        _oi.initializeButtons(_driveTrain, _shooter, _intake);
         startPeriodic();
 
     }
