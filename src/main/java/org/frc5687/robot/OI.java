@@ -50,7 +50,11 @@ public class OI extends OutliersProxy {
 
     }
 
-    public void initializeButtons(DriveTrain drivetrain) {
+    public void initializeButtons(
+        DriveTrain drivetrain,
+        Intake intake) {
+
+            _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
     }
 
 

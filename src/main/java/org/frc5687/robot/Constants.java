@@ -321,4 +321,9 @@ public class Constants {
         public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(70); // imu deviations lower number to trust
                                                                                 // more;
     }
+
+    public static class INTAKE {
+        public static final String CAN_BUS = "CANivore";
+        public static final double INTAKE_SPEED = 0.5;       
+    }
 }

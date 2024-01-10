@@ -23,11 +23,8 @@ public class RobotMap {
                         public static final int NORTH_WEST_TRANSLATION = 5;
                         public static final int SOUTH_WEST_ROTATION = 6;
                         public static final int SOUTH_WEST_TRANSLATION = 7;
-
-                        public static final int ARM = 9;
-                        public static final int EXT_ARM = 12;
-                        public static final int CUBESHOOTER_WRIST = 15;
-                        public static final int CUBESHOOTER_SHOOTER = 14;
+                        
+                        public static final int INTAKE = 8;
                 }
 
                 public static class CANCODER {
