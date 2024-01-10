@@ -29,6 +29,7 @@ public class RobotContainer extends OutliersContainer {
     // private Lights _lights;
     // private LightsExample _lights;
     private DriveTrain _driveTrain;
+    private Shooter _shooter;
     // private EndEffector _endEffector;
     // private CubeShooter _cubeShooter;
     // private Arm _arm;
@@ -68,20 +69,12 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor, _imu);
-        // _testModule = new TestyModule(
-        //     this, 
-        //     new SwerveModule(
-        //         Constants.DriveTrain.NORTH_WEST_CONFIG, 
-        //         RobotMap.CAN.TALONFX.NORTH_WEST_ROTATION, 
-        //         RobotMap.CAN.TALONFX.NORTH_WEST_TRANSLATION, 
-        //         RobotMap.CAN.CANCODER.ENCODER_NW
-        //     )
-        // );
+        _shooter = new Shooter(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, /*_endEffector,*/ _oi));
 
 
-        _oi.initializeButtons(_driveTrain);
+        _oi.initializeButtons(_driveTrain, _shooter);
         startPeriodic();
 
     }

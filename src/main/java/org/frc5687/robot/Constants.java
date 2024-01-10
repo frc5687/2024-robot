@@ -321,4 +321,8 @@ public class Constants {
         public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(70); // imu deviations lower number to trust
                                                                                 // more;
     }
+
+    public static class Shooter {
+        public static double SHOOT_SPEED = 1.0;
+    }
 }

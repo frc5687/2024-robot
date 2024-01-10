@@ -12,6 +12,7 @@ import static org.frc5687.robot.util.Helpers.*;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
+import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.OutliersProxy;
 
@@ -50,7 +51,11 @@ public class OI extends OutliersProxy {
 
     }
 
-    public void initializeButtons(DriveTrain drivetrain) {
+    public void initializeButtons(
+        DriveTrain drivetrain,
+        Shooter shooter
+    ) {
+        _driverRightTrigger.whileTrue(new Shoot(shooter));
     }
 
 
