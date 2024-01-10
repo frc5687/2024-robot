@@ -3,7 +3,9 @@
 package org.frc5687.robot;
 
 import org.frc5687.robot.commands.Drive;
+import org.frc5687.robot.commands.IdleIntake;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.*;
 import org.frc5687.robot.util.AutoChooser.AutoType;
@@ -74,7 +76,8 @@ public class RobotContainer extends OutliersContainer {
         _intake = new Intake(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, /*_endEffector,*/ _oi));
-
+        setDefaultCommand(_shooter, new IdleShooter(_shooter));
+        setDefaultCommand(_intake, new IdleIntake(_intake));
         _oi.initializeButtons(_driveTrain, _shooter, _intake);
         startPeriodic();
 

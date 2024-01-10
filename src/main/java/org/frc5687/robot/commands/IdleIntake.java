@@ -3,10 +3,10 @@ package org.frc5687.robot.commands;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.subsystems.Intake;
 
-public class IntakeCommand extends OutliersCommand{
+public class IdleIntake extends OutliersCommand{
     private Intake _intake;
 
-    public IntakeCommand(Intake intake) {
+    public IdleIntake(Intake intake) {
         _intake = intake;
         addRequirements(_intake);
     }
@@ -18,7 +18,8 @@ public class IntakeCommand extends OutliersCommand{
 
     @Override
     public void execute() {
-        _intake.setSpeed(Constants.INTAKE.INTAKE_SPEED);
+        _intake.setSpeed(0);
+
     }
 
     @Override
@@ -32,3 +33,4 @@ public class IntakeCommand extends OutliersCommand{
         _intake.setSpeed(0);
     }
 }
+
