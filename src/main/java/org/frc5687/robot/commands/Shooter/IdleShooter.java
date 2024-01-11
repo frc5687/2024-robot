@@ -9,6 +9,7 @@ public class IdleShooter extends OutliersCommand{
 
     public IdleShooter(Shooter shooter) {
         _shooter = shooter;
+        addRequirements(_shooter);
     }
 
     public void initialize() {

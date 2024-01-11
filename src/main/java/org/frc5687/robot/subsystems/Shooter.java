@@ -9,8 +9,8 @@ public class Shooter extends OutliersSubsystem {
     public OutliersTalon _rightTalon;
     public Shooter(OutliersContainer container) {
         super(container);
-        _leftTalon = new OutliersTalon(RobotMap.CAN.TALONFX.LEFT_SHOOTER, "rio", "Left Shooter");
-        _rightTalon = new OutliersTalon(RobotMap.CAN.TALONFX.RIGHT_SHOOTER, "rio", "Right Shooter");
+        _leftTalon = new OutliersTalon(RobotMap.CAN.TALONFX.LEFT_SHOOTER, "CANivore", "Left Shooter");
+        _rightTalon = new OutliersTalon(RobotMap.CAN.TALONFX.RIGHT_SHOOTER, "CANivore", "Right Shooter");
     }
 
     public void setSpeed(double speed) {

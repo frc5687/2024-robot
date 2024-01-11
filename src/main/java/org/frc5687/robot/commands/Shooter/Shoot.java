@@ -9,6 +9,7 @@ public class Shoot extends OutliersCommand{
 
     public Shoot(Shooter shooter) {
         _shooter = shooter;
+        addRequirements(_shooter);
     }
 
     public void initialize() {

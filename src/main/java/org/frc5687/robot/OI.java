@@ -52,7 +52,7 @@ public class OI extends OutliersProxy {
     }
 
     public void initializeButtons(
-        DriveTrain drivetrain,
+        //DriveTrain drivetrain,
         Shooter shooter,
         Intake intake
     ) {

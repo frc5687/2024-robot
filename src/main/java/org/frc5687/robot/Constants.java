@@ -323,11 +323,11 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static double SHOOT_SPEED = 1.0;
+        public static double SHOOT_SPEED =1.0;
     }
     
     public static class INTAKE {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 0.5;       
+        public static final double INTAKE_SPEED = -1.0;       
     }
 }
