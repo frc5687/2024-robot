@@ -88,8 +88,9 @@ public class OutliersTalon extends TalonFX {
     }
 
     public void setVelocity(double rpm) {
-        if (_velocityVoltage.Velocity != rpm) {
-            this.setControl(_velocityVoltage.withVelocity(rpm));
+        double rps = rpm / 60;
+        if (_velocityVoltage.Velocity != rps) {
+            this.setControl(_velocityVoltage.withVelocity(rps));
         }
     }
 
@@ -156,7 +157,6 @@ public class OutliersTalon extends TalonFX {
         _motionMagicConfigs.MotionMagicJerk = config.JERK;
 
         _closedLoopGenConfig.ContinuousWrap = config.IS_CONTINUOUS;
-
         _configurator.apply(_closedLoopGenConfig);
         _configurator.apply(_slot0Configs, config.TIME_OUT);
         _configurator.apply(_slot1Configs, config.TIME_OUT);

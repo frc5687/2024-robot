@@ -13,7 +13,7 @@ public class Shoot extends OutliersCommand{
     }
 
     public void initialize() {
-        _shooter.setSpeed(Constants.Shooter.SHOOT_SPEED);
+        _shooter.setSpeed(Constants.Shooter.SHOOT_RPM);
     }
 
     public boolean isFinished(boolean interrupted) {

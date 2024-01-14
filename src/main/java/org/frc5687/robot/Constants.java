@@ -323,11 +323,45 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static double SHOOT_SPEED =1.0;
+        public static double SHOOT_RPM = 3250;
+        public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
+        static {
+            SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.535; // 70
+            SHOOTER_CONTROLLER_CONFIG.kI = 0;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.0001; // 0.7
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.12;
+
+
+            // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
+            SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
+            SHOOTER_CONTROLLER_CONFIG.ACCELERATION = 4000;
+            SHOOTER_CONTROLLER_CONFIG.JERK = 10000;
+
+            SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
+        }
+
+        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        // this is the motor config for the swerve motors
+        static {
+            CONFIG.TIME_OUT = 0.1;
+
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            CONFIG.MAX_VOLTAGE = 12.0;
+
+            CONFIG.MAX_STATOR_CURRENT = 60;
+            CONFIG.MAX_CURRENT = 60;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.USE_FOC = true;
+        }
     }
     
     public static class INTAKE {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = -1.0;       
+        public static final double INTAKE_SPEED = 1.0;       
     }
 }
