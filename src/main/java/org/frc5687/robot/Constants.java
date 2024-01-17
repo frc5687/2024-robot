@@ -323,7 +323,7 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static double SHOOT_RPM = 3250;
+        public static double SHOOT_RPM = 3000;
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
