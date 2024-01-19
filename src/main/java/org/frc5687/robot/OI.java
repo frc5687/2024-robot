@@ -12,6 +12,10 @@ import static org.frc5687.robot.util.Helpers.*;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
+import org.frc5687.robot.commands.Shooter.DecreaseRPM;
+import org.frc5687.robot.commands.Shooter.DecreaseRPMBig;
+import org.frc5687.robot.commands.Shooter.IncreaseRPM;
+import org.frc5687.robot.commands.Shooter.IncreaseRPMBig;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.OutliersProxy;
@@ -58,6 +62,10 @@ public class OI extends OutliersProxy {
     ) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter));
+        _driverGamepad.getYButton().onTrue(new IncreaseRPMBig(shooter));
+        _driverGamepad.getAButton().onTrue(new DecreaseRPMBig(shooter));
+        _driverGamepad.getXButton().onTrue(new DecreaseRPM(shooter));
+        _driverGamepad.getYButton().onTrue(new IncreaseRPM(shooter));
     }
 
 

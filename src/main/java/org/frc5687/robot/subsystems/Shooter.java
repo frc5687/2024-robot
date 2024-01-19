@@ -25,11 +25,21 @@ public class Shooter extends OutliersSubsystem {
         _rightTalon.setControl(new Follower(_leftTalon.getDeviceID(), true));
     }
 
-    /// FIXME: this function sets the RPM of the motor. Take into account the gear ratio to set the RPM of the shooter shaft.
-    public void setSpeed(double speed) {
-        _leftTalon.setVelocity(speed);
-        // just for graphing... this variable does nothing
+    public void setTargetRPM(double speed) {
         _targetRPM = speed;
+    }
+
+    public double getTargetRPM() {
+        return _targetRPM;
+    }
+
+    public void enableMotor() {
+        _leftTalon.setVelocity(_targetRPM);
+    }
+
+    public void disableMotor() {
+        // TODO: coast
+        _leftTalon.setVelocity(0);
     }
 
     public void updateDashboard() {

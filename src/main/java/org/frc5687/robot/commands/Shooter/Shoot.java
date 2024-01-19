@@ -1,6 +1,5 @@
 package org.frc5687.robot.commands.Shooter;
 
-import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
@@ -13,7 +12,7 @@ public class Shoot extends OutliersCommand{
     }
 
     public void initialize() {
-        _shooter.setSpeed(Constants.Shooter.SHOOT_RPM);
+        _shooter.enableMotor();
     }
 
     public boolean isFinished(boolean interrupted) {
@@ -21,6 +20,6 @@ public class Shoot extends OutliersCommand{
     }
 
     public void end(boolean interrupted) {
-        _shooter.setSpeed(0);
+        _shooter.disableMotor();
     }
 }

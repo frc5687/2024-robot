@@ -3,23 +3,19 @@ package org.frc5687.robot.commands.Shooter;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
-public class IdleShooter extends OutliersCommand{
+public class IncreaseRPMBig extends OutliersCommand{
     public Shooter _shooter;
 
-    public IdleShooter(Shooter shooter) {
+    public IncreaseRPMBig(Shooter shooter) {
         _shooter = shooter;
         addRequirements(_shooter);
     }
 
     public void initialize() {
-        _shooter.disableMotor();
+        _shooter.setTargetRPM(_shooter.getTargetRPM() + 100.0);
     }
 
     public boolean isFinished(boolean interrupted) {
-        return false;
-    }
-
-    public void end(boolean interrupted) {
-        _shooter.disableMotor();
+        return true;
     }
 }
