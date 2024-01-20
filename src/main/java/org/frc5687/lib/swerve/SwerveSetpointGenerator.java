@@ -56,71 +56,6 @@ public class SwerveSetpointGenerator {
         double f(double x, double y);
     }
 
-    private double findRootIllinois(
-            Function2d func,
-            double x_0,
-            double y_0,
-            double f_0,
-            double x_1,
-            double y_1,
-            double f_1,
-            int iterations_left) {
-        if (iterations_left < 0 || epsilonEquals(f_0, f_1)) {
-            return 1.0;
-        }
-        var s_guess = Math.max(0.0, Math.min(1.0, -f_0 / (f_1 - f_0)));
-        var x_guess = (x_1 - x_0) * s_guess + x_0;
-        var y_guess = (y_1 - y_0) * s_guess + y_0;
-        var f_guess = func.f(x_guess, y_guess);
-        var slope_guess = (f_guess - f_0) / (s_guess - 0);
-        var slope_1 = (f_1 - f_0);
-        if (Math.signum(slope_guess) == Math.signum(slope_1)) {
-            // guess and upper bracket have same slope, so use upper bracket.
-            return s_guess
-                    + (1.0 - s_guess)
-                            * findRootIllinois(
-                                    func, x_guess, y_guess, f_guess, x_1, y_1, f_1, iterations_left - 1);
-        } else {
-            // Use lower bracket.
-            return s_guess
-                    * findRootIllinois(func, x_0, y_0, f_0, x_guess, y_guess, f_guess, iterations_left - 1);
-        }
-    }
-
-    private double findRootITP(
-            Function2d func,
-            double x_0,
-            double y_0,
-            double f_0,
-            double x_1,
-            double y_1,
-            double f_1,
-            int iterations_left) {
-        if (iterations_left < 0 || epsilonEquals(f_0, f_1)) {
-            return 1.0;
-        }
-        var x_extrap = x_0 + (x_1 - x_0) * f_0 / (f_1 - f_0);
-        var y_extrap = y_0 + (y_1 - y_0) * f_0 / (f_1 - f_0);
-        if (x_extrap < Math.min(x_0, x_1) || x_extrap > Math.max(x_0, x_1)) {
-            // Truncate to nearest endpoint.
-            if (Math.abs(x_extrap - x_0) < Math.abs(x_extrap - x_1)) {
-                return findRootITP(func, x_0, y_0, f_0, x_1, y_1, f_1, iterations_left - 1);
-            } else {
-                return findRootITP(func, x_1, y_1, f_1, x_0, y_0, f_0, iterations_left - 1);
-            }
-        } else {
-            // Project to x-axis.
-            var f_extrap = func.f(x_extrap, y_extrap);
-            if (Math.signum(f_0) == Math.signum(f_extrap)) {
-                // 0 and extrap on same side of root, so use upper bracket.
-                return findRootITP(func, x_extrap, y_extrap, f_extrap, x_1, y_1, f_1, iterations_left - 1);
-            } else {
-                // Use lower bracket.
-                return findRootITP(func, x_0, y_0, f_0, x_extrap, y_extrap, f_extrap, iterations_left - 1);
-            }
-        }
-    }
-
     private double findRootRegula(
             Function2d func,
             double x_0,
@@ -158,8 +93,6 @@ public class SwerveSetpointGenerator {
             double y_1,
             double f_1,
             int iterations_left) {
-        // return findRootIllinois(func, x_0, y_0, f_0, x_1, y_1, f_1, iterations_left);
-        //    return findRootITP(func, x_0, y_0, f_0, x_1, y_1, f_1, iterations_left);
         return findRootRegula(func, x_0, y_0, f_0, x_1, y_1, f_1, iterations_left);
     }
 
@@ -383,9 +316,6 @@ public class SwerveSetpointGenerator {
             // Find the max s for this drive wheel. Search on the interval between 0 and min_s, because we
             // already know we can't go faster
             // than that.
-            // TODO(for efficiency, do all this on v^2 to save a bunch of sqrts)
-            // TODO(be smarter about root finding, since this is just a quadratic in s:
-            // ((xf-x0)*s+x0)^2+((yf-y0)*s+y0)^2)
             final int kMaxIterations = 10;
             double s =
                     min_s

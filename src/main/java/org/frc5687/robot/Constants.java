@@ -18,7 +18,7 @@ public class Constants {
     public static final double METRIC_FLUSH_PERIOD = 0.02;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double CONTROL_PERIOD = 0.02; // 10 ms
-    public static final double DATA_PERIOD = 0.02; // 20 ms
+    public static final double DATA_PERIOD = 0.004; // 20 ms
     public static final double EPSILON = 1e-9;
 
     /**
@@ -47,8 +47,8 @@ public class Constants {
         public static final int NUM_MODULES = 4;
 
         // Size of the robot chassis in meters
-        public static final double WIDTH = 0.4445; // meters
-        public static final double LENGTH = 0.4445; // meters
+        public static final double WIDTH = 0.5461; // meters
+        public static final double LENGTH = 0.5461; // meters
         // Distance of swerve modules from center of robot
         public static final double SWERVE_NS_POS = LENGTH / 2.0;
         public static final double SWERVE_WE_POS = WIDTH / 2.0;
