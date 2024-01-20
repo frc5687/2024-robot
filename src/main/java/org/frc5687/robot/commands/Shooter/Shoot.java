@@ -11,7 +11,7 @@ public class Shoot extends OutliersCommand{
         addRequirements(_shooter);
     }
 
-    public void initialize() {
+    public void execute() {
         _shooter.enableMotor();
     }
 

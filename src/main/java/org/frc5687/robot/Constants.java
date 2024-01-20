@@ -328,7 +328,7 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.535; // 70
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.135; // 70
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001; // 0.7
             SHOOTER_CONTROLLER_CONFIG.kF = 0.12;

@@ -14,6 +14,10 @@ public class IdleShooter extends OutliersCommand{
     public void initialize() {
         _shooter.disableMotor();
     }
+    
+    public void execute() {
+        _shooter.disableMotor();
+    }
 
     public boolean isFinished(boolean interrupted) {
         return false;
