@@ -7,6 +7,7 @@ public class Deflect extends OutliersCommand{
 
     public Deflect(Deflector deflector) {
         _deflector = deflector;
+        addRequirements(_deflector);
     }
 
     @Override
@@ -16,12 +17,13 @@ public class Deflect extends OutliersCommand{
 
     @Override
     public void execute() {
+        System.out.println("Setting motion magic to "+_deflector.getTargetAngle()+" degrees.");
         _deflector.setMotionMagic(_deflector.getTargetAngle());
     }
 
     @Override
     public boolean isFinished() {
-        return true; 
+        return false; 
     }
 
     @Override

@@ -58,8 +58,8 @@ public class OI extends OutliersProxy {
             Deflector deflector) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter));
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflector(deflector, -0.5));
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflector(deflector, 0.5));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflector(deflector, -2.5));
+        _driverGamepad.getRightBumper().onTrue(new ChangeDeflector(deflector, 2.5));
     }
 
     public boolean shiftUp() {

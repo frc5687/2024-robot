@@ -5,6 +5,8 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Deflector extends OutliersSubsystem {
 
     private OutliersTalon _talon;
@@ -31,6 +33,7 @@ public class Deflector extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-
+        SmartDashboard.putNumber("Deflector Target Angle", _targetAngle);
+        SmartDashboard.putNumber("Deflector Current Angle", _talon.getPosition().getValue());
     }
 }
