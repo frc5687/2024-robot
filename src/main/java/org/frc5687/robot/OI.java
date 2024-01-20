@@ -12,7 +12,7 @@ import static org.frc5687.robot.util.Helpers.*;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
-import org.frc5687.robot.commands.Deflector.SetDeflectorAngle;
+import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.OutliersProxy;
@@ -59,8 +59,8 @@ public class OI extends OutliersProxy {
             Deflector deflector) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter));
-        _driverGamepad.getLeftBumper().onTrue(new SetDeflectorAngle(deflector, -2.5));
-        _driverGamepad.getRightBumper().onTrue(new SetDeflectorAngle(deflector, 2.5));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.1));
+        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.1));
     }
 
     public boolean shiftUp() {
