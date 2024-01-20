@@ -6,11 +6,9 @@ import static org.frc5687.robot.Constants.SwerveModule.*;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 
-// import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
-// import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -24,7 +22,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Swerve Module Code Created in the shadow of
@@ -55,7 +52,6 @@ public class SwerveModule {
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
     private double _rotPerMet;
-    private double _gearRatio;
     private double _metPerRot;
 
     private double _wantedSpeed;
@@ -100,6 +96,9 @@ public class SwerveModule {
         _rotPerMet = 1 / _metPerRot;
 
         _positionVector = config.position;
+
+        // Dont need fast refresh for hardware faults
+        _driveMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
 
         _drivePositionRotations = _driveMotor.getPosition();
         _driveVelocityRotationsPerSec = _driveMotor.getVelocity();
@@ -147,12 +146,6 @@ public class SwerveModule {
         return _internalState;
     }
 
-    // public ControlState getControlState() {
-    // return _controlState;
-    // }
-    // public void setControlState(ControlState state) {
-    // _controlState = state;
-    // }
     public BaseStatusSignal[] getSignals() {
         return _signals;
     }
