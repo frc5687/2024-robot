@@ -52,14 +52,15 @@ public class OI extends OutliersProxy {
     }
 
     public void initializeButtons(
-        //DriveTrain drivetrain,
-        Shooter shooter,
-        Intake intake
-    ) {
+            // DriveTrain drivetrain,
+            Shooter shooter,
+            Intake intake,
+            Deflector deflector) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflector(deflector, -0.5));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflector(deflector, 0.5));
     }
-
 
     public boolean shiftUp() {
         return _driverGamepad.getAButton().getAsBoolean();
@@ -73,7 +74,6 @@ public class OI extends OutliersProxy {
         // worky rn
         // return false;
     }
-
 
     public boolean shiftOverride() {
         return _driverGamepad.getBackButton().getAsBoolean();
@@ -105,7 +105,6 @@ public class OI extends OutliersProxy {
         return speed;
     }
 
-    
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);
     }

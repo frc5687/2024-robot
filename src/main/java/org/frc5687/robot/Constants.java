@@ -4,10 +4,8 @@ package org.frc5687.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -108,7 +106,8 @@ public class Constants {
          * 2) Find your CANcoder on Phoenix Tuner X by its device ID
          * 3) Open the Plot window and check the Position box
          * 4) Turn the module back to its intended position
-         * 5) Set the offset in code to the opposite of what Phoenix Tuner is reading ex. -0.5 should be 0.5 in code
+         * 5) Set the offset in code to the opposite of what Phoenix Tuner is reading
+         * ex. -0.5 should be 0.5 in code
          * 6) Repeat with all []\
          * modules
          */
@@ -268,7 +267,7 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration DRIVE_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-        //     DRIVE_CONTROLLER_CONFIG.SLOT = 0;
+            // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
             DRIVE_CONTROLLER_CONFIG.kP = 11.0;// 11.0 //23.0
@@ -333,7 +332,6 @@ public class Constants {
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001; // 0.7
             SHOOTER_CONTROLLER_CONFIG.kF = 0.12;
 
-
             // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
             SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
             SHOOTER_CONTROLLER_CONFIG.ACCELERATION = 4000;
@@ -359,9 +357,43 @@ public class Constants {
             CONFIG.USE_FOC = true;
         }
     }
-    
+
     public static class INTAKE {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 1.0;       
+        public static final double INTAKE_SPEED = 1.0;
+    }
+
+    public static class Deflector {
+        public static final String CAN_BUS = "CANivore";
+        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        // this is the motor config for the swerve motors
+        static {
+            CONFIG.TIME_OUT = 0.1;
+
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            CONFIG.MAX_VOLTAGE = 12.0;
+
+            CONFIG.MAX_STATOR_CURRENT = 60;
+            CONFIG.MAX_CURRENT = 60;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.USE_FOC = true;
+        }
+        public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        static {
+            CLOSED_LOOP_CONFIG.SLOT = 0;
+            CLOSED_LOOP_CONFIG.kP = 0.0; // 70
+            CLOSED_LOOP_CONFIG.kI = 0;
+            CLOSED_LOOP_CONFIG.kD = 0.0; // 0.7
+            CLOSED_LOOP_CONFIG.kF = 0.0;
+
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 0;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 0;
+            CLOSED_LOOP_CONFIG.JERK = 0;
+
+            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = true;
+        }
     }
 }

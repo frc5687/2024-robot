@@ -28,6 +28,8 @@ public class RobotMap {
 
                         public static final int LEFT_SHOOTER = 1;
                         public static final int RIGHT_SHOOTER = 2;
+
+                        public static final int DEFLECTOR = 3; // FIXME: can ID
                 }
 
                 public static class CANCODER {
