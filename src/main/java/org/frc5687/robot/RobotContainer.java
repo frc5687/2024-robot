@@ -30,6 +30,7 @@ public class RobotContainer extends OutliersContainer {
     // private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
+    private Deflector _deflector;
     // private EndEffector _endEffector;
     // private CubeShooter _cubeShooter;
     // private Arm _arm;
@@ -54,26 +55,31 @@ public class RobotContainer extends OutliersContainer {
         // _trajectories = new Trajectories(new PathConstraints(3.0, 2.0));
 
         // try {
-        //     _photonProcessor =
-        //             // new
-        //             // PhotonProcessor(AprilTagFieldLayout.loadFromResource("2023-swerret.json"));
-        //             new PhotonProcessor(FieldConstants.aprilTags);
+        // _photonProcessor =
+        // // new
+        // //
+        // PhotonProcessor(AprilTagFieldLayout.loadFromResource("2023-swerret.json"));
+        // new PhotonProcessor(FieldConstants.aprilTags);
         // } catch (Exception e) {
-        //     e.getMessage();
+        // e.getMessage();
         // }
         // configure pigeon
         // _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
         // var pigeonConfig = new Pigeon2Configuration();
         // _imu.getConfigurator().apply(pigeonConfig);
 
-        // _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor, _imu);
+        // _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor,
+        // _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
+        _deflector = new Deflector(this);
 
-        // setDefaultCommand(_driveTrain, new Drive(_driveTrain, /*_endEffector,*/ _oi));
+        // setDefaultCommand(_driveTrain, new Drive(_driveTrain, /*_endEffector,*/
+        // _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        _oi.initializeButtons(/*_driveTrain,*/ _shooter, _intake);
+        
+        _oi.initializeButtons(/* _driveTrain, */ _shooter, _intake, _deflector);
         startPeriodic();
 
     }

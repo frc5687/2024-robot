@@ -13,6 +13,7 @@ import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
+import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.OutliersProxy;
@@ -53,18 +54,19 @@ public class OI extends OutliersProxy {
     }
 
     public void initializeButtons(
-        //DriveTrain drivetrain,
-        Shooter shooter,
-        Intake intake
-    ) {
+            // DriveTrain drivetrain,
+            Shooter shooter,
+            Intake intake,
+            Deflector deflector) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter));
         _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
         _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
         _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
         _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -10));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.1));
+        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.1));
     }
-
 
     public boolean shiftUp() {
         return _driverGamepad.getAButton().getAsBoolean();
@@ -78,7 +80,6 @@ public class OI extends OutliersProxy {
         // worky rn
         // return false;
     }
-
 
     public boolean shiftOverride() {
         return _driverGamepad.getBackButton().getAsBoolean();
@@ -110,7 +111,6 @@ public class OI extends OutliersProxy {
         return speed;
     }
 
-    
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);
     }
