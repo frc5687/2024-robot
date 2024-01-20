@@ -366,11 +366,17 @@ public class Constants {
     public static class Deflector {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-        
+
+        public static final double GEAR_RATIO = 56.0; //56:1
+
+        public static final double ANGLE_TOLERANCE = 0.01;
+        public static final double LOWER_HALL_ANGLE = 0.0; //FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
+        public static final double UPPER_HALL_ANGLE = 1.0; //FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
+
         static {
             CONFIG.TIME_OUT = 0.1;
 
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
             CONFIG.MAX_VOLTAGE = 12.0;

@@ -2,7 +2,6 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
-import org.frc5687.robot.commands.Deflect;
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.IdleIntake;
 import org.frc5687.robot.commands.OutliersCommand;
@@ -79,7 +78,6 @@ public class RobotContainer extends OutliersContainer {
         // _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        setDefaultCommand(_deflector, new Deflect(_deflector));
         
         _oi.initializeButtons(/* _driveTrain, */ _shooter, _intake, _deflector);
         startPeriodic();
