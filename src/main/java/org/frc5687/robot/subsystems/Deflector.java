@@ -24,11 +24,14 @@ public class Deflector extends OutliersSubsystem {
 
     @Override
     public void periodic() {
+        if (_lowerHall != null && _upperHall!= null){
         if (_lowerHall.get()) {
             setEncoderAngle(Constants.Deflector.LOWER_HALL_ANGLE);
         } else if (_upperHall.get()) {
             setEncoderAngle(Constants.Deflector.UPPER_HALL_ANGLE);
         }
+    } else {}
+
     }
 
     public double getAngle() {
