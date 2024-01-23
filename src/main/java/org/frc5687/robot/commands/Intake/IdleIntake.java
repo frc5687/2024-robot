@@ -1,6 +1,7 @@
-package org.frc5687.robot.commands;
+package org.frc5687.robot.commands.Intake;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Intake;
 
 public class IdleIntake extends OutliersCommand{

@@ -224,7 +224,7 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = 0.0508;
+        public static final double WHEEL_RADIUS = 0.0889;
         public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
         public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
         public static final double GEAR_RATIO_STEER = (52 / 14) * (96 / 16);
@@ -358,7 +358,7 @@ public class Constants {
         }
     }
 
-    public static class INTAKE {
+    public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
     }

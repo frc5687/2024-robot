@@ -12,7 +12,7 @@ public class Intake extends OutliersSubsystem {
 
     public Intake(OutliersContainer container) {
         super(container);
-        _talon = new OutliersTalon(RobotMap.CAN.TALONFX.INTAKE, Constants.INTAKE.CAN_BUS, "intake");
+        _talon = new OutliersTalon(RobotMap.CAN.TALONFX.INTAKE, Constants.Intake.CAN_BUS, "Intake");
         
     }
 

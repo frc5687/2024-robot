@@ -3,13 +3,11 @@
 package org.frc5687.robot;
 
 import org.frc5687.robot.commands.Drive;
-import org.frc5687.robot.commands.IdleIntake;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.*;
-import org.frc5687.robot.util.AutoChooser.AutoType;
-import org.frc5687.robot.util.AutoChooser.Node;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -23,20 +21,14 @@ public class RobotContainer extends OutliersContainer {
     private OI _oi;
     private AutoChooser _autoChooser;
     // private VisionProcessor _visionProcessor;
-    // private Pigeon2 _imu;
+    private Pigeon2 _imu;
     private Robot _robot;
-    // private Lights _lights;
-    // private LightsExample _lights;
-    // private DriveTrain _driveTrain;
+    private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
     private Deflector _deflector;
-    // private EndEffector _endEffector;
-    // private CubeShooter _cubeShooter;
-    // private Arm _arm;
     // private Elevator _elevator;
     // private PhotonProcessor _photonProcessor;
-    // private Trajectories _trajectories;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -52,7 +44,6 @@ public class RobotContainer extends OutliersContainer {
         // _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
         // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
-        // _trajectories = new Trajectories(new PathConstraints(3.0, 2.0));
 
         // try {
         // _photonProcessor =
@@ -63,23 +54,22 @@ public class RobotContainer extends OutliersContainer {
         // } catch (Exception e) {
         // e.getMessage();
         // }
-        // configure pigeon
-        // _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
-        // var pigeonConfig = new Pigeon2Configuration();
-        // _imu.getConfigurator().apply(pigeonConfig);
 
-        // _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor,
-        // _imu);
+        // configure pigeon
+        _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
+        var pigeonConfig = new Pigeon2Configuration();
+        _imu.getConfigurator().apply(pigeonConfig);
+
+        _driveTrain = new DriveTrain(this, /*_visionProcessor, _photonProcessor,*/ _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
 
-        // setDefaultCommand(_driveTrain, new Drive(_driveTrain, /*_endEffector,*/
-        // _oi));
+        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         
-        _oi.initializeButtons(/* _driveTrain, */ _shooter, _intake, _deflector);
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
         startPeriodic();
 
     }

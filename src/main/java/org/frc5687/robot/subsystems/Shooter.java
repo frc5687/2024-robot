@@ -11,18 +11,18 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 
 public class Shooter extends OutliersSubsystem {
-    public OutliersTalon _leftTalon;
-    public OutliersTalon _rightTalon;
+    public OutliersTalon _bottomTalon;
+    public OutliersTalon _topTalon;
     private double _targetRPM = 0;
     public Shooter(OutliersContainer container) {
         super(container);
-        _leftTalon = new OutliersTalon(RobotMap.CAN.TALONFX.LEFT_SHOOTER, "CANivore", "Left Shooter");
-        _rightTalon = new OutliersTalon(RobotMap.CAN.TALONFX.RIGHT_SHOOTER, "CANivore", "Right Shooter");
-        _leftTalon.configure(Constants.Shooter.CONFIG);
-        _rightTalon.configure(Constants.Shooter.CONFIG);
+        _bottomTalon = new OutliersTalon(RobotMap.CAN.TALONFX.BOTTOM_SHOOTER, "CANivore", "Left Shooter");
+        _topTalon = new OutliersTalon(RobotMap.CAN.TALONFX.TOP_SHOOTER, "CANivore", "Right Shooter");
+        _bottomTalon.configure(Constants.Shooter.CONFIG);
+        _topTalon.configure(Constants.Shooter.CONFIG);
 
-        _leftTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
-        _rightTalon.setControl(new Follower(_leftTalon.getDeviceID(), true));
+        _bottomTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
+        _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
     }
 
     public void setTargetRPM(double speed) {
@@ -34,16 +34,16 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public void enableMotor() {
-        _leftTalon.setVelocity(_targetRPM);
+        _bottomTalon.setVelocity(_targetRPM);
     }
 
     public void disableMotor() {
         // TODO: coast
-        _leftTalon.setVelocity(0);
+        _bottomTalon.setVelocity(0);
     }
 
     public void updateDashboard() {
-        SmartDashboard.putNumber("_leftTalon RPM Shooter", _leftTalon.getVelocity().getValue() * 60);
+        SmartDashboard.putNumber("_bottomTalon RPM Shooter", _bottomTalon.getVelocity().getValue() * 60);
         SmartDashboard.putNumber("Targt RPM Shooter", _targetRPM);
     }
 }
