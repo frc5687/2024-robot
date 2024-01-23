@@ -24,13 +24,12 @@ public class IntakeCommand extends OutliersCommand{
 
     @Override
     public boolean isFinished() {
-        return _intake.isDonutDetected();
+        return _intake.isBottomDetected();
     }
 
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
         _intake.setSpeed(0);
-        
     }
 }

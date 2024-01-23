@@ -65,8 +65,8 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
         _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
         _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -10));
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.1));
-        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.1));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
+        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
     }
 
     public boolean shiftUp() {

@@ -371,6 +371,8 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 0.9;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        public static final double FORWARD_SERIALIZE_SPEED = 0.3;
+        public static final double REVERSE_SERIALIZE_SPEED = -0.3;
         // this is the motor config for the swerve motors
         static {
             CONFIG.TIME_OUT = 0.1;
@@ -415,14 +417,14 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 7;
+            CLOSED_LOOP_CONFIG.kP = 18;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
-            CLOSED_LOOP_CONFIG.JERK = 10;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 5000;
+            CLOSED_LOOP_CONFIG.JERK = 5000;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }

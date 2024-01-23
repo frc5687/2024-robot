@@ -93,8 +93,8 @@ public class RobotMap {
      * unique.
      */
     public static class DIO {
-        public static int LOWER_HALL = 0; // CHANGE THIS!!!
-        public static int UPPER_HALL = 9; // CHANGE THIS!!!
+        public static int LOWER_HALL = 9; // CHANGE THIS!!!
+        public static int UPPER_HALL = 7; // CHANGE THIS!!!
 
         public static int DONUT_SENSOR = 8;
 
