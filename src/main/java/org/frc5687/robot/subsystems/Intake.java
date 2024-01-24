@@ -13,7 +13,7 @@ public class Intake extends OutliersSubsystem {
     public Intake(OutliersContainer container) {
         super(container);
         _talon = new OutliersTalon(RobotMap.CAN.TALONFX.INTAKE, Constants.Intake.CAN_BUS, "Intake");
-        
+        _talon.configure(Constants.Intake.CONFIG);
     }
 
     public void setSpeed(double intakeSpeed) {
