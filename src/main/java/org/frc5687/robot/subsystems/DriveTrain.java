@@ -106,13 +106,12 @@ public class DriveTrain extends OutliersSubsystem {
         // _photonProcessor = photonProcessor;
 
         _shift = new DoubleSolenoid(
-            2,
             PneumaticsModuleType.REVPH,
             RobotMap.PCM.SHIFTER_HIGH,
             RobotMap.PCM.SHIFTER_LOW
         );
 
-        _compressor = new Compressor(2, PneumaticsModuleType.REVPH);
+        _compressor = new Compressor(PneumaticsModuleType.REVPH);
         _compressor.enableDigital();
 
         // configure our system IO and pigeon;
