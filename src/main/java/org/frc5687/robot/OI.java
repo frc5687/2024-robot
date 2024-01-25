@@ -60,7 +60,7 @@ public class OI extends OutliersProxy {
             Intake intake,
             Deflector deflector) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
-        _driverRightTrigger.whileTrue(new Shoot(shooter));
+        _driverRightTrigger.whileTrue(new Shoot(shooter, intake));
         _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
         _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
         _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));

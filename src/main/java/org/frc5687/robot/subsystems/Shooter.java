@@ -34,7 +34,11 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public void enableMotor() {
-        _bottomTalon.setVelocity(_targetRPM);
+        _bottomTalon.setVelocity(/*_targetRPM*/1200);
+    }
+
+    public double getMotorRPM() {
+        return _topTalon.getVelocity().getValueAsDouble();
     }
 
     public void disableMotor() {

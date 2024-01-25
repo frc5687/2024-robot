@@ -65,8 +65,8 @@ public class RobotMap {
      * unique.
      */
     public static class PCM {
-        public static final int SHIFTER_HIGH = 2; // these values may be flip-flopped
-        public static final int SHIFTER_LOW = 3;
+        public static final int SHIFTER_HIGH = 3; // these values may be flip-flopped
+        public static final int SHIFTER_LOW = 2;
     }
 
     /**
@@ -85,6 +85,7 @@ public class RobotMap {
      */
     public static class Analog {}
 
+
     /**
      * There should be an entry here for each DIO port, preferrably in numerical
      * order. Note that for
@@ -93,6 +94,9 @@ public class RobotMap {
      */
     public static class DIO {
         public static int LOWER_HALL = 0; // CHANGE THIS!!!
-        public static int UPPER_HALL = 1; // CHANGE THIS!!!
+        public static int UPPER_HALL = 9; // CHANGE THIS!!!
+
+        public static int DONUT_SENSOR = 1; // CHANGE THIS!!!
+
     }
 }

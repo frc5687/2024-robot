@@ -239,7 +239,7 @@ public class Constants {
         static {
             CONFIG.TIME_OUT = 0.1;
 
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
             CONFIG.MAX_VOLTAGE = 12.0;
