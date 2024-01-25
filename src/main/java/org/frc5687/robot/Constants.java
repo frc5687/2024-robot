@@ -322,7 +322,7 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static final double SHOOT_RPM = 2000;
+        public static final double SHOOT_RPM = 500;
 
         public static final double VELOCITY_TOLERANCE = 50;
 
