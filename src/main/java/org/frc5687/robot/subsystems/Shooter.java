@@ -29,25 +29,27 @@ public class Shooter extends OutliersSubsystem {
         _targetRPM = speed;
     }
 
+    public void setToTarget(){
+        _bottomTalon.setVelocity(_targetRPM);
+    }
+
     public double getTargetRPM() {
         return _targetRPM;
     }
 
-    public void enableMotor() {
-        _bottomTalon.setVelocity(/*_targetRPM*/1200);
-    }
-
     public double getMotorRPM() {
-        return _topTalon.getVelocity().getValueAsDouble();
+        return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
     }
 
-    public void disableMotor() {
-        // TODO: coast
-        _bottomTalon.setVelocity(0);
+    public boolean isAtTargetRPM(){
+        return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
+
+
 
     public void updateDashboard() {
-        SmartDashboard.putNumber("_bottomTalon RPM Shooter", _bottomTalon.getVelocity().getValue() * 60);
+        SmartDashboard.putNumber("_bottomTalon RPM Shooter", getMotorRPM());
         SmartDashboard.putNumber("Targt RPM Shooter", _targetRPM);
+        SmartDashboard.putBoolean("At Target RPM", isAtTargetRPM());
     }
 }

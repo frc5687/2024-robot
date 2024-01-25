@@ -19,16 +19,12 @@ public class IntakeCommand extends OutliersCommand{
 
     @Override
     public void execute() {
-        if (_intake.isDonutDetected()) {
-            _intake.setSpeed(0);
-        } else {
-            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
-        }
+        _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
     }
 
     @Override
     public boolean isFinished() {
-        return false; 
+        return _intake.isDonutDetected();
     }
 
     @Override

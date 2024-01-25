@@ -322,7 +322,12 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static double SHOOT_RPM = 3000;
+        public static final double SHOOT_RPM = 2000;
+
+        public static final double VELOCITY_TOLERANCE = 50;
+
+        public static final double IDLE_RPM = 500;
+
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
@@ -360,7 +365,7 @@ public class Constants {
 
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 1.0;
+        public static final double INTAKE_SPEED = 0.9;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
         static {

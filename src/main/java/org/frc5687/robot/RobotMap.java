@@ -96,7 +96,7 @@ public class RobotMap {
         public static int LOWER_HALL = 0; // CHANGE THIS!!!
         public static int UPPER_HALL = 9; // CHANGE THIS!!!
 
-        public static int DONUT_SENSOR = 1; // CHANGE THIS!!!
+        public static int DONUT_SENSOR = 8;
 
     }
 }

@@ -28,7 +28,7 @@ public class Intake extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        
+        metric("Note in Chamber", isDonutDetected());
     }
     
 }
