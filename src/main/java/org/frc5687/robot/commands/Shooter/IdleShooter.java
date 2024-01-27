@@ -13,8 +13,7 @@ public class IdleShooter extends OutliersCommand{
     }
 
     public void execute() {
-        _shooter.setTargetRPM(Constants.Shooter.IDLE_RPM);
-        _shooter.setToTarget();
+        _shooter.setIdle();
     }
 
     public boolean isFinished(boolean interrupted) {

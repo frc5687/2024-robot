@@ -111,13 +111,14 @@ public class DriveTrain extends OutliersSubsystem {
                 RobotMap.PCM.SHIFTER_LOW);
 
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressor.enableDigital();
+        _compressor.enableAnalog(
+                Constants.DriveTrain.MIN_PSI,
+                Constants.DriveTrain.MAX_PSI);
 
         // configure our system IO and pigeon;
         _imu = imu;
         _systemIO = new SystemIO();
 
-        // hi chat
         _controlState = ControlState.NEUTRAL;
 
         // set up the modules
@@ -277,9 +278,6 @@ public class DriveTrain extends OutliersSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        if (!_compressor.getPressureSwitchValue()) {
-            _compressor.disable();
-        }
         if (!_hasShiftInit) {
             shiftDownModules();
             _hasShiftInit = true;
@@ -593,6 +591,7 @@ public class DriveTrain extends OutliersSubsystem {
                         .getDistance(_hoverGoal.getTranslation()));
         metric("Drivetrain Speed", getSpeed());
         metric("Is Low Gear", isLowGear());
+        metric("Tank Pressure PSI", _compressor.getPressure());
         SmartDashboard.putData(_field);
         moduleMetrics();
     }

@@ -25,6 +25,10 @@ public class Shooter extends OutliersSubsystem {
         _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
     }
 
+    public void setIdle() {
+        _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
+    }
+
     public void setTargetRPM(double speed) {
         _targetRPM = speed;
     }
