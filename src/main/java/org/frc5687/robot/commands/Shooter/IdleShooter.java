@@ -1,5 +1,6 @@
 package org.frc5687.robot.commands.Shooter;
 
+import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
@@ -11,19 +12,12 @@ public class IdleShooter extends OutliersCommand{
         addRequirements(_shooter);
     }
 
-    public void initialize() {
-        _shooter.disableMotor();
-    }
-    
     public void execute() {
-        _shooter.disableMotor();
+        _shooter.setTargetRPM(Constants.Shooter.IDLE_RPM);
+        _shooter.setToTarget();
     }
 
     public boolean isFinished(boolean interrupted) {
         return false;
-    }
-
-    public void end(boolean interrupted) {
-        _shooter.disableMotor();
     }
 }

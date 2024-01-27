@@ -6,6 +6,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
 
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.util.Units;
 
 public class Deflector extends OutliersSubsystem {
@@ -20,6 +21,9 @@ public class Deflector extends OutliersSubsystem {
         _talon = new OutliersTalon(RobotMap.CAN.TALONFX.DEFLECTOR, Constants.Deflector.CAN_BUS, "Deflector");
         _talon.configure(Constants.Deflector.CONFIG);
         _talon.configureClosedLoop(Constants.Deflector.CLOSED_LOOP_CONFIG);
+
+        _lowerHall = new HallEffect(RobotMap.DIO.LOWER_HALL);
+        _upperHall = new HallEffect(RobotMap.DIO.UPPER_HALL);
     }
 
     @Override

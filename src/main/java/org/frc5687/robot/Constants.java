@@ -120,7 +120,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = 0.242666;
+            NORTH_WEST_CONFIG.encoderOffset = 0.412109375;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -131,7 +131,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.091553;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.34033203125;
         }
 
         public static final ModuleConfiguration SOUTH_EAST_CONFIG = new ModuleConfiguration();
@@ -142,7 +142,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.2697754;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.493896484375;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -153,7 +153,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.170166;
+            NORTH_EAST_CONFIG.encoderOffset = -0.215576171875;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -224,7 +224,7 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = 0.0508;
+        public static final double WHEEL_RADIUS = 0.0492125;
         public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
         public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
         public static final double GEAR_RATIO_STEER = (52 / 14) * (96 / 16);
@@ -322,7 +322,12 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static double SHOOT_RPM = 3000;
+        public static final double SHOOT_RPM = 500;
+
+        public static final double VELOCITY_TOLERANCE = 50;
+
+        public static final double IDLE_RPM = 500;
+
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
@@ -358,9 +363,25 @@ public class Constants {
         }
     }
 
-    public static class INTAKE {
+    public static class Intake {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 1.0;
+        public static final double INTAKE_SPEED = 0.9;
+        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        // this is the motor config for the swerve motors
+        static {
+            CONFIG.TIME_OUT = 0.1;
+
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+
+            CONFIG.MAX_VOLTAGE = 12.0;
+
+            CONFIG.MAX_STATOR_CURRENT = 60;
+            CONFIG.MAX_CURRENT = 60;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.USE_FOC = true;
+        }
     }
 
     public static class Deflector {

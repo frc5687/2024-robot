@@ -1,12 +1,13 @@
-package org.frc5687.robot.commands;
+package org.frc5687.robot.commands.Intake;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Intake;
 
-public class IdleIntake extends OutliersCommand{
+public class IntakeCommand extends OutliersCommand{
     private Intake _intake;
 
-    public IdleIntake(Intake intake) {
+    public IntakeCommand(Intake intake) {
         _intake = intake;
         addRequirements(_intake);
     }
@@ -18,13 +19,12 @@ public class IdleIntake extends OutliersCommand{
 
     @Override
     public void execute() {
-        _intake.setSpeed(0);
-
+        _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
     }
 
     @Override
     public boolean isFinished() {
-        return false; 
+        return _intake.isDonutDetected();
     }
 
     @Override
@@ -33,4 +33,3 @@ public class IdleIntake extends OutliersCommand{
         _intake.setSpeed(0);
     }
 }
-
