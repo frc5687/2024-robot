@@ -59,7 +59,7 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector) {
-        _driverLeftTrigger.whileTrue(new IntakeCommand(intake));
+        _driverLeftTrigger.whileTrue(new IntakeCommand(intake).andThen(new RumbleGamepad(this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake));
         _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
         _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
@@ -122,7 +122,7 @@ public class OI extends OutliersProxy {
         // metric("Raw y", yIn);
     }
 
-    public void RumbleDriver() {
+    public void rumbleDriver() {
         _driverGamepad.setRumble(GenericHID.RumbleType.kBothRumble, 1);
     }
 

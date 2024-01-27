@@ -6,14 +6,12 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
 
-import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.util.Units;
 
 public class Deflector extends OutliersSubsystem {
 
     private OutliersTalon _talon;
     private HallEffect _lowerHall;
-    private HallEffect _upperHall;
     private double _targetAngle;
 
     public Deflector(OutliersContainer container) {
@@ -23,15 +21,12 @@ public class Deflector extends OutliersSubsystem {
         _talon.configureClosedLoop(Constants.Deflector.CLOSED_LOOP_CONFIG);
 
         _lowerHall = new HallEffect(RobotMap.DIO.LOWER_HALL);
-        _upperHall = new HallEffect(RobotMap.DIO.UPPER_HALL);
     }
 
     @Override
     public void periodic() {
         if (_lowerHall.get()) {
             setEncoderAngle(Constants.Deflector.LOWER_HALL_ANGLE);
-        } else if (_upperHall.get()) {
-            setEncoderAngle(Constants.Deflector.UPPER_HALL_ANGLE);
         }
     }
 

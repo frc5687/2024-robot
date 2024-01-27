@@ -214,6 +214,9 @@ public class Constants {
         public static final double QUICK_LEVEL_KP = 3.0; // PID controller for leveling
         public static final double QUICK_LEVEL_KI = 0.0;
         public static final double QUICK_LEVEL_KD = 0.5;
+
+        public static final double MIN_PSI = 40.0;
+        public static final double MAX_PSI = 100.0;
     }
 
     public static class SwerveModule {
@@ -228,6 +231,7 @@ public class Constants {
         public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
         public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
         public static final double GEAR_RATIO_STEER = (52 / 14) * (96 / 16);
+
         // public static
         final double MAX_SPEED = 0;
 
@@ -324,7 +328,7 @@ public class Constants {
     public static class Shooter {
         public static final double SHOOT_RPM = 500;
 
-        public static final double VELOCITY_TOLERANCE = 50;
+        public static final double VELOCITY_TOLERANCE = 10;
 
         public static final double IDLE_RPM = 500;
 
@@ -332,17 +336,17 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.135; // 70
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.5;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.0001; // 0.7
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.12;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.135;
 
             // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
             SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
             SHOOTER_CONTROLLER_CONFIG.ACCELERATION = 4000;
             SHOOTER_CONTROLLER_CONFIG.JERK = 10000;
 
-            SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
+            SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
 
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -391,8 +395,8 @@ public class Constants {
         public static final double GEAR_RATIO = 56.0; //56:1
 
         public static final double ANGLE_TOLERANCE = 0.01;
-        public static final double LOWER_HALL_ANGLE = 0.0; //FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
-        public static final double UPPER_HALL_ANGLE = 1.0; //FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
+        public static final double LOWER_HALL_ANGLE = 0.0;
+        public static final double UPPER_HALL_ANGLE = 2.5;
 
         static {
             CONFIG.TIME_OUT = 0.1;
@@ -411,13 +415,13 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 4; // 70
+            CLOSED_LOOP_CONFIG.kP = 7;
             CLOSED_LOOP_CONFIG.kI = 0;
-            CLOSED_LOOP_CONFIG.kD = 0; // 0.7
+            CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
             CLOSED_LOOP_CONFIG.JERK = 10;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;

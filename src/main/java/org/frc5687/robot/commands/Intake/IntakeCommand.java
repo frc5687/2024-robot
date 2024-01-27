@@ -31,5 +31,6 @@ public class IntakeCommand extends OutliersCommand{
     public void end(boolean interrupted) {
         super.end(interrupted);
         _intake.setSpeed(0);
+        
     }
 }
