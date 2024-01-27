@@ -61,18 +61,20 @@ public class Constants {
         public static final double SHIFT_UP_SPEED_MPS = 2.0; // Speed to start shift y
         public static final double SHIFT_DOWN_SPEED_MPS = 1.75; // Speed to start shift y
 
+        public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
+
         public static final KinematicLimits HIGH_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 45; // m/s^2
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 60; // m/s^2
             HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
-            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2
+            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2
             LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
 
@@ -167,7 +169,7 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MAINTAIN_kP = 4.5;
+        public static final double MAINTAIN_kP = 6.5;
         public static final double MAINTAIN_kI = 0.0;
         public static final double MAINTAIN_kD = 0.3;
 
@@ -388,11 +390,11 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
 
-        public static final double GEAR_RATIO = 56.0; //56:1
+        public static final double GEAR_RATIO = 56.0; // 56:1
 
         public static final double ANGLE_TOLERANCE = 0.01;
-        public static final double LOWER_HALL_ANGLE = 0.0; //FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
-        public static final double UPPER_HALL_ANGLE = 1.0; //FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
+        public static final double LOWER_HALL_ANGLE = 0.0; // FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
+        public static final double UPPER_HALL_ANGLE = 1.0; // FIXME: ARBITRARY VALUE PLEASE CHANGE!!!
 
         static {
             CONFIG.TIME_OUT = 0.1;

@@ -106,10 +106,9 @@ public class DriveTrain extends OutliersSubsystem {
         // _photonProcessor = photonProcessor;
 
         _shift = new DoubleSolenoid(
-            PneumaticsModuleType.REVPH,
-            RobotMap.PCM.SHIFTER_HIGH,
-            RobotMap.PCM.SHIFTER_LOW
-        );
+                PneumaticsModuleType.REVPH,
+                RobotMap.PCM.SHIFTER_HIGH,
+                RobotMap.PCM.SHIFTER_LOW);
 
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
         _compressor.enableDigital();
@@ -118,7 +117,7 @@ public class DriveTrain extends OutliersSubsystem {
         _imu = imu;
         _systemIO = new SystemIO();
 
-        //hi chat
+        // hi chat
         _controlState = ControlState.NEUTRAL;
 
         // set up the modules
@@ -167,8 +166,7 @@ public class DriveTrain extends OutliersSubsystem {
                 _modules[NORTH_WEST_IDX].getModuleLocation(),
                 _modules[SOUTH_WEST_IDX].getModuleLocation(),
                 _modules[SOUTH_EAST_IDX].getModuleLocation(),
-                _modules[NORTH_EAST_IDX].getModuleLocation() 
-        );
+                _modules[NORTH_EAST_IDX].getModuleLocation());
 
         _odometry = new SwerveDriveOdometry(
                 _kinematics,
@@ -179,8 +177,7 @@ public class DriveTrain extends OutliersSubsystem {
                         _modules[SOUTH_EAST_IDX].getModulePosition(),
                         _modules[NORTH_EAST_IDX].getModulePosition()
                 },
-                new Pose2d(0, 0, getHeading())
-        );
+                new Pose2d(0, 0, getHeading()));
 
         _poseEstimator = new SwerveDrivePoseEstimator(
                 _kinematics,
@@ -224,8 +221,6 @@ public class DriveTrain extends OutliersSubsystem {
                         new TrapezoidProfile.Constraints(
                                 Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
                                 Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
-
-
 
         _field = new Field2d();
         _hoverGoal = new Pose2d();
@@ -282,9 +277,9 @@ public class DriveTrain extends OutliersSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        if (!_compressor.getPressureSwitchValue()){
+        if (!_compressor.getPressureSwitchValue()) {
             _compressor.disable();
-        } 
+        }
         if (!_hasShiftInit) {
             shiftDownModules();
             _hasShiftInit = true;
@@ -309,17 +304,18 @@ public class DriveTrain extends OutliersSubsystem {
             // _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
             // Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
             // List<EstimatedRobotPose> cameraPoses = Stream.of(
-            //         _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
-            //         _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
-            //         _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
-            //         _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose))
-            //         .flatMap(Optional::stream)
-            //         .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
-            //         .collect(Collectors.toList());
+            // _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
+            // _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
+            // _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
+            // _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose))
+            // .flatMap(Optional::stream)
+            // .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+            // .collect(Collectors.toList());
 
             // cameraPoses.forEach(cameraPose -> {
-            //     dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-            //     _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(), cameraPose.timestampSeconds);
+            // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+            // _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(),
+            // cameraPose.timestampSeconds);
             // });
 
             // _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
@@ -387,7 +383,6 @@ public class DriveTrain extends OutliersSubsystem {
         }
     }
     /* Module Control End */
-
 
     /* Heading Controller Start */
     public HeadingState getHeadingControllerState() {
@@ -487,7 +482,7 @@ public class DriveTrain extends OutliersSubsystem {
         return _kinematics;
     }
 
-    /* Odometry And Pose Estimator Start*/
+    /* Odometry And Pose Estimator Start */
     public void updateOdometry() {
         _odometry.update(
                 isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
@@ -537,7 +532,6 @@ public class DriveTrain extends OutliersSubsystem {
         _wantsToSetPose = true;
     }
     /* Odometry And Pose Estimator End */
-
 
     public double getDistanceToGoal() {
         return _systemIO.estimatedPose
@@ -675,7 +669,6 @@ public class DriveTrain extends OutliersSubsystem {
         return Math.hypot(getDesiredChassisSpeeds().vxMetersPerSecond, getDesiredChassisSpeeds().vyMetersPerSecond);
     }
 
-
     public double getSpeed() {
         return Math.hypot(getMeasuredChassisSpeeds().vxMetersPerSecond, getMeasuredChassisSpeeds().vyMetersPerSecond);
     }
@@ -709,7 +702,6 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void autoShifter() {
         double speed = getSpeed();
-        double LockoutTime = 500;
         if (speed > Constants.DriveTrain.SHIFT_UP_SPEED_MPS && getDesiredSpeed() > SHIFT_UP_SPEED_MPS) {
             if (!_shiftLockout) {
                 _shiftLockout = true;
@@ -717,7 +709,7 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftTime = System.currentTimeMillis();
                 shiftUpModules();
             }
-            if (_shiftTime + LockoutTime < System.currentTimeMillis()) {
+            if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
                 _shiftLockout = false;
             }
         }
@@ -728,14 +720,14 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftLockout = true;
                 shiftDownModules();
             }
-            if (_shiftTime + LockoutTime < System.currentTimeMillis()) {
+            if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
                 _shiftLockout = false;
             }
         }
 
     }
     /* Shift stuff end */
-    
+
     public Pose2d getEstimatedPose() {
         return _systemIO.estimatedPose;
     }
@@ -811,7 +803,8 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void readIMU() {
-        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(), _imu.getAngularVelocityZDevice());
+        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
+                _imu.getAngularVelocityZDevice());
         _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset);
         _systemIO.pitch = Units.degreesToRadians(_imu.getPitch().getValue());
     }
