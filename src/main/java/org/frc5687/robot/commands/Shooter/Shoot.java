@@ -18,7 +18,7 @@ public class Shoot extends OutliersCommand{
     }
 
     public void execute() {
-        _shooter.setTargetRPM(Constants.Shooter.SHOOT_RPM);
+        // _shooter.setTargetRPM(Constants.Shooter.SHOOT_RPM);
         _shooter.setToTarget();
         if (_shooter.isAtTargetRPM()) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
