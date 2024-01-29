@@ -11,6 +11,7 @@ public class SerializeNote extends OutliersCommand {
     public SerializeNote(Intake intake) {
         _intake = intake;
         _state = SerializeState.DETECTED_NOTE;
+        addRequirements(_intake);
     }
     @Override
     public void initialize() {

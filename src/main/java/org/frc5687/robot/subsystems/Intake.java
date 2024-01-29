@@ -16,8 +16,8 @@ public class Intake extends OutliersSubsystem {
         super(container);
         _talon = new OutliersTalon(RobotMap.CAN.TALONFX.INTAKE, Constants.Intake.CAN_BUS, "Intake");
         _talon.configure(Constants.Intake.CONFIG);
-        _top = new ProximitySensor(RobotMap.DIO.DONUT_SENSOR);
-        _bottom = new ProximitySensor(RobotMap.DIO.DONUT_SENSOR - 5);
+        _top = new ProximitySensor(RobotMap.DIO.TOP_DONUT_SENSOR);
+        _bottom = new ProximitySensor(RobotMap.DIO.BOTTOM_DONUT_SENSOR);
     }
     
     public boolean isDonutDetected(){
@@ -34,6 +34,7 @@ public class Intake extends OutliersSubsystem {
     @Override
     public void updateDashboard() {
         metric("Note in Chamber", isDonutDetected());
+        metric("Note in Bottom", isBottomDetected());
     }
     
 }
