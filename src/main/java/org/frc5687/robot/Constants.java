@@ -371,7 +371,7 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 0.9;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-        public static final double FORWARD_SERIALIZE_SPEED = 0.1;
+        public static final double FORWARD_SERIALIZE_SPEED = 0.3;
         public static final double REVERSE_SERIALIZE_SPEED = -0.3;
         // this is the motor config for the swerve motors
         static {
