@@ -23,19 +23,19 @@ public class SerializeNote extends OutliersCommand {
     public void execute() {
         switch(_state) {
             case DETECTED_NOTE:
-                if (!_intake.isDonutDetected() && !_intake.isBottomDetected()) {
+                if (!_intake.isDonutDetected()) {
                     _intake.setSpeed(0.0);
-                    _state = SerializeState.BOTH_SENSORS_CLEARED;
+                    _state = SerializeState.SENSOR_CLEARED;
                 } else {
-                    _intake.setSpeed(Constants.Intake.FORWARD_SERIALIZE_SPEED);
+                    _intake.setSpeed(Constants.Intake.REVERSE_SERIALIZE_SPEED);
                 }
                 break;
-            case BOTH_SENSORS_CLEARED:
-                if (_intake.isDonutDetected() && !_intake.isBottomDetected()) {
+            case SENSOR_CLEARED:
+                if (_intake.isDonutDetected()) {
                     _intake.setSpeed(0.0);
                     _state = SerializeState.NOTE_SERIALIZED;
                 } else {
-                    _intake.setSpeed(Constants.Intake.REVERSE_SERIALIZE_SPEED);
+                    _intake.setSpeed(Constants.Intake.FORWARD_SERIALIZE_SPEED);
                 }
                 break;
             case NOTE_SERIALIZED:
@@ -60,7 +60,7 @@ public class SerializeNote extends OutliersCommand {
 
     public enum SerializeState {
         DETECTED_NOTE(0),
-        BOTH_SENSORS_CLEARED(1),
+        SENSOR_CLEARED(1),
         NOTE_SERIALIZED(2);
 
         private final int _value;
