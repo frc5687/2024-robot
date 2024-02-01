@@ -285,6 +285,7 @@ public class DriveTrain extends OutliersSubsystem {
         readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
+        checkCompressor();
     }
 
     /* Vision Stuff */
@@ -480,6 +481,25 @@ public class DriveTrain extends OutliersSubsystem {
         return _kinematics;
     }
 
+    /* Compressor Custom Function */
+    public void checkCompressor(){
+        boolean _hasCharged = false;
+        boolean _hasInitialized = false;
+        if (!_hasInitialized){
+        if(!_hasCharged){
+            _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, 
+            Constants.DriveTrain.MAX_PSI);
+
+            if (_compressor.getPressure() >= Constants.DriveTrain.MAX_PSI){
+                _hasCharged = true;
+            }
+        } else{
+            _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI,
+            Constants.DriveTrain.MAX_PSI);
+            _hasInitialized = true;
+        }
+    }
+    }
     /* Odometry And Pose Estimator Start */
     public void updateOdometry() {
         _odometry.update(
