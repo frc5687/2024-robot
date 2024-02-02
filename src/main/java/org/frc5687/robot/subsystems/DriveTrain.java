@@ -52,8 +52,8 @@ public class DriveTrain extends OutliersSubsystem {
     private static final int SOUTH_EAST_IDX = 2;
     private static final int NORTH_EAST_IDX = 3;
 
-    private final DoubleSolenoid _shift;
-    private final Compressor _compressor;
+    // private final DoubleSolenoid _shift;
+    // private final Compressor _compressor;
 
     private final SwerveModule[] _modules;
     private final BaseStatusSignal[] _moduleSignals;
@@ -105,15 +105,15 @@ public class DriveTrain extends OutliersSubsystem {
         // _visionProcessor = processor;
         // _photonProcessor = photonProcessor;
 
-        _shift = new DoubleSolenoid(
-                PneumaticsModuleType.REVPH,
-                RobotMap.PCM.SHIFTER_HIGH,
-                RobotMap.PCM.SHIFTER_LOW);
+        // _shift = new DoubleSolenoid(
+        //         PneumaticsModuleType.REVPH,
+        //         RobotMap.PCM.SHIFTER_HIGH,
+        //         RobotMap.PCM.SHIFTER_LOW);
 
-        _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressor.enableAnalog(
-                Constants.DriveTrain.MIN_PSI,
-                Constants.DriveTrain.MAX_PSI);
+        // _compressor = new Compressor(PneumaticsModuleType.REVPH);
+        // _compressor.enableAnalog(
+        //         Constants.DriveTrain.MIN_PSI,
+        //         Constants.DriveTrain.MAX_PSI);
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -285,7 +285,7 @@ public class DriveTrain extends OutliersSubsystem {
         readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
-        checkCompressor();
+        // checkCompressor();
     }
 
     /* Vision Stuff */
@@ -482,35 +482,35 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     /* Compressor Custom Function */
-    public void checkCompressor(){
-        boolean _hasCharged = false;
-        boolean _hasInitialized = false;
-        if (!_hasInitialized){
-        if(!_hasCharged){
-            _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, 
-            Constants.DriveTrain.MAX_PSI);
+    // public void checkCompressor(){
+    //     boolean _hasCharged = false;
+    //     boolean _hasInitialized = false;
+    //     if (!_hasInitialized){
+    //     if(!_hasCharged){
+    //         _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, 
+    //         Constants.DriveTrain.MAX_PSI);
 
-            if (_compressor.getPressure() >= Constants.DriveTrain.MAX_PSI){
-                _hasCharged = true;
-            }
-        } else{
-            _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI,
-            Constants.DriveTrain.MAX_PSI);
-            _hasInitialized = true;
-        }
-    }
-    }
-    /* Odometry And Pose Estimator Start */
-    public void updateOdometry() {
-        _odometry.update(
-                isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
-                new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_EAST_IDX].getModulePosition(),
-                        _modules[NORTH_EAST_IDX].getModulePosition()
-                });
-    }
+    //         if (_compressor.getPressure() >= Constants.DriveTrain.MAX_PSI){
+    //             _hasCharged = true;
+    //         }
+    //     } else{
+    //         _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI,
+    //         Constants.DriveTrain.MAX_PSI);
+    //         _hasInitialized = true;
+    //     }
+    // }
+    // }
+    // /* Odometry And Pose Estimator Start */
+    // public void updateOdometry() {
+    //     _odometry.update(
+    //             isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
+    //             new SwerveModulePosition[] {
+    //                     _modules[NORTH_WEST_IDX].getModulePosition(),
+    //                     _modules[SOUTH_WEST_IDX].getModulePosition(),
+    //                     _modules[SOUTH_EAST_IDX].getModulePosition(),
+    //                     _modules[NORTH_EAST_IDX].getModulePosition()
+    //             });
+    // }
 
     public Pose2d getOdometryPose() {
         return _odometry.getPoseMeters();
@@ -611,7 +611,7 @@ public class DriveTrain extends OutliersSubsystem {
                         .getDistance(_hoverGoal.getTranslation()));
         metric("Drivetrain Speed", getSpeed());
         metric("Is Low Gear", isLowGear());
-        metric("Tank Pressure PSI", _compressor.getPressure());
+        // metric("Tank Pressure PSI", _compressor.getPressure());
         SmartDashboard.putData(_field);
         moduleMetrics();
     }
@@ -694,7 +694,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     /* Shift stuff start */
     public void shiftUpModules() {
-        _shift.set(Value.kForward);
+        // _shift.set(Value.kForward);
         _isLowGear = false;
         setKinematicLimits(HIGH_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
@@ -703,7 +703,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void shiftDownModules() {
-        _shift.set(Value.kReverse);
+        // _shift.set(Value.kReverse);
         setKinematicLimits(LOW_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
             _modules[i].setLowGear(true);

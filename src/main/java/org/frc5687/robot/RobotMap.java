@@ -24,14 +24,14 @@ public class RobotMap {
             public static final int BOTTOM_SHOOTER = 2;
             public static final int TOP_SHOOTER = 3;
 
-            public static final int SOUTH_EAST_ROTATION = 4;
-            public static final int SOUTH_EAST_TRANSLATION = 5;
-            public static final int NORTH_EAST_ROTATION = 6;
-            public static final int NORTH_EAST_TRANSLATION = 7;
-            public static final int NORTH_WEST_ROTATION = 8;
-            public static final int NORTH_WEST_TRANSLATION = 9;
-            public static final int SOUTH_WEST_ROTATION = 10;
-            public static final int SOUTH_WEST_TRANSLATION = 11;
+            public static final int SOUTH_EAST_ROTATION = 0;
+            public static final int SOUTH_EAST_TRANSLATION = 1;
+            public static final int NORTH_EAST_ROTATION = 2;                        
+            public static final int NORTH_EAST_TRANSLATION = 3;
+            public static final int NORTH_WEST_ROTATION = 4;
+            public static final int NORTH_WEST_TRANSLATION = 5;
+            public static final int SOUTH_WEST_ROTATION = 6;
+            public static final int SOUTH_WEST_TRANSLATION = 7;
         }
 
         public static class CANCODER {
