@@ -18,15 +18,15 @@ public class RobotMap {
 
             // Ordered in order of CAN connection in loop.
 
-            public static final int INTAKE = 0;
-            public static final int DEFLECTOR = 1;
+            public static final int INTAKE = 8;
+            public static final int DEFLECTOR = 9;
 
-            public static final int BOTTOM_SHOOTER = 2;
-            public static final int TOP_SHOOTER = 3;
+            public static final int BOTTOM_SHOOTER = 10;
+            public static final int TOP_SHOOTER = 11;
 
             public static final int SOUTH_EAST_ROTATION = 0;
             public static final int SOUTH_EAST_TRANSLATION = 1;
-            public static final int NORTH_EAST_ROTATION = 2;                        
+            public static final int NORTH_EAST_ROTATION = 2;
             public static final int NORTH_EAST_TRANSLATION = 3;
             public static final int NORTH_WEST_ROTATION = 4;
             public static final int NORTH_WEST_TRANSLATION = 5;
@@ -35,10 +35,10 @@ public class RobotMap {
         }
 
         public static class CANCODER {
-            public static final int ENCODER_SE = 0;
-            public static final int ENCODER_NE = 1;
-            public static final int ENCODER_NW = 2;
-            public static final int ENCODER_SW = 3;
+                public static final int ENCODER_NW = 0;
+                public static final int ENCODER_SE = 1;
+                public static final int ENCODER_SW = 2;
+                public static final int ENCODER_NE = 3;
         }
 
         public static class PIGEON {
