@@ -24,7 +24,7 @@ public class IntakeCommand extends OutliersCommand{
 
     @Override
     public boolean isFinished() {
-        return _intake.isBottomDetected();
+        return _intake.isDonutDetected();
     }
 
     @Override
