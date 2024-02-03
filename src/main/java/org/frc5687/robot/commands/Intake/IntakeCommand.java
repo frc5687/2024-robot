@@ -32,7 +32,7 @@ public class IntakeCommand extends OutliersCommand{
         super.end(interrupted);
         _intake.setSpeed(0);
         if (!interrupted) {
-            new SerializeNote(_intake).schedule();
+            new IndexNote(_intake).schedule();
         }
     }
 }

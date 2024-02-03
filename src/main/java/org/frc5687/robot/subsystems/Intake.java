@@ -20,9 +20,10 @@ public class Intake extends OutliersSubsystem {
         _bottom = new ProximitySensor(RobotMap.DIO.BOTTOM_DONUT_SENSOR);
     }
     
-    public boolean isDonutDetected(){
+    public boolean isTopDetected(){
         return _top.get();
     }
+
     public boolean isBottomDetected() {
         return _bottom.get();
     }
@@ -33,8 +34,8 @@ public class Intake extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Note in Chamber", isDonutDetected());
-        metric("Note in Bottom", isBottomDetected());
+        metric("Top Detected", isTopDetected());
+        metric("Bottom Detected", isBottomDetected());
     }
     
 }
