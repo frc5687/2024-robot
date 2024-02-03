@@ -16,7 +16,7 @@ public class Constants {
     public static final double METRIC_FLUSH_PERIOD = 0.02;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double CONTROL_PERIOD = 0.02; // 10 ms
-    public static final double DATA_PERIOD = 0.004; // 20 ms
+    public static final double DATA_PERIOD = 0.01; // 20 ms
     public static final double EPSILON = 1e-9;
 
     public static class SwerveModule {
@@ -215,7 +215,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.417724609375;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.353759765625;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -226,7 +226,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.436279296875;
+            NORTH_EAST_CONFIG.encoderOffset = 0.063720703125;
         }
         
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -237,7 +237,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = 0.27880859375;
+            NORTH_WEST_CONFIG.encoderOffset = -0.22119140625;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -248,7 +248,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.458251953125;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.041748046875;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -343,7 +343,7 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.5;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.45;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
             SHOOTER_CONTROLLER_CONFIG.kF = 0.135;
