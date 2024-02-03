@@ -15,6 +15,7 @@ import org.frc5687.robot.commands.*;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.OutliersProxy;
@@ -59,14 +60,14 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector) {
-        _driverLeftTrigger.whileTrue(new IntakeCommand(intake).andThen(new RumbleGamepad(this)));
+        _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake));
         _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
         _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
         _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
         _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -10));
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.1));
-        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.1));
+        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
+        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
     }
 
     public boolean shiftUp() {

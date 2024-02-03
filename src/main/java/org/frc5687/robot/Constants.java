@@ -377,6 +377,8 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 0.9;
+        public static final double INDEX_SPEED = 0.4;
+        public static final double SLOW_INDEX_SPEED = 0.4;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
         static {
