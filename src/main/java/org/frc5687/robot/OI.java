@@ -1,6 +1,7 @@
 /* Team 5687 (C)2020-2021 */
 package org.frc5687.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -62,25 +63,34 @@ public class OI extends OutliersProxy {
             Deflector deflector) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake));
-        _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
-        _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
-        _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
-        _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -10));
+
+        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI/2)));
+        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
+
+        
+        
+        _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
+        _povButtonDown.onTrue(new ChangeRPM(shooter, -100));
+        _povButtonRight.onTrue(new ChangeRPM(shooter, 10));
+        _povButtonLeft.onTrue(new ChangeRPM(shooter, -10));
+
         _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
         _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
     }
 
     public boolean shiftUp() {
-        return _driverGamepad.getAButton().getAsBoolean();
+        // return _driverGamepad.getAButton().getAsBoolean();
         // return _driverGamepad.getBButton().getAsBoolean();
-        // return false;
+        return false;
     }
 
     public boolean shiftDown() {
-        return _driverGamepad.getBButton().getAsBoolean();
+        // return _driverGamepad.getBButton().getAsBoolean();
         // return _driverGamepad.getXButton().getAsBoolean(); //changed as vision no
         // worky rn
-        // return false;
+        return false;
     }
 
     public boolean shiftOverride() {

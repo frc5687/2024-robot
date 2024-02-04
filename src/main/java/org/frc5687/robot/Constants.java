@@ -152,7 +152,7 @@ public class Constants {
         public static final double MAX_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
-        public static final double SHIFT_UP_SPEED_MPS = 2.0; // Speed to start shift y
+        public static final double SHIFT_UP_SPEED_MPS = 3.0; // Speed to start shift y
         public static final double SHIFT_DOWN_SPEED_MPS = 1.75; // Speed to start shift y
 
         public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
