@@ -21,7 +21,7 @@ import org.frc5687.robot.util.OutliersProxy;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
-    protected CommandJoystick _operatorJoystick;
+    protected Joystick _operatorGamepad;
     protected Gamepad _buttonpad;
 
     // protected CustomController _customController;
@@ -33,11 +33,11 @@ public class OI extends OutliersProxy {
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
     protected Trigger _povButtonDown;
-
+    
     public OI() {
 
         _driverGamepad = new Gamepad(0);
-        _operatorJoystick = new CommandJoystick(1);
+        _operatorGamepad = new Gamepad(1);
         _buttonpad = new Gamepad(2);
         // _customController = new CustomController();
         _povButtonLeft = new Trigger(() -> _driverGamepad.getPOV() == 270);
@@ -105,12 +105,19 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.DriveTrain.TRANSLATION_DEADBAND);
         return speed;
     }
-
+ 
     public double getRotationX() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.ROTATION_DEADBAND);
         return speed;
     }
+
+    public double getClimbY() {
+        double speed = -getSpeedFromAxis(_operatorGamepad, _operatorGamepad.getYChannel());
+        speed = applyDeadband(speed, Constants.Climber.CLIMBER_TRANSLATION);
+        return speed;
+    }
+
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);
