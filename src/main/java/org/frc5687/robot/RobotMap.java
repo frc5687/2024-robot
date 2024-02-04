@@ -26,15 +26,14 @@ public class RobotMap {
             
             public static final int CLIMBER = 4;
 
-            public static final int SOUTH_EAST_ROTATION = 4;
-            public static final int SOUTH_EAST_TRANSLATION = 5;
-            public static final int NORTH_EAST_ROTATION = 6;
-            public static final int NORTH_EAST_TRANSLATION = 7;
-            public static final int NORTH_WEST_ROTATION = 8;
-            public static final int NORTH_WEST_TRANSLATION = 9;
-            public static final int SOUTH_WEST_ROTATION = 10;
-            public static final int SOUTH_WEST_TRANSLATION = 11;
-
+            public static final int SOUTH_EAST_ROTATION = 5;
+            public static final int SOUTH_EAST_TRANSLATION = 6;
+            public static final int NORTH_EAST_ROTATION = 7;
+            public static final int NORTH_EAST_TRANSLATION = 8;
+            public static final int NORTH_WEST_ROTATION = 9;
+            public static final int NORTH_WEST_TRANSLATION = 10;
+            public static final int SOUTH_WEST_ROTATION = 11;
+            public static final int SOUTH_WEST_TRANSLATION = 12;
         }
 
         public static class CANCODER {
@@ -99,10 +98,10 @@ public class RobotMap {
      * unique.
      */
     public static class DIO {
-        public static int LOWER_HALL = 0; // CHANGE THIS!!!
-        public static int UPPER_HALL = 9; // CHANGE THIS!!!
+        public static int LOWER_HALL = 9;
 
-        public static int DONUT_SENSOR = 8;
+        public static int TOP_DONUT_SENSOR = 7;
+        public static int BOTTOM_DONUT_SENSOR = 8;
 
     }
 }

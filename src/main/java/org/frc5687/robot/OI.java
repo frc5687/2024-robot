@@ -1,6 +1,7 @@
 /* Team 5687 (C)2020-2021 */
 package org.frc5687.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -15,6 +16,7 @@ import org.frc5687.robot.commands.*;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.OutliersProxy;
@@ -59,36 +61,46 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector) {
-        _driverLeftTrigger.whileTrue(new IntakeCommand(intake).andThen(new RumbleGamepad(this)));
+        _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake));
-        _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
-        _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
-        _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
-        _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -10));
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.1));
-        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.1));
+
+        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI/2)));
+        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
+
+        
+        
+        _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
+        _povButtonDown.onTrue(new ChangeRPM(shooter, -100));
+        _povButtonRight.onTrue(new ChangeRPM(shooter, 10));
+        _povButtonLeft.onTrue(new ChangeRPM(shooter, -10));
+
+        //_driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
+        //_driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
     }
 
     public boolean shiftUp() {
-        return _driverGamepad.getAButton().getAsBoolean();
+        return _driverGamepad.getLeftBumper().getAsBoolean();
+        // return _driverGamepad.getAButton().getAsBoolean();
         // return _driverGamepad.getBButton().getAsBoolean();
-        // return false;
+        //return false;
     }
 
     public boolean shiftDown() {
-        return _driverGamepad.getBButton().getAsBoolean();
+        return _driverGamepad.getRightBumper().getAsBoolean();
         // return _driverGamepad.getXButton().getAsBoolean(); //changed as vision no
         // worky rn
-        // return false;
+        //return false;
     }
 
     public boolean shiftOverride() {
         return _driverGamepad.getBackButton().getAsBoolean();
     }
 
-    public boolean getSlowMode() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
-    }
+    // public boolean getSlowMode() {
+    //     return _driverGamepad.getLeftBumper().getAsBoolean();
+    // }
 
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();
