@@ -93,21 +93,7 @@ public class Drive extends OutliersCommand {
         double controllerPower = _driveTrain.getRotationCorrection();
         // metric("Element Angle", elementAngle);
         metric("Rot+Controller", (rot + controllerPower));
-        if (_oi.getSlowMode()) {
-            _toNormal = false;
-            _driveTrain.setMode(Mode.SLOW);
-            // _driveTrain.shiftDownModules();
-            // _driveTrain.setShiftLockout(true);
-            _driveTrain.setKinematicLimits(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS);
-            vx = vec.x() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
-            vy = vec.y() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
-            rot = -rot
-                    * Constants.DriveTrain.SLOW_ANG_VEL; // negative added to flip rotation in slowmode, driver
-                                                         // preference
-            _driveTrain.setVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-        } else {
+        
             if (!_toNormal) {
                 _driveTrain.setKinematicLimits(Constants.DriveTrain.LOW_KINEMATIC_LIMITS);
                 _toNormal = true;
@@ -127,7 +113,7 @@ public class Drive extends OutliersCommand {
             SmartDashboard.putNumber("/vx", vx);
             SmartDashboard.putNumber("/vy", vy);
 
-        }
+        
     }
 
     @Override

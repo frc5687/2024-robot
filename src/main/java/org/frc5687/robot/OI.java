@@ -76,30 +76,31 @@ public class OI extends OutliersProxy {
         _povButtonRight.onTrue(new ChangeRPM(shooter, 10));
         _povButtonLeft.onTrue(new ChangeRPM(shooter, -10));
 
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
-        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
+        //_driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
+        //_driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
     }
 
     public boolean shiftUp() {
+        return _driverGamepad.getLeftBumper().getAsBoolean();
         // return _driverGamepad.getAButton().getAsBoolean();
         // return _driverGamepad.getBButton().getAsBoolean();
-        return false;
+        //return false;
     }
 
     public boolean shiftDown() {
-        // return _driverGamepad.getBButton().getAsBoolean();
+        return _driverGamepad.getRightBumper().getAsBoolean();
         // return _driverGamepad.getXButton().getAsBoolean(); //changed as vision no
         // worky rn
-        return false;
+        //return false;
     }
 
     public boolean shiftOverride() {
         return _driverGamepad.getBackButton().getAsBoolean();
     }
 
-    public boolean getSlowMode() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
-    }
+    // public boolean getSlowMode() {
+    //     return _driverGamepad.getLeftBumper().getAsBoolean();
+    // }
 
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();

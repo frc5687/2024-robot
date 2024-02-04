@@ -49,7 +49,7 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_STATOR_CURRENT = 120;
-            CONFIG.MAX_CURRENT = 120;
+            CONFIG.MAX_CURRENT = 70;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
         }
@@ -140,7 +140,6 @@ public class Constants {
 
         public static final double MAX_FALCON_FOC_RPM = 6080.0;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
-
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
         public static final double MAX_LOW_GEAR_MPS = (
             Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
@@ -148,11 +147,14 @@ public class Constants {
         public static final double MAX_HIGH_GEAR_MPS = (
             Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
             / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+
+        public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
+
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
-        public static final double SHIFT_UP_SPEED_MPS = 3.0; // Speed to start shift y
+        public static final double SHIFT_UP_SPEED_MPS = 2.0; // Speed to start shift y
         public static final double SHIFT_DOWN_SPEED_MPS = 1.75; // Speed to start shift y
 
         public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
