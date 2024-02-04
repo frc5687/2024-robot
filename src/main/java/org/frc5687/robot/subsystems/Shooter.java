@@ -2,6 +2,7 @@ package org.frc5687.robot.subsystems;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
+import org.frc5687.robot.util.PhotonProcessor;
 
 import com.ctre.phoenix6.controls.Follower;
 
@@ -11,8 +12,8 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 
 public class Shooter extends OutliersSubsystem {
-    public OutliersTalon _bottomTalon;
-    public OutliersTalon _topTalon;
+    private OutliersTalon _bottomTalon;
+    private OutliersTalon _topTalon;
     private double _targetRPM = 0;
     public Shooter(OutliersContainer container) {
         super(container);
@@ -49,11 +50,21 @@ public class Shooter extends OutliersSubsystem {
         return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
-
+    public double calculateRPMFromDistance(double distance) {
+        return (
+            Constants.Shooter.SEXTIC_COEFFECIENT * Math.pow(distance, 6) +
+            Constants.Shooter.QUINTIC_COEFFICIENT * Math.pow(distance, 5) +
+            Constants.Shooter.QUARTIC_COEFFICIENT * Math.pow(distance, 4) +
+            Constants.Shooter.CUBIC_COEFFICIENT * Math.pow(distance, 3) +
+            Constants.Shooter.QUADRATIC_COEFFICIENT * Math.pow(distance, 2) +
+            Constants.Shooter.LINEAR_COEFFIECIENT * distance +
+            Constants.Shooter.OFFSET_COEFFICIENT
+        );
+    }
 
     public void updateDashboard() {
-        SmartDashboard.putNumber("_bottomTalon RPM Shooter", getMotorRPM());
-        SmartDashboard.putNumber("Targt RPM Shooter", _targetRPM);
-        SmartDashboard.putBoolean("At Target RPM", isAtTargetRPM());
+        metric("Shooter RPM", getMotorRPM());
+        metric("Target RPM", _targetRPM);
+        metric("At Target RPM", isAtTargetRPM());
     }
 }

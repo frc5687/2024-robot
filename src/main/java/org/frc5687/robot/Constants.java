@@ -339,6 +339,15 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
+        // regression equation
+        public static final double SEXTIC_COEFFECIENT = 3446.87547841668;
+        public static final double QUINTIC_COEFFICIENT = -78761.4146267351;
+        public static final double QUARTIC_COEFFICIENT = 744867.704631976;
+        public static final double CUBIC_COEFFICIENT = -3730776.48359247;
+        public static final double QUADRATIC_COEFFICIENT = 10434762.9280147;
+        public static final double LINEAR_COEFFIECIENT = -15450198.1419455;
+        public static final double OFFSET_COEFFICIENT = 9463197.07505351;
+
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
