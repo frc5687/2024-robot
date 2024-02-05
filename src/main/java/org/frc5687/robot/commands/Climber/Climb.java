@@ -26,3 +26,4 @@ public class Climb extends OutliersCommand {
     }
 
 }
+

@@ -125,7 +125,7 @@ public class OI extends OutliersProxy {
     }
 
     public double getClimbY() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, _operatorGamepad.getYChannel());
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber());
         speed = applyDeadband(speed, Constants.Climber.CLIMBER_TRANSLATION);
         return speed;
     }

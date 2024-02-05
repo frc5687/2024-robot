@@ -6,11 +6,11 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+// import edu.wpi.first.math.util.Units;
+// import edu.wpi.first.wpilibj.DoubleSolenoid;
+// import edu.wpi.first.wpilibj.PneumaticsModuleType;
+// import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+// import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 public class Climber extends OutliersSubsystem{
 
@@ -42,12 +42,16 @@ public class Climber extends OutliersSubsystem{
         } else if (meters > Constants.Climber.UPPER_LIMIT){
             warn("Attempted to set climber past upper limit.");
         } else{
-        _talon.setMotionMagic(meters/(2 * Math.PI * Constants.Climber.WINCH_RADIUS));
+        _talon.setMotionMagic(meters * Constants.Climber.CLIMBER_GEAR_RATIO /(2 * Math.PI * Constants.Climber.WINCH_RADIUS));
         }
     }
 
     public void setSpeed(double speed) {
         _talon.setPercentOutput(speed);
+    }
+
+    public double getMeters() {
+        return (_talon.getPosition().getValue() / Constants.Climber.CLIMBER_GEAR_RATIO) * (2 * Math.PI * Constants.Climber.WINCH_RADIUS);
     }
 
     // public void changeRatchetUp(){
@@ -99,5 +103,8 @@ public class Climber extends OutliersSubsystem{
 
     @Override
     public void updateDashboard() {
+        metric("ClimberPosition", getMeters());
+        
+        
     }
 }
