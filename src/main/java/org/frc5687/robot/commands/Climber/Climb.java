@@ -14,15 +14,12 @@ public class Climb extends OutliersCommand {
         _oi = oi;
         addRequirements(_climber);
     }
-    
-    @Override
-    public void initialize() {
-        super.initialize();
-    }
 
     public void execute() {
         super.execute();
-        _climber.setSpeed(_oi.getClimbY());
+        double speed = _oi.getClimbY();
+        _climber.setSpeed(speed);
+        metric("ClimberSpeed", speed);
     }
 
 }

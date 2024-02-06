@@ -3,6 +3,7 @@ package org.frc5687.robot.subsystems;
 import org.frc5687.lib.drivers.OutliersTalon;
 // import org.frc5687.lib.sensors.HallEffect;
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
 
@@ -15,7 +16,7 @@ import org.frc5687.robot.util.OutliersContainer;
 public class Climber extends OutliersSubsystem{
 
     private OutliersTalon _talon;
-
+    private OI _oi;
     // private DoubleSolenoid _ratchet;
     // private boolean _isRatchetUp;
     // private ClimberStep _step = ClimberStep.UNKNOWN;
@@ -103,8 +104,6 @@ public class Climber extends OutliersSubsystem{
 
     @Override
     public void updateDashboard() {
-        metric("ClimberPosition", getMeters());
-        
-        
+        metric("ClimberPosition", getMeters());        
     }
 }
