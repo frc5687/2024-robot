@@ -1,6 +1,8 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
+import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
+import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -426,5 +428,31 @@ public class Constants {
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
+    }
+    public static class CANdle {
+        public static int NUM_LED = 128;
+        public static double SPEED = 0.1;
+        public static TwinklePercent TWINKLEPERCENT = TwinklePercent.Percent42;
+        public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
+
+        public static int[] RED = {255, 0, 0};
+        public static int[] ORANGE = {255, 165, 0};
+        public static int[] YELLOW = {255, 65, 0};
+        public static int[] GREEN = {0, 255, 0};
+        public static int[] CYAN = {0, 255, 255};
+        public static int[] BLUE = {0, 0, 255};
+        public static int[] PURPLE = {128, 0, 128};
+        public static int[] PINK = {255, 105, 18};
+        public static int[] WHITE = {0, 0, 0};
+
+        public static int[] RUFOUS = {168, 28, 7};
+        public static int[] ORANGE_RED = {255, 69, 0};
+        public static int[] MAROON = {128, 0, 0};
+        public static int[] GOLD = {212, 175, 55};
+        public static int[] PURPLER = {64, 0, 64};
+        public static int[] LESS_GREEN = {0, 64, 0};
+        public static int[] MINTISH = {100, 255, 100};
+        public static int[] LEAF00 = {30, 175, 0}; //epic color frfr
+        public static int[] MILO_BLUE = {1, 52, 133};
     }
 }
