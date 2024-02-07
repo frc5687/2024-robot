@@ -4,6 +4,7 @@ package org.frc5687.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -340,6 +341,14 @@ public class Constants {
         public static final double IDLE_RPM = 500;
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
+        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(1.0, 1.0, null); //TODO please change these possition values :P
+        
+        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.0, 1.0, null); //TODO please change these possitions again D:
+
+        public static final double AMP_SHOT_SPEED = 0; //TODO change this :O
+
+        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 90; //TODO change this ;P
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;

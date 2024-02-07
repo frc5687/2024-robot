@@ -13,6 +13,7 @@ import static org.frc5687.robot.util.Helpers.*;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
+import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
@@ -69,7 +70,7 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
 
-        
+        //_driverGamepad.getLeftBumper().onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
         
         _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
         _povButtonDown.onTrue(new ChangeRPM(shooter, -100));
