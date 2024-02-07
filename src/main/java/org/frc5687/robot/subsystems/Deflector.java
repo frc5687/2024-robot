@@ -56,13 +56,27 @@ public class Deflector extends OutliersSubsystem {
         }
     }
 
+    //don't use this for non-zero purposes!!
+    public void beginDeflectorZero() {
+        _talon.setPercentOutput(-0.1);
+    }
+    
+    public boolean getHall() {
+        return _lowerHall.get();
+    }
+
     public boolean isAtTargetAngle() {
         return Math.abs(_targetAngle - getAngle()) < Constants.Deflector.ANGLE_TOLERANCE;
+    }
+
+    public double calculateAngleFromDistance(double distance) {
+        return Constants.Shooter.kDeflectorRegression.predict(distance);
     }
 
     @Override
     public void updateDashboard() {
         metric("Deflector Target Angle", getTargetAngle());
         metric("Deflector Current Angle", getAngle());
+        metric("Deflector Hall", getHall());
     }
 }

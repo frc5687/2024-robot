@@ -82,7 +82,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     // Vision Processors
     // private final VisionProcessor _visionProcessor;
-    // private final PhotonProcessor _photonProcessor;
+    private final PhotonProcessor _photonProcessor;
 
     private final Field2d _field;
     private Mode _mode = Mode.NORMAL;
@@ -98,24 +98,22 @@ public class DriveTrain extends OutliersSubsystem {
     public DriveTrain(
             OutliersContainer container,
             // VisionProcessor processor,
-            // PhotonProcessor photonProcessor,
+            PhotonProcessor photonProcessor,
             Pigeon2 imu) {
         super(container);
 
         // _visionProcessor = processor;
-        // _photonProcessor = photonProcessor;
+        _photonProcessor = photonProcessor;
 
         _shift = new DoubleSolenoid(
-            PneumaticsModuleType.REVPH,
-            RobotMap.PCM.SHIFTER_HIGH,
-            RobotMap.PCM.SHIFTER_LOW
-        );
+                PneumaticsModuleType.REVPH,
+                RobotMap.PCM.SHIFTER_HIGH,
+                RobotMap.PCM.SHIFTER_LOW);
 
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
         _compressor.enableAnalog(
-            Constants.DriveTrain.MIN_PSI,
-            Constants.DriveTrain.MAX_PSI
-        );
+                Constants.DriveTrain.MIN_PSI,
+                Constants.DriveTrain.MAX_PSI);
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -169,8 +167,7 @@ public class DriveTrain extends OutliersSubsystem {
                 _modules[NORTH_WEST_IDX].getModuleLocation(),
                 _modules[SOUTH_WEST_IDX].getModuleLocation(),
                 _modules[SOUTH_EAST_IDX].getModuleLocation(),
-                _modules[NORTH_EAST_IDX].getModuleLocation() 
-        );
+                _modules[NORTH_EAST_IDX].getModuleLocation());
 
         _odometry = new SwerveDriveOdometry(
                 _kinematics,
@@ -181,8 +178,7 @@ public class DriveTrain extends OutliersSubsystem {
                         _modules[SOUTH_EAST_IDX].getModulePosition(),
                         _modules[NORTH_EAST_IDX].getModulePosition()
                 },
-                new Pose2d(0, 0, getHeading())
-        );
+                new Pose2d(0, 0, getHeading()));
 
         _poseEstimator = new SwerveDrivePoseEstimator(
                 _kinematics,
@@ -227,8 +223,6 @@ public class DriveTrain extends OutliersSubsystem {
                                 Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
                                 Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
 
-
-
         _field = new Field2d();
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
@@ -239,6 +233,8 @@ public class DriveTrain extends OutliersSubsystem {
 
         readModules();
         setSetpointFromMeasuredModules();
+
+        logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
     }
 
     /**
@@ -291,11 +287,6 @@ public class DriveTrain extends OutliersSubsystem {
         readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
-    }
-
-    /* Vision Stuff */
-    @Override
-    public void dataPeriodic(double timestamp) {
         readInputs();
 
         // current assumption is that because this is in a different thread a data race
@@ -305,25 +296,56 @@ public class DriveTrain extends OutliersSubsystem {
             resetRobotPose(_wantedRestPose);
             _wantsToSetPose = false;
         } else {
-            // _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
-            // Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
-            // List<EstimatedRobotPose> cameraPoses = Stream.of(
-            //         _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
-            //         _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
-            //         _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
-            //         _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose))
-            //         .flatMap(Optional::stream)
-            //         .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
-            //         .collect(Collectors.toList());
+            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
+            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
+            List<EstimatedRobotPose> cameraPoses = Stream.of(
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
+            )
+            .flatMap(Optional::stream)
+            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+            .collect(Collectors.toList());
 
-            // cameraPoses.forEach(cameraPose -> {
-            //     dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-            //     _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(), cameraPose.timestampSeconds);
-            // });
+            cameraPoses.forEach(cameraPose -> {
+                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                _poseEstimator.addVisionMeasurement(
+                    cameraPose.estimatedPose.toPose2d(),
+                    cameraPose.timestampSeconds
+                );
+            });
 
-            // _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
+            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
         }
         _field.setRobotPose(_systemIO.estimatedPose);
+    }
+
+    /* Vision Stuff */
+    // @Override
+    public void dataPeriodicTest(double timestamp) {
+            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
+            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
+            List<EstimatedRobotPose> cameraPoses = Stream.of(
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
+            )
+            .flatMap(Optional::stream)
+            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+            .collect(Collectors.toList());
+
+            cameraPoses.forEach(cameraPose -> {
+                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                _poseEstimator.addVisionMeasurement(
+                    cameraPose.estimatedPose.toPose2d(),
+                    cameraPose.timestampSeconds
+                );
+            });
+
+            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
+        // _field.setRobotPose(_systemIO.estimatedPose);
     }
 
     /* If we want to control modules faster, move periodic to here */
@@ -370,7 +392,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.length; module++) {
-            _modules[module].setIdealState(states[module]);
+            // _modules[module].setIdealState(states[module]);
+            _modules[module].setModuleState(states[module]);
+
         }
     }
 
@@ -386,7 +410,6 @@ public class DriveTrain extends OutliersSubsystem {
         }
     }
     /* Module Control End */
-
 
     /* Heading Controller Start */
     public HeadingState getHeadingControllerState() {
@@ -485,8 +508,7 @@ public class DriveTrain extends OutliersSubsystem {
     public SwerveDriveKinematics getKinematics() {
         return _kinematics;
     }
-
-    /* Odometry And Pose Estimator Start*/
+    /* Odometry And Pose Estimator Start */
     public void updateOdometry() {
         _odometry.update(
                 isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
@@ -537,7 +559,6 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Odometry And Pose Estimator End */
 
-
     public double getDistanceToGoal() {
         return _systemIO.estimatedPose
                 .getTranslation()
@@ -550,57 +571,60 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Swerve State", _controlState.name());
-        metric("Robot goal position", _hoverGoal.toString());
-        metric("Current Heading", getHeading().getRadians());
-        metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
-        metric("Heading State", _headingController.getHeadingState().name());
-        metric("Rotation State", getYaw());
-        metric("Pitch Angle", getPitch());
-        metric("Estimated X", _systemIO.estimatedPose.getX());
-        metric("Estimated Y", _systemIO.estimatedPose.getY());
-        metric("NW Angle", _modules[0].getCanCoderAngle().getRadians());
-        metric("SW Angle", _modules[1].getCanCoderAngle().getRadians());
-        metric("SE Angle", _modules[2].getCanCoderAngle().getRadians());
-        metric("NE Angle", _modules[3].getCanCoderAngle().getRadians());
-        metric("NW AngleRot", _modules[0].getCanCoderAngle().getRotations());
-        metric("SW AngleRot", _modules[1].getCanCoderAngle().getRotations());
-        metric("SE AngleRot", _modules[2].getCanCoderAngle().getRotations());
-        metric("NE AngleRot", _modules[3].getCanCoderAngle().getRotations());
-        metric("NW Angle Wanted", _systemIO.setpoint.moduleStates[0].angle.getRadians());
-        metric("SW Angle Wanted", _systemIO.setpoint.moduleStates[1].angle.getRadians());
-        metric("SE Angle Wanted", _systemIO.setpoint.moduleStates[2].angle.getRadians());
-        metric("NE Angle Wanted", _systemIO.setpoint.moduleStates[3].angle.getRadians());
-        metric("NW Velocity", _modules[0].getWheelVelocity());
-        metric("SW Velocity", _modules[1].getWheelVelocity());
-        metric("SE Velocity", _modules[2].getWheelVelocity());
-        metric("NE Velocity", _modules[3].getWheelVelocity());
-        metric("NW Velocity Wanted", _modules[0].getWantedSpeed());
-        metric("SW Velocity Wanted", _modules[1].getWantedSpeed());
-        metric("SE Velocity Wanted", _modules[2].getWantedSpeed());
-        metric("NE Velocity Wanted", _modules[3].getWantedSpeed());
-        metric("NW Drive Velocity", _modules[0].getDriveRPM() / 60);
-        metric("SW Drive Velocity", _modules[1].getDriveRPM() / 60);
-        metric("NE Drive Velocity", _modules[2].getDriveRPM() / 60);
-        metric("SE Drive Velocity", _modules[3].getDriveRPM() / 60);
-        metric("NW State Velocity", _modules[0].getStateMPS());
-        metric("SW State Velocity", _modules[1].getStateMPS());
-        metric("NE State Velocity", _modules[2].getStateMPS());
-        metric("SE State Velocity", _modules[3].getStateMPS());
+        // metric("Swerve State", _controlState.name());
+        // metric("Robot goal position", _hoverGoal.toString());
+        // metric("Current Heading", getHeading().getRadians());
+        // metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
+        // metric("Heading State", _headingController.getHeadingState().name());
+        // metric("Rotation State", getYaw());
+        // // metric("Pitch Angle", getPitch());
+        // metric("Estimated X", _systemIO.estimatedPose.getX());
+        // metric("Estimated Y", _systemIO.estimatedPose.getY());
+        // metric("NW Angle", _modules[0].getCanCoderAngle().getRadians());
+        // metric("SW Angle", _modules[1].getCanCoderAngle().getRadians());
+        // metric("SE Angle", _modules[2].getCanCoderAngle().getRadians());
+        // metric("NE Angle", _modules[3].getCanCoderAngle().getRadians());
+        // // metric("NW AngleRot", _modules[0].getCanCoderAngle().getRotations());
+        // // metric("SW AngleRot", _modules[1].getCanCoderAngle().getRotations());
+        // // metric("SE AngleRot", _modules[2].getCanCoderAngle().getRotations());
+        // // metric("NE AngleRot", _modules[3].getCanCoderAngle().getRotations());
+        // metric("NW Angle Wanted", _systemIO.setpoint.moduleStates[0].angle.getRadians());
+        // metric("SW Angle Wanted", _systemIO.setpoint.moduleStates[1].angle.getRadians());
+        // metric("SE Angle Wanted", _systemIO.setpoint.moduleStates[2].angle.getRadians());
+        // metric("NE Angle Wanted", _systemIO.setpoint.moduleStates[3].angle.getRadians());
+        // // metric("NW Velocity", _modules[0].getWheelVelocity());
+        // // metric("SW Velocity", _modules[1].getWheelVelocity());
+        // // metric("SE Velocity", _modules[2].getWheelVelocity());
+        // // metric("NE Velocity", _modules[3].getWheelVelocity());
+        // // metric("NW Velocity Wanted", _modules[0].getWantedSpeed());
+        // // metric("SW Velocity Wanted", _modules[1].getWantedSpeed());
+        // // metric("SE Velocity Wanted", _modules[2].getWantedSpeed());
+        // // metric("NE Velocity Wanted", _modules[3].getWantedSpeed());
+        // // metric("NW Drive Velocity", _modules[0].getDriveRPM() / 60);
+        // // metric("SW Drive Velocity", _modules[1].getDriveRPM() / 60);
+        // // metric("NE Drive Velocity", _modules[2].getDriveRPM() / 60);
+        // // metric("SE Drive Velocity", _modules[3].getDriveRPM() / 60);
+        // // metric("NW State Velocity", _modules[0].getStateMPS());
+        // // metric("SW State Velocity", _modules[1].getStateMPS());
+        // // metric("NE State Velocity", _modules[2].getStateMPS());
+        // // metric("SE State Velocity", _modules[3].getStateMPS());
         metric("NW Current", _modules[0].getDriveMotorCurrent());
         metric("SW Current", _modules[1].getDriveMotorCurrent());
         metric("SE Current", _modules[2].getDriveMotorCurrent());
         metric("NE Current", _modules[3].getDriveMotorCurrent());
-        metric(
-                "Distance to goal node",
-                _systemIO.estimatedPose
-                        .getTranslation()
-                        .getDistance(_hoverGoal.getTranslation()));
-        metric("Drivetrain Speed", getSpeed());
-        metric("Is Low Gear", isLowGear());
-        metric("Tank Pressure PSI", _compressor.getPressure());
+        // // metric("NW Camera Estimate Pose", _photonProcessor.getNorthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // // metric("SW Camera Estimate Pose", _photonProcessor.getSouthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // // metric("SE Camera Estimate Pose", _photonProcessor.getSouthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // // metric("NE Camera Estimate Pose", _photonProcessor.getNorthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // metric("Distance to goal node",
+        //         _systemIO.estimatedPose
+        //                 .getTranslation()
+        //                 .getDistance(_hoverGoal.getTranslation()));
+        // metric("Drivetrain Speed", getSpeed());
+        // metric("Is Low Gear", isLowGear());
+        // metric("Tank Pressure PSI", _compressor.getPressure());
         SmartDashboard.putData(_field);
-        moduleMetrics();
+        // moduleMetrics();
     }
 
     public void moduleMetrics() {
@@ -675,7 +699,6 @@ public class DriveTrain extends OutliersSubsystem {
         return Math.hypot(getDesiredChassisSpeeds().vxMetersPerSecond, getDesiredChassisSpeeds().vyMetersPerSecond);
     }
 
-
     public double getSpeed() {
         return Math.hypot(getMeasuredChassisSpeeds().vxMetersPerSecond, getMeasuredChassisSpeeds().vyMetersPerSecond);
     }
@@ -709,7 +732,6 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void autoShifter() {
         double speed = getSpeed();
-        double LockoutTime = 500;
         if (speed > Constants.DriveTrain.SHIFT_UP_SPEED_MPS && getDesiredSpeed() > SHIFT_UP_SPEED_MPS) {
             if (!_shiftLockout) {
                 _shiftLockout = true;
@@ -717,7 +739,7 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftTime = System.currentTimeMillis();
                 shiftUpModules();
             }
-            if (_shiftTime + LockoutTime < System.currentTimeMillis()) {
+            if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
                 _shiftLockout = false;
             }
         }
@@ -728,14 +750,14 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftLockout = true;
                 shiftDownModules();
             }
-            if (_shiftTime + LockoutTime < System.currentTimeMillis()) {
+            if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
                 _shiftLockout = false;
             }
         }
 
     }
     /* Shift stuff end */
-    
+
     public Pose2d getEstimatedPose() {
         return _systemIO.estimatedPose;
     }
@@ -752,7 +774,8 @@ public class DriveTrain extends OutliersSubsystem {
                 && measurement.getX() <= FieldConstants.fieldLength + fieldBuffer)
                 && (measurement.getY() >= -fieldBuffer
                         && measurement.getY() <= FieldConstants.fieldWidth + fieldBuffer);
-        return isTargetWithinHeight && isMeasurementInField;
+        // return isTargetWithinHeight && isMeasurementInField;
+        return isMeasurementInField;
     }
 
     /**
@@ -811,7 +834,8 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void readIMU() {
-        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(), _imu.getAngularVelocityZDevice());
+        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
+                _imu.getAngularVelocityZDevice());
         _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset);
         _systemIO.pitch = Units.degreesToRadians(_imu.getPitch().getValue());
     }
