@@ -1,27 +1,44 @@
 package org.frc5687.robot.util;
 
-import edu.wpi.first.wpilibj.Notifier;
 import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.frc5687.lib.flatbuffers.*;
+import java.util.concurrent.locks.ReentrantLock;
 
-// Import FlatBuffers generated classes
+import org.frc5687.Messages.VisionPose;
+import org.frc5687.Messages.VisionPoseArray;
+import java.nio.ByteOrder;
+import java.nio.ByteBuffer;
+
 import com.google.flatbuffers.FlatBufferBuilder;
+
+import edu.wpi.first.wpilibj.Notifier;
 
 public class VisionProcessor {
     private final ZMQ.Context context;
     private final Map<String, ZMQ.Socket> subscribers = new HashMap<>();
     private final Map<String, ZMQ.Socket> publishers = new HashMap<>();
     private volatile boolean running = false;
-    private final Notifier _receiveNotifier;
+    private boolean firstRun = true;
+    private ReentrantLock _mtx;
+
+    private VisionPoseArray _detectedObjects;
+    private final Notifier _receiveNotifier =
+            new Notifier(
+                    () -> {
+                        synchronized (VisionProcessor.this) {
+                            if (firstRun) {
+                                firstRunSetup();
+                                firstRun = false;
+                            }
+                            receive();
+                        }
+                    });
 
     public VisionProcessor() {
         context = ZMQ.context(1);
-        firstRunSetup(); 
-        _receiveNotifier = new Notifier(this::receive); 
+        _mtx = new ReentrantLock();
     }
 
     private void firstRunSetup() {
@@ -52,42 +69,60 @@ public class VisionProcessor {
         _receiveNotifier.stop();
     }
 
+    public ZMQ.Socket getSubscriber(String topic) {
+        return subscribers.get(topic);
+    }
+
     private void receive() {
         subscribers.values().forEach(this::processSubscriber);
     }
 
+    public VisionPoseArray getDetectedObjects() {
+        try {
+            _mtx.lock();
+        return _detectedObjects;
+        } finally {
+            _mtx.unlock();
+        }
+    }
 
-    private void processSubscriber(ZMQ.Socket subscriber) {
+    public void processSubscriber(ZMQ.Socket subscriber) {
         String topic = subscriber.recvStr();
         if (topic != null) {
             byte[] data = subscriber.recv();
             if (data != null) {
                 switch (topic) {
                     case "HeartBeat":
-                        //HeartBeat heartBeat = decodeHeartBeat(data);
-                        // Process HeartBeat data
+                        System.out.println("Not implemented HeartBeat");
+                        // Assuming HeartBeat decoding is implemented elsewhere
                         break;
                     case "IMUInfo":
-                        //IMUInfo imuInfo = decodeIMUInfo(data);
-                        // Process IMUInfo data
+                        // Assuming IMUInfo decoding is implemented elsewhere
                         break;
                     case "VisionPose":
-                        //VisionPose visionPose = decodeVisionPose(data);
-                        // Process VisionPose data
+                        ByteBuffer bb1 = ByteBuffer.wrap(data);
+                        VisionPose visionPose1 = VisionPose.getRootAsVisionPose(bb1);
+                        System.out.println("VisionPose{ x: " + visionPose1.x() + " y: " + visionPose1.y() + " z: " + visionPose1.z() + " }");
                         break;
-                    default:
-                        System.out.println("Unknown topic: " + topic);
-                        break;
+                    case "Objects":
+                        try {
+                            _mtx.lock();
+                            ByteBuffer bb = ByteBuffer.wrap(data);
+                            bb.order(ByteOrder.LITTLE_ENDIAN);
+                            _detectedObjects = VisionPoseArray.getRootAsVisionPoseArray(bb);
+                            //for (int i = 0; i < visionPoseArray.posesLength(); i++) {
+                            //    VisionPose visionPose = visionPoseArray.poses(i);
+                            //    System.out.println("VisionPose " + i + "{ x: " + visionPose.x() + ", y: " + visionPose.y() + ", z: " + visionPose.z() + " }");
+                            //}
+                        } catch (IndexOutOfBoundsException e) {
+                            System.err.println("Failed to process VisionPoseArray due to IndexOutOfBoundsException.");
+                            // Log additional details here
+                        } finally {
+                            _mtx.unlock();
+
+                        }              
                 }
             }
-        }
-    }
-        
-    public synchronized void sendData(String topic, byte[] data) {
-        ZMQ.Socket publisher = publishers.get(topic);
-        if (publisher != null) {
-            publisher.sendMore(topic);
-            publisher.send(data);
         }
     }
 }

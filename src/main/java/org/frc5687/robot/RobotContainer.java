@@ -2,6 +2,8 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import org.frc5687.Messages.VisionPose;
+import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Intake.IdleIntake;
@@ -20,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
     private AutoChooser _autoChooser;
-    // private VisionProcessor _visionProcessor;
+    private VisionProcessor _visionProcessor;
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
@@ -41,9 +43,10 @@ public class RobotContainer extends OutliersContainer {
         _oi = new OI();
         _autoChooser = new AutoChooser();
         // create the vision processor
-        // _visionProcessor = new VisionProcessor();
+        _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
-        // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
+        _visionProcessor.createSubscriber("Objects", "tcp://10.56.87.20:5556");
+        _visionProcessor.start();
 
         // try {
         // _photonProcessor =
@@ -75,6 +78,11 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void periodic() {
+        VisionPoseArray poses = _visionProcessor.getDetectedObjects();
+        for (int i = 0; i < poses.posesLength(); i++) {
+            VisionPose visionPose = poses.poses(i);
+            System.out.println("VisionPose " + i + "{ x: " + visionPose.x() + ", y: " + visionPose.y() + ", z: " + visionPose.z() + " }");
+        }
     }
 
     public void disabledPeriodic() {
