@@ -20,15 +20,16 @@ public class Lights extends OutliersSubsystem{
 
     public Lights(OutliersContainer _container) {
         super(_container);
-        _candle = new CANdle(RobotMap.CAN.CANDLE.PORT, "rio");
+        _candle = new CANdle(RobotMap.CAN.CANDLE.PORT, "CANivore");
         _config = new CANdleConfiguration();
         // Set LED strip type
         _config.stripType = LEDStripType.RGB;
         // Sets LED brightness
+        setBrightness(1);
         _config.brightnessScalar = _brightness;
         _candle.configAllSettings(_config);
         // set the _color in the constructor to make sure it's not null;
-        _color = Constants.CANdle.RED;
+        _color = Constants.CANdle.LEAF00;
         setColor(Constants.CANdle.RUFOUS);
         switchAnimation(AnimationType.STATIC);
     }
@@ -54,7 +55,7 @@ public class Lights extends OutliersSubsystem{
     }
 
     public void setBrightness(double brightness) {
-        if (Math.abs(_brightness - brightness) < 0.0001) {
+        if (Math.abs(_brightness - brightness) > 0.0001) {
             _brightness = brightness;
             _dirty = true;
         }
@@ -100,7 +101,7 @@ public class Lights extends OutliersSubsystem{
             case RAINBOW:
                 _animate =
                         new RainbowAnimation(
-                                _brightness, Constants.CANdle.SPEED, Constants.CANdle.NUM_LED);
+                                1.0, Constants.CANdle.SPEED, Constants.CANdle.NUM_LED);
                 break;
             case STROBE:
                 _animate =

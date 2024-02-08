@@ -544,10 +544,6 @@ public class DriveTrain extends OutliersSubsystem {
                 .getDistance(_hoverGoal.getTranslation());
     }
 
-    public double getMeasuredSpeed() {
-        return Math.hypot(getMeasuredChassisSpeeds().vxMetersPerSecond, getMeasuredChassisSpeeds().vyMetersPerSecond);
-    }
-
     public boolean isTopSpeed() {
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
     }

@@ -430,7 +430,7 @@ public class Constants {
         }
     }
     public static class CANdle {
-        public static int NUM_LED = 128;
+        public static int NUM_LED = 38;
         public static double SPEED = 0.1;
         public static TwinklePercent TWINKLEPERCENT = TwinklePercent.Percent42;
         public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
@@ -445,7 +445,7 @@ public class Constants {
         public static int[] PINK = {255, 105, 18};
         public static int[] WHITE = {0, 0, 0};
 
-        public static int[] RUFOUS = {168, 28, 7};
+        public static int[] RUFOUS = {128, 0, 0};
         public static int[] ORANGE_RED = {255, 69, 0};
         public static int[] MAROON = {128, 0, 0};
         public static int[] GOLD = {212, 175, 55};

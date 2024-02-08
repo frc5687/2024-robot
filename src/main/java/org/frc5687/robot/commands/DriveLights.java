@@ -8,6 +8,7 @@ import org.frc5687.robot.subsystems.Lights.AnimationType;
 import org.frc5687.robot.util.OutliersContainer;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 
 
@@ -18,6 +19,7 @@ public class DriveLights extends OutliersCommand {
     public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake) {
         _lights = lights;
         _driveTrain = driveTrain;
+        addRequirements(lights);
     }
     
     /*
@@ -34,9 +36,18 @@ public class DriveLights extends OutliersCommand {
     @Override
     public void execute() {
         if (DriverStation.isDisabled()) {
-            _lights.switchAnimation(AnimationType.RAINBOW);
+            var alliance = DriverStation.getAlliance();
+            if (!DriverStation.isDSAttached()) {
+                _lights.switchAnimation(AnimationType.RAINBOW);
+                return;
+            }
+            if (alliance.get() == Alliance.Blue) {
+                _lights.setColor(Constants.CANdle.BLUE);
+            } else {
+                _lights.setColor(Constants.CANdle.RED);
+            }
+            _lights.switchAnimation(AnimationType.SINGLE_FADE);
         } else {
-
             //Has Ring
             if (_intake.isDonutDetected()) {
                 _lights.setColor(Constants.CANdle.PURPLER);
@@ -76,6 +87,8 @@ public class DriveLights extends OutliersCommand {
             }
         }
     }
+
+    
 
     @Override
     public boolean runsWhenDisabled() {
