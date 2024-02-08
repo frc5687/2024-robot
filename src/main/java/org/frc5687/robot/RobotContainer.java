@@ -30,7 +30,7 @@ public class RobotContainer extends OutliersContainer {
     private Deflector _deflector;
     private Climber _climber;
     // private Elevator _elevator;
-    // private PhotonProcessor _photonProcessor;
+    private PhotonProcessor _photonProcessor;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -47,22 +47,18 @@ public class RobotContainer extends OutliersContainer {
         // subscribe to a vision topic for the correct data
         // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
 
-        // try {
-        // _photonProcessor =
-        // // new
-        // //
-        // PhotonProcessor(AprilTagFieldLayout.loadFromResource("2023-swerret.json"));
-        // new PhotonProcessor(FieldConstants.aprilTags);
-        // } catch (Exception e) {
-        // e.getMessage();
-        // }
+        try {
+            _photonProcessor = new PhotonProcessor(FieldConstants.aprilTags);
+        } catch (Exception e) {
+            e.getMessage();
+        }
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor, _photonProcessor,*/ _imu);
+        _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor, _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);

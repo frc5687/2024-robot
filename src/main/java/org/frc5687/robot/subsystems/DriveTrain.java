@@ -82,7 +82,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     // Vision Processors
     // private final VisionProcessor _visionProcessor;
-    // private final PhotonProcessor _photonProcessor;
+    private final PhotonProcessor _photonProcessor;
 
     private final Field2d _field;
     private Mode _mode = Mode.NORMAL;
@@ -98,12 +98,12 @@ public class DriveTrain extends OutliersSubsystem {
     public DriveTrain(
             OutliersContainer container,
             // VisionProcessor processor,
-            // PhotonProcessor photonProcessor,
+            PhotonProcessor photonProcessor,
             Pigeon2 imu) {
         super(container);
 
         // _visionProcessor = processor;
-        // _photonProcessor = photonProcessor;
+        _photonProcessor = photonProcessor;
 
         _shift = new DoubleSolenoid(
                 PneumaticsModuleType.REVPH,
@@ -290,8 +290,8 @@ public class DriveTrain extends OutliersSubsystem {
     /* Vision Stuff */
     @Override
     public void dataPeriodic(double timestamp) {
-        readInputs();
-
+        readSignals();
+        error("Running Data periodic");
         // current assumption is that because this is in a different thread a data race
         // is occurring where a reset doesn't occur until after a measurement(or during)
         // which is causing the estimated pose to be wrong.
@@ -299,24 +299,24 @@ public class DriveTrain extends OutliersSubsystem {
             resetRobotPose(_wantedRestPose);
             _wantsToSetPose = false;
         } else {
-            // _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
-            // Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
-            // List<EstimatedRobotPose> cameraPoses = Stream.of(
-            // _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
-            // _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
-            // _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
-            // _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose))
-            // .flatMap(Optional::stream)
-            // .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
-            // .collect(Collectors.toList());
+            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
+            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
+            List<EstimatedRobotPose> cameraPoses = Stream.of(
+            _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
+            _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
+            _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
+            _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose))
+            .flatMap(Optional::stream)
+            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+            .collect(Collectors.toList());
 
-            // cameraPoses.forEach(cameraPose -> {
-            // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-            // _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(),
-            // cameraPose.timestampSeconds);
-            // });
+            cameraPoses.forEach(cameraPose -> {
+            dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+            _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(),
+            cameraPose.timestampSeconds);
+            });
 
-            // _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
+            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
         }
         _field.setRobotPose(_systemIO.estimatedPose);
     }

@@ -28,8 +28,8 @@ public class PhotonProcessor {
     //private final ExecutorService _executorService;
     public PhotonProcessor(AprilTagFieldLayout layout) {
         _northCamera = new PhotonCamera("North_Camera"); 
-        _southCamera = new PhotonCamera("South_Camera");
-        _westCamera = new PhotonCamera("West_Camera");
+        _southCamera = new PhotonCamera("Test");
+        _westCamera = new PhotonCamera("Testt1");
         _eastCamera = new PhotonCamera("East_Camera");
         //_executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
 
