@@ -10,6 +10,7 @@ public class RPMForAmpShot extends OutliersCommand{
     
     public RPMForAmpShot(Shooter shooter) {
         _shooter = shooter;
+        addRequirements(_shooter);
     }
 
     @Override
