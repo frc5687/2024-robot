@@ -302,10 +302,10 @@ public class DriveTrain extends OutliersSubsystem {
             _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
             Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
             List<EstimatedRobotPose> cameraPoses = Stream.of(
-                _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose)
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
             )
             .flatMap(Optional::stream)
             .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
