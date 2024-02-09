@@ -416,6 +416,10 @@ public class Constants {
         public static final double LOWER_HALL_ANGLE = 0.0;
         public static final double UPPER_HALL_ANGLE = 2.5;
 
+        // regression equation
+        public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
+        public static final double OFFSET_COEFFICIENT = 2.75678571428571;
+
         static {
             CONFIG.TIME_OUT = 0.1;
 

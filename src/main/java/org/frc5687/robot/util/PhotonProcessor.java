@@ -33,29 +33,29 @@ public class PhotonProcessor {
         _southWestCamera = new PhotonCamera("South_West_Camera");
         //_executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
 
-        setPipeline(Pipeline.FAR);
+        // setPipeline(Pipeline.FAR);
         // z taken from floor
         Transform3d robotToSouthEastCam =
             new Transform3d(
-                new Translation3d(-0.21, -0.19, 0.56),
+                new Translation3d(-0.163482, -0.137455, 0.554292),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5))
             );
 
         Transform3d robotToNorthEastCam =
             new Transform3d(
-                new Translation3d(-0.16, -0.19, 0.56), 
+                new Translation3d(-0.105059, -0.15118, 0.554292), 
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(-25))
             );
 
         Transform3d robotToNorthWestCam =
             new Transform3d(
-                new Translation3d(-0.16, 0.19, 0.56),
+                new Translation3d(-0.105059, 0.15118, 0.554292),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(25))
             );
 
         Transform3d robotToSouthWestCam =
             new Transform3d(
-                new Translation3d(-0.21, 0.19, 0.56),
+                new Translation3d(-0.163482, 0.137455, 0.554292),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(-162.5))
             );
 
