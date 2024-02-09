@@ -285,11 +285,43 @@ public class DriveTrain extends OutliersSubsystem {
         readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
+        readInputs();
+
+        // current assumption is that because this is in a different thread a data race
+        // is occurring where a reset doesn't occur until after a measurement(or during)
+        // which is causing the estimated pose to be wrong.
+        if (_wantsToSetPose) {
+            resetRobotPose(_wantedRestPose);
+            _wantsToSetPose = false;
+        } else {
+            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
+            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
+            List<EstimatedRobotPose> cameraPoses = Stream.of(
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
+            )
+            .flatMap(Optional::stream)
+            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+            .collect(Collectors.toList());
+
+            cameraPoses.forEach(cameraPose -> {
+                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                _poseEstimator.addVisionMeasurement(
+                    cameraPose.estimatedPose.toPose2d(),
+                    cameraPose.timestampSeconds
+                );
+            });
+
+            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
+        }
+        _field.setRobotPose(_systemIO.estimatedPose);
     }
 
     /* Vision Stuff */
-    @Override
-    public void dataPeriodic(double timestamp) {
+    // @Override
+    public void dataPeriodicTest(double timestamp) {
         readInputs();
 
         // current assumption is that because this is in a different thread a data race
@@ -748,7 +780,8 @@ public class DriveTrain extends OutliersSubsystem {
                 && measurement.getX() <= FieldConstants.fieldLength + fieldBuffer)
                 && (measurement.getY() >= -fieldBuffer
                         && measurement.getY() <= FieldConstants.fieldWidth + fieldBuffer);
-        return isTargetWithinHeight && isMeasurementInField;
+        // return isTargetWithinHeight && isMeasurementInField;
+        return isMeasurementInField;
     }
 
     /**
