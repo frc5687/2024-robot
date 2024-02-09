@@ -586,8 +586,11 @@ public class DriveTrain extends OutliersSubsystem {
         metric("SW Current", _modules[1].getDriveMotorCurrent());
         metric("SE Current", _modules[2].getDriveMotorCurrent());
         metric("NE Current", _modules[3].getDriveMotorCurrent());
-        metric(
-                "Distance to goal node",
+        metric("NW Camera Estimate Pose", _photonProcessor.getNorthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        metric("SW Camera Estimate Pose", _photonProcessor.getSouthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        metric("SE Camera Estimate Pose", _photonProcessor.getSouthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        metric("NE Camera Estimate Pose", _photonProcessor.getNorthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        metric("Distance to goal node",
                 _systemIO.estimatedPose
                         .getTranslation()
                         .getDistance(_hoverGoal.getTranslation()));
