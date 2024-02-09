@@ -1,6 +1,7 @@
 package org.frc5687.robot.commands;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
@@ -49,11 +50,13 @@ public class DriveLights extends OutliersCommand {
             _lights.switchAnimation(AnimationType.SINGLE_FADE);
         } else {
             //Has Ring
-            if (_intake.isDonutDetected()) {
-                _lights.setColor(Constants.CANdle.PURPLER);
+            if (_intake.isTopDetected()) {
+                _lights.setColor(Constants.CANdle.ORANGE);
                 _lights.setBrightness(1);
+                _lights.switchAnimation(AnimationType.STATIC);
+            } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
+                _lights.setColor(Constants.CANdle.ORANGE);
                 _lights.switchAnimation(AnimationType.STROBE);
-
             //Targeting Ring
             /* } else if (_lockHeading = true) {
                 _lights.setColor(Constants.CANdle.LESS_GREEN);
