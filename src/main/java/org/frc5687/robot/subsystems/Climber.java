@@ -5,6 +5,7 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.commands.Climber.Climb;
 import org.frc5687.robot.util.OutliersContainer;
 
 // import edu.wpi.first.math.util.Units;
@@ -19,7 +20,7 @@ public class Climber extends OutliersSubsystem{
     private OI _oi;
     // private DoubleSolenoid _ratchet;
     // private boolean _isRatchetUp;
-    // private ClimberStep _step = ClimberStep.UNKNOWN;
+    private ClimberStep _step = ClimberStep.UNKNOWN;
     
     public Climber(OutliersContainer container) {
         super(container);
@@ -38,6 +39,7 @@ public class Climber extends OutliersSubsystem{
     }
  
     public void setPositionMeters(double meters) {
+
         if(meters < Constants.Climber.LOWER_LIMIT){
             warn("Attempted to set climber past lower limit.");
         } else if (meters > Constants.Climber.UPPER_LIMIT){
@@ -55,6 +57,14 @@ public class Climber extends OutliersSubsystem{
         return (_talon.getPosition().getValue() / Constants.Climber.CLIMBER_GEAR_RATIO) * (2 * Math.PI * Constants.Climber.WINCH_RADIUS);
     }
 
+    
+    public boolean isClimberAtUpperLimit() {
+    return  Math.abs(getMeters() - (Constants.Climber.UPPER_LIMIT * Constants.Climber.CLIMBER_GEAR_RATIO /(2 * Math.PI * Constants.Climber.WINCH_RADIUS))) < Constants.Climber.CLIMBER_TOLERANCE;
+    }
+
+    public boolean isClimberAtLowerLimit() {
+        return  Math.abs(getMeters() - (Constants.Climber.LOWER_LIMIT * Constants.Climber.CLIMBER_GEAR_RATIO /(2 * Math.PI * Constants.Climber.WINCH_RADIUS))) < Constants.Climber.CLIMBER_TOLERANCE;
+    }
     // public void changeRatchetUp(){
     //     //sets the ratchet to allow the climber to go up
     //     _ratchet.set(Value.kForward);
@@ -71,35 +81,37 @@ public class Climber extends OutliersSubsystem{
     //     return   
     // }
 
-    // public void setStep(ClimberStep step){
-    //     //Sets the current step of the climbing process
-    //     _step = step;
-    // }
+    public void setStep(ClimberStep step){
+        //Sets the current step of the climbing process
+        _step = step;
+    }
 
-    // public ClimberStep getStep() {
-    //     return _step;
-    // }
+    public ClimberStep getStep() {
+        return _step;
+    }
 
-    // public enum ClimberStep { 
-    //     UNKNOWN(0),
-    //     STOW(1),
-    //     STOWED(2),
-    //     PREP_TO_CLIMB(3),
-    //     READY_TO_CLIMB(4),
-    //     RAISE_ARM(5),
-    //     LOWER_ARM(6),
-    //     ARM_LOWERED(7),
-    //     DONE(8);
+    public enum ClimberStep { 
+        UNKNOWN(0),
+        STOW(1),
+        STOWED(2),
+        PREP_TO_CLIMB(3),
+        READY_TO_CLIMB(4),
+        RAISE_ARM(5),
+        ARM_RAISED(6),
+        DRIVE_FORWARD(7),
+        LOWER_ARM(8),
+        ARM_LOWERED(9),
+        DONE(10);
 
-    //     private final int _value;
-    //     ClimberStep(int value) { 
-    //         _value = value; 
-    //     }
+        private final int _value;
+        ClimberStep(int value) { 
+            _value = value; 
+        }
 
-    //     public int getValue() { 
-    //         return _value; 
-    //     }
-    // }
+        public int getValue() { 
+            return _value; 
+        }
+    }
     
 
     @Override

@@ -20,6 +20,7 @@ public class Climb extends OutliersCommand {
         // TODO Auto-generated method stub
         super.initialize();
     }
+    
     @Override
     public void execute() {
         super.execute();
@@ -27,11 +28,13 @@ public class Climb extends OutliersCommand {
         _climber.setSpeed(speed);
         metric("ClimberSpeed", speed);
     }
+
     @Override
     public boolean isFinished() {
         // TODO Auto-generated method stub
         return super.isFinished();
     }
+
     @Override
     public void end(boolean interrupted) {
         _climber.setSpeed(0);

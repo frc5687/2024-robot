@@ -13,6 +13,7 @@ import static org.frc5687.robot.util.Helpers.*;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
+import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
@@ -23,7 +24,7 @@ import org.frc5687.robot.util.OutliersProxy;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
-    protected Joystick _operatorGamepad;
+    protected Gamepad _operatorGamepad;
     protected Gamepad _buttonpad;
 
     // protected CustomController _customController;
@@ -60,7 +61,8 @@ public class OI extends OutliersProxy {
             DriveTrain drivetrain,
             Shooter shooter,
             Intake intake,
-            Deflector deflector) {
+            Deflector deflector,
+            Climber climber) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake));
 
@@ -69,7 +71,7 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
 
-        
+        _operatorGamepad.getYButton().onTrue(new AutoClimb(climber));
         
         _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
         _povButtonDown.onTrue(new ChangeRPM(shooter, -100));

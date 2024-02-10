@@ -466,7 +466,8 @@ public class Constants {
         public static double CLIMBER_GEAR_RATIO = 25.0;//25:1
 
         public static double WINCH_RADIUS = 0.035052; 
-        //public static double OPEN_WINCH = 0.0; //get value from amory
+
+        public static double CLIMBER_TOLERANCE = .05;
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;

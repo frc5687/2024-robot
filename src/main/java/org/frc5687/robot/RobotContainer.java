@@ -70,7 +70,7 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_climber, new Climb(_climber, _oi));
         //setDefaultCommand(_climber, new IdleClimber(_climber));
 
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber);
         startPeriodic();
 
     }

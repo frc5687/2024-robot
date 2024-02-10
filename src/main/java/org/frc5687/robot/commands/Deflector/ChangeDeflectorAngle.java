@@ -21,6 +21,4 @@ public class ChangeDeflectorAngle extends OutliersCommand{
     public boolean isFinished() {
         return _deflector.isAtTargetAngle();
     }
-
-    
 }
