@@ -75,7 +75,6 @@ public class SwerveModule {
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
         // _positionVoltage = new PositionVoltage(0.0);
 
-        _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
         _encoder = new CANcoder(encoderPort, config.canBus);
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
@@ -84,6 +83,8 @@ public class SwerveModule {
         CANfig.MagnetSensor.MagnetOffset = config.encoderOffset;
         CANfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         _encoder.getConfigurator().apply(CANfig);
+        _goal = new SwerveModuleState(0.0, getCanCoderAngle());
+
 
         FeedbackConfigs feedback = new FeedbackConfigs();
         feedback.FeedbackRemoteSensorID = encoderPort;
@@ -151,10 +152,6 @@ public class SwerveModule {
     }
 
     public void setIdealState(SwerveModuleState state) {
-        SmartDashboard.putNumber("/inputVelocityMPS", state.speedMetersPerSecond);
-        SmartDashboard.putNumber("/wantedAngleRotations", state.angle.getRotations());
-        SmartDashboard.putNumber("/currentAngleRotations", getCanCoderAngle().getRotations());
-
         if (Math.abs(state.speedMetersPerSecond) < 0.1) {
             stopAll();
             // System.out.println("speedMPS < 0.1");
@@ -168,16 +165,20 @@ public class SwerveModule {
     public void setModuleState(SwerveModuleState state) {
         // SwerveModuleState optimized = SwerveModuleState.optimize(state,
         // _internalState.angle);
-        _stateMPS = state.speedMetersPerSecond;
-        _wantedSpeed = state.speedMetersPerSecond
-                * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
-                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)
-                * _rotPerMet;
-        double position = state.angle.getRotations();
-        _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
-        _steeringMotor.setPositionVoltage(position);
-        SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
-        SmartDashboard.putNumber("/wantedPosition", position);
+        // if (Math.abs(state.speedMetersPerSecond) < 0.1) {
+        //     stopAll();
+        // } else {
+            _stateMPS = state.speedMetersPerSecond;
+            _wantedSpeed = state.speedMetersPerSecond
+                    * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
+                            : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)
+                    * _rotPerMet;
+            double position = state.angle.getRotations();
+            _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
+            _steeringMotor.setPositionVoltage(position);
+            SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
+            SmartDashboard.putNumber("/wantedPosition", position);
+        // }
     }
 
     public SwerveModuleState getState() {

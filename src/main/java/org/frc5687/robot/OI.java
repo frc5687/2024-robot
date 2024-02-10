@@ -16,6 +16,7 @@ import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
+import org.frc5687.robot.commands.Deflector.ZeroDeflector;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -70,29 +71,17 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
 
+        _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new Pose2d(2, 2, new Rotation2d())));
         
-        
-        _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
-        _povButtonDown.onTrue(new ChangeRPM(shooter, -100));
-        _povButtonRight.onTrue(new ChangeRPM(shooter, 10));
-        _povButtonLeft.onTrue(new ChangeRPM(shooter, -10));
-
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
-        // _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
-        _driverGamepad.getRightBumper().whileTrue(new DriveToPose(drivetrain, new Pose2d(2, 2, new Rotation2d())));
+        _povButtonDown.onTrue(new ZeroDeflector(deflector));
     }
 
     public boolean shiftUp() {
-        // return _driverGamepad.getAButton().getAsBoolean();
-        // return _driverGamepad.getBButton().getAsBoolean();
-        return false;
+        return _driverGamepad.getRightBumper().getAsBoolean();
     }
 
     public boolean shiftDown() {
-        // return _driverGamepad.getBButton().getAsBoolean();
-        // return _driverGamepad.getXButton().getAsBoolean(); //changed as vision no
-        // worky rn
-        return false;
+        return _driverGamepad.getLeftBumper().getAsBoolean(); 
     }
 
     public boolean shiftOverride() {
