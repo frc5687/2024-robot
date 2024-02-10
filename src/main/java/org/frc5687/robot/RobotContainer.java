@@ -4,6 +4,7 @@ package org.frc5687.robot;
 
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Climber.Climb;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
@@ -67,8 +68,8 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        setDefaultCommand(_climber, new Climb(_climber, _oi));
-        //setDefaultCommand(_climber, new IdleClimber(_climber));
+        // setDefaultCommand(_climber, new Climb(_climber, _oi));
+        setDefaultCommand(_climber, new AutoClimb(_climber, _oi));
 
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber);
         startPeriodic();

@@ -40,12 +40,12 @@ public class Climber extends OutliersSubsystem{
  
     public void setPositionMeters(double meters) {
 
-        if(meters < Constants.Climber.LOWER_LIMIT){
+        if (meters < Constants.Climber.LOWER_LIMIT) {
             warn("Attempted to set climber past lower limit.");
         } else if (meters > Constants.Climber.UPPER_LIMIT){
             warn("Attempted to set climber past upper limit.");
-        } else{
-        _talon.setMotionMagic(meters * Constants.Climber.CLIMBER_GEAR_RATIO /(2 * Math.PI * Constants.Climber.WINCH_RADIUS));
+        } else {
+            _talon.setMotionMagic((meters * Constants.Climber.CLIMBER_GEAR_RATIO) / (2 * Math.PI * Constants.Climber.WINCH_RADIUS));
         }
     }
 
@@ -53,18 +53,10 @@ public class Climber extends OutliersSubsystem{
         _talon.setPercentOutput(speed);
     }
 
-    public double getMeters() {
+    public double getPositionMeters() {
         return (_talon.getPosition().getValue() / Constants.Climber.CLIMBER_GEAR_RATIO) * (2 * Math.PI * Constants.Climber.WINCH_RADIUS);
     }
 
-    
-    public boolean isClimberAtUpperLimit() {
-    return  Math.abs(getMeters() - (Constants.Climber.UPPER_LIMIT * Constants.Climber.CLIMBER_GEAR_RATIO /(2 * Math.PI * Constants.Climber.WINCH_RADIUS))) < Constants.Climber.CLIMBER_TOLERANCE;
-    }
-
-    public boolean isClimberAtLowerLimit() {
-        return  Math.abs(getMeters() - (Constants.Climber.LOWER_LIMIT * Constants.Climber.CLIMBER_GEAR_RATIO /(2 * Math.PI * Constants.Climber.WINCH_RADIUS))) < Constants.Climber.CLIMBER_TOLERANCE;
-    }
     // public void changeRatchetUp(){
     //     //sets the ratchet to allow the climber to go up
     //     _ratchet.set(Value.kForward);
@@ -77,11 +69,7 @@ public class Climber extends OutliersSubsystem{
     //     info("Setting Ratchet To Down.");
     // }
 
-    // public boolean getClimberPosition() {
-    //     return   
-    // }
-
-    public void setStep(ClimberStep step){
+    public void setStep(ClimberStep step) {
         //Sets the current step of the climbing process
         _step = step;
     }
@@ -92,16 +80,12 @@ public class Climber extends OutliersSubsystem{
 
     public enum ClimberStep { 
         UNKNOWN(0),
-        STOW(1),
-        STOWED(2),
-        PREP_TO_CLIMB(3),
-        READY_TO_CLIMB(4),
-        RAISE_ARM(5),
-        ARM_RAISED(6),
-        DRIVE_FORWARD(7),
-        LOWER_ARM(8),
-        ARM_LOWERED(9),
-        DONE(10);
+        STOWED(1),
+        RAISING(2),
+        RAISED(3),
+        LOWERING(4),
+        LOWERED(5),
+        STOWING(6);
 
         private final int _value;
         ClimberStep(int value) { 
@@ -116,6 +100,6 @@ public class Climber extends OutliersSubsystem{
 
     @Override
     public void updateDashboard() {
-        metric("ClimberPosition", getMeters());        
+        metric("ClimberPosition", getPositionMeters());        
     }
 }

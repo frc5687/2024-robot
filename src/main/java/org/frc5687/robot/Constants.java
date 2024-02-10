@@ -461,6 +461,9 @@ public class Constants {
         public static double UPPER_LIMIT = 4.0;
         public static double LOWER_LIMIT = 0.0;
 
+        public static double PREP_METERS = 2.0; //TODO: change
+        public static double CLIMB_METERS = 0.5; //TODO: change
+
         public static double CLIMBER_TRANSLATION = .05;
 
         public static double CLIMBER_GEAR_RATIO = 25.0;//25:1

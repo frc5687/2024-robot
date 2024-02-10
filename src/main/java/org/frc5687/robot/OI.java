@@ -70,8 +70,6 @@ public class OI extends OutliersProxy {
         _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI/2)));
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
-
-        _operatorGamepad.getYButton().onTrue(new AutoClimb(climber));
         
         _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
         _povButtonDown.onTrue(new ChangeRPM(shooter, -100));
@@ -108,6 +106,14 @@ public class OI extends OutliersProxy {
         return _driverGamepad.getStartButton().getAsBoolean();
     }
 
+    public boolean getClimbButton() {
+        return _operatorGamepad.getAButton().getAsBoolean();
+    }
+
+    public boolean getStowButton() {
+        return _operatorGamepad.getBButton().getAsBoolean();
+    }
+
     public double getDriveY() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.TRANSLATION_DEADBAND);
@@ -131,7 +137,6 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.Climber.CLIMBER_TRANSLATION);
         return speed;
     }
-
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);

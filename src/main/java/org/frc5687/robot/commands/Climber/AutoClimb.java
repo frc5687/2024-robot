@@ -1,48 +1,69 @@
 package org.frc5687.robot.commands.Climber;
 
 import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Climber.ClimberStep;
+import org.frc5687.robot.Constants;
+import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class AutoClimb extends OutliersCommand{
     
     private Climber _climber;
+    private OI _oi;
     
-    public AutoClimb(Climber climber) {
+    public AutoClimb(Climber climber, OI oi) {
         _climber = climber;
+        _oi = oi;
+        addRequirements(_climber);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        SequentialCommandGroup group = new SequentialCommandGroup(); 
-        switch(_climber.getStep()) {
+    public void execute() {
+        switch (_climber.getStep()) {
             case UNKNOWN:
-            case STOW:
+                break;
             case STOWED:
-                group.addCommands(new PrepToClimb(_climber));
+                if (_oi.getClimbButton()) {
+                    _climber.setStep(ClimberStep.RAISING);
+                }
                 break;
-            case READY_TO_CLIMB:
-            case RAISE_ARM:
-                group.addCommands(new RaiseArm(_climber));
+            case RAISING:
+                _climber.setPositionMeters(Constants.Climber.PREP_METERS);
+                if (Math.abs(_climber.getPositionMeters() - Constants.Climber.PREP_METERS) < Constants.Climber.CLIMBER_TOLERANCE) {
+                    _climber.setStep(ClimberStep.RAISED);
+                }
                 break;
-            case ARM_RAISED:
-            case DRIVE_FORWARD:
-                //group.addCommands(new DriveForward(_climber));
-                //break;
-            case LOWER_ARM:
-                group.addCommands(new LowerArm(_climber));
-            case ARM_LOWERED:  
-                _climber.setStep(Climber.ClimberStep.DONE);          
-            case DONE:
+            case RAISED:
+                if (_oi.getClimbButton()) {
+                    _climber.setStep(ClimberStep.LOWERING);
+                }
+                if (_oi.getStowButton()) {
+                    _climber.setStep(ClimberStep.STOWING);
+                }
+                break;
+            case LOWERING:
+                _climber.setPositionMeters(Constants.Climber.CLIMB_METERS);
+                if (Math.abs(_climber.getPositionMeters() - Constants.Climber.CLIMB_METERS) < Constants.Climber.CLIMBER_TOLERANCE) {
+                    _climber.setStep(ClimberStep.LOWERED);
+                }
+                break;
+            case LOWERED:
+                // maybe add "press a button to go back to RAISING here?"
+                if (_oi.getStowButton()) {
+                    _climber.setStep(ClimberStep.STOWING);
+                }
+                break;
+            case STOWING:
+                _climber.setPositionMeters(Constants.Climber.LOWER_LIMIT);
+                if (Math.abs(_climber.getPositionMeters() - Constants.Climber.LOWER_LIMIT) < Constants.Climber.CLIMBER_TOLERANCE) {
+                    _climber.setStep(ClimberStep.STOWED);
+                }
                 break;
         }
-        group.schedule();
     }
 
     @Override
     public boolean isFinished() {
-        super.isFinished();
-        return true;
+        return false;
     }
 }
