@@ -2,6 +2,7 @@ package org.frc5687.robot.commands.Shooter;
 
 import org.frc5687.robot.commands.DriveToPose;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
+import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
@@ -20,7 +21,7 @@ public class AmpShot extends SequentialCommandGroup{
                 new ChangeDeflectorAngle(deflector, Constants.Shooter.AMP_SHOT_DEFLECTOR_ANGLE),
                 new DriveToPose(driveTrain, Constants.Shooter.RED_AMP_SHOT_POSE)
             ),
-            new Shoot(shooter, intake)
+            new TimedIntake(intake, 1.0)
         );
     }
     
