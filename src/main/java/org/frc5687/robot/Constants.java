@@ -4,9 +4,13 @@ package org.frc5687.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -342,13 +346,13 @@ public class Constants {
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
-        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(1.0, 1.0, null); //TODO please change these possition values :P
+        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
         
-        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.0, 1.0, null); //TODO please change these possitions again D:
+        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
 
-        public static final double AMP_SHOT_SPEED = 0; //TODO change this :O
+        public static final double AMP_SHOT_SPEED = 810;
 
-        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 90; //TODO change this ;P
+        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
@@ -444,5 +448,10 @@ public class Constants {
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
+    }
+
+    public static class FieldConstants {
+        public static final double FIELD_LENGTH = 16.54175;
+        public static final double FIELD_WIDTH = 8.0137;
     }
 }

@@ -9,7 +9,8 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.Constants;
 
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -19,7 +20,9 @@ public class AmpShot extends SequentialCommandGroup{
             new ParallelCommandGroup(
                 new RPMForAmpShot(shooter),
                 new ChangeDeflectorAngle(deflector, Constants.Shooter.AMP_SHOT_DEFLECTOR_ANGLE),
-                new DriveToPose(driveTrain, Constants.Shooter.RED_AMP_SHOT_POSE)
+                new DriveToPose(driveTrain, 
+                    DriverStation.getAlliance().get() == Alliance.Red ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
+                )
             ),
             new TimedIntake(intake, 1.0)
         );
