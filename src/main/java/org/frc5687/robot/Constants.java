@@ -31,7 +31,7 @@ public class Constants {
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
         public static final double WHEEL_RADIUS = 0.0508;
-        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (60.0 / 36.0) * (45.0 / 15.0) * (16.0 / 36.0); // 8.2539
+        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 14.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
