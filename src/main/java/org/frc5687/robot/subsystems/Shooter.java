@@ -51,15 +51,7 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public double calculateRPMFromDistance(double distance) {
-        return (
-            Constants.Shooter.SEXTIC_COEFFECIENT * Math.pow(distance, 6) +
-            Constants.Shooter.QUINTIC_COEFFICIENT * Math.pow(distance, 5) +
-            Constants.Shooter.QUARTIC_COEFFICIENT * Math.pow(distance, 4) +
-            Constants.Shooter.CUBIC_COEFFICIENT * Math.pow(distance, 3) +
-            Constants.Shooter.QUADRATIC_COEFFICIENT * Math.pow(distance, 2) +
-            Constants.Shooter.LINEAR_COEFFIECIENT * distance +
-            Constants.Shooter.OFFSET_COEFFICIENT
-        );
+        return Constants.Shooter.kRPMRegression.predict(distance);
     }
 
     public void updateDashboard() {

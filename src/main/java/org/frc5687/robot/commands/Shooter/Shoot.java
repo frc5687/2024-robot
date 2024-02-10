@@ -54,7 +54,7 @@ public class Shoot extends OutliersCommand{
         );
 
         double angle = Math.atan2(yDistance, xDistance) + Math.PI;
-
+        
         _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
         _shooter.setToTarget();
         _deflector.setTargetAngle(_deflector.calculateAngleFromDistance(distance));

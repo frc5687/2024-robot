@@ -7,6 +7,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
+import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
+import org.frc5687.lib.cheesystuff.PolynomialRegression;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
@@ -347,6 +350,46 @@ public class Constants {
         public static final double QUADRATIC_COEFFICIENT = 10434762.9280147;
         public static final double LINEAR_COEFFIECIENT = -15450198.1419455;
         public static final double OFFSET_COEFFICIENT = 9463197.07505351;
+
+        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
+        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
+
+        public static PolynomialRegression kDeflectorRegression;
+        public static PolynomialRegression kRPMRegression;
+
+        public static double[][] kRPMValues = {
+            {2.87020574, 2600},
+            {3.17500635, 2600},
+            {3.47980696, 2350},
+            {3.784607569, 1900},
+            {4.089408179, 1750},
+            {4.394208788, 1700},
+            {4.699009398, 1690}
+        };
+
+        public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
+        public static double[][] kDeflectorValues = {
+            {1.041402083, 2.45}, // all at 2600 rpm
+            {1.346202692, 2.4},
+            {1.651003302, 2.35},
+            {1.955803912, 2.25},
+            {2.260604521, 2.15},
+            {2.565405131, 2.05}
+        };
+
+        static {
+            for (double[] pair : kRPMValues) {
+                kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+            }
+
+            for (double[] pair : kDeflectorValues) {
+                kHoodMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+            }
+
+            kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
+            kRPMRegression = new PolynomialRegression(kRPMValues, 1);
+        }
+
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 

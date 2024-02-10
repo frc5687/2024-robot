@@ -61,10 +61,7 @@ public class Deflector extends OutliersSubsystem {
     }
 
     public double calculateAngleFromDistance(double distance) {
-        return (
-            Constants.Deflector.LINEAR_COEFFIECIENT * distance +
-            Constants.Deflector.OFFSET_COEFFICIENT
-        );
+        return Constants.Shooter.kDeflectorRegression.predict(distance);
     }
 
     @Override
