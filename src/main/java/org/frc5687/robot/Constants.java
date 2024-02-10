@@ -445,7 +445,7 @@ public class Constants {
         public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
 
         public static int[] RED = {255, 0, 0};
-        public static int[] ORANGE = {255, 165, 0};
+        public static int[] ORANGE = {255, 20, 0};
         public static int[] YELLOW = {255, 65, 0};
         public static int[] GREEN = {0, 255, 0};
         public static int[] CYAN = {0, 255, 255};

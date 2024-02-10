@@ -20,78 +20,49 @@ public class DriveLights extends OutliersCommand {
     public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake) {
         _lights = lights;
         _driveTrain = driveTrain;
+        _intake = intake;
         addRequirements(lights);
     }
     
     /*
+     * Completed Chain Climb (Just for the style points)
+     * In range of speaker (try on regression branch)
      * Has Ring
      * Targeted on Ring
-     * Targeted Speaker/amp
-     * Driving normally
-     * Completed Chain Climb (Just for the style points)
+     * Driving normally (alliance color)
      * 
+     * Other:
      * Just Shot (Not important)
      * Is In Auto (Might not work)
      */
 
     @Override
     public void execute() {
-        if (DriverStation.isDisabled()) {
-            var alliance = DriverStation.getAlliance();
-            if (!DriverStation.isDSAttached()) {
-                _lights.switchAnimation(AnimationType.RAINBOW);
-                return;
-            }
-            if (alliance.get() == Alliance.Blue) {
-                _lights.setColor(Constants.CANdle.BLUE);
-            } else {
-                _lights.setColor(Constants.CANdle.RED);
-            }
-            _lights.switchAnimation(AnimationType.SINGLE_FADE);
+        _lights.setBrightness(1);
+        //Not connected to driver station
+        if (!DriverStation.isDSAttached()) {
+            _lights.switchAnimation(AnimationType.RAINBOW);
+        //Has Note
+        } else if (_intake.isTopDetected()) {
+            _lights.setColor(Constants.CANdle.GREEN);
+            _lights.switchAnimation(AnimationType.STATIC);
+        //Targeting Note
+        /* } else if (_vision.hasTarget()) { //unimplemented
+            _lights.setColor(Constants.CANdle.ORANGE);
+            _lights.switchAnimation(AnimationType.STROBE);
+        */
+        //Intaking
+        } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
+            _lights.setColor(Constants.CANdle.ORANGE);
+            _lights.switchAnimation(AnimationType.STATIC);
+        //No other condition is true, use alliance color
         } else {
-            //Has Ring
-            if (_intake.isTopDetected()) {
-                _lights.setColor(Constants.CANdle.ORANGE);
-                _lights.setBrightness(1);
-                _lights.switchAnimation(AnimationType.STATIC);
-            } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
-                _lights.setColor(Constants.CANdle.ORANGE);
-                _lights.switchAnimation(AnimationType.STROBE);
-            //Targeting Ring
-            /* } else if (_lockHeading = true) {
-                _lights.setColor(Constants.CANdle.LESS_GREEN);
-                _lights.setBrightness(0.8);
-                _lights.switchAnimation(AnimationType.LARSON);
-
-            //Targeting Goals
-            /* } else if (LockedOnToSpeaker/Amp = true) {
-                _lights.setColor(Constants.CANdle.MILO_BLUE);
-                _lights.setBrightness(0.8);
-                _lights.switchAnimation(AnimationType.LARSON);
-            */
-
-            //Driving Contant Speed
-            // }  else if (_driveTrain.getSpeed() > 1) {
-            //     _lights.setColor(Constants.CANdle.GREEN);
-            //     _lights.setBrightness(0.6);
-            //     _lights.switchAnimation(AnimationType.STROBE);
-
-            //Completed Climb
-            /*}  else if (CompletedChainClimb = true ) {
-                _lights.setColor(Constants.CANdle.LEAF00);
-                _lights.setBrightness(0.5);
-                _lights.switchAnimation(AnimationType.TWINKLE);
-
-
-            */ } else {
-                 _lights.setColor(Constants.CANdle.RUFOUS);
-                _lights.setBrightness(1);
-                _lights.switchAnimation(AnimationType.STATIC);
-            }
+            _lights.setColor(
+                DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE
+            );
+            _lights.switchAnimation(AnimationType.SINGLE_FADE);
         }
     }
-
-    
 
     @Override
     public boolean runsWhenDisabled() {
