@@ -56,20 +56,8 @@ public class RobotContainer extends OutliersContainer {
         // }
 
         // configure pigeon
-        _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
-        var pigeonConfig = new Pigeon2Configuration();
-        _imu.getConfigurator().apply(pigeonConfig);
-
-        _driveTrain = new DriveTrain(this, /*_visionProcessor, _photonProcessor,*/ _imu);
-        _shooter = new Shooter(this);
-        _intake = new Intake(this);
-        _deflector = new Deflector(this);
-
-        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter));
-        setDefaultCommand(_intake, new IdleIntake(_intake));
-        
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
+        TestMotor test1 = new TestMotor(this);
+        test1.setSpeed(1.0);
         startPeriodic();
 
     }
