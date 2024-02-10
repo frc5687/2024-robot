@@ -1,6 +1,7 @@
 /* Team 5687 (C)2020-2021 */
 package org.frc5687.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -77,7 +78,8 @@ public class OI extends OutliersProxy {
         _povButtonLeft.onTrue(new ChangeRPM(shooter, -10));
 
         _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
-        _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
+        // _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector, 0.05));
+        _driverGamepad.getRightBumper().whileTrue(new DriveToPose(drivetrain, new Pose2d(2, 2, new Rotation2d())));
     }
 
     public boolean shiftUp() {
