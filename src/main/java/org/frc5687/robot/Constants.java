@@ -45,10 +45,10 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_SUPPLY_CURRENT = 70;
-            CONFIG.MAX_STATOR_CURRENT = 120;
+            CONFIG.MAX_STATOR_CURRENT = 70;
             CONFIG.MAX_CURRENT = 120;
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
@@ -63,8 +63,8 @@ public class Constants {
             STEER_CONFIG.MAX_SUPPLY_CURRENT = 70;
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
             STEER_CONFIG.MAX_CURRENT = 120;
-            STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
-            STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
+            STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
             STEER_CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
