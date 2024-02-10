@@ -71,10 +71,10 @@ public class DriveLights extends OutliersCommand {
             */
 
             //Driving Contant Speed
-            }  else if (_driveTrain.getSpeed() > 1) {
-                _lights.setColor(Constants.CANdle.GREEN);
-                _lights.setBrightness(0.6);
-                _lights.switchAnimation(AnimationType.STROBE);
+            // }  else if (_driveTrain.getSpeed() > 1) {
+            //     _lights.setColor(Constants.CANdle.GREEN);
+            //     _lights.setBrightness(0.6);
+            //     _lights.switchAnimation(AnimationType.STROBE);
 
             //Completed Climb
             /*}  else if (CompletedChainClimb = true ) {
