@@ -60,6 +60,10 @@ public class Deflector extends OutliersSubsystem {
         return Math.abs(_targetAngle - getAngle()) < Constants.Deflector.ANGLE_TOLERANCE;
     }
 
+    public double calculateAngleFromDistance(double distance) {
+        return Constants.Shooter.kDeflectorRegression.predict(distance);
+    }
+
     @Override
     public void updateDashboard() {
         metric("Deflector Target Angle", getTargetAngle());

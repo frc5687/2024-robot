@@ -12,6 +12,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
+import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
+import org.frc5687.lib.cheesystuff.PolynomialRegression;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
@@ -33,7 +36,7 @@ public class Constants {
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
         public static final double WHEEL_RADIUS = 0.0508;
-        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (60.0 / 36.0) * (45.0 / 15.0) * (16.0 / 36.0); // 8.2539
+        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 14.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
@@ -344,6 +347,55 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
+        // regression equation
+        public static final double SEXTIC_COEFFECIENT = 3446.87547841668;
+        public static final double QUINTIC_COEFFICIENT = -78761.4146267351;
+        public static final double QUARTIC_COEFFICIENT = 744867.704631976;
+        public static final double CUBIC_COEFFICIENT = -3730776.48359247;
+        public static final double QUADRATIC_COEFFICIENT = 10434762.9280147;
+        public static final double LINEAR_COEFFIECIENT = -15450198.1419455;
+        public static final double OFFSET_COEFFICIENT = 9463197.07505351;
+
+        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
+        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
+
+        public static PolynomialRegression kDeflectorRegression;
+        public static PolynomialRegression kRPMRegression;
+
+        public static double[][] kRPMValues = {
+            {2.87020574, 2600},
+            {3.17500635, 2600},
+            {3.47980696, 2350},
+            {3.784607569, 1900},
+            {4.089408179, 1750},
+            {4.394208788, 1700},
+            {4.699009398, 1690}
+        };
+
+        public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
+        public static double[][] kDeflectorValues = {
+            {1.041402083, 2.45}, // all at 2600 rpm
+            {1.346202692, 2.4},
+            {1.651003302, 2.35},
+            {1.955803912, 2.25},
+            {2.260604521, 2.15},
+            {2.565405131, 2.05}
+        };
+
+        static {
+            for (double[] pair : kRPMValues) {
+                kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+            }
+
+            for (double[] pair : kDeflectorValues) {
+                kHoodMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+            }
+
+            kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
+            kRPMRegression = new PolynomialRegression(kRPMValues, 1);
+        }
+
+
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
@@ -419,6 +471,10 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.01;
         public static final double LOWER_HALL_ANGLE = 0.0;
         public static final double UPPER_HALL_ANGLE = 2.5;
+
+        // regression equation
+        public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
+        public static final double OFFSET_COEFFICIENT = 2.75678571428571;
 
         static {
             CONFIG.TIME_OUT = 0.1;
