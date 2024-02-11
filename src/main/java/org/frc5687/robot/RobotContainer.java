@@ -8,6 +8,7 @@ import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.*;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -30,8 +31,10 @@ public class RobotContainer extends OutliersContainer {
     private Shooter _shooter;
     private Intake _intake;
     private Deflector _deflector;
-    // private Elevator _elevator;
+
     private PhotonProcessor _photonProcessor;
+
+    private RobotState _robotState;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -60,27 +63,29 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor,*/ _photonProcessor, _imu);
+        _driveTrain = new DriveTrain(this, _imu);
+        _robotState = new RobotState(_driveTrain, _photonProcessor);
+
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
+
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
-        startPeriodic();
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _robotState);
 
     }
 
     public void periodic() {
+        _robotState.periodic();
     }
 
     public void disabledPeriodic() {
         _autoChooser.updateChooser();
-
     }
 
     @Override

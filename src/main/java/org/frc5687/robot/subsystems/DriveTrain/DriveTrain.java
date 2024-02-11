@@ -1,21 +1,13 @@
 /* Team 5687 (C)2020-2022 */
-package org.frc5687.robot.subsystems;
+package org.frc5687.robot.subsystems.DriveTrain;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
@@ -27,62 +19,89 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static org.frc5687.robot.Constants.DriveTrain.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.frc5687.lib.control.SwerveHeadingController;
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.subsystems.OutliersSubsystem;
+import org.frc5687.robot.subsystems.SwerveModule;
 import org.frc5687.robot.util.*;
 
-// import org.frc5687.lib.vision.VisionProcessor;
-
-import org.photonvision.EstimatedRobotPose;
-
 public class DriveTrain extends OutliersSubsystem {
+    public enum ControlState {
+        /* Neutral state */
+        NEUTRAL(0),
+        /* Driving With Joystick */
+        MANUAL(1),
+
+        /* Use pose controller to drive */
+        POSITION(2),
+
+        /* Rotation only control */
+        ROTATION(3),
+        /* Trajectory driving control */
+        TRAJECTORY(4);
+
+        private final int _value;
+
+        ControlState(int value) {
+            _value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+    }
+
+    /**
+     * SystemIO is input, output of our drivetrain that we want to cache.
+     */
+    public static class SystemIO {
+        ChassisSpeeds desiredChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        SwerveModuleState[] measuredStates = new SwerveModuleState[] {
+                new SwerveModuleState(),
+                new SwerveModuleState(),
+                new SwerveModuleState(),
+                new SwerveModuleState()
+        };
+        SwerveModulePosition[] measuredPositions = new SwerveModulePosition[] {
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition()
+        };
+        Rotation2d heading = new Rotation2d(0.0);
+        double pitch = 0.0;
+        Pose2d odometryPose = new Pose2d();
+
+        SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), new SwerveModuleState[4]);
+    }
+
     // Order we define swerve modules in kinematics
+    private final SwerveModule[] _modules;
     private static final int NORTH_WEST_IDX = 0;
     private static final int SOUTH_WEST_IDX = 1;
     private static final int SOUTH_EAST_IDX = 2;
     private static final int NORTH_EAST_IDX = 3;
 
+    private final SwerveSetpointGenerator _swerveSetpointGenerator;
+    private KinematicLimits _kinematicLimits = LOW_KINEMATIC_LIMITS;
+
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
 
-    private final SwerveModule[] _modules;
     private final BaseStatusSignal[] _moduleSignals;
 
     private final SwerveDriveKinematics _kinematics;
     private final SwerveDriveOdometry _odometry;
-    private final SwerveDrivePoseEstimator _poseEstimator;
-    // module sensor readings we would like to read all at once over CAN
 
     // controllers [Heading, Pose, Trajectory]
     private ControlState _controlState;
-    private final SwerveHeadingController _headingController;
-    private final HolonomicDriveController _poseController;
 
     // IMU (Pigeon)
     private final Pigeon2 _imu;
     private double _yawOffset;
-
-    private boolean _isLowGear;
-
-    // Setpoint generator for swerve.
-    private final SwerveSetpointGenerator _swerveSetpointGenerator;
-    private KinematicLimits _kinematicLimits = LOW_KINEMATIC_LIMITS;
-
-    private final SystemIO _systemIO;
-
-    // Vision Processors
-    // private final VisionProcessor _visionProcessor;
-    private final PhotonProcessor _photonProcessor;
 
     private final Field2d _field;
     private Mode _mode = Mode.NORMAL;
@@ -91,19 +110,19 @@ public class DriveTrain extends OutliersSubsystem {
     private boolean _shiftLockout = false;
     private long _shiftTime = 0;
 
-    private Pose2d _wantedRestPose;
-    private boolean _wantsToSetPose = false;
     private boolean _hasShiftInit = false;
+    private boolean _isLowGear;
+
+    private final SystemIO _systemIO;
+    private HeadingDriveController _headingDriveController;
+    private AutoAlignDriveController _alignDriveController;
+
+    private boolean _useHeadingController;
 
     public DriveTrain(
             OutliersContainer container,
-            // VisionProcessor processor,
-            PhotonProcessor photonProcessor,
             Pigeon2 imu) {
         super(container);
-
-        // _visionProcessor = processor;
-        _photonProcessor = photonProcessor;
 
         _shift = new DoubleSolenoid(
                 PneumaticsModuleType.REVPH,
@@ -180,24 +199,6 @@ public class DriveTrain extends OutliersSubsystem {
                 },
                 new Pose2d(0, 0, getHeading()));
 
-        _poseEstimator = new SwerveDrivePoseEstimator(
-                _kinematics,
-                getHeading(),
-                new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_EAST_IDX].getModulePosition(),
-                        _modules[NORTH_EAST_IDX].getModulePosition()
-                },
-                new Pose2d(0, 0, getHeading()),
-                createStateStandardDeviations(
-                        Constants.VisionConfig.STATE_STD_DEV_X,
-                        Constants.VisionConfig.STATE_STD_DEV_Y,
-                        Constants.VisionConfig.STATE_STD_DEV_ANGLE),
-                createVisionStandardDeviations(
-                        Constants.VisionConfig.VISION_STD_DEV_X,
-                        Constants.VisionConfig.VISION_STD_DEV_Y,
-                        Constants.VisionConfig.VISION_STD_DEV_ANGLE));
 
         _swerveSetpointGenerator = new SwerveSetpointGenerator(
                 _kinematics,
@@ -208,20 +209,10 @@ public class DriveTrain extends OutliersSubsystem {
                         _modules[NORTH_EAST_IDX].getModuleLocation()
                 });
 
-        _headingController = new SwerveHeadingController(Constants.UPDATE_PERIOD);
+        _headingDriveController = new HeadingDriveController();
+        _alignDriveController = new AutoAlignDriveController();
 
-        _poseController = new HolonomicDriveController(
-                new PIDController(
-                        Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
-                new PIDController(
-                        Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
-                new ProfiledPIDController(
-                        MAINTAIN_kP,
-                        MAINTAIN_kI,
-                        MAINTAIN_kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
+        _useHeadingController = false;
 
         _field = new Field2d();
         _hoverGoal = new Pose2d();
@@ -229,37 +220,13 @@ public class DriveTrain extends OutliersSubsystem {
         _isLowGear = true;
 
         zeroGyroscope();
-        resetRobotPose(new Pose2d());
 
         readModules();
         setSetpointFromMeasuredModules();
 
-        logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
+        // logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
     }
 
-    /**
-     * SystemIO is input, output of our drivetrain that we want to cache.
-     */
-    public static class SystemIO {
-        ChassisSpeeds desiredChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        SwerveModuleState[] measuredStates = new SwerveModuleState[] {
-                new SwerveModuleState(),
-                new SwerveModuleState(),
-                new SwerveModuleState(),
-                new SwerveModuleState()
-        };
-        SwerveModulePosition[] measuredPositions = new SwerveModulePosition[] {
-                new SwerveModulePosition(),
-                new SwerveModulePosition(),
-                new SwerveModulePosition(),
-                new SwerveModulePosition()
-        };
-        Rotation2d heading = new Rotation2d(0.0);
-        double pitch = 0.0;
-        Pose2d estimatedPose = new Pose2d();
-
-        SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), new SwerveModuleState[4]);
-    }
 
     protected void configureSignalFrequency(double frequency) {
         for (var signal : _moduleSignals) {
@@ -276,6 +243,37 @@ public class DriveTrain extends OutliersSubsystem {
         readIMU();
         readModules();
     }
+    
+    public void setEnableHeadingController(boolean enabled) {
+        _useHeadingController = enabled;
+    }
+
+    public void setHeadingControllerGoal(Rotation2d goal) {
+        _headingDriveController.setTargetHeading(goal);
+    }
+
+    public void setHeadingMaintainGoal(Rotation2d goal) {
+        _headingDriveController.maintainCurrentHeading(goal);
+    }
+
+    private void updateHeadingController() {
+        synchronized (_systemIO) {
+            _systemIO.desiredChassisSpeeds = _headingDriveController.update(
+                _systemIO.desiredChassisSpeeds,
+                getHeading()
+            );
+        }
+    }
+
+    private void updateAutoAlignController() {
+        synchronized (_systemIO) {
+            _systemIO.desiredChassisSpeeds = _alignDriveController.updateAutoAlign(_hoverGoal);
+        }
+    }
+
+    public boolean isAutoAlignComplete() {
+        return _alignDriveController.isAutoAlignComplete();
+    }
 
     @Override
     public void periodic() {
@@ -284,74 +282,33 @@ public class DriveTrain extends OutliersSubsystem {
             shiftDownModules();
             _hasShiftInit = true;
         }
+
+        if (!_useHeadingController) {
+            _headingDriveController.reset(getHeading());
+        }
+
         readSignals();
+
+        /* Update odometry */
+        _odometry.update(getHeading(), _systemIO.measuredPositions);
+
+        switch (_controlState) {
+            case NEUTRAL:
+                break;  
+            case MANUAL:
+                updateHeadingController();
+                break;
+            case POSITION: 
+                updateAutoAlignController();
+                break;
+            case ROTATION: 
+                break;
+            case TRAJECTORY:
+                break;
+
+        }
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
-        readInputs();
-
-        // current assumption is that because this is in a different thread a data race
-        // is occurring where a reset doesn't occur until after a measurement(or during)
-        // which is causing the estimated pose to be wrong.
-        if (_wantsToSetPose) {
-            resetRobotPose(_wantedRestPose);
-            _wantsToSetPose = false;
-        } else {
-            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
-            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
-            List<EstimatedRobotPose> cameraPoses = Stream.of(
-                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
-            )
-            .flatMap(Optional::stream)
-            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
-            .collect(Collectors.toList());
-
-            cameraPoses.forEach(cameraPose -> {
-                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-                _poseEstimator.addVisionMeasurement(
-                    cameraPose.estimatedPose.toPose2d(),
-                    cameraPose.timestampSeconds
-                );
-            });
-
-            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
-        }
-        _field.setRobotPose(_systemIO.estimatedPose);
-    }
-
-    /* Vision Stuff */
-    // @Override
-    public void dataPeriodicTest(double timestamp) {
-            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
-            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
-            List<EstimatedRobotPose> cameraPoses = Stream.of(
-                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
-            )
-            .flatMap(Optional::stream)
-            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
-            .collect(Collectors.toList());
-
-            cameraPoses.forEach(cameraPose -> {
-                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-                _poseEstimator.addVisionMeasurement(
-                    cameraPose.estimatedPose.toPose2d(),
-                    cameraPose.timestampSeconds
-                );
-            });
-
-            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
-        // _field.setRobotPose(_systemIO.estimatedPose);
-    }
-
-    /* If we want to control modules faster, move periodic to here */
-    @Override
-    public void controlPeriodic(double timestamp) {
-        super.controlPeriodic(timestamp);
     }
 
     public void updateDesiredStates() {
@@ -380,7 +337,7 @@ public class DriveTrain extends OutliersSubsystem {
     public void readModules() {
         for (int module = 0; module < _modules.length; module++) {
             _systemIO.measuredStates[module] = _modules[module].getState();
-            _systemIO.measuredPositions[module] = _modules[module].getPosition(true);
+            _systemIO.measuredPositions[module] = _modules[module].getPosition();
         }
     }
 
@@ -392,10 +349,12 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.length; module++) {
-            // _modules[module].setIdealState(states[module]);
             _modules[module].setModuleState(states[module]);
-
         }
+    }
+
+    public SwerveModulePosition[] getSwerveModuleMeasuredPositions() {
+        return _systemIO.measuredPositions;
     }
 
     public void setSetpointFromMeasuredModules() {
@@ -411,52 +370,6 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Module Control End */
 
-    /* Heading Controller Start */
-    public HeadingState getHeadingControllerState() {
-        return _headingController.getHeadingState();
-    }
-
-    public void setHeadingControllerState(HeadingState state) {
-        _headingController.setState(state);
-    }
-
-    public double getRotationCorrection() {
-        return _headingController.getRotationCorrection(getHeading());
-    }
-
-    public void temporaryDisabledHeadingController() {
-        _headingController.temporaryDisable();
-    }
-
-    public void disableHeadingController() {
-        _headingController.disable();
-    }
-
-    public void initializeHeadingController() {
-        _headingController.setMaintainHeading(getHeading());
-    }
-
-    public void incrementHeadingControllerAngle() {
-        Rotation2d heading = getHeading();
-        _headingController.setMaintainHeading(
-                Rotation2d.fromDegrees(heading.getDegrees() + Constants.DriveTrain.BUMP_DEGREES));
-    }
-
-    public void decrementHeadingControllerAngle() {
-        Rotation2d heading = getHeading();
-        _headingController.setMaintainHeading(
-                Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
-    }
-
-    public void setSnapHeading(Rotation2d heading) {
-        _headingController.setSnapHeading(heading);
-    }
-
-    public void setMaintainHeading(Rotation2d heading) {
-        _headingController.setMaintainHeading(heading);
-    }
-    /* Heading Controller End */
-
     public void plotTrajectory(Trajectory t, String name) {
         _field.getObject(name).setTrajectory(t);
     }
@@ -469,19 +382,9 @@ public class DriveTrain extends OutliersSubsystem {
         return _controlState;
     }
 
-    // Swerve setpoint generator functions
-
     /* Swerve Control Start */
     public void setVelocity(ChassisSpeeds chassisSpeeds) {
         _systemIO.desiredChassisSpeeds = chassisSpeeds;
-    }
-
-    public void setVelocityPose(Pose2d pose) {
-        ChassisSpeeds speeds = _poseController.calculate(
-                _systemIO.estimatedPose, pose, 0.0, _systemIO.heading);
-        _headingController.setMaintainHeading(new Rotation2d());
-        speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
-        _systemIO.desiredChassisSpeeds = speeds;
     }
 
     public SwerveSetpoint getSetpoint() {
@@ -505,6 +408,10 @@ public class DriveTrain extends OutliersSubsystem {
         }
     }
 
+    public KinematicLimits getKinematicLimits() {
+        return _kinematicLimits;
+    }
+
     public SwerveDriveKinematics getKinematics() {
         return _kinematics;
     }
@@ -524,56 +431,16 @@ public class DriveTrain extends OutliersSubsystem {
         return _odometry.getPoseMeters();
     }
 
-    /**
-     * Reset position and gyroOffset of odometry
-     *
-     * @param position is a Pose2d (Translation2d, Rotation2d)
-     *                 <p>
-     *                 Translation2d resets odometry (X,Y) coordinates
-     *                 <p>
-     *                 Rotation2d - gyroAngle = gyroOffset
-     *                 <p>
-     *                 If Rotation2d <> gyroAngle, then robot heading will no longer
-     *                 equal IMU heading.
-     */
-    public void resetRobotPose(Pose2d position) {
-        for (int module = 0; module < _modules.length; module++) {
-            _modules[module].resetEncoders();
-        }
-        _poseEstimator.resetPosition(
-                getHeading(),
-                new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_EAST_IDX].getModulePosition(),
-                        _modules[NORTH_EAST_IDX].getModulePosition()
-                },
-                position);
-        error("Reset robot position: " + position.toString());
-        _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
-    }
-
-    public void wantsToResetPose(Pose2d pose) {
-        _wantedRestPose = pose;
-        _wantsToSetPose = true;
-    }
-    /* Odometry And Pose Estimator End */
-
-    public double getDistanceToGoal() {
-        return _systemIO.estimatedPose
-                .getTranslation()
-                .getDistance(_hoverGoal.getTranslation());
-    }
-
     public boolean isTopSpeed() {
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
     }
 
     @Override
     public void updateDashboard() {
-        // metric("Swerve State", _controlState.name());
+        metric("Swerve State", _controlState.name());
+        metric("Current Heading", getHeading().getRadians());
+
         // metric("Robot goal position", _hoverGoal.toString());
-        // metric("Current Heading", getHeading().getRadians());
         // metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
         // metric("Heading State", _headingController.getHeadingState().name());
         // metric("Rotation State", getYaw());
@@ -608,10 +475,10 @@ public class DriveTrain extends OutliersSubsystem {
         // // metric("SW State Velocity", _modules[1].getStateMPS());
         // // metric("NE State Velocity", _modules[2].getStateMPS());
         // // metric("SE State Velocity", _modules[3].getStateMPS());
-        metric("NW Current", _modules[0].getDriveMotorCurrent());
-        metric("SW Current", _modules[1].getDriveMotorCurrent());
-        metric("SE Current", _modules[2].getDriveMotorCurrent());
-        metric("NE Current", _modules[3].getDriveMotorCurrent());
+        // metric("NW Current", _modules[0].getDriveMotorCurrent());
+        // metric("SW Current", _modules[1].getDriveMotorCurrent());
+        // metric("SE Current", _modules[2].getDriveMotorCurrent());
+        // metric("NE Current", _modules[3].getDriveMotorCurrent());
         // // metric("NW Camera Estimate Pose", _photonProcessor.getNorthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
         // // metric("SW Camera Estimate Pose", _photonProcessor.getSouthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
         // // metric("SE Camera Estimate Pose", _photonProcessor.getSouthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
@@ -630,24 +497,6 @@ public class DriveTrain extends OutliersSubsystem {
     public void moduleMetrics() {
         for (var module : _modules) {
             module.updateDashboard();
-        }
-    }
-
-    public enum ControlState {
-        NEUTRAL(0),
-        MANUAL(1),
-        POSITION(2),
-        ROTATION(3),
-        TRAJECTORY(4);
-
-        private final int _value;
-
-        ControlState(int value) {
-            _value = value;
-        }
-
-        public int getValue() {
-            return _value;
         }
     }
 
@@ -676,7 +525,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public boolean isRedAlliance() {
-        return true;
+        return true; // TODO: We need to fix this. We are not always red :)
     }
 
     public Pose2d getHoverGoal() {
@@ -754,60 +603,6 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftLockout = false;
             }
         }
-
-    }
-    /* Shift stuff end */
-
-    public Pose2d getEstimatedPose() {
-        return _systemIO.estimatedPose;
-    }
-
-    public boolean isValidMeasurement(Pose3d measurement) {
-        final double heightThreshold = Units.inchesToMeters(30);
-        final double fieldBuffer = Units.inchesToMeters(6); // add a 6 inch buffer to the field boundaries
-
-        boolean isTargetWithinHeight = measurement.getZ() < (heightThreshold + heightThreshold * 0.1); // allow for a
-                                                                                                       // 10% error in
-                                                                                                       // height
-                                                                                                       // measurement
-        boolean isMeasurementInField = (measurement.getX() >= -fieldBuffer
-                && measurement.getX() <= FieldConstants.fieldLength + fieldBuffer)
-                && (measurement.getY() >= -fieldBuffer
-                        && measurement.getY() <= FieldConstants.fieldWidth + fieldBuffer);
-        // return isTargetWithinHeight && isMeasurementInField;
-        return isMeasurementInField;
-    }
-
-    /**
-     * This changes the standard deviations to trust vision measurements less the
-     * farther the machine is.
-     * the linear line y = 0.13x + 0.3
-     * 
-     * @param measurement the measurement from an AprilTag
-     */
-    public void dynamicallyChangeDeviations(Pose3d measurement, Pose2d currentEstimatedPose) {
-        double dist = measurement.toPose2d().getTranslation().getDistance(currentEstimatedPose.getTranslation());
-        double positionDev = Math.abs(0.2 * dist + 0.2);
-        _poseEstimator.setVisionMeasurementStdDevs(
-                createVisionStandardDeviations(positionDev, positionDev, Units.degreesToRadians(400)));
-    }
-
-    protected Vector<N3> createStandardDeviations(double x, double y, double z) {
-        return VecBuilder.fill(x, y, z);
-    }
-
-    /**
-     * @param x     in meters of how much we trust x component
-     * @param y     in meters of how much we trust x component
-     * @param angle in radians of how much we trust the IMU;
-     * @return Standard Deivation of the pose;
-     */
-    protected Vector<N3> createStateStandardDeviations(double x, double y, double angle) {
-        return createStandardDeviations(x, y, angle);
-    }
-
-    protected Vector<N3> createVisionStandardDeviations(double x, double y, double angle) {
-        return createStandardDeviations(x, y, angle);
     }
 
     public double getYaw() {
@@ -825,7 +620,6 @@ public class DriveTrain extends OutliersSubsystem {
     public void zeroGyroscope() {
         _yawOffset = _imu.getYaw().getValue();
         readIMU();
-        resetRobotPose(_systemIO.estimatedPose);
     }
 
     public void setGyroscopeAngle(Rotation2d rotation) {

@@ -2,11 +2,12 @@ package org.frc5687.robot.commands.Shooter;
 
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.Intake;
-import org.frc5687.robot.subsystems.DriveTrain;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,18 +21,21 @@ public class Shoot extends OutliersCommand{
     private Deflector _deflector;
     private Intake _intake;
     private DriveTrain _driveTrain;
+    private RobotState _robotState;
     private Pose3d _tagPose;
 
     public Shoot(
         Shooter shooter,
         Deflector deflector,
         Intake intake,
-        DriveTrain driveTrain
+        DriveTrain driveTrain,
+        RobotState robotState
     ) {
         _shooter = shooter;
         _deflector = deflector;
         _intake = intake;
         _driveTrain = driveTrain;
+        _robotState = robotState;
         addRequirements(_shooter, _intake, _deflector);
     }
 
@@ -44,7 +48,7 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void execute() {
-        Pose2d robotPose = _driveTrain.getEstimatedPose();
+        Pose2d robotPose = _robotState.getEstimatedPose();
 
         double xDistance = _tagPose.getX() - robotPose.getX();
         double yDistance = _tagPose.getY() - robotPose.getY();
@@ -63,7 +67,7 @@ public class Shoot extends OutliersCommand{
             _shooter.setToTarget();
             _deflector.setTargetAngle(1.5);
         }
-        _driveTrain.setSnapHeading(new Rotation2d(angle));
+        _driveTrain.setHeadingControllerGoal(new Rotation2d(angle));
 
         if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle() && _driveTrain.getHeading().getRadians() - angle < Constants.DriveTrain.SNAP_TOLERANCE) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
@@ -77,6 +81,5 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
-        _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
     }
 }

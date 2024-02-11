@@ -1,8 +1,8 @@
 package org.frc5687.robot.commands;
 
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.robot.subsystems.DriveTrain.Mode;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain.Mode;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 

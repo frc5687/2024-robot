@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 
 public class SnapTo extends OutliersCommand {
     private DriveTrain _driveTrain;
@@ -18,18 +18,14 @@ public class SnapTo extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
-        // _driveTrain.setHeadingControllerState(HeadingState.SNAP); //unrequired,
-        _driveTrain.setSnapHeading(_rotation);
-        error(" begun");
-        error(" state is " + _driveTrain.getHeadingControllerState().name());
+        _driveTrain.setHeadingControllerGoal(_rotation);
     }
 
     @Override
     public boolean isFinished() {
-        
         if (_driveTrain.getHeading().minus(_rotation).getRadians()
                 < Constants.DriveTrain.SNAP_TOLERANCE) {
-            _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
+            _driveTrain.setHeadingMaintainGoal(_rotation);
             return true;
         }
         return false;
@@ -38,7 +34,6 @@ public class SnapTo extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         error(" finished");
-        error(" state is " + _driveTrain.getHeadingControllerState().name());
         super.end(interrupted);
     }
 }
