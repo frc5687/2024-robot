@@ -4,6 +4,7 @@ package org.frc5687.robot;
 
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
@@ -12,6 +13,8 @@ import org.frc5687.robot.util.*;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,7 +31,7 @@ public class RobotContainer extends OutliersContainer {
     private Intake _intake;
     private Deflector _deflector;
     // private Elevator _elevator;
-    // private PhotonProcessor _photonProcessor;
+    private PhotonProcessor _photonProcessor;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -45,22 +48,19 @@ public class RobotContainer extends OutliersContainer {
         // subscribe to a vision topic for the correct data
         // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
 
-        // try {
-        // _photonProcessor =
-        // // new
-        // //
-        // PhotonProcessor(AprilTagFieldLayout.loadFromResource("2023-swerret.json"));
-        // new PhotonProcessor(FieldConstants.aprilTags);
-        // } catch (Exception e) {
-        // e.getMessage();
-        // }
+        try {
+            _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+            // new PhotonProcessor(FieldConstants.aprilTags);
+        } catch (Exception e) {
+            e.getMessage();
+        }
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor, _photonProcessor,*/ _imu);
+        _driveTrain = new DriveTrain(this, /*_visionProcessor,*/ _photonProcessor, _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
@@ -68,6 +68,7 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
+        setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
         startPeriodic();
