@@ -44,7 +44,7 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_SUPPLY_CURRENT = 70;
+            CONFIG.MAX_SUPPLY_CURRENT = 40;
             CONFIG.MAX_STATOR_CURRENT = 120;
             CONFIG.MAX_CURRENT = 120;
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;

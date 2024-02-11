@@ -100,6 +100,8 @@ public class DriveTrain extends OutliersSubsystem {
             Pigeon2 imu) {
         super(container);
 
+        _photonProcessor = photonProcessor;
+
         // _visionProcessor = processor;
 
         _shift = new DoubleSolenoid(
