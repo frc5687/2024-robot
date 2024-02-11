@@ -41,7 +41,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.*;
 
-// import org.frc5687.lib.vision.VisionProcessor;
+import org.frc5687.robot.util.VisionProcessor;
 
 import org.photonvision.EstimatedRobotPose;
 
@@ -81,7 +81,6 @@ public class DriveTrain extends OutliersSubsystem {
     private final SystemIO _systemIO;
 
     // Vision Processors
-    // private final VisionProcessor _visionProcessor;
     private final PhotonProcessor _photonProcessor;
 
     private final Field2d _field;
@@ -97,13 +96,11 @@ public class DriveTrain extends OutliersSubsystem {
 
     public DriveTrain(
             OutliersContainer container,
-            // VisionProcessor processor,
             PhotonProcessor photonProcessor,
             Pigeon2 imu) {
         super(container);
 
         // _visionProcessor = processor;
-        _photonProcessor = photonProcessor;
 
         _shift = new DoubleSolenoid(
                 PneumaticsModuleType.REVPH,

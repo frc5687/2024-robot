@@ -63,7 +63,7 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor,*/ _photonProcessor, _imu);
+        _driveTrain = new DriveTrain(this, _photonProcessor, _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
@@ -73,17 +73,17 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor);
         startPeriodic();
 
     }
 
     public void periodic() {
-        VisionPoseArray poses = _visionProcessor.getDetectedObjects();
-        for (int i = 0; i < poses.posesLength(); i++) {
-            VisionPose visionPose = poses.poses(i);
-            System.out.println("VisionPose " + i + "{ x: " + visionPose.x() + ", y: " + visionPose.y() + ", z: " + visionPose.z() + " }");
-        }
+        //VisionPoseArray poses = _visionProcessor.getDetectedObjects();
+        //for (int i = 0; i < poses.posesLength(); i++) {
+        //    VisionPose visionPose = poses.poses(i);
+        //    System.out.println("VisionPose " + i + "{ x: " + visionPose.x() + ", y: " + visionPose.y() + ", z: " + visionPose.z() + " }");
+        //}
     }
 
     public void disabledPeriodic() {

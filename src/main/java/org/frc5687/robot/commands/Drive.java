@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.lib.control.SwerveHeadingController;
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
-import org.frc5687.lib.vision.TrackedObjectInfo;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.subsystems.DriveTrain;
