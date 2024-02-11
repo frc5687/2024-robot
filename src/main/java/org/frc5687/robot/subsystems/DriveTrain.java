@@ -300,7 +300,7 @@ public class DriveTrain extends OutliersSubsystem {
             List<EstimatedRobotPose> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
                 _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                // _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
                 _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
             )
             .flatMap(Optional::stream)
@@ -328,7 +328,7 @@ public class DriveTrain extends OutliersSubsystem {
             List<EstimatedRobotPose> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
                 _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                // _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
                 _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
             )
             .flatMap(Optional::stream)
