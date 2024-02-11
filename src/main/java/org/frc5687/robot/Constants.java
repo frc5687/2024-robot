@@ -65,7 +65,8 @@ public class Constants {
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
-            STEER_CONFIG.MAX_SUPPLY_CURRENT = 70;
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 40
+            ;
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
             STEER_CONFIG.MAX_CURRENT = 120;
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
@@ -220,7 +221,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.26025390625;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.05737304687;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -280,7 +281,7 @@ public class Constants {
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 4.0;
         public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 8.0;
 
-        public static final double kP = 3.3;
+        public static final double kP = 5;
         public static final double kI = 0.0;
         public static final double kD = 0.05;
 
@@ -296,7 +297,7 @@ public class Constants {
         public static final double ANGLE_TRAJECTORY_kI = 0.0;
         public static final double ANGLE_TRAJECTORY_kD = 0.05;
 
-        public static final double POSITION_TOLERANCE = 0.01;
+        public static final double POSITION_TOLERANCE = 0.03;
         public static final double LEVEL_TOLERANCE = 0.5;
         public static final double HEADING_TOLERANCE = 0.15; // rad
         public static final double BUMP_DEGREES = 7;
@@ -326,13 +327,13 @@ public class Constants {
     }
 
     public static class VisionConfig {
-        public static double STATE_STD_DEV_X = 0.01;
-        public static double STATE_STD_DEV_Y = 0.01;
+        public static double STATE_STD_DEV_X = 0.1;
+        public static double STATE_STD_DEV_Y = 0.1;
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
                                                                                 // more;
 
-        public static double VISION_STD_DEV_X = 0.35;
-        public static double VISION_STD_DEV_Y = 0.35;
+        public static double VISION_STD_DEV_X = 0.15;
+        public static double VISION_STD_DEV_Y = 0.15;
         public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(70); // imu deviations lower number to trust
                                                                                 // more;
     }
@@ -406,7 +407,7 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.45;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.50;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
             SHOOTER_CONTROLLER_CONFIG.kF = 0.135;
@@ -497,10 +498,9 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
-            CLOSED_LOOP_CONFIG.JERK = 10;
-
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 3000;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 5000;
+            CLOSED_LOOP_CONFIG.JERK = 1000;
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
     }

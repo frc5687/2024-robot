@@ -21,10 +21,11 @@ public class ZeroDeflector extends OutliersCommand {
 
     @Override
     public void execute() {
+        
     }
+
     @Override
     public boolean isFinished() {
-        
         return _deflector.getHall();
     }
 

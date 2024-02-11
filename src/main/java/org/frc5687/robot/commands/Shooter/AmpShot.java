@@ -1,7 +1,6 @@
 package org.frc5687.robot.commands.Shooter;
 
 import org.frc5687.robot.commands.DriveToPose;
-import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Deflector.SetDeflectorAngle;
 import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.Deflector;
@@ -25,8 +24,10 @@ public class AmpShot extends SequentialCommandGroup{
                     DriverStation.getAlliance().get() == Alliance.Red ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
                 )
             ),
-            new TimedIntake(intake, 1.0)
-
+            new DriveToPose(driveTrain, 
+                    DriverStation.getAlliance().get() == Alliance.Red ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
+            ),
+            new TimedIntake(intake, 1000)
         );
     }
     
