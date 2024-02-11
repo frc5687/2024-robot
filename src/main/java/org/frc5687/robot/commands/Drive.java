@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.lib.control.SwerveHeadingController;
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
-import org.frc5687.lib.vision.TrackedObjectInfo;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.subsystems.DriveTrain;
@@ -65,11 +64,9 @@ public class Drive extends OutliersCommand {
         }
         if (_oi.shiftUp()) {
             _driveTrain.shiftUpModules();
-        }
-        if (_oi.shiftDown()) {
+        } else if (_oi.shiftDown()) {
             _driveTrain.shiftDownModules();
-        }
-        if (!_isOverride) {
+        } else if (!_isOverride) {
             _driveTrain.autoShifter();
         }
         // driveX and driveY are swapped due to coordinate system that WPILib uses.
@@ -93,41 +90,26 @@ public class Drive extends OutliersCommand {
         double controllerPower = _driveTrain.getRotationCorrection();
         // metric("Element Angle", elementAngle);
         metric("Rot+Controller", (rot + controllerPower));
-        if (_oi.getSlowMode()) {
-            _toNormal = false;
-            _driveTrain.setMode(Mode.SLOW);
-            // _driveTrain.shiftDownModules();
-            // _driveTrain.setShiftLockout(true);
-            _driveTrain.setKinematicLimits(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS);
-            vx = vec.x() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
-            vy = vec.y() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
-            rot = -rot
-                    * Constants.DriveTrain.SLOW_ANG_VEL; // negative added to flip rotation in slowmode, driver
-                                                         // preference
-            _driveTrain.setVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-        } else {
-            if (!_toNormal) {
-                _driveTrain.setKinematicLimits(Constants.DriveTrain.LOW_KINEMATIC_LIMITS);
-                _toNormal = true;
-            }
-            _driveTrain.setMode(Mode.NORMAL);
-            // _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
-            // _driveTrain.setKinematicLimits(Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
-            // _driveTrain.setShiftLockout(false);
-            vx = vec.x() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                    : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
-            vy = vec.y() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                    : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
-            rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-            _driveTrain.setVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-            SmartDashboard.putNumber("/vx", vx);
-            SmartDashboard.putNumber("/vy", vy);
-
+        
+        if (!_toNormal) {
+            _driveTrain.setKinematicLimits(Constants.DriveTrain.LOW_KINEMATIC_LIMITS);
+            _toNormal = true;
         }
+        _driveTrain.setMode(Mode.NORMAL);
+        // _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
+        // _driveTrain.setKinematicLimits(Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
+        // _driveTrain.setShiftLockout(false);
+        vx = vec.x() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
+                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
+        vy = vec.y() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
+                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
+        rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
+        _driveTrain.setVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        SmartDashboard.putNumber("/vx", vx);
+        SmartDashboard.putNumber("/vy", vy);
+
     }
 
     @Override

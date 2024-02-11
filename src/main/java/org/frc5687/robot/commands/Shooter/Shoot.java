@@ -54,10 +54,15 @@ public class Shoot extends OutliersCommand{
         );
 
         double angle = Math.atan2(yDistance, xDistance) + Math.PI;
-        
-        _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
-        _shooter.setToTarget();
-        _deflector.setTargetAngle(_deflector.calculateAngleFromDistance(distance));
+        if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
+            _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
+            _shooter.setToTarget();
+            _deflector.setTargetAngle(_deflector.calculateAngleFromDistance(distance));
+        } else {
+            _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
+            _shooter.setToTarget();
+            _deflector.setTargetAngle(1.5);
+        }
         _driveTrain.setSnapHeading(new Rotation2d(angle));
 
         if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle() && _driveTrain.getHeading().getRadians() - angle < Constants.DriveTrain.SNAP_TOLERANCE) { 

@@ -2,8 +2,11 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import org.frc5687.Messages.VisionPose;
+import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
@@ -20,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
     private AutoChooser _autoChooser;
-    // private VisionProcessor _visionProcessor;
+    private VisionProcessor _visionProcessor;
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
@@ -40,9 +43,10 @@ public class RobotContainer extends OutliersContainer {
         _oi = new OI();
         _autoChooser = new AutoChooser();
         // create the vision processor
-        // _visionProcessor = new VisionProcessor();
+        _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
-        // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
+        _visionProcessor.createSubscriber("Objects", "tcp://10.56.87.20:5556");
+        _visionProcessor.start();
 
         try {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
@@ -55,7 +59,7 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor,*/ _photonProcessor, _imu);
+        _driveTrain = new DriveTrain(this, _photonProcessor, _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
@@ -63,13 +67,19 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
+        setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor);
         startPeriodic();
 
     }
 
     public void periodic() {
+        //VisionPoseArray poses = _visionProcessor.getDetectedObjects();
+        //for (int i = 0; i < poses.posesLength(); i++) {
+        //    VisionPose visionPose = poses.poses(i);
+        //    System.out.println("VisionPose " + i + "{ x: " + visionPose.x() + ", y: " + visionPose.y() + ", z: " + visionPose.z() + " }");
+        //}
     }
 
     public void disabledPeriodic() {
