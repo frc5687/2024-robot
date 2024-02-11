@@ -25,7 +25,7 @@ public class Deflector extends OutliersSubsystem {
 
     @Override
     public void periodic() {
-        if (_lowerHall.get()) {
+        if (getHall()) {
             setEncoderAngle(Constants.Deflector.LOWER_HALL_ANGLE);
         }
     }
@@ -59,6 +59,10 @@ public class Deflector extends OutliersSubsystem {
     //don't use this for non-zero purposes!!
     public void beginDeflectorZero() {
         _talon.setPercentOutput(-0.1);
+    }
+
+    public void stopMotor() {
+        _talon.setPercentOutput(0.0);
     }
     
     public boolean getHall() {

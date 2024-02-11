@@ -31,7 +31,9 @@ public class DriveToPose extends OutliersCommand{
     @Override
     public boolean isFinished() {
         return (Math.abs(_driveTrain.getEstimatedPose().getX() - _goalPose2d.getX()) < Constants.DriveTrain.POSITION_TOLERANCE) && 
-        (Math.abs(_driveTrain.getEstimatedPose().getY() - _goalPose2d.getY()) < Constants.DriveTrain.POSITION_TOLERANCE); 
+        (Math.abs(_driveTrain.getEstimatedPose().getY() - _goalPose2d.getY()) < Constants.DriveTrain.POSITION_TOLERANCE);
+
+        // TODO: use angle here as well
     }
 
     @Override

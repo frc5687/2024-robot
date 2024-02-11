@@ -479,7 +479,7 @@ public class DriveTrain extends OutliersSubsystem {
     public void setVelocityPose(Pose2d pose) {
         ChassisSpeeds speeds = _poseController.calculate(
                 _systemIO.estimatedPose, pose, 0.0, _systemIO.heading);
-        _headingController.setMaintainHeading(new Rotation2d());
+        _headingController.setMaintainHeading(pose.getRotation());
         speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
         _systemIO.desiredChassisSpeeds = speeds;
     }

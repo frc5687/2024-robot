@@ -74,18 +74,17 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
 
-        // _driverGamepad.getLeftBumper().onTrue(new AmpShot(shooter, deflector,
-        // drivetrain, intake));
+        _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
         // _povButtonUp.onTrue(new ChangeRPM(shooter, 100));
         // _povButtonDown.onTrue(new ChangeRPM(shooter, -100));
         // _povButtonRight.onTrue(new ChangeRPM(shooter, 10));
         // _povButtonLeft.onTrue(new ChangeRPM(shooter, -10));
 
-        _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
-        // _driverGamepad.getRightBumper().onTrue(new ChangeDeflectorAngle(deflector,
-        // 0.05));
-        _driverGamepad.getRightBumper().whileTrue(new DriveToPose(drivetrain, new Pose2d(2, 2, new Rotation2d())));
+        // _driverGamepad.getLeftBumper().onTrue(new ChangeDeflectorAngle(deflector, -0.05));
+        _povButtonUp.onTrue(new ChangeDeflectorAngle(deflector,
+        0.05));
+    //    _povButtonLeft.whileTrue(new DriveToPose(drivetrain, new Pose2d(1.75, 7.25, Rotation2d.fromDegrees(-90.0))));
         // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
         // Pose2d(2, 2, new Rotation2d())));
         _driverGamepad.getBackButton().whileTrue(new DriveToNote(drivetrain, visionProcessor));

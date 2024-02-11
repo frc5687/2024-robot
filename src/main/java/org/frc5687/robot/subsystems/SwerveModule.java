@@ -73,6 +73,7 @@ public class SwerveModule {
         _isLowGear = false;
 
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
+        _velocityTorqueCurrentFOC.OverrideCoastDurNeutral = true;
         // _positionVoltage = new PositionVoltage(0.0);
 
 
@@ -165,9 +166,9 @@ public class SwerveModule {
     public void setModuleState(SwerveModuleState state) {
         // SwerveModuleState optimized = SwerveModuleState.optimize(state,
         // _internalState.angle);
-        // if (Math.abs(state.speedMetersPerSecond) < 0.1) {
-        //     stopAll();
-        // } else {
+        if (Math.abs(state.speedMetersPerSecond) < 0.1) {
+            stopAll();
+        } else {
             _stateMPS = state.speedMetersPerSecond;
             _wantedSpeed = state.speedMetersPerSecond
                     * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
@@ -178,7 +179,7 @@ public class SwerveModule {
             _steeringMotor.setPositionVoltage(position);
             SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
             SmartDashboard.putNumber("/wantedPosition", position);
-        // }
+        }
     }
 
     public SwerveModuleState getState() {
