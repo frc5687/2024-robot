@@ -48,10 +48,10 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_CURRENT = 60; // Max control requeset current
-            CONFIG.MAX_SUPPLY_CURRENT = 30;
+            CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
 
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.1;
         }
@@ -65,7 +65,7 @@ public class Constants {
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
             STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
-            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30;
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current 
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;

@@ -150,8 +150,8 @@ public class OutliersTalon extends TalonFX {
 
         _currentLimitsConfigs.StatorCurrentLimit = config.MAX_STATOR_CURRENT;
         _currentLimitsConfigs.SupplyCurrentLimit = config.MAX_SUPPLY_CURRENT;
-        _currentLimitsConfigs.StatorCurrentLimitEnable =config.ENABLE_STATOR_CURRENT_LIMIT;
-        _currentLimitsConfigs.SupplyCurrentLimitEnable =config.ENABLE_SUPPLY_CURRENT_LIMIT;
+        _currentLimitsConfigs.StatorCurrentLimitEnable = config.ENABLE_STATOR_CURRENT_LIMIT;
+        _currentLimitsConfigs.SupplyCurrentLimitEnable = config.ENABLE_SUPPLY_CURRENT_LIMIT;
 
         _torqueCurrentConfigs.PeakForwardTorqueCurrent = config.MAX_CURRENT;
         _torqueCurrentConfigs.PeakReverseTorqueCurrent = -config.MAX_CURRENT;

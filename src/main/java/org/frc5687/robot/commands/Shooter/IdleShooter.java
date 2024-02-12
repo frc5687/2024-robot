@@ -1,6 +1,5 @@
 package org.frc5687.robot.commands.Shooter;
 
-import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 

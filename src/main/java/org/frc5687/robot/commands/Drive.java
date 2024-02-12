@@ -40,6 +40,7 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void execute() {
+        // Constantly polling OI can be expensive, make these commands potentially?
         if (_oi.zeroIMU()) {
             _driveTrain.zeroGyroscope();
         }
@@ -58,12 +59,15 @@ public class Drive extends OutliersCommand {
         double vx;
         double vy;
         double rot = _oi.getRotationX();
+
+        double max_mps = _driveTrain.isLowGear() ? 
+                 Constants.DriveTrain.MAX_LOW_GEAR_MPS
+                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+
         rot = Math.signum(rot) * rot * rot;
 
-        vx = vec.x() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
-        vy = vec.y() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
+        vx = vec.x() * max_mps;
+        vy = vec.y() * max_mps;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
         _driveTrain.setVelocity(
             ChassisSpeeds.fromFieldRelativeSpeeds(
