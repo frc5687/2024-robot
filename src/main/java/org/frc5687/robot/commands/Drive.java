@@ -11,27 +11,19 @@ import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain.Mode;
 import org.frc5687.robot.util.Helpers;
 
 public class Drive extends OutliersCommand {
 
     private final DriveTrain _driveTrain;
-    // private final EndEffector _endEffector;
-    // private final HeadingController _headingController;
-    private final PIDController _yCordinateElementController;
     private final OI _oi;
-    private boolean _lockHeading;
     private boolean _isOverride = false;
-    private boolean _toNormal = false;
     private int segmentationArray[] = new int[360 / 5];
 
     public Drive(DriveTrain driveTrain, OI oi) {
-        _lockHeading = false;
         _driveTrain = driveTrain;
         // _endEffector = endEffector;
         _oi = oi;
-        _yCordinateElementController = new PIDController(2.5, 0.0, 0.3);
 
         for (int i = 0; i < segmentationArray.length; i++) {
             double angle = 360 / segmentationArray.length;
@@ -42,9 +34,8 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void initialize() {
-        // _driveTrain.startModules();
-        // _headingController.setGoal(_driveTrain.getHeading().getRadians());
         _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
+        _driveTrain.setEnableHeadingController(true);
     }
 
     @Override

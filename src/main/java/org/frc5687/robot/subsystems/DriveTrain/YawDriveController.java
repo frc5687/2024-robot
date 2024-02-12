@@ -9,7 +9,7 @@ import edu.wpi.first.math.util.Units;
 
 import java.util.Optional;
 
-public class HeadingDriveController {
+public class YawDriveController {
 
     public enum Mode {
         MAINTAIN_HEADING,
@@ -24,7 +24,7 @@ public class HeadingDriveController {
     private Rotation2d _currentMaintainedHeading;
 
 
-    public HeadingDriveController() {
+    public YawDriveController() {
         TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(
                 Units.degreesToRadians(Constants.DriveTrain.MAX_ANG_VEL),
                 Units.degreesToRadians(Constants.DriveTrain.MAX_ANG_VEL * 4)); // accel

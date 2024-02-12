@@ -55,6 +55,11 @@ public class SwerveModule {
     private boolean _isLowGear;
     private String _moduleName;
 
+    private boolean _isShifting = false;
+    private long _shiftStartTimeMillis = 0;
+    private double _preShiftSpeed = 0.0;
+    private double _preShiftEncoderPosition = 0.0;
+
     public SwerveModule(
             SwerveModule.ModuleConfiguration config,
             int steeringMotorID,
@@ -129,22 +134,57 @@ public class SwerveModule {
         _steeringVelocityRotationsPerSec.refresh();
     }
 
-    private double getGearRatio() {
-        return _isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH;
+    public void startShift() {
+        // refresh to make sure latest values
+        refreshSignals();
+
+        if (!_isShifting) {
+            _isShifting = true;
+            _shiftStartTimeMillis = System.currentTimeMillis();
+            _preShiftSpeed = getWheelVelocity();
+            _preShiftEncoderPosition = _drivePositionRotations.getValue(); 
+        }
+    }
+
+    public void endShift() {
+        // refresh to make sure latest values
+        refreshSignals();
+
+        if (_isShifting) {
+            _isShifting = false;
+            double estimatedDistanceDuringShift = _preShiftSpeed * Constants.SwerveModule.SHIFT_TIME_SECONDS; 
+            double additionalRotationsDuringShift = estimatedDistanceDuringShift * _rotPerMet * getGearRatio();
+
+            double correctedEncoderPosition = _preShiftEncoderPosition + additionalRotationsDuringShift;
+            _driveMotor.setPosition(correctedEncoderPosition); 
+
+            _preShiftSpeed = 0.0;
+        }
     }
 
     private SwerveModulePosition calculatePosition() {
-        double drive_rot = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-        double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations, _steeringVelocityRotationsPerSec);
+        double currentEncoderRotations = _isShifting ? _preShiftEncoderPosition
+                : BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
+        if (_isShifting) {
+            double elapsedTimeSinceShiftStart = (System.currentTimeMillis() - _shiftStartTimeMillis) / 1000.0;
+            if (elapsedTimeSinceShiftStart <= 0.1) { 
+                double estimatedDistance = _preShiftSpeed * elapsedTimeSinceShiftStart;
+                currentEncoderRotations += estimatedDistance * _rotPerMet * getGearRatio();
+            } else {
+                endShift();
+            }
+        }
 
-        _internalState.distanceMeters = drive_rot / (_rotPerMet * getGearRatio());
+        double distanceMeters = currentEncoderRotations / (_rotPerMet * getGearRatio());
+        double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
+                _steeringVelocityRotationsPerSec);
+        _internalState.distanceMeters = distanceMeters;
         _internalState.angle = Rotation2d.fromRotations(angle_rot);
 
         return _internalState;
     }
-
-    public SwerveModulePosition getPosition() {
-        return calculatePosition();
+    private double getGearRatio() {
+        return _isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH;
     }
 
     public BaseStatusSignal[] getSignals() {
@@ -248,17 +288,15 @@ public class SwerveModule {
         return _modulePosition;
     }
 
-    public SwerveModulePosition getModulePosition() {
-        return new SwerveModulePosition(getWheelDistance(), getCanCoderAngle());
+    public SwerveModulePosition getPosition() {
+        return calculatePosition();
     }
 
     public double getWheelDistance() {
-        return (getDistance())
-                * WHEEL_RADIUS;
+        return getDistance() * WHEEL_RADIUS;
     }
 
     public double getDistance() {
-        // _drivePositionRotations.refresh();
         return _drivePositionRotations.getValue() * (Math.PI * 2.0) / (getGearRatio());
     }
 
@@ -268,22 +306,22 @@ public class SwerveModule {
     }
 
     public void updateDashboard() {
-        SmartDashboard.putNumber((_moduleName + "/moduleAngle"), getEncoderAngleDouble());
-        SmartDashboard.putNumber((_moduleName + "/driveRPM"), getDriveRPM());
+        SmartDashboard.putNumber(_moduleName + "/moduleAngle", getEncoderAngleDouble());
+        SmartDashboard.putNumber(_moduleName + "/driveRPM", getDriveRPM());
 
-        SmartDashboard.putBoolean((_moduleName +"/isLowGear"), _isLowGear);
-        SmartDashboard.putNumber((_moduleName +"/wantedSpeed"), _wantedSpeed);
+        SmartDashboard.putBoolean(_moduleName +"/isLowGear", _isLowGear);
+        SmartDashboard.putNumber(_moduleName +"/wantedSpeed", _wantedSpeed);
 
-        SmartDashboard.putNumber((_moduleName +"/wheelVelocity"), getWheelVelocity());
-        SmartDashboard.putNumber((_moduleName +"/wheelAngularVelocity"), getWheelAngularVelocity());
-        SmartDashboard.putNumber((_moduleName +"/driveVoltage"), _driveMotor.getSupplyVoltage().getValue());
-        SmartDashboard.putNumber((_moduleName +"/steerVoltage"), _steeringMotor.getSupplyVoltage().getValue());
+        SmartDashboard.putNumber(_moduleName +"/wheelVelocity", getWheelVelocity());
+        SmartDashboard.putNumber(_moduleName +"/wheelAngularVelocity", getWheelAngularVelocity());
+        SmartDashboard.putNumber(_moduleName +"/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
+        SmartDashboard.putNumber(_moduleName +"/steerVoltage", _steeringMotor.getSupplyVoltage().getValue());
 
-        SmartDashboard.putNumber((_moduleName +"/driveSupplyCurrent"), getDriveMotorCurrent());
-        SmartDashboard.putNumber((_moduleName +"/steerSupplyCurrent"), _steeringMotor.getSupplyCurrent().getValue());
+        SmartDashboard.putNumber(_moduleName +"/driveSupplyCurrent", getDriveMotorCurrent());
+        SmartDashboard.putNumber(_moduleName +"/steerSupplyCurrent", _steeringMotor.getSupplyCurrent().getValue());
 
-        SmartDashboard.putNumber((_moduleName +"/drivePosition"), _drivePositionRotations.getValue());
-        SmartDashboard.putNumber((_moduleName +"/distance"), getDistance());
+        SmartDashboard.putNumber(_moduleName +"/drivePosition", _drivePositionRotations.getValue());
+        SmartDashboard.putNumber(_moduleName +"/distance", getDistance());
     }
 
     public static class ModuleConfiguration {

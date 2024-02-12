@@ -2,7 +2,6 @@ package org.frc5687.robot.commands;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain.Mode;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
@@ -21,7 +20,6 @@ public class DriveWithSpeeds extends OutliersCommand{
     @Override
     public void execute() {
         super.execute();    
-        _driveTrain.setMode(Mode.NORMAL);
         _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
         _driveTrain.setVelocity(
             ChassisSpeeds.fromFieldRelativeSpeeds(

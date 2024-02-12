@@ -36,6 +36,7 @@ public class Constants {
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.05; // mps
+        public static final double SHIFT_TIME_SECONDS = 0.1; // 100ms time to shift
 
         // this is the motor config for the swerve motors
         static {
@@ -46,9 +47,10 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_SUPPLY_CURRENT = 70;
+            CONFIG.MAX_CURRENT = 60; // Max control requeset current
+            CONFIG.MAX_SUPPLY_CURRENT = 30;
             CONFIG.MAX_STATOR_CURRENT = 120;
-            CONFIG.MAX_CURRENT = 120;
+
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.1;
@@ -62,9 +64,9 @@ public class Constants {
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
-            STEER_CONFIG.MAX_SUPPLY_CURRENT = 70;
+            STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30;
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
-            STEER_CONFIG.MAX_CURRENT = 120;
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             STEER_CONFIG.CURRENT_DEADBAND = 0.1;
@@ -436,9 +438,10 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_STATOR_CURRENT = 60;
-            CONFIG.MAX_CURRENT = 60;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_SUPPLY_CURRENT = 30;
+            CONFIG.MAX_STATOR_CURRENT = 30;
+            CONFIG.MAX_CURRENT = 30;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }

@@ -7,7 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import org.frc5687.robot.Constants;
 
-public class AutoAlignDriveController {
+public class AutoPoseDriveController {
     private ProfiledPIDController _xController;
     private ProfiledPIDController _yController;
     private ProfiledPIDController _headingController;
@@ -16,7 +16,7 @@ public class AutoAlignDriveController {
     private Pose2d _fieldToTargetPoint;
     private Double _startTime;
 
-    public AutoAlignDriveController() {
+    public AutoPoseDriveController() {
         _xController = new ProfiledPIDController(
                 Constants.DriveTrain.kP,
                 Constants.DriveTrain.kI,
@@ -54,6 +54,11 @@ public class AutoAlignDriveController {
     public void setTargetPoint(Pose2d targetPoint) {
         _fieldToTargetPoint = targetPoint;
     }
+    /***
+     * Align(Drive) to target Pose2d
+     * @param currentPose
+     * @return ChassisSpeed to send to Swerve
+     */
 
     public ChassisSpeeds updateAutoAlign(Pose2d currentPose) {
         Pose2d poseError = _fieldToTargetPoint.relativeTo(currentPose);

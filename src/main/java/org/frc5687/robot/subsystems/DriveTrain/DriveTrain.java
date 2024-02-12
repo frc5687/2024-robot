@@ -104,7 +104,6 @@ public class DriveTrain extends OutliersSubsystem {
     private double _yawOffset;
 
     private final Field2d _field;
-    private Mode _mode = Mode.NORMAL;
     private Pose2d _hoverGoal;
 
     private boolean _shiftLockout = false;
@@ -114,8 +113,8 @@ public class DriveTrain extends OutliersSubsystem {
     private boolean _isLowGear;
 
     private final SystemIO _systemIO;
-    private HeadingDriveController _headingDriveController;
-    private AutoAlignDriveController _alignDriveController;
+    private YawDriveController _yawDriveController;
+    private AutoPoseDriveController _poseDriveController;
 
     private boolean _useHeadingController;
 
@@ -192,10 +191,10 @@ public class DriveTrain extends OutliersSubsystem {
                 _kinematics,
                 getHeading(),
                 new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_EAST_IDX].getModulePosition(),
-                        _modules[NORTH_EAST_IDX].getModulePosition()
+                        _modules[NORTH_WEST_IDX].getPosition(),
+                        _modules[SOUTH_WEST_IDX].getPosition(),
+                        _modules[SOUTH_EAST_IDX].getPosition(),
+                        _modules[NORTH_EAST_IDX].getPosition()
                 },
                 new Pose2d(0, 0, getHeading()));
 
@@ -209,8 +208,8 @@ public class DriveTrain extends OutliersSubsystem {
                         _modules[NORTH_EAST_IDX].getModuleLocation()
                 });
 
-        _headingDriveController = new HeadingDriveController();
-        _alignDriveController = new AutoAlignDriveController();
+        _yawDriveController = new YawDriveController();
+        _poseDriveController = new AutoPoseDriveController();
 
         _useHeadingController = false;
 
@@ -249,30 +248,26 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void setHeadingControllerGoal(Rotation2d goal) {
-        _headingDriveController.setTargetHeading(goal);
+        _yawDriveController.setTargetHeading(goal);
     }
 
     public void setHeadingMaintainGoal(Rotation2d goal) {
-        _headingDriveController.maintainCurrentHeading(goal);
+        _yawDriveController.maintainCurrentHeading(goal);
     }
 
     private void updateHeadingController() {
-        synchronized (_systemIO) {
-            _systemIO.desiredChassisSpeeds = _headingDriveController.update(
-                _systemIO.desiredChassisSpeeds,
-                getHeading()
-            );
-        }
+        _systemIO.desiredChassisSpeeds = _yawDriveController.update(
+            _systemIO.desiredChassisSpeeds,
+            getHeading()
+        );
     }
 
     private void updateAutoAlignController() {
-        synchronized (_systemIO) {
-            _systemIO.desiredChassisSpeeds = _alignDriveController.updateAutoAlign(_hoverGoal);
-        }
+        _systemIO.desiredChassisSpeeds = _poseDriveController.updateAutoAlign(_hoverGoal);
     }
 
     public boolean isAutoAlignComplete() {
-        return _alignDriveController.isAutoAlignComplete();
+        return _poseDriveController.isAutoAlignComplete();
     }
 
     @Override
@@ -284,7 +279,7 @@ public class DriveTrain extends OutliersSubsystem {
         }
 
         if (!_useHeadingController) {
-            _headingDriveController.reset(getHeading());
+            _yawDriveController.reset(getHeading());
         }
 
         readSignals();
@@ -309,6 +304,22 @@ public class DriveTrain extends OutliersSubsystem {
         }
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
+    }
+
+    public void setControlState(ControlState state) {
+        _controlState = state;
+    }
+
+    public ControlState getControlState() {
+        return _controlState;
+    }
+
+    public void setVelocity(ChassisSpeeds chassisSpeeds) {
+        _systemIO.desiredChassisSpeeds = chassisSpeeds;
+    }
+
+    public SwerveSetpoint getSetpoint() {
+        return _systemIO.setpoint;
     }
 
     public void updateDesiredStates() {
@@ -370,25 +381,13 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Module Control End */
 
+    /* Trajectory Info Start */
     public void plotTrajectory(Trajectory t, String name) {
         _field.getObject(name).setTrajectory(t);
     }
 
-    public void setControlState(ControlState state) {
-        _controlState = state;
-    }
-
-    public ControlState getControlState() {
-        return _controlState;
-    }
-
-    /* Swerve Control Start */
-    public void setVelocity(ChassisSpeeds chassisSpeeds) {
-        _systemIO.desiredChassisSpeeds = chassisSpeeds;
-    }
-
-    public SwerveSetpoint getSetpoint() {
-        return _systemIO.setpoint;
+    public SwerveDriveKinematicsConstraint getKinematicConstraint() {
+        return new SwerveDriveKinematicsConstraint(_kinematics, TRAJECTORY_FOLLOWING.maxDriveAcceleration);
     }
 
     public TrajectoryConfig getConfig() {
@@ -396,12 +395,15 @@ public class DriveTrain extends OutliersSubsystem {
                 .setKinematics(_kinematics)
                 .addConstraint(getKinematicConstraint());
     }
+    /* Trajectory Info End */
 
     /* Kinematics Stuff Start */
-    public SwerveDriveKinematicsConstraint getKinematicConstraint() {
-        return new SwerveDriveKinematicsConstraint(_kinematics, TRAJECTORY_FOLLOWING.maxDriveAcceleration);
+    public SwerveDriveKinematics getKinematics() {
+        return _kinematics;
     }
 
+
+    /* Kinematic limit for the Setpoint Generator */
     public void setKinematicLimits(KinematicLimits limits) {
         if (limits != _kinematicLimits) {
             _kinematicLimits = limits;
@@ -411,19 +413,17 @@ public class DriveTrain extends OutliersSubsystem {
     public KinematicLimits getKinematicLimits() {
         return _kinematicLimits;
     }
+    /* Kinematics End  */
 
-    public SwerveDriveKinematics getKinematics() {
-        return _kinematics;
-    }
     /* Odometry And Pose Estimator Start */
     public void updateOdometry() {
         _odometry.update(
                 isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
                 new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_WEST_IDX].getModulePosition(),
-                        _modules[SOUTH_EAST_IDX].getModulePosition(),
-                        _modules[NORTH_EAST_IDX].getModulePosition()
+                        _modules[NORTH_WEST_IDX].getPosition(),
+                        _modules[SOUTH_WEST_IDX].getPosition(),
+                        _modules[SOUTH_EAST_IDX].getPosition(),
+                        _modules[NORTH_EAST_IDX].getPosition()
                 });
     }
 
@@ -439,57 +439,7 @@ public class DriveTrain extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
-
-        // metric("Robot goal position", _hoverGoal.toString());
-        // metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
-        // metric("Heading State", _headingController.getHeadingState().name());
-        // metric("Rotation State", getYaw());
-        // // metric("Pitch Angle", getPitch());
-        // metric("Estimated X", _systemIO.estimatedPose.getX());
-        // metric("Estimated Y", _systemIO.estimatedPose.getY());
-        // metric("NW Angle", _modules[0].getCanCoderAngle().getRadians());
-        // metric("SW Angle", _modules[1].getCanCoderAngle().getRadians());
-        // metric("SE Angle", _modules[2].getCanCoderAngle().getRadians());
-        // metric("NE Angle", _modules[3].getCanCoderAngle().getRadians());
-        // // metric("NW AngleRot", _modules[0].getCanCoderAngle().getRotations());
-        // // metric("SW AngleRot", _modules[1].getCanCoderAngle().getRotations());
-        // // metric("SE AngleRot", _modules[2].getCanCoderAngle().getRotations());
-        // // metric("NE AngleRot", _modules[3].getCanCoderAngle().getRotations());
-        // metric("NW Angle Wanted", _systemIO.setpoint.moduleStates[0].angle.getRadians());
-        // metric("SW Angle Wanted", _systemIO.setpoint.moduleStates[1].angle.getRadians());
-        // metric("SE Angle Wanted", _systemIO.setpoint.moduleStates[2].angle.getRadians());
-        // metric("NE Angle Wanted", _systemIO.setpoint.moduleStates[3].angle.getRadians());
-        // // metric("NW Velocity", _modules[0].getWheelVelocity());
-        // // metric("SW Velocity", _modules[1].getWheelVelocity());
-        // // metric("SE Velocity", _modules[2].getWheelVelocity());
-        // // metric("NE Velocity", _modules[3].getWheelVelocity());
-        // // metric("NW Velocity Wanted", _modules[0].getWantedSpeed());
-        // // metric("SW Velocity Wanted", _modules[1].getWantedSpeed());
-        // // metric("SE Velocity Wanted", _modules[2].getWantedSpeed());
-        // // metric("NE Velocity Wanted", _modules[3].getWantedSpeed());
-        // // metric("NW Drive Velocity", _modules[0].getDriveRPM() / 60);
-        // // metric("SW Drive Velocity", _modules[1].getDriveRPM() / 60);
-        // // metric("NE Drive Velocity", _modules[2].getDriveRPM() / 60);
-        // // metric("SE Drive Velocity", _modules[3].getDriveRPM() / 60);
-        // // metric("NW State Velocity", _modules[0].getStateMPS());
-        // // metric("SW State Velocity", _modules[1].getStateMPS());
-        // // metric("NE State Velocity", _modules[2].getStateMPS());
-        // // metric("SE State Velocity", _modules[3].getStateMPS());
-        // metric("NW Current", _modules[0].getDriveMotorCurrent());
-        // metric("SW Current", _modules[1].getDriveMotorCurrent());
-        // metric("SE Current", _modules[2].getDriveMotorCurrent());
-        // metric("NE Current", _modules[3].getDriveMotorCurrent());
-        // // metric("NW Camera Estimate Pose", _photonProcessor.getNorthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
-        // // metric("SW Camera Estimate Pose", _photonProcessor.getSouthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
-        // // metric("SE Camera Estimate Pose", _photonProcessor.getSouthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
-        // // metric("NE Camera Estimate Pose", _photonProcessor.getNorthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
-        // metric("Distance to goal node",
-        //         _systemIO.estimatedPose
-        //                 .getTranslation()
-        //                 .getDistance(_hoverGoal.getTranslation()));
-        // metric("Drivetrain Speed", getSpeed());
-        // metric("Is Low Gear", isLowGear());
-        // metric("Tank Pressure PSI", _compressor.getPressure());
+        metric("Tank Pressure PSI", _compressor.getPressure());
         SmartDashboard.putData(_field);
         // moduleMetrics();
     }
@@ -498,30 +448,6 @@ public class DriveTrain extends OutliersSubsystem {
         for (var module : _modules) {
             module.updateDashboard();
         }
-    }
-
-    public enum Mode {
-        NORMAL(0),
-        SLOW(1),
-        VISION(2);
-
-        private final int _value;
-
-        Mode(int value) {
-            _value = value;
-        }
-
-        public int getValue() {
-            return _value;
-        }
-    }
-
-    public void setMode(Mode mode) {
-        _mode = mode;
-    }
-
-    public Mode getMode() {
-        return _mode;
     }
 
     public boolean isRedAlliance() {
@@ -558,6 +484,7 @@ public class DriveTrain extends OutliersSubsystem {
         _isLowGear = false;
         setKinematicLimits(HIGH_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
+            _modules[i].startShift();
             _modules[i].setLowGear(false);
         }
     }
@@ -566,6 +493,7 @@ public class DriveTrain extends OutliersSubsystem {
         _shift.set(Value.kReverse);
         setKinematicLimits(LOW_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
+            _modules[i].startShift();
             _modules[i].setLowGear(true);
         }
         _isLowGear = true;
