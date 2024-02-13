@@ -77,7 +77,7 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor));
         
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor, _robotState);
 

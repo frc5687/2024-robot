@@ -7,6 +7,7 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.Lights.AnimationType;
 import org.frc5687.robot.util.OutliersContainer;
+import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -17,10 +18,12 @@ public class DriveLights extends OutliersCommand {
     private Lights _lights;
     private DriveTrain _driveTrain;
     private Intake _intake;
-    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake) {
+    private VisionProcessor _visionProcessor;
+    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor) {
         _lights = lights;
         _driveTrain = driveTrain;
         _intake = intake;
+        _visionProcessor = visionProcessor;
         addRequirements(lights);
     }
     
@@ -42,15 +45,18 @@ public class DriveLights extends OutliersCommand {
         //Not connected to driver station
         if (!DriverStation.isDSAttached()) {
             _lights.switchAnimation(AnimationType.RAINBOW);
+        //Is in optimal shooting range
+        } else if (_driveTrain.isWithinOptimalRange()) {
+            _lights.setColor(Constants.CANdle.GREEN);
+            _lights.switchAnimation(AnimationType.STROBE);
         //Has Note
         } else if (_intake.isTopDetected()) {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STATIC);
-        //Targeting Note
-        /* } else if (_vision.hasTarget()) { //unimplemented
+        //Targeting Note 
+        } else if (_visionProcessor.getDetectedObjects().posesLength() > 0 && _driveTrain.getCurrentCommand() instanceof DriveToNote) {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STROBE);
-        */
         //Intaking
         } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
             _lights.setColor(Constants.CANdle.ORANGE);

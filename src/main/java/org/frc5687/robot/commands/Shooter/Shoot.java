@@ -10,6 +10,7 @@ import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.Intake;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,7 +23,6 @@ public class Shoot extends OutliersCommand{
     private Intake _intake;
     private DriveTrain _driveTrain;
     private RobotState _robotState;
-    private Pose3d _tagPose;
 
     public Shoot(
         Shooter shooter,
@@ -40,24 +40,13 @@ public class Shoot extends OutliersCommand{
     }
 
     @Override
-    public void initialize() {
-        _tagPose = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(
-            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
-        ).get();
-    }
-
-    @Override
     public void execute() {
-        Pose2d robotPose = _robotState.getEstimatedPose();
+        Pair<Double, Double> distanceAndAngle = _driveTrain.getDistanceAndAngleToSpeaker();
 
-        double xDistance = _tagPose.getX() - robotPose.getX();
-        double yDistance = _tagPose.getY() - robotPose.getY();
+        double distance = distanceAndAngle.getFirst();
 
-        double distance = Math.sqrt(
-            Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
-        );
-
-        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
+        double angle = distanceAndAngle.getSecond();
+        
         if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
             _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
             _shooter.setToTarget();

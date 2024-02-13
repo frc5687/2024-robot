@@ -4,6 +4,8 @@ package org.frc5687.robot.subsystems.DriveTrain;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -466,6 +468,34 @@ public class DriveTrain extends OutliersSubsystem {
 
     public boolean isTopSpeed() {
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
+    }
+
+    public Pose3d getSpeakerTagPose() {
+        return AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(
+            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
+        ).get();
+    }
+
+    public Pair<Double, Double> getDistanceAndAngleToSpeaker() {
+        Pose2d robotPose = getOdometryPose();
+        Pose3d tagPose = getSpeakerTagPose();
+
+        double xDistance = tagPose.getX() - robotPose.getX();
+        double yDistance = tagPose.getY() - robotPose.getY();
+
+        double distance = Math.sqrt(
+            Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
+        );
+
+        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
+
+        // using a pair here to return both values without doing excess math in multiple methods
+        return new Pair<Double, Double>(distance, angle);
+    }
+
+    // edit this as needed to reflect the optimal range to shoot from
+    public boolean isWithinOptimalRange() {
+        return getDistanceAndAngleToSpeaker().getFirst() < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_THRESHOLD;
     }
 
     @Override

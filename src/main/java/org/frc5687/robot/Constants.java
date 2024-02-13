@@ -340,6 +340,8 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
+        public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
+
         // regression equation
         public static final double SEXTIC_COEFFECIENT = 3446.87547841668;
         public static final double QUINTIC_COEFFICIENT = -78761.4146267351;
