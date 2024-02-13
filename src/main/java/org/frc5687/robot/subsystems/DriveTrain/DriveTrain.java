@@ -12,12 +12,16 @@ import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static org.frc5687.robot.Constants.DriveTrain.*;
+
+import java.util.Optional;
 
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
@@ -451,7 +455,12 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public boolean isRedAlliance() {
-        return true; // TODO: We need to fix this. We are not always red :)
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == Alliance.Red;
+        }
+        error("Could not check if alliance was red, driver station was not connected");
+        return false;
     }
 
     public Pose2d getHoverGoal() {
