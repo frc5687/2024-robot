@@ -2,7 +2,7 @@ package org.frc5687.robot.commands;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.Lights.AnimationType;
