@@ -77,7 +77,7 @@ public class OI extends OutliersProxy {
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
 
         //_driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new Pose2d(2, 2, new Rotation2d())));
-        _driverGamepad.getBackButton().whileTrue(new DriveToNote(drivetrain, visionProcessor));
+        _povButtonUp.whileTrue(new DriveToNote(drivetrain, visionProcessor));
         
         _povButtonDown.onTrue(new ZeroDeflector(deflector));
     }

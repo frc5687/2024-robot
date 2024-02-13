@@ -47,7 +47,7 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_CURRENT = 60; // Max control requeset current
+            CONFIG.MAX_CURRENT = 80; // Max control requeset current
             CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
 
@@ -156,8 +156,8 @@ public class Constants {
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
-        public static final double SHIFT_UP_SPEED_MPS = 4.0; // Speed to start shift y
-        public static final double SHIFT_DOWN_SPEED_MPS = 2.5; // Speed to start shift y
+        public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
+        public static final double SHIFT_DOWN_SPEED_MPS = 1.5; // Speed to start shift y
 
         public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
 
@@ -200,6 +200,14 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxDriveVelocity = 2; // m/s
             SLOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
+        }
+
+        public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1; // m/s
+            VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
+            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
         /*

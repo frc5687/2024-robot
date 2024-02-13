@@ -21,8 +21,8 @@ public class DriveToNote extends OutliersCommand{
     public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
         _VisionProcessor = visionProcessor;
-        _xController = new ProfiledPIDController(3.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(3.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
+        _xController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
+        _yController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
         _yawController = new ProfiledPIDController(3.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL*4.0));
         addRequirements(_driveTrain);
     }
@@ -41,6 +41,12 @@ public class DriveToNote extends OutliersCommand{
         double rot = 0;
         VisionPoseArray poses = _VisionProcessor.getDetectedObjects();
         VisionPose pose = null;
+        
+        if (!_driveTrain.isLowGear()) {
+            _driveTrain.shiftDownModules();
+        }
+
+        metric("Jetson Note Detected", poses.posesLength() > 0);
         for (int i = 0; i < poses.posesLength(); i++) {
             if (pose == null) {
                 pose = poses.poses(i);
