@@ -60,6 +60,10 @@ public class Deflector extends OutliersSubsystem {
     public void beginDeflectorZero() {
         _talon.setPercentOutput(-0.1);
     }
+
+    public void stopMotor() {
+        _talon.setPercentOutput(0.0);
+    }
     
     public boolean getHall() {
         return _lowerHall.get();

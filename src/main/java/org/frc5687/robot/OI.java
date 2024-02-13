@@ -21,6 +21,7 @@ import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
 
@@ -64,9 +65,10 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector,
-            VisionProcessor visionProcessor) {
+            RobotState robotState
+            ) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
-        _driverRightTrigger.whileTrue(new Shoot(shooter, deflector, intake, drivetrain));
+        _driverRightTrigger.whileTrue(new Shoot(shooter, deflector, intake, drivetrain, robotState));
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
         _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI/2)));

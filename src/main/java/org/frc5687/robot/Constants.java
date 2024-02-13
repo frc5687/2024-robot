@@ -35,6 +35,9 @@ public class Constants {
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 14.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
+        public static final double IDLE_MPS_LIMIT = 0.05; // mps
+        public static final double SHIFT_TIME_SECONDS = 0.1; // 100ms time to shift
+
         // this is the motor config for the swerve motors
         static {
             CONFIG.TIME_OUT = 0.1;
@@ -44,10 +47,11 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_SUPPLY_CURRENT = 40;
+            CONFIG.MAX_CURRENT = 60; // Max control requeset current
+            CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
-            CONFIG.MAX_CURRENT = 120;
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.1;
         }
@@ -60,9 +64,9 @@ public class Constants {
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
-            STEER_CONFIG.MAX_SUPPLY_CURRENT = 70;
+            STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current 
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
-            STEER_CONFIG.MAX_CURRENT = 120;
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             STEER_CONFIG.CURRENT_DEADBAND = 0.1;
@@ -157,6 +161,9 @@ public class Constants {
 
         public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
 
+        public static final double MIN_TRANSLATION_COMMAND = 0.1; // mps
+        public static final double YAW_RATE_THRESHOLD = 0.05; // rad / s
+
         public static final KinematicLimits HIGH_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
@@ -215,7 +222,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.26025390625;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.05737304687;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -258,7 +265,6 @@ public class Constants {
         public static final double LINEAR_VELOCITY_REFERENCE = 0.5;
 
         // Maximum rates of motion
-
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
@@ -275,6 +281,7 @@ public class Constants {
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 4.0;
         public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 8.0;
 
+        // AutoAlignDriveController PID
         public static final double kP = 3.3;
         public static final double kI = 0.0;
         public static final double kD = 0.05;
@@ -301,14 +308,6 @@ public class Constants {
 
         public static final double DRIVING_UP_RAMP_SPEEDS_VX = 2.0;
         public static final double DRIVING_DOWN_RAMP_SPEEDS_VX = 1.0;
-
-        public static final double AUTO_LEVEL_KP = 4.5; // PID controller for leveling
-        public static final double AUTO_LEVEL_KI = 0.0;
-        public static final double AUTO_LEVEL_KD = 1.0;
-
-        public static final double QUICK_LEVEL_KP = 3.0; // PID controller for leveling
-        public static final double QUICK_LEVEL_KI = 0.0;
-        public static final double QUICK_LEVEL_KD = 0.5;
 
         public static final double MIN_PSI = 60.0;
         public static final double MAX_PSI = 100.0;
@@ -439,9 +438,10 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_STATOR_CURRENT = 60;
-            CONFIG.MAX_CURRENT = 60;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_SUPPLY_CURRENT = 30;
+            CONFIG.MAX_STATOR_CURRENT = 30;
+            CONFIG.MAX_CURRENT = 30;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }
