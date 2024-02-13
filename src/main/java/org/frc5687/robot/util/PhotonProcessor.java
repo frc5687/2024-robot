@@ -18,20 +18,20 @@ public class PhotonProcessor {
     //private static final int NUM_CAMERAS = 4;
     private final PhotonCamera _northEastCamera;
     private final PhotonCamera _southEastCamera;
-    // private final PhotonCamera _northWestCamera;
+    private final PhotonCamera _northWestCamera;
     private final PhotonCamera _southWestCamera;
     private final PhotonPoseEstimator _southEastCameraEstimator;
     private final PhotonPoseEstimator _northEastCameraEstimator;
-    // private final PhotonPoseEstimator _northWestCameraEstimator;
+    private final PhotonPoseEstimator _northWestCameraEstimator;
     private final PhotonPoseEstimator _southWestCameraEstimator;
 
     //private final ExecutorService _executorService;
     public PhotonProcessor(AprilTagFieldLayout layout) {
         _southEastCamera = new PhotonCamera("South_East_Camera");
         _northEastCamera = new PhotonCamera("North_East_Camera"); 
-        // _northWestCamera = new PhotonCamera("North_West_Camera");
+        _northWestCamera = new PhotonCamera("North_West_Camera");
         _southWestCamera = new PhotonCamera("South_West_Camera");
-        //_executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
+        // _executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
 
         // setPipeline(Pipeline.FAR);
         // z taken from floor
@@ -73,12 +73,12 @@ public class PhotonProcessor {
                 _northEastCamera,
                 robotToNorthEastCam);
 
-        // _northWestCameraEstimator =
-        //     new PhotonPoseEstimator(
-        //         layout,
-        //         PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-        //         _northWestCamera,
-        //         robotToNorthWestCam);
+        _northWestCameraEstimator =
+            new PhotonPoseEstimator(
+                layout,
+                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                _northWestCamera,
+                robotToNorthWestCam);
 
         _southWestCameraEstimator =
             new PhotonPoseEstimator(
@@ -91,8 +91,8 @@ public class PhotonProcessor {
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _northEastCameraEstimator.setMultiTagFallbackStrategy(
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        // _northWestCameraEstimator.setMultiTagFallbackStrategy(
-                // PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+        _northWestCameraEstimator.setMultiTagFallbackStrategy(
+                PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _southWestCameraEstimator.setMultiTagFallbackStrategy(
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
@@ -100,7 +100,7 @@ public class PhotonProcessor {
     public void setPipeline(Pipeline pipeline) {
         _southEastCamera.setPipelineIndex(pipeline.getValue());
         _northEastCamera.setPipelineIndex(pipeline.getValue());
-        // _northWestCamera.setPipelineIndex(pipeline.getValue());
+        _northWestCamera.setPipelineIndex(pipeline.getValue());
         _southWestCamera.setPipelineIndex(pipeline.getValue());
     }
     
@@ -112,9 +112,9 @@ public class PhotonProcessor {
         return _northEastCamera.getLatestResult().getLatencyMillis();
     }
         
-    // public double getNorthWestCameraLatency() {
-    //     return _northWestCamera.getLatestResult().getLatencyMillis();
-    // }
+    public double getNorthWestCameraLatency() {
+        return _northWestCamera.getLatestResult().getLatencyMillis();
+    }
 
     public double getSouthWestCameraLatency() {
         return _southWestCamera.getLatestResult().getLatencyMillis();
@@ -128,9 +128,9 @@ public class PhotonProcessor {
         return _northEastCamera.getLatestResult().hasTargets();
     }
 
-    // public boolean hasNorthWestCameraTargets() {
-    //     return _northWestCamera.getLatestResult().hasTargets();
-    // }
+    public boolean hasNorthWestCameraTargets() {
+        return _northWestCamera.getLatestResult().hasTargets();
+    }
 
     public boolean hasSouthWestCameraTargets() {
         return _southWestCamera.getLatestResult().hasTargets();
@@ -139,7 +139,7 @@ public class PhotonProcessor {
     public void setLowestAmbiguity() {
         _southEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _northEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        // _northWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+        _northWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _southWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
 
@@ -155,11 +155,11 @@ public class PhotonProcessor {
         return _northEastCameraEstimator.update();
     }
 
-    // public Optional<EstimatedRobotPose> getNorthWestCameraEstimatedGlobalPose(
-    //         Pose2d prevEstimatedPose) {
-    //     _northWestCameraEstimator.setReferencePose(prevEstimatedPose);
-    //     return _northWestCameraEstimator.update();
-    // }
+    public Optional<EstimatedRobotPose> getNorthWestCameraEstimatedGlobalPose(
+            Pose2d prevEstimatedPose) {
+        _northWestCameraEstimator.setReferencePose(prevEstimatedPose);
+        return _northWestCameraEstimator.update();
+    }
 
     public Optional<EstimatedRobotPose> getSouthWestCameraEstimatedGlobalPose(
             Pose2d prevEstimatedPose) {
@@ -179,11 +179,11 @@ public class PhotonProcessor {
                 () -> getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose));
     }
 
-    // public CompletableFuture<Optional<EstimatedRobotPose>> getNorthWestCameraEstimatedGlobalPoseAsync(
-    //             Pose2d prevEstimatedPose) {
-    //     return CompletableFuture.supplyAsync(
-    //             () -> getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose));
-    // }
+    public CompletableFuture<Optional<EstimatedRobotPose>> getNorthWestCameraEstimatedGlobalPoseAsync(
+                Pose2d prevEstimatedPose) {
+        return CompletableFuture.supplyAsync(
+                () -> getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose));
+    }
 
     public CompletableFuture<Optional<EstimatedRobotPose>> getSouthWestCameraEstimatedGlobalPoseAsync(
             Pose2d prevEstimatedPose) {

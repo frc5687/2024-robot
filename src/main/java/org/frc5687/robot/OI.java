@@ -65,6 +65,7 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector,
+            VisionProcessor visionProcessor,
             RobotState robotState
             ) {
         _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));

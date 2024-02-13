@@ -3,7 +3,7 @@ package org.frc5687.robot.commands;
 import org.frc5687.Messages.VisionPose;
 import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -33,11 +33,10 @@ public class DriveToNote extends OutliersCommand{
 
     @Override
     public void execute() {
-        // TODO Auto-generated method stub
         double vx = 0;
         double vy = 0;
         VisionPoseArray poses = _VisionProcessor.getDetectedObjects();
-        VisionPose pose  = null;
+        VisionPose pose = null;
         for (int i = 0; i < poses.posesLength(); i++) {
             if (pose == null) {
                 pose = poses.poses(i);
