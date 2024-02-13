@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Swerve Module Code Created in the shadow of
@@ -175,7 +176,7 @@ public class SwerveModule {
             }
         }
 
-        // DriverStation.reportError(currentEncoderRotations, false);
+        // DriverStation.reportError(String.valueOf(currentEncoderRotations), false);
         double distanceMeters = currentEncoderRotations / (_rotPerMet * getGearRatio());
         double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
                 _steeringVelocityRotationsPerSec);

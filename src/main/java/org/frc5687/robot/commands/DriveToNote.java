@@ -2,33 +2,36 @@ package org.frc5687.robot.commands;
 
 import org.frc5687.Messages.VisionPose;
 import org.frc5687.Messages.VisionPoseArray;
+import org.frc5687.robot.Constants;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class DriveToNote extends OutliersCommand{
     private final DriveTrain _driveTrain;
-    private final PIDController _xController;
-    private final PIDController _yController;
-    private final PIDController _yawController;
+    private final ProfiledPIDController _xController;
+    private final ProfiledPIDController _yController;
+    private final ProfiledPIDController _yawController;
     private final VisionProcessor _VisionProcessor;
 
     public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
         _VisionProcessor = visionProcessor;
-        _xController = new PIDController(1.0, 0, 0);
-        _yController = new PIDController(1.0, 0, 0);
-        _yawController = new PIDController(1.0, 0, 0);
+        _xController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
+        _yController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
+        _yawController = new ProfiledPIDController(3.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL*4.0));
         addRequirements(_driveTrain);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        _xController.setSetpoint(0);
-        _yController.setSetpoint(0);
+        _xController.setGoal(0.0);
+        _yController.setGoal(0.0);
     }
 
     @Override
@@ -38,6 +41,12 @@ public class DriveToNote extends OutliersCommand{
         double rot = 0;
         VisionPoseArray poses = _VisionProcessor.getDetectedObjects();
         VisionPose pose = null;
+        
+        if (!_driveTrain.isLowGear()) {
+            _driveTrain.shiftDownModules();
+        }
+
+        metric("Jetson Note Detected", poses.posesLength() > 0);
         for (int i = 0; i < poses.posesLength(); i++) {
             if (pose == null) {
                 pose = poses.poses(i);

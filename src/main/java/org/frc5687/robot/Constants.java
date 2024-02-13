@@ -32,7 +32,7 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = 0.0508;
+        public static final double WHEEL_RADIUS = 0.04445; // 3.5in diameter
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
@@ -49,7 +49,7 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_CURRENT = 60; // Max control requeset current
+            CONFIG.MAX_CURRENT = 80; // Max control requeset current
             CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
 
@@ -158,8 +158,8 @@ public class Constants {
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
-        public static final double SHIFT_UP_SPEED_MPS = 4.0; // Speed to start shift y
-        public static final double SHIFT_DOWN_SPEED_MPS = 2.5; // Speed to start shift y
+        public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
+        public static final double SHIFT_DOWN_SPEED_MPS = 1.5; // Speed to start shift y
 
         public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
 
@@ -202,6 +202,14 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxDriveVelocity = 2; // m/s
             SLOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
+        }
+
+        public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1; // m/s
+            VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
+            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
         /*
@@ -483,7 +491,7 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 15;
+            CLOSED_LOOP_CONFIG.kP = 0; // FIXME: 15
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
