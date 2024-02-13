@@ -47,10 +47,10 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_CURRENT = 60; // Max control requeset current
-            CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
+            CONFIG.MAX_CURRENT = 60; // Max control request current
+            CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these don't do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
-
+ 
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.1;

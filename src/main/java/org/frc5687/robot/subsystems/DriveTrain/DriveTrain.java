@@ -211,6 +211,9 @@ public class DriveTrain extends OutliersSubsystem {
         _yawDriveController = new YawDriveController();
         _poseDriveController = new AutoPoseDriveController();
 
+        // this `false` value doesn't mean that the heading controller is disabled.
+        // as of 02/13/24, it gets initialized to true in the Drive command
+        // this default value can and will be overridden by commands - xavier bradford
         _useHeadingController = false;
 
         _field = new Field2d();
