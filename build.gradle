@@ -3,6 +3,10 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2024.2.1"
 }
 
+repositories {
+    mavenCentral()
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -50,6 +54,9 @@ def includeDesktopSupport = false
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
+    implementation 'org.zeromq:jeromq:0.5.3'
+    implementation group: 'com.google.flatbuffers', name: 'flatbuffers-java', version: '23.5.26'
+
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
@@ -69,6 +76,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'gov.nist.math:jama:1.0.3'
 }
 
 test {

@@ -1,6 +1,5 @@
 package org.frc5687.robot.commands.Shooter;
 
-import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
@@ -16,7 +15,7 @@ public class IdleShooter extends OutliersCommand{
         _shooter.setIdle();
     }
 
-    public boolean isFinished(boolean interrupted) {
+    public boolean isFinished() {
         return false;
     }
 }

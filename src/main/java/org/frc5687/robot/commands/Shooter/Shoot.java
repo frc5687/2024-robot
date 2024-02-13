@@ -1,31 +1,86 @@
 package org.frc5687.robot.commands.Shooter;
 
+import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.subsystems.Deflector;
+import org.frc5687.robot.subsystems.Intake;
+
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Shoot extends OutliersCommand{
     private Shooter _shooter;
-
+    private Deflector _deflector;
     private Intake _intake;
+    private DriveTrain _driveTrain;
+    private RobotState _robotState;
+    private Pose3d _tagPose;
 
-    public Shoot(Shooter shooter,
-    Intake intake) {
+    public Shoot(
+        Shooter shooter,
+        Deflector deflector,
+        Intake intake,
+        DriveTrain driveTrain,
+        RobotState robotState
+    ) {
         _shooter = shooter;
+        _deflector = deflector;
         _intake = intake;
-        addRequirements(_shooter, _intake);
+        _driveTrain = driveTrain;
+        _robotState = robotState;
+        addRequirements(_shooter, _intake, _deflector);
     }
 
+    @Override
+    public void initialize() {
+        _tagPose = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(
+            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
+        ).get();
+    }
+
+    @Override
     public void execute() {
-        // _shooter.setTargetRPM(Constants.Shooter.SHOOT_RPM);
-        _shooter.setToTarget();
-        if (_shooter.isAtTargetRPM()) { 
+        Pose2d robotPose = _robotState.getEstimatedPose();
+
+        double xDistance = _tagPose.getX() - robotPose.getX();
+        double yDistance = _tagPose.getY() - robotPose.getY();
+
+        double distance = Math.sqrt(
+            Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
+        );
+
+        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
+        if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
+            _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
+            _shooter.setToTarget();
+            _deflector.setTargetAngle(_deflector.calculateAngleFromDistance(distance));
+        } else {
+            _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
+            _shooter.setToTarget();
+            _deflector.setTargetAngle(1.5);
+        }
+        _driveTrain.setSnapHeading(new Rotation2d(angle));
+
+        if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle() && _driveTrain.getHeading().getRadians() - angle < Constants.DriveTrain.SNAP_TOLERANCE) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
     }
 
-    public boolean isFinished(boolean interrupted) {
+    @Override
+    public boolean isFinished() {
         return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
     }
 }
