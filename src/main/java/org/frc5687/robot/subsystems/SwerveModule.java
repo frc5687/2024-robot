@@ -175,6 +175,7 @@ public class SwerveModule {
             }
         }
 
+        // DriverStation.reportError(currentEncoderRotations, false);
         double distanceMeters = currentEncoderRotations / (_rotPerMet * getGearRatio());
         double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
                 _steeringVelocityRotationsPerSec);

@@ -67,7 +67,7 @@ public class Shoot extends OutliersCommand{
             _shooter.setToTarget();
             _deflector.setTargetAngle(1.5);
         }
-        _driveTrain.setHeadingControllerGoal(new Rotation2d(angle));
+        _driveTrain.setSnapHeading(new Rotation2d(angle));
 
         if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle() && _driveTrain.getHeading().getRadians() - angle < Constants.DriveTrain.SNAP_TOLERANCE) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
@@ -81,5 +81,6 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
+        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
     }
 }

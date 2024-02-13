@@ -19,23 +19,26 @@ public class Drive extends OutliersCommand {
     private final OI _oi;
     private boolean _isOverride = false;
     private int segmentationArray[] = new int[360 / 5];
+    private boolean _lockHeading;
+
 
     public Drive(DriveTrain driveTrain, OI oi) {
         _driveTrain = driveTrain;
-        // _endEffector = endEffector;
+
         _oi = oi;
 
         for (int i = 0; i < segmentationArray.length; i++) {
             double angle = 360 / segmentationArray.length;
             segmentationArray[i] = (int) angle * i;
         }
+        _lockHeading = false;
         addRequirements(_driveTrain);
     }
 
     @Override
     public void initialize() {
         _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
-        _driveTrain.setEnableHeadingController(true);
+
     }
 
     @Override
@@ -43,6 +46,8 @@ public class Drive extends OutliersCommand {
         // Constantly polling OI can be expensive, make these commands potentially?
         if (_oi.zeroIMU()) {
             _driveTrain.zeroGyroscope();
+            _driveTrain.setHeadingControllerState(SwerveHeadingController.HeadingState.OFF);
+            _lockHeading = false;
         }
 
         if (_oi.shiftUp()) {
@@ -66,12 +71,25 @@ public class Drive extends OutliersCommand {
 
         rot = Math.signum(rot) * rot * rot;
 
+        if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
+            if (!_lockHeading) {
+                _driveTrain.temporaryDisabledHeadingController();
+            }
+            _lockHeading = true;
+        } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
+            _driveTrain.disableHeadingController();
+            _lockHeading = false;
+        }
+
+        double controllerPower = _driveTrain.getRotationCorrection();
+
+
         vx = vec.x() * max_mps;
         vy = vec.y() * max_mps;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
         _driveTrain.setVelocity(
             ChassisSpeeds.fromFieldRelativeSpeeds(
-                vx, vy, rot,
+                vx, vy, rot + controllerPower,
                 _driveTrain.getHeading()
             )
         );

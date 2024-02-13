@@ -31,8 +31,8 @@ public class Constants {
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
         public static final double WHEEL_RADIUS = 0.0508;
-        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 14.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
+        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
+        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.05; // mps
@@ -395,7 +395,7 @@ public class Constants {
             SHOOTER_CONTROLLER_CONFIG.kP = 0.45;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.135;
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.125;
 
             // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
             SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
@@ -479,14 +479,14 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 7;
+            CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
-            CLOSED_LOOP_CONFIG.JERK = 10;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
+            CLOSED_LOOP_CONFIG.JERK = 5000;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }

@@ -23,6 +23,10 @@ import static org.frc5687.robot.Constants.DriveTrain.*;
 
 import java.util.Optional;
 
+import java.util.Optional;
+
+import org.frc5687.lib.control.SwerveHeadingController;
+import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -100,6 +104,8 @@ public class DriveTrain extends OutliersSubsystem {
     private final SwerveDriveKinematics _kinematics;
     private final SwerveDriveOdometry _odometry;
 
+    private final SwerveHeadingController _headingController;
+
     // controllers [Heading, Pose, Trajectory]
     private ControlState _controlState;
 
@@ -117,7 +123,7 @@ public class DriveTrain extends OutliersSubsystem {
     private boolean _isLowGear;
 
     private final SystemIO _systemIO;
-    private YawDriveController _yawDriveController;
+    // private YawDriveController _yawDriveController;
     private AutoPoseDriveController _poseDriveController;
 
     private boolean _useHeadingController;
@@ -212,7 +218,8 @@ public class DriveTrain extends OutliersSubsystem {
                         _modules[NORTH_EAST_IDX].getModuleLocation()
                 });
 
-        _yawDriveController = new YawDriveController();
+        _headingController = new SwerveHeadingController(Constants.UPDATE_PERIOD);
+
         _poseDriveController = new AutoPoseDriveController();
 
         _useHeadingController = false;
@@ -246,25 +253,52 @@ public class DriveTrain extends OutliersSubsystem {
         readIMU();
         readModules();
     }
-    
-    public void setEnableHeadingController(boolean enabled) {
-        _useHeadingController = enabled;
+
+    /* Heading Controller Start */
+    public HeadingState getHeadingControllerState() {
+        return _headingController.getHeadingState();
     }
 
-    public void setHeadingControllerGoal(Rotation2d goal) {
-        _yawDriveController.setTargetHeading(goal);
+    public void setHeadingControllerState(HeadingState state) {
+        _headingController.setState(state);
     }
 
-    public void setHeadingMaintainGoal(Rotation2d goal) {
-        _yawDriveController.maintainCurrentHeading(goal);
+    public double getRotationCorrection() {
+        return _headingController.getRotationCorrection(getHeading());
     }
 
-    private void updateHeadingController() {
-        _systemIO.desiredChassisSpeeds = _yawDriveController.update(
-            _systemIO.desiredChassisSpeeds,
-            getHeading()
-        );
+    public void temporaryDisabledHeadingController() {
+        _headingController.temporaryDisable();
     }
+
+    public void disableHeadingController() {
+        _headingController.disable();
+    }
+
+    public void initializeHeadingController() {
+        _headingController.setMaintainHeading(getHeading());
+    }
+
+    public void incrementHeadingControllerAngle() {
+        Rotation2d heading = getHeading();
+        _headingController.setMaintainHeading(
+                Rotation2d.fromDegrees(heading.getDegrees() + Constants.DriveTrain.BUMP_DEGREES));
+    }
+
+    public void decrementHeadingControllerAngle() {
+        Rotation2d heading = getHeading();
+        _headingController.setMaintainHeading(
+                Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
+    }
+
+    public void setSnapHeading(Rotation2d heading) {
+        _headingController.setSnapHeading(heading);
+    }
+
+    public void setMaintainHeading(Rotation2d heading) {
+        _headingController.setMaintainHeading(heading);
+    }
+    /* Heading Controller End */
 
     private void updateAutoAlignController() {
         _systemIO.desiredChassisSpeeds = _poseDriveController.updateAutoAlign(_hoverGoal);
@@ -282,10 +316,6 @@ public class DriveTrain extends OutliersSubsystem {
             _hasShiftInit = true;
         }
 
-        if (!_useHeadingController) {
-            _yawDriveController.reset(getHeading());
-        }
-
         readSignals();
 
         /* Update odometry */
@@ -295,7 +325,6 @@ public class DriveTrain extends OutliersSubsystem {
             case NEUTRAL:
                 break;  
             case MANUAL:
-                updateHeadingController();
                 break;
             case POSITION: 
                 updateAutoAlignController();

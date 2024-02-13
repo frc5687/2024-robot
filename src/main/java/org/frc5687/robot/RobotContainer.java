@@ -2,8 +2,6 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
-import org.frc5687.Messages.VisionPose;
-import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Deflector.IdleDeflector;
@@ -16,9 +14,7 @@ import org.frc5687.robot.util.*;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
