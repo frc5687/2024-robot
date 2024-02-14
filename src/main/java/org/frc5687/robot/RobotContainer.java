@@ -38,7 +38,7 @@ public class RobotContainer extends OutliersContainer {
 
     private PhotonProcessor _photonProcessor;
 
-    private RobotState _robotState;
+    private RobotState _robotState = RobotState.getInstance();
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -70,7 +70,9 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-        _robotState = new RobotState(_driveTrain, _photonProcessor);
+
+        // Grab instance such that we can initalize with drivetrain and processor
+        _robotState.initializeRobotState(_driveTrain, _photonProcessor);
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);

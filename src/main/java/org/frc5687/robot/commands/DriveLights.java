@@ -7,7 +7,6 @@ import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.Lights.AnimationType;
-import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.wpilibj.DriverStation;

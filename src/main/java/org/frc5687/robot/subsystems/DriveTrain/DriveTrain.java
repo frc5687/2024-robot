@@ -20,10 +20,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import static org.frc5687.robot.Constants.DriveTrain.*;
-
-import java.util.Optional;
 
 import java.util.Optional;
 
@@ -34,6 +31,7 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.SwerveModule;
 import org.frc5687.robot.Constants.FieldConstants;
@@ -127,6 +125,7 @@ public class DriveTrain extends OutliersSubsystem {
     private final SystemIO _systemIO;
     // private YawDriveController _yawDriveController;
     private AutoPoseDriveController _poseDriveController;
+    private RobotState _robotState = RobotState.getInstance();
 
     private boolean _useHeadingController;
 
@@ -299,11 +298,11 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Heading Controller End */
 
-    private void updateAutoAlignController() {
-        _systemIO.desiredChassisSpeeds = _poseDriveController.updateAutoAlign(_hoverGoal);
+    private void updateAutoPoseController() {
+        _systemIO.desiredChassisSpeeds = _poseDriveController.updateAutoAlign(_robotState.getEstimatedPose());
     }
 
-    public boolean isAutoAlignComplete() {
+    public boolean isAutoPoseComplete() {
         return _poseDriveController.isAutoAlignComplete();
     }
 
@@ -325,8 +324,8 @@ public class DriveTrain extends OutliersSubsystem {
                 break;
             case MANUAL:
                 break;
-            case POSITION:
-                updateAutoAlignController();
+            case POSITION: 
+                updateAutoPoseController();
                 break;
             case ROTATION:
                 break;
@@ -490,6 +489,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setHoverGoal(Pose2d pose) {
         _hoverGoal = pose;
+        _poseDriveController.setTargetPoint(_hoverGoal);
     }
 
     public ChassisSpeeds getMeasuredChassisSpeeds() {

@@ -24,18 +24,25 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
+
 public class RobotState {
     private DriveTrain _driveTrain;
     private PhotonProcessor _photonProcessor;
-
     private SwerveDrivePoseEstimator _poseEstimator;
 
     private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private static RobotState _instance;
 
-    public RobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor) {
+    public static RobotState getInstance() {
+        if (_instance == null) _instance = new RobotState();
+        return _instance;
+    }
+
+    public RobotState() {}
+
+    public void initializeRobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor) {
         _driveTrain = driveTrain;
         _photonProcessor = photonProcessor;
-
         initPoseEstimator();
     }
 
