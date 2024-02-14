@@ -32,7 +32,8 @@ public class Constants {
 
         public static final double WHEEL_RADIUS = 0.04445; // 3.5in diameter
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
+        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
+                * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.05; // mps
@@ -65,7 +66,8 @@ public class Constants {
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
             STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
-            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current 
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify
+                                                  // max_current
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
@@ -146,12 +148,10 @@ public class Constants {
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
 
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
-        public static final double MAX_LOW_GEAR_MPS = (
-            Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
-            / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
-        public static final double MAX_HIGH_GEAR_MPS = (
-            Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
-            / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+                / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+                / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
@@ -243,7 +243,7 @@ public class Constants {
             NORTH_EAST_CONFIG.encoderInverted = false;
             NORTH_EAST_CONFIG.encoderOffset = 0.256591796875;
         }
-        
+
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
 
         static {
@@ -362,24 +362,24 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            {2.87020574, 2600},
-            {3.17500635, 2600},
-            {3.47980696, 2350},
-            {3.784607569, 1900},
-            {4.089408179, 1750},
-            {4.394208788, 1700},
-            {4.699009398, 1690}
+                { 2.87020574, 2600 },
+                { 3.17500635, 2600 },
+                { 3.47980696, 2350 },
+                { 3.784607569, 1900 },
+                { 4.089408179, 1750 },
+                { 4.394208788, 1700 },
+                { 4.699009398, 1690 }
         };
 
         public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
         public static final double MAX_DEFLECTOR_DISTANCE = 2.6;
         public static double[][] kDeflectorValues = {
-            {1.041402083, 2.45}, // all at 2600 rpm
-            {1.346202692, 2.4},
-            {1.651003302, 2.35},
-            {1.955803912, 2.25},
-            {2.260604521, 2.15},
-            {2.565405131, 2.05}
+                { 1.041402083, 2.45 }, // all at 2600 rpm
+                { 1.346202692, 2.4 },
+                { 1.651003302, 2.35 },
+                { 1.955803912, 2.25 },
+                { 2.260604521, 2.15 },
+                { 2.565405131, 2.05 }
         };
 
         static {
@@ -394,7 +394,6 @@ public class Constants {
             kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
             kRPMRegression = new PolynomialRegression(kRPMValues, 1);
         }
-
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 

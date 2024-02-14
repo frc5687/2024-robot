@@ -52,7 +52,6 @@ public class RobotContainer extends OutliersContainer {
 
         try {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-            // new PhotonProcessor(FieldConstants.aprilTags);
         } catch (Exception e) {
             e.getMessage();
         }
@@ -69,12 +68,11 @@ public class RobotContainer extends OutliersContainer {
         _intake = new Intake(this);
         _deflector = new Deflector(this);
 
-
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
-        
+
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor, _robotState);
 
     }
