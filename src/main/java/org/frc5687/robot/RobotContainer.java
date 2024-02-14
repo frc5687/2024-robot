@@ -3,19 +3,21 @@
 package org.frc5687.robot;
 
 import org.frc5687.robot.commands.Drive;
+import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.*;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -23,15 +25,20 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
     private AutoChooser _autoChooser;
-    // private VisionProcessor _visionProcessor;
+    private VisionProcessor _visionProcessor;
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
     private Deflector _deflector;
-    // private Elevator _elevator;
+    private Lights _lights;
+
+    private Field2d _field;
+
     private PhotonProcessor _photonProcessor;
+
+    private RobotState _robotState;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -44,9 +51,12 @@ public class RobotContainer extends OutliersContainer {
         _oi = new OI();
         _autoChooser = new AutoChooser();
         // create the vision processor
-        // _visionProcessor = new VisionProcessor();
+        _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
-        // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
+        _visionProcessor.createSubscriber("Objects", "tcp://10.56.87.20:5556");
+        _visionProcessor.start();
+
+        _field = new Field2d();
 
         try {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
@@ -60,27 +70,32 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor,*/ _photonProcessor, _imu);
+        _driveTrain = new DriveTrain(this, _imu);
+        _robotState = new RobotState(_driveTrain, _photonProcessor);
+
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
+        _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
         
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector);
-        startPeriodic();
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor, _robotState);
 
     }
 
     public void periodic() {
+        _robotState.periodic();
+        _field.setRobotPose(_robotState.getEstimatedPose());
+        SmartDashboard.putData(_field);
     }
 
     public void disabledPeriodic() {
         _autoChooser.updateChooser();
-
     }
 
     @Override

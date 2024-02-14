@@ -29,8 +29,7 @@ import org.frc5687.robot.util.*;
  * call enableMetrics() from code (eg at the start of an auto command) or set
  * Metrics/[SubSystemName] to true in the SmartDashboard
  */
-public abstract class OutliersSubsystem extends SubsystemBase
-        implements ILoggingSource, OutlierPeriodic {
+public abstract class OutliersSubsystem extends SubsystemBase implements ILoggingSource {
     private MetricTracker _metricTracker;
 
     public OutliersSubsystem(OutliersContainer container) {
@@ -95,14 +94,4 @@ public abstract class OutliersSubsystem extends SubsystemBase
             _metricTracker.disable();
         }
     }
-
-    public void readInputs() {}
-
-    @Override
-    public void controlPeriodic(double timestamp) {
-        readInputs();
-    }
-
-    @Override
-    public void dataPeriodic(double timestamp) {}
 }

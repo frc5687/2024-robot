@@ -31,7 +31,7 @@ public class PhotonProcessor {
         _northEastCamera = new PhotonCamera("North_East_Camera"); 
         _northWestCamera = new PhotonCamera("North_West_Camera");
         _southWestCamera = new PhotonCamera("South_West_Camera");
-        //_executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
+        // _executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
 
         // setPipeline(Pipeline.FAR);
         // z taken from floor

@@ -1,9 +1,8 @@
 package org.frc5687.robot.commands;
 
-import org.frc5687.robot.Constants;
-import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain.ControlState;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class DriveToPose extends OutliersCommand{
@@ -13,29 +12,28 @@ public class DriveToPose extends OutliersCommand{
     public DriveToPose(DriveTrain driveTrain, Pose2d goalPose2d){
         _driveTrain = driveTrain;
         _goalPose2d = goalPose2d;
-
     }
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
+        _driveTrain.setControlState(ControlState.POSITION);
+        _driveTrain.setHoverGoal(_goalPose2d);
         super.initialize();
     }
 
     @Override
     public void execute() {
-        // TODO Auto-generated method stub
-        _driveTrain.setVelocityPose(_goalPose2d);
+
     }
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(_driveTrain.getEstimatedPose().getX() - _goalPose2d.getX()) < Constants.DriveTrain.POSITION_TOLERANCE) && 
-        (Math.abs(_driveTrain.getEstimatedPose().getY() - _goalPose2d.getY()) < Constants.DriveTrain.POSITION_TOLERANCE); 
+        return _driveTrain.isAutoAlignComplete();
     }
 
     @Override
     public void end(boolean interrupted) {
+        _driveTrain.setControlState(ControlState.MANUAL);
         super.end(interrupted);
     }
 
