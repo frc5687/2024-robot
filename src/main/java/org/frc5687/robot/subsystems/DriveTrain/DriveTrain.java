@@ -36,6 +36,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.SwerveModule;
+import org.frc5687.robot.Constants.FieldConstants;
 import org.frc5687.robot.util.*;
 
 public class DriveTrain extends OutliersSubsystem {
@@ -209,7 +210,6 @@ public class DriveTrain extends OutliersSubsystem {
                 },
                 new Pose2d(0, 0, getHeading()));
 
-
         _swerveSetpointGenerator = new SwerveSetpointGenerator(
                 _kinematics,
                 new Translation2d[] {
@@ -236,7 +236,6 @@ public class DriveTrain extends OutliersSubsystem {
 
         // logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
     }
-
 
     protected void configureSignalFrequency(double frequency) {
         for (var signal : _moduleSignals) {
@@ -323,13 +322,13 @@ public class DriveTrain extends OutliersSubsystem {
 
         switch (_controlState) {
             case NEUTRAL:
-                break;  
+                break;
             case MANUAL:
                 break;
-            case POSITION: 
+            case POSITION:
                 updateAutoAlignController();
                 break;
-            case ROTATION: 
+            case ROTATION:
                 break;
             case TRAJECTORY:
                 break;
@@ -430,7 +429,6 @@ public class DriveTrain extends OutliersSubsystem {
         return _kinematics;
     }
 
-
     /* Kinematic limit for the Setpoint Generator */
     public void setKinematicLimits(KinematicLimits limits) {
         if (limits != _kinematicLimits) {
@@ -441,7 +439,7 @@ public class DriveTrain extends OutliersSubsystem {
     public KinematicLimits getKinematicLimits() {
         return _kinematicLimits;
     }
-    /* Kinematics End  */
+    /* Kinematics End */
 
     /* Odometry And Pose Estimator Start */
     public void updateOdometry() {
@@ -563,7 +561,10 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftLockout = false;
             }
         }
+
     }
+    /* Shift stuff end */
+    
 
     public double getYaw() {
         return _systemIO.heading.getRadians();

@@ -60,7 +60,6 @@ public class RobotContainer extends OutliersContainer {
 
         try {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-            // new PhotonProcessor(FieldConstants.aprilTags);
         } catch (Exception e) {
             e.getMessage();
         }

@@ -5,11 +5,11 @@ import org.frc5687.robot.subsystems.DriveTrain.DriveTrain.ControlState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
-public class DriveToPose extends OutliersCommand{
+public class DriveToPose extends OutliersCommand {
     private final DriveTrain _driveTrain;
     private final Pose2d _goalPose2d;
 
-    public DriveToPose(DriveTrain driveTrain, Pose2d goalPose2d){
+    public DriveToPose(DriveTrain driveTrain, Pose2d goalPose2d) {
         _driveTrain = driveTrain;
         _goalPose2d = goalPose2d;
     }

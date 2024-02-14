@@ -49,7 +49,7 @@ public class IndexNote extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-       return _intake.isTopDetected();
+       return _state == IndexState.BOTTOM_SENSOR_AGAIN;
     }
 
     @Override
