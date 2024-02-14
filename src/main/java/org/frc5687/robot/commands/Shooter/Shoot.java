@@ -2,13 +2,15 @@ package org.frc5687.robot.commands.Shooter;
 
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.Intake;
-import org.frc5687.robot.subsystems.DriveTrain;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,40 +22,31 @@ public class Shoot extends OutliersCommand{
     private Deflector _deflector;
     private Intake _intake;
     private DriveTrain _driveTrain;
-    private Pose3d _tagPose;
+    private RobotState _robotState;
 
     public Shoot(
         Shooter shooter,
         Deflector deflector,
         Intake intake,
-        DriveTrain driveTrain
+        DriveTrain driveTrain,
+        RobotState robotState
     ) {
         _shooter = shooter;
         _deflector = deflector;
         _intake = intake;
         _driveTrain = driveTrain;
+        _robotState = robotState;
         addRequirements(_shooter, _intake, _deflector);
     }
 
     @Override
-    public void initialize() {
-        _tagPose = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(
-            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
-        ).get();
-    }
-
-    @Override
     public void execute() {
-        Pose2d robotPose = _driveTrain.getEstimatedPose();
+        Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
 
-        double xDistance = _tagPose.getX() - robotPose.getX();
-        double yDistance = _tagPose.getY() - robotPose.getY();
+        double distance = distanceAndAngle.getFirst();
 
-        double distance = Math.sqrt(
-            Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
-        );
+        double angle = distanceAndAngle.getSecond();
 
-        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
         if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
             _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
             _shooter.setToTarget();
@@ -61,7 +54,7 @@ public class Shoot extends OutliersCommand{
         } else {
             _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
             _shooter.setToTarget();
-            _deflector.setTargetAngle(1.5);
+            _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE);
         }
         _driveTrain.setSnapHeading(new Rotation2d(angle));
 
@@ -77,6 +70,6 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
-        _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
+        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
     }
 }

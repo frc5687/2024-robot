@@ -2,11 +2,9 @@ package org.frc5687.robot.subsystems;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
-import org.frc5687.robot.util.PhotonProcessor;
 
 import com.ctre.phoenix6.controls.Follower;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
