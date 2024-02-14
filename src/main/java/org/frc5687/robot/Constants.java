@@ -4,6 +4,8 @@ package org.frc5687.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -382,6 +384,15 @@ public class Constants {
                 { 2.565405131, 2.05 }
         };
 
+        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
+        
+        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
+
+        public static final double AMP_SHOT_SPEED = 810;
+
+        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
+
+
         static {
             for (double[] pair : kRPMValues) {
                 kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
@@ -463,7 +474,7 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.01;
         public static final double LOWER_HALL_ANGLE = 0.0;
         public static final double UPPER_HALL_ANGLE = 2.5;
-        public static final double IDLE_ANGLE = 1.0;
+        public static final double IDLE_ANGLE = 0.5;
 
         // regression equation
         public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
@@ -486,7 +497,7 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 0; // FIXME: 15
+            CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
@@ -497,5 +508,10 @@ public class Constants {
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
+    }
+
+    public static class FieldConstants {
+        public static final double FIELD_LENGTH = 16.54175;
+        public static final double FIELD_WIDTH = 8.0137;
     }
 }

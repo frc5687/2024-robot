@@ -350,14 +350,6 @@ public class DriveTrain extends OutliersSubsystem {
         _systemIO.desiredChassisSpeeds = chassisSpeeds;
     }
 
-    public void setVelocityPose(Pose2d pose) {
-        ChassisSpeeds speeds = _poseController.calculate(
-                _systemIO.estimatedPose, pose, 0.0, _systemIO.heading);
-        _headingController.setMaintainHeading(pose.getRotation());
-        speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
-        _systemIO.desiredChassisSpeeds = speeds;
-    }
-
     public SwerveSetpoint getSetpoint() {
         return _systemIO.setpoint;
     }
@@ -578,58 +570,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     }
     /* Shift stuff end */
-
-    public Pose2d getEstimatedPose() {
-        return _systemIO.estimatedPose;
-    }
-
-    public boolean isValidMeasurement(Pose3d measurement) {
-        final double heightThreshold = Units.inchesToMeters(30);
-        final double fieldBuffer = Units.inchesToMeters(6); // add a 6 inch buffer to the field boundaries
-
-        boolean isTargetWithinHeight = measurement.getZ() < (heightThreshold + heightThreshold * 0.1); // allow for a
-                                                                                                       // 10% error in
-                                                                                                       // height
-                                                                                                       // measurement
-        boolean isMeasurementInField = (measurement.getX() >= -fieldBuffer
-                && measurement.getX() <= Constants.FieldConstants.FIELD_LENGTH + fieldBuffer)
-                && (measurement.getY() >= -fieldBuffer
-                        && measurement.getY() <= Constants.FieldConstants.FIELD_WIDTH + fieldBuffer);
-        // return isTargetWithinHeight && isMeasurementInField;
-        return isMeasurementInField;
-    }
-
-    /**
-     * This changes the standard deviations to trust vision measurements less the
-     * farther the machine is.
-     * the linear line y = 0.13x + 0.3
-     * 
-     * @param measurement the measurement from an AprilTag
-     */
-    public void dynamicallyChangeDeviations(Pose3d measurement, Pose2d currentEstimatedPose) {
-        double dist = measurement.toPose2d().getTranslation().getDistance(currentEstimatedPose.getTranslation());
-        double positionDev = Math.abs(0.2 * dist + 0.2);
-        _poseEstimator.setVisionMeasurementStdDevs(
-                createVisionStandardDeviations(positionDev, positionDev, Units.degreesToRadians(400)));
-    }
-
-    protected Vector<N3> createStandardDeviations(double x, double y, double z) {
-        return VecBuilder.fill(x, y, z);
-    }
-
-    /**
-     * @param x     in meters of how much we trust x component
-     * @param y     in meters of how much we trust x component
-     * @param angle in radians of how much we trust the IMU;
-     * @return Standard Deivation of the pose;
-     */
-    protected Vector<N3> createStateStandardDeviations(double x, double y, double angle) {
-        return createStandardDeviations(x, y, angle);
-    }
-
-    protected Vector<N3> createVisionStandardDeviations(double x, double y, double angle) {
-        return createStandardDeviations(x, y, angle);
-    }
+    
 
     public double getYaw() {
         return _systemIO.heading.getRadians();

@@ -4,7 +4,7 @@ import org.frc5687.robot.commands.DriveToPose;
 import org.frc5687.robot.commands.Deflector.SetDeflectorAngle;
 import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.Deflector;
-import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.Constants;
