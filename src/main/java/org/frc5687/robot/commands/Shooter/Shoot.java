@@ -41,12 +41,12 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void execute() {
-        Pair<Double, Double> distanceAndAngle = _driveTrain.getDistanceAndAngleToSpeaker();
+        Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
 
         double distance = distanceAndAngle.getFirst();
 
         double angle = distanceAndAngle.getSecond();
-        
+
         if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
             _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
             _shooter.setToTarget();
@@ -54,11 +54,11 @@ public class Shoot extends OutliersCommand{
         } else {
             _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
             _shooter.setToTarget();
-            _deflector.setTargetAngle(1.5);
+            _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE);
         }
         _driveTrain.setSnapHeading(new Rotation2d(angle));
 
-        if (_shooter.isAtTargetRPM()/* && _deflector.isAtTargetAngle() */&& _driveTrain.getHeading().getRadians() - angle < Constants.DriveTrain.SNAP_TOLERANCE) { 
+        if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle() && _driveTrain.getHeading().getRadians() - angle < Constants.DriveTrain.SNAP_TOLERANCE) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
     }

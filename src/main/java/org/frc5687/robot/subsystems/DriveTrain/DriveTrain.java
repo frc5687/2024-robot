@@ -115,7 +115,6 @@ public class DriveTrain extends OutliersSubsystem {
     private final Pigeon2 _imu;
     private double _yawOffset;
 
-    private final Field2d _field;
     private Pose2d _hoverGoal;
 
     private boolean _shiftLockout = false;
@@ -226,7 +225,6 @@ public class DriveTrain extends OutliersSubsystem {
 
         _useHeadingController = false;
 
-        _field = new Field2d();
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
         _isLowGear = true;
@@ -416,11 +414,6 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Module Control End */
 
-    /* Trajectory Info Start */
-    public void plotTrajectory(Trajectory t, String name) {
-        _field.getObject(name).setTrajectory(t);
-    }
-
     public SwerveDriveKinematicsConstraint getKinematicConstraint() {
         return new SwerveDriveKinematicsConstraint(_kinematics, TRAJECTORY_FOLLOWING.maxDriveAcceleration);
     }
@@ -470,40 +463,11 @@ public class DriveTrain extends OutliersSubsystem {
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
     }
 
-    public Pose3d getSpeakerTagPose() {
-        return AprilTagFields.k2024Crescendo.loadAprilTagLayoutField().getTagPose(
-            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
-        ).get();
-    }
-
-    public Pair<Double, Double> getDistanceAndAngleToSpeaker() {
-        Pose2d robotPose = getOdometryPose();
-        Pose3d tagPose = getSpeakerTagPose();
-
-        double xDistance = tagPose.getX() - robotPose.getX();
-        double yDistance = tagPose.getY() - robotPose.getY();
-
-        double distance = Math.sqrt(
-            Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
-        );
-
-        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
-
-        // using a pair here to return both values without doing excess math in multiple methods
-        return new Pair<Double, Double>(distance, angle);
-    }
-
-    // edit this as needed to reflect the optimal range to shoot from
-    public boolean isWithinOptimalRange() {
-        return getDistanceAndAngleToSpeaker().getFirst() < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_THRESHOLD;
-    }
-
     @Override
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
-        SmartDashboard.putData(_field);
         // moduleMetrics();
     }
 

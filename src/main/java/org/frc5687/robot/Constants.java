@@ -335,8 +335,8 @@ public class Constants {
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
                                                                                 // more;
 
-        public static double VISION_STD_DEV_X = 0.35;
-        public static double VISION_STD_DEV_Y = 0.35;
+        public static double VISION_STD_DEV_X = 0.5;
+        public static double VISION_STD_DEV_Y = 0.5;
         public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(70); // imu deviations lower number to trust
                                                                                 // more;
     }
@@ -349,15 +349,6 @@ public class Constants {
         public static final double IDLE_RPM = 500;
 
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
-
-        // regression equation
-        public static final double SEXTIC_COEFFECIENT = 3446.87547841668;
-        public static final double QUINTIC_COEFFICIENT = -78761.4146267351;
-        public static final double QUARTIC_COEFFICIENT = 744867.704631976;
-        public static final double CUBIC_COEFFICIENT = -3730776.48359247;
-        public static final double QUADRATIC_COEFFICIENT = 10434762.9280147;
-        public static final double LINEAR_COEFFIECIENT = -15450198.1419455;
-        public static final double OFFSET_COEFFICIENT = 9463197.07505351;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
@@ -491,7 +482,7 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 0; // FIXME: 15
+            CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;

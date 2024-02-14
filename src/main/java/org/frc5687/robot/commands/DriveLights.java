@@ -1,6 +1,7 @@
 package org.frc5687.robot.commands;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
@@ -19,11 +20,13 @@ public class DriveLights extends OutliersCommand {
     private DriveTrain _driveTrain;
     private Intake _intake;
     private VisionProcessor _visionProcessor;
-    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor) {
+    private RobotState _robotState;
+    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, RobotState robotState) {
         _lights = lights;
         _driveTrain = driveTrain;
         _intake = intake;
         _visionProcessor = visionProcessor;
+        _robotState = robotState;
         addRequirements(lights);
     }
     
@@ -46,7 +49,7 @@ public class DriveLights extends OutliersCommand {
         if (!DriverStation.isDSAttached()) {
             _lights.switchAnimation(AnimationType.RAINBOW);
         //Is in optimal shooting range
-        } else if (_driveTrain.isWithinOptimalRange()) {
+        } else if (_robotState.isWithinOptimalRange()) {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STROBE);
         //Has Note

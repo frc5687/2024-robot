@@ -9,6 +9,9 @@ import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.photonvision.EstimatedRobotPose;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -18,12 +21,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class RobotState {
     private DriveTrain _driveTrain;
     private PhotonProcessor _photonProcessor;
 
     private SwerveDrivePoseEstimator _poseEstimator;
+
+    private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     public RobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor) {
         _driveTrain = driveTrain;
@@ -86,6 +93,35 @@ public class RobotState {
     private boolean isValidMeasurement(Pose3d measurement) {
         return true;
     }
+
+    public Pose3d getSpeakerTagPose() {
+        return _layout.getTagPose(
+            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
+        ).get();
+    }
+
+    public Pair<Double, Double> getDistanceAndAngleToSpeaker() {
+        Pose2d robotPose = getEstimatedPose();
+        Pose3d tagPose = getSpeakerTagPose();
+
+        double xDistance = tagPose.getX() - robotPose.getX();
+        double yDistance = tagPose.getY() - robotPose.getY();
+
+        double distance = Math.sqrt(
+            Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
+        );
+
+        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
+
+        // using a pair here to return both values without doing excess math in multiple methods
+        return new Pair<Double, Double>(distance, angle);
+    }
+
+    // edit this as needed to reflect the optimal range to shoot from
+    public boolean isWithinOptimalRange() {
+        return getDistanceAndAngleToSpeaker().getFirst() < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_THRESHOLD;
+    }
+
 
 
     /**

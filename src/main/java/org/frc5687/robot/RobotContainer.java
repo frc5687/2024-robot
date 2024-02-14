@@ -16,6 +16,8 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -31,6 +33,8 @@ public class RobotContainer extends OutliersContainer {
     private Intake _intake;
     private Deflector _deflector;
     private Lights _lights;
+
+    private Field2d _field;
 
     private PhotonProcessor _photonProcessor;
 
@@ -52,6 +56,8 @@ public class RobotContainer extends OutliersContainer {
         _visionProcessor.createSubscriber("Objects", "tcp://10.56.87.20:5556");
         _visionProcessor.start();
 
+        _field = new Field2d();
+
         try {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
             // new PhotonProcessor(FieldConstants.aprilTags);
@@ -72,12 +78,11 @@ public class RobotContainer extends OutliersContainer {
         _deflector = new Deflector(this);
         _lights = new Lights(this);
 
-
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
         
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor, _robotState);
 
@@ -85,6 +90,8 @@ public class RobotContainer extends OutliersContainer {
 
     public void periodic() {
         _robotState.periodic();
+        _field.setRobotPose(_robotState.getEstimatedPose());
+        SmartDashboard.putData(_field);
     }
 
     public void disabledPeriodic() {
