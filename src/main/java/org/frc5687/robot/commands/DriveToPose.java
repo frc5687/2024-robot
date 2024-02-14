@@ -28,7 +28,7 @@ public class DriveToPose extends OutliersCommand{
 
     @Override
     public boolean isFinished() {
-        return _driveTrain.isAutoAlignComplete();
+        return _driveTrain.isAutoPoseComplete();
     }
 
     @Override
