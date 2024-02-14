@@ -65,11 +65,9 @@ public class Drive extends OutliersCommand {
         }
         if (_oi.shiftUp()) {
             _driveTrain.shiftUpModules();
-        }
-        if (_oi.shiftDown()) {
+        } else if (_oi.shiftDown()) {
             _driveTrain.shiftDownModules();
-        }
-        if (!_isOverride) {
+        } else if (!_isOverride) {
             _driveTrain.autoShifter();
         }
         // driveX and driveY are swapped due to coordinate system that WPILib uses.
@@ -94,26 +92,25 @@ public class Drive extends OutliersCommand {
         // metric("Element Angle", elementAngle);
         metric("Rot+Controller", (rot + controllerPower));
         
-            if (!_toNormal) {
-                _driveTrain.setKinematicLimits(Constants.DriveTrain.LOW_KINEMATIC_LIMITS);
-                _toNormal = true;
-            }
-            _driveTrain.setMode(Mode.NORMAL);
-            // _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
-            // _driveTrain.setKinematicLimits(Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
-            // _driveTrain.setShiftLockout(false);
-            vx = vec.x() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                    : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
-            vy = vec.y() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                    : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
-            rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-            _driveTrain.setVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-            SmartDashboard.putNumber("/vx", vx);
-            SmartDashboard.putNumber("/vy", vy);
+        if (!_toNormal) {
+            _driveTrain.setKinematicLimits(Constants.DriveTrain.LOW_KINEMATIC_LIMITS);
+            _toNormal = true;
+        }
+        _driveTrain.setMode(Mode.NORMAL);
+        // _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
+        // _driveTrain.setKinematicLimits(Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
+        // _driveTrain.setShiftLockout(false);
+        vx = vec.x() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
+                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
+        vy = vec.y() * (_driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
+                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS);
+        rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
+        _driveTrain.setVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        SmartDashboard.putNumber("/vx", vx);
+        SmartDashboard.putNumber("/vy", vy);
 
-        
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Climber.Climb;
+import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
@@ -14,6 +15,8 @@ import org.frc5687.robot.util.*;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -49,7 +52,7 @@ public class RobotContainer extends OutliersContainer {
         // _visionProcessor.createSubscriber("vision", "tcp://10.56.87.20:5557");
 
         try {
-            _photonProcessor = new PhotonProcessor(FieldConstants.aprilTags);
+            _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
         } catch (Exception e) {
             e.getMessage();
         }
@@ -59,7 +62,7 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, /*_visionProcessor, */_photonProcessor, _imu);
+        _driveTrain = new DriveTrain(this, /*_visionProcessor,*/ _photonProcessor, _imu);
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
@@ -68,10 +71,11 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        // setDefaultCommand(_climber, new Climb(_climber, _oi));
         setDefaultCommand(_climber, new AutoClimb(_climber, _oi));
+        setDefaultCommand(_deflector, new IdleDeflector(_deflector));
 
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber);
+
         startPeriodic();
 
     }

@@ -233,6 +233,8 @@ public class DriveTrain extends OutliersSubsystem {
 
         readModules();
         setSetpointFromMeasuredModules();
+
+        logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
     }
 
     /**
@@ -285,13 +287,8 @@ public class DriveTrain extends OutliersSubsystem {
         readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
-    }
+        readInputs();
 
-    /* Vision Stuff */
-    @Override
-    public void dataPeriodic(double timestamp) {
-        readSignals();
-        error("Running Data periodic");
         // current assumption is that because this is in a different thread a data race
         // is occurring where a reset doesn't occur until after a measurement(or during)
         // which is causing the estimated pose to be wrong.
@@ -302,23 +299,53 @@ public class DriveTrain extends OutliersSubsystem {
             _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
             Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
             List<EstimatedRobotPose> cameraPoses = Stream.of(
-            _photonProcessor.getNorthCameraEstimatedGlobalPose(prevEstimatedPose),
-            _photonProcessor.getSouthCameraEstimatedGlobalPose(prevEstimatedPose),
-            _photonProcessor.getWestCameraEstimatedGlobalPose(prevEstimatedPose),
-            _photonProcessor.getEastCameraEstimatedGlobalPose(prevEstimatedPose))
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
+            )
             .flatMap(Optional::stream)
             .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
             .collect(Collectors.toList());
 
             cameraPoses.forEach(cameraPose -> {
-            dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-            _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(),
-            cameraPose.timestampSeconds);
+                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                _poseEstimator.addVisionMeasurement(
+                    cameraPose.estimatedPose.toPose2d(),
+                    cameraPose.timestampSeconds
+                );
             });
 
             _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
         }
         _field.setRobotPose(_systemIO.estimatedPose);
+    }
+
+    /* Vision Stuff */
+    // @Override
+    public void dataPeriodicTest(double timestamp) {
+            _poseEstimator.update(getHeading(), _systemIO.measuredPositions);
+            Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
+            List<EstimatedRobotPose> cameraPoses = Stream.of(
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose)
+            )
+            .flatMap(Optional::stream)
+            .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+            .collect(Collectors.toList());
+
+            cameraPoses.forEach(cameraPose -> {
+                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                _poseEstimator.addVisionMeasurement(
+                    cameraPose.estimatedPose.toPose2d(),
+                    cameraPose.timestampSeconds
+                );
+            });
+
+            _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
+        // _field.setRobotPose(_systemIO.estimatedPose);
     }
 
     /* If we want to control modules faster, move periodic to here */
@@ -365,7 +392,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.length; module++) {
-            _modules[module].setIdealState(states[module]);
+            // _modules[module].setIdealState(states[module]);
+            _modules[module].setModuleState(states[module]);
+
         }
     }
 
@@ -542,57 +571,60 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Swerve State", _controlState.name());
-        metric("Robot goal position", _hoverGoal.toString());
-        metric("Current Heading", getHeading().getRadians());
-        metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
-        metric("Heading State", _headingController.getHeadingState().name());
-        metric("Rotation State", getYaw());
-        metric("Pitch Angle", getPitch());
-        metric("Estimated X", _systemIO.estimatedPose.getX());
-        metric("Estimated Y", _systemIO.estimatedPose.getY());
-        metric("NW Angle", _modules[0].getCanCoderAngle().getRadians());
-        metric("SW Angle", _modules[1].getCanCoderAngle().getRadians());
-        metric("SE Angle", _modules[2].getCanCoderAngle().getRadians());
-        metric("NE Angle", _modules[3].getCanCoderAngle().getRadians());
-        metric("NW AngleRot", _modules[0].getCanCoderAngle().getRotations());
-        metric("SW AngleRot", _modules[1].getCanCoderAngle().getRotations());
-        metric("SE AngleRot", _modules[2].getCanCoderAngle().getRotations());
-        metric("NE AngleRot", _modules[3].getCanCoderAngle().getRotations());
-        metric("NW Angle Wanted", _systemIO.setpoint.moduleStates[0].angle.getRadians());
-        metric("SW Angle Wanted", _systemIO.setpoint.moduleStates[1].angle.getRadians());
-        metric("SE Angle Wanted", _systemIO.setpoint.moduleStates[2].angle.getRadians());
-        metric("NE Angle Wanted", _systemIO.setpoint.moduleStates[3].angle.getRadians());
-        metric("NW Velocity", _modules[0].getWheelVelocity());
-        metric("SW Velocity", _modules[1].getWheelVelocity());
-        metric("SE Velocity", _modules[2].getWheelVelocity());
-        metric("NE Velocity", _modules[3].getWheelVelocity());
-        metric("NW Velocity Wanted", _modules[0].getWantedSpeed());
-        metric("SW Velocity Wanted", _modules[1].getWantedSpeed());
-        metric("SE Velocity Wanted", _modules[2].getWantedSpeed());
-        metric("NE Velocity Wanted", _modules[3].getWantedSpeed());
-        metric("NW Drive Velocity", _modules[0].getDriveRPM() / 60);
-        metric("SW Drive Velocity", _modules[1].getDriveRPM() / 60);
-        metric("NE Drive Velocity", _modules[2].getDriveRPM() / 60);
-        metric("SE Drive Velocity", _modules[3].getDriveRPM() / 60);
-        metric("NW State Velocity", _modules[0].getStateMPS());
-        metric("SW State Velocity", _modules[1].getStateMPS());
-        metric("NE State Velocity", _modules[2].getStateMPS());
-        metric("SE State Velocity", _modules[3].getStateMPS());
+        // metric("Swerve State", _controlState.name());
+        // metric("Robot goal position", _hoverGoal.toString());
+        // metric("Current Heading", getHeading().getRadians());
+        // metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
+        // metric("Heading State", _headingController.getHeadingState().name());
+        // metric("Rotation State", getYaw());
+        // // metric("Pitch Angle", getPitch());
+        // metric("Estimated X", _systemIO.estimatedPose.getX());
+        // metric("Estimated Y", _systemIO.estimatedPose.getY());
+        // metric("NW Angle", _modules[0].getCanCoderAngle().getRadians());
+        // metric("SW Angle", _modules[1].getCanCoderAngle().getRadians());
+        // metric("SE Angle", _modules[2].getCanCoderAngle().getRadians());
+        // metric("NE Angle", _modules[3].getCanCoderAngle().getRadians());
+        // // metric("NW AngleRot", _modules[0].getCanCoderAngle().getRotations());
+        // // metric("SW AngleRot", _modules[1].getCanCoderAngle().getRotations());
+        // // metric("SE AngleRot", _modules[2].getCanCoderAngle().getRotations());
+        // // metric("NE AngleRot", _modules[3].getCanCoderAngle().getRotations());
+        // metric("NW Angle Wanted", _systemIO.setpoint.moduleStates[0].angle.getRadians());
+        // metric("SW Angle Wanted", _systemIO.setpoint.moduleStates[1].angle.getRadians());
+        // metric("SE Angle Wanted", _systemIO.setpoint.moduleStates[2].angle.getRadians());
+        // metric("NE Angle Wanted", _systemIO.setpoint.moduleStates[3].angle.getRadians());
+        // // metric("NW Velocity", _modules[0].getWheelVelocity());
+        // // metric("SW Velocity", _modules[1].getWheelVelocity());
+        // // metric("SE Velocity", _modules[2].getWheelVelocity());
+        // // metric("NE Velocity", _modules[3].getWheelVelocity());
+        // // metric("NW Velocity Wanted", _modules[0].getWantedSpeed());
+        // // metric("SW Velocity Wanted", _modules[1].getWantedSpeed());
+        // // metric("SE Velocity Wanted", _modules[2].getWantedSpeed());
+        // // metric("NE Velocity Wanted", _modules[3].getWantedSpeed());
+        // // metric("NW Drive Velocity", _modules[0].getDriveRPM() / 60);
+        // // metric("SW Drive Velocity", _modules[1].getDriveRPM() / 60);
+        // // metric("NE Drive Velocity", _modules[2].getDriveRPM() / 60);
+        // // metric("SE Drive Velocity", _modules[3].getDriveRPM() / 60);
+        // // metric("NW State Velocity", _modules[0].getStateMPS());
+        // // metric("SW State Velocity", _modules[1].getStateMPS());
+        // // metric("NE State Velocity", _modules[2].getStateMPS());
+        // // metric("SE State Velocity", _modules[3].getStateMPS());
         metric("NW Current", _modules[0].getDriveMotorCurrent());
         metric("SW Current", _modules[1].getDriveMotorCurrent());
         metric("SE Current", _modules[2].getDriveMotorCurrent());
         metric("NE Current", _modules[3].getDriveMotorCurrent());
-        metric(
-                "Distance to goal node",
-                _systemIO.estimatedPose
-                        .getTranslation()
-                        .getDistance(_hoverGoal.getTranslation()));
-        metric("Drivetrain Speed", getSpeed());
-        metric("Is Low Gear", isLowGear());
-        metric("Tank Pressure PSI", _compressor.getPressure());
+        // // metric("NW Camera Estimate Pose", _photonProcessor.getNorthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // // metric("SW Camera Estimate Pose", _photonProcessor.getSouthWestCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // // metric("SE Camera Estimate Pose", _photonProcessor.getSouthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // // metric("NE Camera Estimate Pose", _photonProcessor.getNorthEastCameraEstimatedGlobalPose(_systemIO.estimatedPose).toString());
+        // metric("Distance to goal node",
+        //         _systemIO.estimatedPose
+        //                 .getTranslation()
+        //                 .getDistance(_hoverGoal.getTranslation()));
+        // metric("Drivetrain Speed", getSpeed());
+        // metric("Is Low Gear", isLowGear());
+        // metric("Tank Pressure PSI", _compressor.getPressure());
         SmartDashboard.putData(_field);
-        moduleMetrics();
+        // moduleMetrics();
     }
 
     public void moduleMetrics() {
@@ -734,15 +766,12 @@ public class DriveTrain extends OutliersSubsystem {
         final double heightThreshold = Units.inchesToMeters(30);
         final double fieldBuffer = Units.inchesToMeters(6); // add a 6 inch buffer to the field boundaries
 
-        boolean isTargetWithinHeight = measurement.getZ() < (heightThreshold + heightThreshold * 0.1); // allow for a
-                                                                                                       // 10% error in
-                                                                                                       // height
-                                                                                                       // measurement
         boolean isMeasurementInField = (measurement.getX() >= -fieldBuffer
                 && measurement.getX() <= FieldConstants.fieldLength + fieldBuffer)
                 && (measurement.getY() >= -fieldBuffer
                         && measurement.getY() <= FieldConstants.fieldWidth + fieldBuffer);
-        return isTargetWithinHeight && isMeasurementInField;
+        // return isTargetWithinHeight && isMeasurementInField;
+        return isMeasurementInField;
     }
 
     /**

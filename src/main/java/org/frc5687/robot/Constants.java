@@ -7,6 +7,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
+import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
+import org.frc5687.lib.cheesystuff.PolynomialRegression;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
@@ -28,16 +31,9 @@ public class Constants {
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
         public static final double WHEEL_RADIUS = 0.0508;
-        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (60.0 / 36.0) * (45.0 / 15.0) * (16.0 / 36.0); // 8.2539
+        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 14.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 14.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
-
-        // public static
-        final double MAX_SPEED = 0;
-
-        public static final double kP = 5.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
 
         // this is the motor config for the swerve motors
         static {
@@ -48,9 +44,11 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
+            CONFIG.MAX_SUPPLY_CURRENT = 70;
             CONFIG.MAX_STATOR_CURRENT = 120;
-            CONFIG.MAX_CURRENT = 70;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_CURRENT = 120;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
@@ -62,9 +60,11 @@ public class Constants {
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 70;
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
             STEER_CONFIG.MAX_CURRENT = 120;
-            STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
+            STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             STEER_CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
@@ -74,9 +74,9 @@ public class Constants {
             // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
-            DRIVE_CONTROLLER_CONFIG.kP = 11.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 15.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.02;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.00;
             DRIVE_CONTROLLER_CONFIG.kF = 0.0;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 45.0;
@@ -151,11 +151,11 @@ public class Constants {
         public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
 
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
-        public static final double MAX_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
+        public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
-        public static final double SHIFT_UP_SPEED_MPS = 2.0; // Speed to start shift y
-        public static final double SHIFT_DOWN_SPEED_MPS = 1.75; // Speed to start shift y
+        public static final double SHIFT_UP_SPEED_MPS = 4.0; // Speed to start shift y
+        public static final double SHIFT_DOWN_SPEED_MPS = 2.5; // Speed to start shift y
 
         public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
 
@@ -217,7 +217,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.353759765625;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.26025390625;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -228,7 +228,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.063720703125;
+            NORTH_EAST_CONFIG.encoderOffset = 0.256591796875;
         }
         
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -239,7 +239,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.22119140625;
+            NORTH_WEST_CONFIG.encoderOffset = 0.41455078125;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -250,7 +250,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.041748046875;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.165771484375;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -312,7 +312,7 @@ public class Constants {
         public static final double QUICK_LEVEL_KI = 0.0;
         public static final double QUICK_LEVEL_KD = 0.5;
 
-        public static final double MIN_PSI = 40.0;
+        public static final double MIN_PSI = 60.0;
         public static final double MAX_PSI = 100.0;
     }
 
@@ -340,6 +340,56 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 10;
 
         public static final double IDLE_RPM = 500;
+
+        // regression equation
+        public static final double SEXTIC_COEFFECIENT = 3446.87547841668;
+        public static final double QUINTIC_COEFFICIENT = -78761.4146267351;
+        public static final double QUARTIC_COEFFICIENT = 744867.704631976;
+        public static final double CUBIC_COEFFICIENT = -3730776.48359247;
+        public static final double QUADRATIC_COEFFICIENT = 10434762.9280147;
+        public static final double LINEAR_COEFFIECIENT = -15450198.1419455;
+        public static final double OFFSET_COEFFICIENT = 9463197.07505351;
+
+        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
+        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
+
+        public static PolynomialRegression kDeflectorRegression;
+        public static PolynomialRegression kRPMRegression;
+
+        public static double[][] kRPMValues = {
+            {2.87020574, 2600},
+            {3.17500635, 2600},
+            {3.47980696, 2350},
+            {3.784607569, 1900},
+            {4.089408179, 1750},
+            {4.394208788, 1700},
+            {4.699009398, 1690}
+        };
+
+        public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
+        public static final double MAX_DEFLECTOR_DISTANCE = 2.6;
+        public static double[][] kDeflectorValues = {
+            {1.041402083, 2.45}, // all at 2600 rpm
+            {1.346202692, 2.4},
+            {1.651003302, 2.35},
+            {1.955803912, 2.25},
+            {2.260604521, 2.15},
+            {2.565405131, 2.05}
+        };
+
+        static {
+            for (double[] pair : kRPMValues) {
+                kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+            }
+
+            for (double[] pair : kDeflectorValues) {
+                kHoodMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+            }
+
+            kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
+            kRPMRegression = new PolynomialRegression(kRPMValues, 1);
+        }
+
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -408,6 +458,11 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.01;
         public static final double LOWER_HALL_ANGLE = 0.0;
         public static final double UPPER_HALL_ANGLE = 2.5;
+        public static final double IDLE_ANGLE = 1.0;
+
+        // regression equation
+        public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
+        public static final double OFFSET_COEFFICIENT = 2.75678571428571;
 
         static {
             CONFIG.TIME_OUT = 0.1;
