@@ -99,6 +99,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
+    private boolean _compressInit;
 
     private final BaseStatusSignal[] _moduleSignals;
 
@@ -138,11 +139,9 @@ public class DriveTrain extends OutliersSubsystem {
                 PneumaticsModuleType.REVPH,
                 RobotMap.PCM.SHIFTER_HIGH,
                 RobotMap.PCM.SHIFTER_LOW);
-
+        // create compressor, compressor logic
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressor.enableAnalog(
-                Constants.DriveTrain.MIN_PSI,
-                Constants.DriveTrain.MAX_PSI);
+        _compressInit = false;
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -222,6 +221,9 @@ public class DriveTrain extends OutliersSubsystem {
 
         _poseDriveController = new AutoPoseDriveController();
 
+        // this `false` value doesn't mean that the heading controller is disabled.
+        // as of 02/13/24, it gets initialized to true in the Drive command
+        // this default value can and will be overridden by commands - xavier bradford
         _useHeadingController = false;
 
         _hoverGoal = new Pose2d();
@@ -312,6 +314,14 @@ public class DriveTrain extends OutliersSubsystem {
         if (!_hasShiftInit) {
             shiftDownModules();
             _hasShiftInit = true;
+        }
+
+        if(!_compressInit){
+            _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
+            if (_compressor.getPressureSwitchValue() && !_compressInit){
+                _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
+                _compressInit = true;
+            }
         }
 
         readSignals();
