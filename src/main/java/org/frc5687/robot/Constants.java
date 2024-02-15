@@ -160,10 +160,6 @@ public class Constants {
 
         public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
 
-        public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
-                / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
-        public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
-                / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
