@@ -13,13 +13,11 @@ public class IdleDeflector extends OutliersCommand{
     public IdleDeflector(Deflector deflector) {
         _deflector = deflector;
         addRequirements(_deflector);
-        DriverStation.reportError("balls balls", false);
     }
 
     @Override
     public void execute() {
         _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE + 0.1);
-        DriverStation.reportError("execute", false);
     }
 
     @Override

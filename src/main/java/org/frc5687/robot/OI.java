@@ -68,7 +68,7 @@ public class OI extends OutliersProxy {
             Deflector deflector,
             VisionProcessor visionProcessor,
             RobotState robotState) {
-        _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
+        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, deflector, intake, drivetrain, robotState));
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
@@ -78,7 +78,7 @@ public class OI extends OutliersProxy {
 
         // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
         // Pose2d(2, 2, new Rotation2d())));
-        _driverGamepad.getLeftBumper().whileTrue(new DriveToNote(drivetrain, visionProcessor));
+        _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
@@ -86,7 +86,8 @@ public class OI extends OutliersProxy {
     }
 
     public boolean shiftUp() {
-        return _driverGamepad.getRightBumper().getAsBoolean();
+        // return _driverGamepad.getLeftBumper().getAsBoolean();
+        return false;
     }
 
     public boolean shiftDown() {
