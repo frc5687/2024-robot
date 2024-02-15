@@ -97,6 +97,11 @@ public class RobotState {
         return _poseEstimator.getEstimatedPosition();
     }
 
+    public void setEstimatedPose(Pose2d pose) {
+        // FIXME: these values might not be right
+        _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
+    }
+
     private boolean isValidMeasurement(Pose3d measurement) {
         return true;
     }
