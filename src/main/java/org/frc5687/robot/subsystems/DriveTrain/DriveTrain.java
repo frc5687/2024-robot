@@ -451,18 +451,6 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Kinematics End */
 
-    /* Odometry And Pose Estimator Start */
-    public void updateOdometry() {
-        _odometry.update(
-                isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
-                new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getPosition(),
-                        _modules[SOUTH_WEST_IDX].getPosition(),
-                        _modules[SOUTH_EAST_IDX].getPosition(),
-                        _modules[NORTH_EAST_IDX].getPosition()
-                });
-    }
-
     public Pose2d getOdometryPose() {
         return _odometry.getPoseMeters();
     }
@@ -476,6 +464,8 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
+        metric("Pose X", _odometry.getPoseMeters().getX());
+        metric("Pose Y", _odometry.getPoseMeters().getY());
         // moduleMetrics();
     }
 
@@ -525,8 +515,7 @@ public class DriveTrain extends OutliersSubsystem {
         _isLowGear = false;
         setKinematicLimits(HIGH_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
-            _modules[i].startShift();
-            _modules[i].setLowGear(false);
+            _modules[i].shiftUp();
         }
     }
 
@@ -534,8 +523,7 @@ public class DriveTrain extends OutliersSubsystem {
         _shift.set(Value.kReverse);
         setKinematicLimits(LOW_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
-            _modules[i].startShift();
-            _modules[i].setLowGear(true);
+            _modules[i].shiftDown();
         }
         _isLowGear = true;
     }

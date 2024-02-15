@@ -56,11 +56,6 @@ public class SwerveModule {
     private boolean _isLowGear;
     private String _moduleName;
 
-    private boolean _isShifting = false;
-    private long _shiftStartTimeMillis = 0;
-    private double _preShiftSpeed = 0.0;
-    private double _preShiftEncoderPosition = 0.0;
-
     public SwerveModule(
             SwerveModule.ModuleConfiguration config,
             int steeringMotorID,
@@ -89,7 +84,6 @@ public class SwerveModule {
 
         _encoder.getConfigurator().apply(CANfig);
 
-        _isLowGear = false;
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
         _velocityTorqueCurrentFOC.OverrideCoastDurNeutral = true;
 
@@ -140,49 +134,24 @@ public class SwerveModule {
         _steeringVelocityRotationsPerSec.refresh();
     }
 
-    public void startShift() {
-        // refresh to make sure latest values
-        refreshSignals();
-
-        if (!_isShifting) {
-            _isShifting = true;
-            _shiftStartTimeMillis = System.currentTimeMillis();
-            _preShiftSpeed = getWheelVelocity();
-            _preShiftEncoderPosition = _drivePositionRotations.getValue();
+    public void shiftDown() {
+        if (!_isLowGear) {
+            setLowGear();
+            transformEncoderFromHighGearToLowGear();
         }
     }
 
-    public void endShift() {
-        // refresh to make sure latest values
-        refreshSignals();
-
-        if (_isShifting) {
-            _isShifting = false;
-            double estimatedDistanceDuringShift = _preShiftSpeed * Constants.SwerveModule.SHIFT_TIME_SECONDS;
-            double additionalRotationsDuringShift = estimatedDistanceDuringShift * _rotPerMet * getGearRatio();
-
-            double correctedEncoderPosition = _preShiftEncoderPosition + additionalRotationsDuringShift;
-            _driveMotor.setPosition(correctedEncoderPosition);
-
-            _preShiftSpeed = 0.0;
+    public void shiftUp() {
+        if (_isLowGear) {
+            setHighGear();
+            transformEncoderFromLowGearToHighGear();
         }
     }
 
     private SwerveModulePosition calculatePosition() {
-        double currentEncoderRotations = _isShifting ? _preShiftEncoderPosition
-                : BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-        if (_isShifting) {
-            double elapsedTimeSinceShiftStart = (System.currentTimeMillis() - _shiftStartTimeMillis) / 1000.0;
-            if (elapsedTimeSinceShiftStart <= 0.1) {
-                double estimatedDistance = _preShiftSpeed * elapsedTimeSinceShiftStart;
-                currentEncoderRotations += estimatedDistance * _rotPerMet * getGearRatio();
-            } else {
-                endShift();
-            }
-        }
+        double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
 
-        // DriverStation.reportError(String.valueOf(currentEncoderRotations), false);
-        double distanceMeters = currentEncoderRotations / (_rotPerMet * getGearRatio());
+        double distanceMeters = currentEncoderRotations * 2.0 * 3.14159265 / getGearRatio() * Constants.SwerveModule.WHEEL_RADIUS ;
         double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
                 _steeringVelocityRotationsPerSec);
         _internalState.distanceMeters = distanceMeters;
@@ -228,6 +197,18 @@ public class SwerveModule {
         }
     }
 
+    private void transformEncoderFromHighGearToLowGear() {
+        refreshSignals();
+        double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
+        _driveMotor.setPosition(currentEncoderRotations * Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW / Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH);
+    }
+
+    private void transformEncoderFromLowGearToHighGear() {
+        refreshSignals();
+        double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
+        _driveMotor.setPosition(currentEncoderRotations * Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH / Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW);
+    }
+
     public SwerveModuleState getState() {
         return new SwerveModuleState(getWheelVelocity(), getCanCoderAngle());
     }
@@ -265,9 +246,16 @@ public class SwerveModule {
         }
     }
 
-    public void setLowGear(boolean isLowGear) {
-        _isLowGear = isLowGear;
-        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(isLowGear ? 0 : 1);
+    private void setLowGear() {
+        _isLowGear = true;
+        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(0);
+        DriverStation.reportError("Setting Low Gear", false);
+    }
+
+    private void setHighGear() {
+        _isLowGear = false;
+        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);
+        DriverStation.reportError("Setting High Gear", false);
     }
 
     public double getDriveRPM() {
@@ -291,7 +279,7 @@ public class SwerveModule {
     }
 
     public double getWheelAngularVelocity() {
-        return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM() / getGearRatio());
+        return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM()   / getGearRatio());
     }
 
     public Translation2d getModuleLocation() {
