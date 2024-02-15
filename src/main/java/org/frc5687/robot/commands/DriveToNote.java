@@ -63,7 +63,7 @@ public class DriveToNote extends OutliersCommand{
             } else {
                 /* Drive to note portion */
                 vx = -_xController.calculate(pose.x());
-                vy = -_xController.calculate(pose.y());
+                vy = -_xController.calculate(pose.y() + 0.06);
 
                 // error("VisionPose " + 0 + "{ x: " + pose.x() + ", y: " + pose.y() + ", z: " +
                 // pose.z() + " }");

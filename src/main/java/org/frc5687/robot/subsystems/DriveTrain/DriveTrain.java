@@ -318,7 +318,8 @@ public class DriveTrain extends OutliersSubsystem {
 
         if(!_compressInit){
             _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
-            if (_compressor.getPressureSwitchValue() && !_compressInit){
+            if (!_compressor.getPressureSwitchValue() && !_compressInit){
+                _compressor.disable();
                 _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
                 _compressInit = true;
             }
