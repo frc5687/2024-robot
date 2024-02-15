@@ -23,6 +23,8 @@ public class RobotMap {
 
             public static final int BOTTOM_SHOOTER = 2;
             public static final int TOP_SHOOTER = 3;
+            
+            public static final int CLIMBER = 4;
 
             public static final int SOUTH_EAST_ROTATION = 5;
             public static final int SOUTH_EAST_TRANSLATION = 6;
@@ -67,6 +69,9 @@ public class RobotMap {
     public static class PCM {
         public static final int SHIFTER_HIGH = 3; // these values may be flip-flopped
         public static final int SHIFTER_LOW = 2;
+
+        public static final int RATCHET_RAISE = 4;
+        public static final int RATCHET_LOWER = 5;
     }
 
     /**

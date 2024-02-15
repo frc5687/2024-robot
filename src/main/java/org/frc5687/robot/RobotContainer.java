@@ -5,6 +5,7 @@ package org.frc5687.robot;
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
@@ -32,6 +33,7 @@ public class RobotContainer extends OutliersContainer {
     private Shooter _shooter;
     private Intake _intake;
     private Deflector _deflector;
+    private Climber _climber;
     private Lights _lights;
 
     private Field2d _field;
@@ -77,16 +79,17 @@ public class RobotContainer extends OutliersContainer {
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _deflector = new Deflector(this);
+        _climber = new Climber(this);
         _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
+        setDefaultCommand(_climber, new AutoClimb(_climber, _oi));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
         
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _visionProcessor, _robotState);
-
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
     }
 
     public void periodic() {

@@ -28,7 +28,7 @@ import org.frc5687.robot.util.VisionProcessor;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
-    protected CommandJoystick _operatorJoystick;
+    protected Gamepad _operatorGamepad;
     protected Gamepad _buttonpad;
 
     // protected CustomController _customController;
@@ -40,11 +40,11 @@ public class OI extends OutliersProxy {
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
     protected Trigger _povButtonDown;
-
+    
     public OI() {
 
         _driverGamepad = new Gamepad(0);
-        _operatorJoystick = new CommandJoystick(1);
+        _operatorGamepad = new Gamepad(1);
         _buttonpad = new Gamepad(2);
         // _customController = new CustomController();
         _povButtonLeft = new Trigger(() -> _driverGamepad.getPOV() == 270);
@@ -66,6 +66,7 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector,
+            Climber climber,
             VisionProcessor visionProcessor,
             RobotState robotState) {
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
@@ -98,12 +99,20 @@ public class OI extends OutliersProxy {
         return _driverGamepad.getBackButton().getAsBoolean();
     }
 
-    public boolean getSlowMode() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
-    }
+    // public boolean getSlowMode() {
+    //     return _driverGamepad.getLeftBumper().getAsBoolean();
+    // }
 
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();
+    }
+
+    public boolean getClimbButton() {
+        return _operatorGamepad.getAButton().getAsBoolean();
+    }
+
+    public boolean getStowButton() {
+        return _operatorGamepad.getBButton().getAsBoolean();
     }
 
     public double getDriveY() {
@@ -117,10 +126,16 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.DriveTrain.TRANSLATION_DEADBAND);
         return speed;
     }
-
+ 
     public double getRotationX() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.ROTATION_DEADBAND);
+        return speed;
+    }
+
+    public double getClimbY() {
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber());
+        speed = applyDeadband(speed, Constants.Climber.CLIMBER_TRANSLATION);
         return speed;
     }
 

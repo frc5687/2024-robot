@@ -150,8 +150,16 @@ public class Constants {
 
         public static final double MAX_FALCON_FOC_RPM = 6080.0;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
-
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
+        public static final double MAX_LOW_GEAR_MPS = (
+            Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
+            / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_HIGH_GEAR_MPS = (
+            Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
+            / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+
+        public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
+
         public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
                 / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
         public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
@@ -500,6 +508,54 @@ public class Constants {
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
             CLOSED_LOOP_CONFIG.JERK = 5000;
+
+            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
+        }
+    }
+
+    public static class Climber{
+        public static final String CAN_BUS = "CANivore";
+        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+
+        static {
+            CONFIG.TIME_OUT = 0.1;
+
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            CONFIG.MAX_VOLTAGE = 12.0;
+
+            CONFIG.MAX_STATOR_CURRENT = 60;
+            CONFIG.MAX_CURRENT = 60;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.USE_FOC = true;
+        }
+
+        public static double UPPER_LIMIT = 4.0;
+        public static double LOWER_LIMIT = 0.0;
+
+        public static double PREP_METERS = 2.0; //TODO: change
+        public static double CLIMB_METERS = 0.5; //TODO: change
+
+        public static double CLIMBER_TRANSLATION = .05;
+
+        public static double CLIMBER_GEAR_RATIO = 25.0;//25:1
+
+        public static double WINCH_RADIUS = 0.035052; 
+
+        public static double CLIMBER_TOLERANCE = .05;
+        public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        static {
+            CLOSED_LOOP_CONFIG.SLOT = 0;
+            CLOSED_LOOP_CONFIG.kP = 4;
+            CLOSED_LOOP_CONFIG.kI = 0;
+            CLOSED_LOOP_CONFIG.kD = 0;
+            CLOSED_LOOP_CONFIG.kF = 0;
+
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
+            CLOSED_LOOP_CONFIG.JERK = 10;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
