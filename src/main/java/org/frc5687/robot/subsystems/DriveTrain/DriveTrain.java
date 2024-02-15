@@ -241,8 +241,8 @@ public class DriveTrain extends OutliersSubsystem {
 
         // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
-                RobotState.getInstance()::getEstimatedPose, // Robot pose supplier
-                RobotState.getInstance()::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                _robotState::getEstimatedPose, // Robot pose supplier
+                _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 // FIXME: this might be field relative
                 this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 // FIXME: this might be field relative
