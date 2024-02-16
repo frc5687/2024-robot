@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import org.frc5687.robot.Constants;
 
@@ -62,7 +63,7 @@ public class AutoPoseDriveController {
 
     public ChassisSpeeds updateAutoAlign(Pose2d currentPose) {
         Pose2d poseError = _fieldToTargetPoint.relativeTo(currentPose);
-
+        DriverStation.reportError(poseError.toString(), false);
         double xOutput = _xController.calculate(currentPose.getX(), poseError.getX());
         double yOutput = _yController.calculate(currentPose.getY(), poseError.getY());
         double thetaOutput = _headingController.calculate(currentPose.getRotation().getRadians(), poseError.getRotation().getRadians());

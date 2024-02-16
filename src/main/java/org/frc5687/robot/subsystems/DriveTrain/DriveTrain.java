@@ -6,10 +6,14 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
@@ -34,6 +38,7 @@ import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.SwerveModule;
+import org.frc5687.robot.Constants.FieldConstants;
 import org.frc5687.robot.util.*;
 
 public class DriveTrain extends OutliersSubsystem {
@@ -98,6 +103,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
+    private boolean _compressInit;
 
     private final BaseStatusSignal[] _moduleSignals;
 
@@ -123,7 +129,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     private final SystemIO _systemIO;
     // private YawDriveController _yawDriveController;
-    private AutoPoseDriveController _poseDriveController;
+    // private AutoPoseDriveController _poseDriveController;
+    private final HolonomicDriveController _poseController;
+
     private RobotState _robotState = RobotState.getInstance();
 
     private boolean _useHeadingController;
@@ -137,11 +145,9 @@ public class DriveTrain extends OutliersSubsystem {
                 PneumaticsModuleType.REVPH,
                 RobotMap.PCM.SHIFTER_HIGH,
                 RobotMap.PCM.SHIFTER_LOW);
-
+        // create compressor, compressor logic
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressor.enableAnalog(
-                Constants.DriveTrain.MIN_PSI,
-                Constants.DriveTrain.MAX_PSI);
+        _compressInit = false;
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -208,7 +214,6 @@ public class DriveTrain extends OutliersSubsystem {
                 },
                 new Pose2d(0, 0, getHeading()));
 
-
         _swerveSetpointGenerator = new SwerveSetpointGenerator(
                 _kinematics,
                 new Translation2d[] {
@@ -219,9 +224,21 @@ public class DriveTrain extends OutliersSubsystem {
                 });
 
         _headingController = new SwerveHeadingController(Constants.UPDATE_PERIOD);
-
-        _poseDriveController = new AutoPoseDriveController();
-
+        _poseController = new HolonomicDriveController(
+            new PIDController(
+                    Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
+            new PIDController(
+                    Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
+            new ProfiledPIDController(
+                    MAINTAIN_kP,
+                    MAINTAIN_kI,
+                    MAINTAIN_kD,
+                    new TrapezoidProfile.Constraints(
+                            Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
+                            Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
+        // this `false` value doesn't mean that the heading controller is disabled.
+        // as of 02/13/24, it gets initialized to true in the Drive command
+        // this default value can and will be overridden by commands - xavier bradford
         _useHeadingController = false;
 
         _hoverGoal = new Pose2d();
@@ -235,7 +252,6 @@ public class DriveTrain extends OutliersSubsystem {
 
         // logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
     }
-
 
     protected void configureSignalFrequency(double frequency) {
         for (var signal : _moduleSignals) {
@@ -299,13 +315,14 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Heading Controller End */
 
-    private void updateAutoPoseController() {
-        _systemIO.desiredChassisSpeeds = _poseDriveController.updateAutoAlign(_robotState.getEstimatedPose());
+    public void setVelocityPose(Pose2d pose) {
+        ChassisSpeeds speeds = _poseController.calculate(
+                _robotState.getEstimatedPose(), pose, 0.0, _systemIO.heading);
+        _headingController.setMaintainHeading(pose.getRotation());
+        speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
+        _systemIO.desiredChassisSpeeds = speeds;
     }
 
-    public boolean isAutoPoseComplete() {
-        return _poseDriveController.isAutoAlignComplete();
-    }
 
     @Override
     public void periodic() {
@@ -315,6 +332,15 @@ public class DriveTrain extends OutliersSubsystem {
             _hasShiftInit = true;
         }
 
+        if(!_compressInit){
+            _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
+            if (!_compressor.getPressureSwitchValue() && !_compressInit){
+                _compressor.disable();
+                _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
+                _compressInit = true;
+            }
+        }
+
         readSignals();
 
         /* Update odometry */
@@ -322,17 +348,15 @@ public class DriveTrain extends OutliersSubsystem {
 
         switch (_controlState) {
             case NEUTRAL:
-                break;  
+                break;
             case MANUAL:
                 break;
             case POSITION: 
-                updateAutoPoseController();
                 break;
-            case ROTATION: 
+            case ROTATION:
                 break;
             case TRAJECTORY:
                 break;
-
         }
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
@@ -429,7 +453,6 @@ public class DriveTrain extends OutliersSubsystem {
         return _kinematics;
     }
 
-
     /* Kinematic limit for the Setpoint Generator */
     public void setKinematicLimits(KinematicLimits limits) {
         if (limits != _kinematicLimits) {
@@ -440,19 +463,7 @@ public class DriveTrain extends OutliersSubsystem {
     public KinematicLimits getKinematicLimits() {
         return _kinematicLimits;
     }
-    /* Kinematics End  */
-
-    /* Odometry And Pose Estimator Start */
-    public void updateOdometry() {
-        _odometry.update(
-                isRedAlliance() ? getHeading().minus(new Rotation2d(Math.PI)) : getHeading(),
-                new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getPosition(),
-                        _modules[SOUTH_WEST_IDX].getPosition(),
-                        _modules[SOUTH_EAST_IDX].getPosition(),
-                        _modules[NORTH_EAST_IDX].getPosition()
-                });
-    }
+    /* Kinematics End */
 
     public Pose2d getOdometryPose() {
         return _odometry.getPoseMeters();
@@ -491,7 +502,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setHoverGoal(Pose2d pose) {
         _hoverGoal = pose;
-        _poseDriveController.setTargetPoint(_hoverGoal);
+        metric("hoverGoal x", _hoverGoal.getX());
+        metric("hoverGoal y", _hoverGoal.getY());
+        metric("hoverGoal rotation degrees", _hoverGoal.getRotation().getDegrees());
     }
 
     public ChassisSpeeds getMeasuredChassisSpeeds() {
@@ -516,8 +529,7 @@ public class DriveTrain extends OutliersSubsystem {
         _isLowGear = false;
         setKinematicLimits(HIGH_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
-            _modules[i].startShift();
-            _modules[i].setLowGear(false);
+            _modules[i].shiftUp();
         }
     }
 
@@ -525,8 +537,7 @@ public class DriveTrain extends OutliersSubsystem {
         _shift.set(Value.kReverse);
         setKinematicLimits(LOW_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
-            _modules[i].startShift();
-            _modules[i].setLowGear(true);
+            _modules[i].shiftDown();
         }
         _isLowGear = true;
     }
@@ -563,7 +574,10 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftLockout = false;
             }
         }
+
     }
+    /* Shift stuff end */
+    
 
     public double getYaw() {
         return _systemIO.heading.getRadians();

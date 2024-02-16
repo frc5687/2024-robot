@@ -63,14 +63,14 @@ public class DriveToNote extends OutliersCommand{
             } else {
                 /* Drive to note portion */
                 vx = -_xController.calculate(pose.x());
-                vy = -_xController.calculate(pose.y());
+                vy = -_xController.calculate(pose.y() + 0.06);
 
                 // error("VisionPose " + 0 + "{ x: " + pose.x() + ", y: " + pose.y() + ", z: " +
                 // pose.z() + " }");
                 /* angle to note */
-                double angle = Math.atan2(pose.y(), pose.x());
+                double angle = Math.atan2(pose.y() + 0.06, pose.x());
                 metric("Note x", pose.x());
-                metric("Note y", pose.y());
+                metric("Note y", pose.y() + 0.06);
                 metric("Angle to note", angle);
                 rot = -_yawController.calculate(angle);
             }

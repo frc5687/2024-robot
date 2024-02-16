@@ -13,8 +13,7 @@ public class TeleopController {
     private double _controllerY = 0.0;
     private double _controllerOmega = 0.0;
 
-    public TeleopController() {
-    }
+    public TeleopController() {}
 
     public void acceptDriveInput(double x, double y, double omega) {
         _controllerX = MathUtil.applyDeadband(x, DEADBAND);
