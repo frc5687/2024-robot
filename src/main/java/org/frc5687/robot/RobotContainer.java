@@ -8,16 +8,24 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.Intake.IdleIntake;
+import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shooter.EjectNote;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
+import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.*;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.fasterxml.jackson.core.sym.Name;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -25,7 +33,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
-    private AutoChooser _autoChooser;
+    private SendableChooser<Command> _autoChooser;
     private VisionProcessor _visionProcessor;
     private Pigeon2 _imu;
     private Robot _robot;
@@ -51,7 +59,13 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
         _oi = new OI();
-        _autoChooser = new AutoChooser();
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        _autoChooser = AutoBuilder.buildAutoChooser();
+
+        // Another option that allows you to specify the default auto by its name
+        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+        SmartDashboard.putData("Auto Chooser", _autoChooser);
         // create the vision processor
         _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
@@ -82,6 +96,8 @@ public class RobotContainer extends OutliersContainer {
         _climber = new Climber(this);
         _lights = new Lights(this);
 
+        registerNamedCommands();
+
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
@@ -99,7 +115,8 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void disabledPeriodic() {
-        _autoChooser.updateChooser();
+        // FIXME: what should we do here with default pathplanner autochooser?? xavier bradford 02/16/24
+        // _autoChooser.updateChooser();
     }
 
     @Override
@@ -112,7 +129,8 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void autonomousInit() {
-        _autoChooser.updateChooser();
+        // FIXME: what should we do here with default pathplanner autochooser?? xavier bradford 02/16/24
+        // _autoChooser.updateChooser();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -124,6 +142,16 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Command getAutoCommand() {
-        return new WaitCommand(15);
+        // Load the path you want to follow using its name in the GUI
+        PathPlannerPath path = PathPlannerPath.fromPathFile("C3_TO_SHOOT_TO_F3");
+
+        // Create a path following command using AutoBuilder. This will also trigger event markers.
+        return AutoBuilder.followPath(path);
+        // return _autoChooser.getSelected();
+    }
+
+    public void registerNamedCommands() {
+        NamedCommands.registerCommand("Shoot", new EjectNote(_shooter, _intake));
+        NamedCommands.registerCommand("Intake", new IntakeCommand(_intake, _oi));
     }
 }
