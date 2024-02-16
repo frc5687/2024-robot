@@ -45,10 +45,13 @@ public class DriveToNote extends OutliersCommand{
         if (!_driveTrain.isLowGear()) {
             _driveTrain.shiftDownModules();
         }
-        if (poses != null) {
-            metric("Jetson Note Detected", poses.posesLength() > 0);
-            for (int i = 0; i < poses.posesLength(); i++) {
-                if (pose == null) {
+
+        metric("Jetson Note Detected", poses.posesLength() > 0);
+        for (int i = 0; i < poses.posesLength(); i++) {
+            if (pose == null) {
+                pose = poses.poses(i);
+            } else {
+                if (poses.poses(i).x() < pose.x() && poses.poses(i).y() < pose.y()) {
                     pose = poses.poses(i);
                 } else {
                     if (poses.poses(i).x() < pose.x()) {
@@ -56,25 +59,29 @@ public class DriveToNote extends OutliersCommand{
                     }
                 }
             }
-            if (pose != null) {
-                if (Double.isNaN(pose.x()) || Double.isNaN(pose.y())) {
-                    vx = 0;
-                    vy = 0;
-                    rot = 0;
-                } else {
-                    /* Drive to note portion */
-                    vx = -_xController.calculate(pose.x());
-                    vy = -_yController.calculate(pose.y() + 0.06);
+        }
+        if (pose != null) {
+            if (Double.isNaN(pose.x()) || Double.isNaN(pose.y())) {
+                vx = 0;
+                vy = 0;
+                rot = 0;
+            } else {
+                /* Drive to note portion */
+                double x = pose.x();
+                double y = pose.y() + 0.08;
 
-                    // error("VisionPose " + 0 + "{ x: " + pose.x() + ", y: " + pose.y() + ", z: " +
-                    // pose.z() + " }");
-                    /* angle to note */
-                    double angle = Math.atan2(pose.y() + 0.06, pose.x());
-                    metric("Note x", pose.x());
-                    metric("Note y", pose.y() + 0.06);
-                    metric("Angle to note", angle);
-                    rot = -_yawController.calculate(angle);
-                }
+                vx = -_xController.calculate(x);
+                vy = -_xController.calculate(y);
+
+                double angleToNote = Math.atan2(y, x);
+
+                double headingAdjustment = angleToNote - _driveTrain.getHeading().getRadians();
+                _yawController.setGoal(headingAdjustment);
+
+                metric("Note x", x);
+                metric("Note y", y);
+                metric("Angle to note", angleToNote);
+                rot = -_yawController.calculate(_driveTrain.getHeading().getRadians());
             }
         } else {
             error(" _visionProcessor.getDetectedObjects() returned null ");
