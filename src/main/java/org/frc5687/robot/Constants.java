@@ -314,7 +314,7 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
-        public static final double HEADING_TOLERANCE = 0.15; // rad
+        public static final double HEADING_TOLERANCE = 0.02; // rad
         public static final double BUMP_DEGREES = 7;
 
         public static final double PITCH_LOOKING_ANGLE = Units.degreesToRadians(15.0); // this is degrees because sad.
@@ -339,9 +339,9 @@ public class Constants {
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
                                                                                 // more;
 
-        public static double VISION_STD_DEV_X = 0.5;
-        public static double VISION_STD_DEV_Y = 0.5;
-        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(70); // imu deviations lower number to trust
+        public static double VISION_STD_DEV_X = 0.45;
+        public static double VISION_STD_DEV_Y = 0.45;
+        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(90); // imu deviations lower number to trust
                                                                                 // more;
     }
 
@@ -385,7 +385,7 @@ public class Constants {
         
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
 
-        public static final double AMP_SHOT_SPEED = 810;
+        public static final double AMP_SHOT_SPEED = 700;
 
         public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
 
@@ -507,7 +507,7 @@ public class Constants {
         }
     }
 
-    public static class Climber{
+    public static class Climber {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
 
@@ -526,15 +526,18 @@ public class Constants {
             CONFIG.USE_FOC = true;
         }
 
-        public static double UPPER_LIMIT = 4.0;
+        public static double UPPER_LIMIT = -2.25;
         public static double LOWER_LIMIT = 0.0;
 
-        public static double PREP_METERS = 2.0; //TODO: change
-        public static double CLIMB_METERS = 0.5; //TODO: change
+        // This represents where the climber assumes zero is when it starts, should be when hook touches lightbar
+        public static double ZERO_VALUE = 0.0; 
+
+        public static double PREP_METERS = -1.55;
+        public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;
 
-        public static double CLIMBER_GEAR_RATIO = 25.0;//25:1
+        public static double CLIMBER_GEAR_RATIO = 25.0; // FIXME: actually 48 - freyja
 
         public static double WINCH_RADIUS = 0.035052; 
 

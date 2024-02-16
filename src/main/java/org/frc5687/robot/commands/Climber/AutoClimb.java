@@ -2,6 +2,10 @@ package org.frc5687.robot.commands.Climber;
 
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.Climber.ClimberStep;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+
+import static org.frc5687.robot.Constants.DriveTrain.SLOW_KINEMATIC_LIMITS;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
@@ -9,10 +13,12 @@ import org.frc5687.robot.commands.OutliersCommand;
 public class AutoClimb extends OutliersCommand{
     
     private Climber _climber;
+    private DriveTrain _driveTrain;
     private OI _oi;
     
-    public AutoClimb(Climber climber, OI oi) {
+    public AutoClimb(Climber climber, DriveTrain driveTrain, OI oi) {
         _climber = climber;
+        _driveTrain = driveTrain;
         _oi = oi;
         addRequirements(_climber);
     }
@@ -20,8 +26,6 @@ public class AutoClimb extends OutliersCommand{
     @Override
     public void execute() {
         switch (_climber.getStep()) {
-            case UNKNOWN:
-                break;
             case STOWED:
                 if (_oi.getClimbButton()) {
                     _climber.setStep(ClimberStep.RAISING);
@@ -29,11 +33,13 @@ public class AutoClimb extends OutliersCommand{
                 break;
             case RAISING:
                 _climber.setPositionMeters(Constants.Climber.PREP_METERS);
+                _driveTrain.setKinematicLimits(SLOW_KINEMATIC_LIMITS);
                 if (Math.abs(_climber.getPositionMeters() - Constants.Climber.PREP_METERS) < Constants.Climber.CLIMBER_TOLERANCE) {
                     _climber.setStep(ClimberStep.RAISED);
                 }
                 break;
             case RAISED:
+                _driveTrain.setKinematicLimits(SLOW_KINEMATIC_LIMITS);
                 if (_oi.getClimbButton()) {
                     _climber.setStep(ClimberStep.LOWERING);
                 }

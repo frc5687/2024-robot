@@ -87,12 +87,22 @@ public class Drive extends OutliersCommand {
         vx = vec.x() * max_mps;
         vy = vec.y() * max_mps;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-        _driveTrain.setVelocity(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                vx, vy, rot + controllerPower,
-                _driveTrain.getHeading()
-            )
-        );
+
+        if (_driveTrain.isFieldCentric()) {
+            _driveTrain.setVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    vx, vy, rot + controllerPower,
+                    _driveTrain.getHeading()
+                )
+            );
+        } else {
+            _driveTrain.setVelocity(
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    vx, vy, rot + controllerPower,
+                    _driveTrain.getHeading()
+                )
+            );
+        }
     }
 
     @Override

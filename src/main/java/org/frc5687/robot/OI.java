@@ -1,30 +1,29 @@
 /* Team 5687 (C)2020-2021 */
 package org.frc5687.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
-
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import static org.frc5687.robot.util.Helpers.*;
+import static org.frc5687.robot.util.Helpers.applyDeadband;
 
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
-import org.frc5687.robot.commands.*;
-import org.frc5687.robot.commands.Shooter.AmpShot;
-import org.frc5687.robot.commands.Shooter.ChangeRPM;
-import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
+import org.frc5687.robot.commands.DriveToNote;
+import org.frc5687.robot.commands.SnapTo;
 import org.frc5687.robot.commands.Deflector.ZeroDeflector;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Intake.IndexNote;
+import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.Shoot;
-import org.frc5687.robot.subsystems.*;
+import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Deflector;
+import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
@@ -69,6 +68,7 @@ public class OI extends OutliersProxy {
             Climber climber,
             VisionProcessor visionProcessor,
             RobotState robotState) {
+
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, deflector, intake, drivetrain, robotState));
 
