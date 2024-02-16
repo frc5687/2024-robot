@@ -385,7 +385,7 @@ public class Constants {
         
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
 
-        public static final double AMP_SHOT_SPEED = 750;
+        public static final double AMP_SHOT_SPEED = 700;
 
         public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
 

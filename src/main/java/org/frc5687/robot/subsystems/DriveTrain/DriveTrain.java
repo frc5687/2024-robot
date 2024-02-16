@@ -136,6 +136,8 @@ public class DriveTrain extends OutliersSubsystem {
 
     private boolean _useHeadingController;
 
+    private boolean _fieldCentric = true;
+
     public DriveTrain(
             OutliersContainer container,
             Pigeon2 imu) {
@@ -376,6 +378,18 @@ public class DriveTrain extends OutliersSubsystem {
 
     public SwerveSetpoint getSetpoint() {
         return _systemIO.setpoint;
+    }
+
+    public boolean isFieldCentric() {
+        return _fieldCentric;
+    }
+
+    public void setFieldCentric() {
+        _fieldCentric = true;
+    }
+
+    public void setRobotCentric() {
+        _fieldCentric = false;
     }
 
     public void updateDesiredStates() {
