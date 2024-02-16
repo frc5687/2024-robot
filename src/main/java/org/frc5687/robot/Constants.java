@@ -221,13 +221,11 @@ public class Constants {
         /*
          * How to find offsets:
          * 
-         * 1) Set the offset in code to 0
-         * 2) Find your CANcoder on Phoenix Tuner X by its device ID
-         * 3) Open the Plot window and check the Position box
-         * 4) Turn the module back to its intended position
-         * 5) Set the offset in code to the opposite of what Phoenix Tuner is reading
-         * ex. -0.5 should be 0.5 in code
-         * 6) Repeat with all modules
+         * 1) Open Phoenix Tuner
+         * 2) Zero CanCoder
+         * 3) Config Tab
+         * 4) Refresh
+         * 5) Use "magnet offset" as offset in code
          */
 
         public static final ModuleConfiguration SOUTH_EAST_CONFIG = new ModuleConfiguration();
@@ -260,7 +258,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = 0.41455078125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.204346;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
