@@ -491,6 +491,9 @@ public class DriveTrain extends OutliersSubsystem {
     public void setHoverGoal(Pose2d pose) {
         _hoverGoal = pose;
         _poseDriveController.setTargetPoint(_hoverGoal);
+        metric("hoverGoal x", _hoverGoal.getX());
+        metric("hoverGoal y", _hoverGoal.getY());
+        metric("hoverGoal rotation degrees", _hoverGoal.getRotation().getDegrees());
     }
 
     public ChassisSpeeds getMeasuredChassisSpeeds() {
