@@ -20,8 +20,6 @@ public class AutoClimb extends OutliersCommand{
     @Override
     public void execute() {
         switch (_climber.getStep()) {
-            case UNKNOWN:
-                break;
             case STOWED:
                 if (_oi.getClimbButton()) {
                     _climber.setStep(ClimberStep.RAISING);

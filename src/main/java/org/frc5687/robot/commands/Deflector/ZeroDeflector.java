@@ -8,6 +8,7 @@ public class ZeroDeflector extends OutliersCommand {
 
     public ZeroDeflector(Deflector deflector) {
         _deflector = deflector;
+        addRequirements(_deflector);
     }
 
     @Override

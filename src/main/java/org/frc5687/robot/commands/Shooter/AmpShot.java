@@ -20,10 +20,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class AmpShot extends SequentialCommandGroup{
     public AmpShot(Shooter shooter, Deflector deflector, DriveTrain driveTrain, Intake intake) {
 
-        Alliance alliance = Alliance.Red;
-        if (DriverStation.getAlliance().isPresent()) {
-            alliance = DriverStation.getAlliance().get();
-        }
+        Alliance alliance = DriverStation.getAlliance().get();
         addCommands(
             new ParallelCommandGroup(
                 new RPMForAmpShot(shooter),

@@ -20,14 +20,14 @@ public class Climber extends OutliersSubsystem{
     private OI _oi;
     // private DoubleSolenoid _ratchet;
     // private boolean _isRatchetUp;
-    private ClimberStep _step = ClimberStep.UNKNOWN;
+    private ClimberStep _step = ClimberStep.STOWED;
     
     public Climber(OutliersContainer container) {
         super(container);
             _talon = new OutliersTalon(RobotMap.CAN.TALONFX.CLIMBER, Constants.Climber.CAN_BUS, "Climber");
             _talon.configure(Constants.Climber.CONFIG);
             _talon.configureClosedLoop(Constants.Climber.CLOSED_LOOP_CONFIG);
-            _talon.setPosition(Constants.Climber.LOWER_LIMIT);
+            _talon.setPosition(Constants.Climber.ZERO_VALUE);
         
     //         _ratchet = new DoubleSolenoid(
     //             PneumaticsModuleType.REVPH,
@@ -40,9 +40,10 @@ public class Climber extends OutliersSubsystem{
  
     public void setPositionMeters(double meters) {
 
-        if (meters < Constants.Climber.LOWER_LIMIT) {
+        //flipped < & > because the climber is inverted.
+        if (meters > Constants.Climber.LOWER_LIMIT) {
             warn("Attempted to set climber past lower limit.");
-        } else if (meters > Constants.Climber.UPPER_LIMIT){
+        } else if (meters < Constants.Climber.UPPER_LIMIT){
             warn("Attempted to set climber past upper limit.");
         } else {
             _talon.setMotionMagic((meters * Constants.Climber.CLIMBER_GEAR_RATIO) / (2 * Math.PI * Constants.Climber.WINCH_RADIUS));
@@ -79,13 +80,12 @@ public class Climber extends OutliersSubsystem{
     }
 
     public enum ClimberStep { 
-        UNKNOWN(0),
-        STOWED(1),
-        RAISING(2),
-        RAISED(3),
-        LOWERING(4),
-        LOWERED(5),
-        STOWING(6);
+        STOWED(0),
+        RAISING(1),
+        RAISED(2),
+        LOWERING(3),
+        LOWERED(4),
+        STOWING(5);
 
         private final int _value;
         ClimberStep(int value) { 
@@ -100,6 +100,7 @@ public class Climber extends OutliersSubsystem{
 
     @Override
     public void updateDashboard() {
-        metric("ClimberPosition", getPositionMeters());        
+        metric("Climber Position", getPositionMeters());
+        metric("Climber Step", getStep().toString());     
     }
 }
