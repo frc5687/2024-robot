@@ -1,6 +1,9 @@
 package org.frc5687.robot.commands.Deflector;
 
 import org.frc5687.robot.subsystems.Deflector;
+
+import edu.wpi.first.wpilibj.DriverStation;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 
@@ -14,7 +17,7 @@ public class IdleDeflector extends OutliersCommand{
 
     @Override
     public void execute() {
-        _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE);
+        _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE + 0.1);
     }
 
     @Override

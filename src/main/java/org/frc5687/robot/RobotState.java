@@ -103,7 +103,12 @@ public class RobotState {
     }
 
     private boolean isValidMeasurement(Pose3d measurement) {
-        return true;
+        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getX() > 0
+         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getY() > 0){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Pose3d getSpeakerTagPose() {

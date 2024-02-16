@@ -44,11 +44,20 @@ public class DriveLights extends OutliersCommand {
     @Override
     public void execute() {
         _lights.setBrightness(1);
+        boolean hasObjects = false;
+        try {
+            hasObjects =_visionProcessor.getDetectedObjects().posesLength() > 0;
+        } catch (Exception e) {
+            error("No objects");
+        }
         //Not connected to driver station
         if (!DriverStation.isDSAttached()) {
             _lights.switchAnimation(AnimationType.RAINBOW);
         //Is in optimal shooting range
-        } else if (_robotState.isWithinOptimalRange()) {
+        } else if (DriverStation.isDisabled()) {
+            _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
+            _lights.switchAnimation(AnimationType.STATIC);
+        } else if (_robotState.isWithinOptimalRange() && _intake.isTopDetected()) {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STROBE);
         //Has Note
@@ -56,7 +65,7 @@ public class DriveLights extends OutliersCommand {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STATIC);
         //Targeting Note 
-        } else if (_visionProcessor.getDetectedObjects().posesLength() > 0 && _driveTrain.getCurrentCommand() instanceof DriveToNote) {
+        } else if (hasObjects && _driveTrain.getCurrentCommand() instanceof DriveToNote) {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STROBE);
         //Intaking

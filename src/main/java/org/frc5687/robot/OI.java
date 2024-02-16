@@ -14,6 +14,7 @@ import static org.frc5687.robot.util.Helpers.*;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.*;
+import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Deflector.ChangeDeflectorAngle;
 import org.frc5687.robot.commands.Deflector.ZeroDeflector;
@@ -27,7 +28,7 @@ import org.frc5687.robot.util.VisionProcessor;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
-    protected CommandJoystick _operatorJoystick;
+    protected Gamepad _operatorGamepad;
     protected Gamepad _buttonpad;
 
     // protected CustomController _customController;
@@ -39,11 +40,11 @@ public class OI extends OutliersProxy {
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
     protected Trigger _povButtonDown;
-
+    
     public OI() {
 
         _driverGamepad = new Gamepad(0);
-        _operatorJoystick = new CommandJoystick(1);
+        _operatorGamepad = new Gamepad(1);
         _buttonpad = new Gamepad(2);
         // _customController = new CustomController();
         _povButtonLeft = new Trigger(() -> _driverGamepad.getPOV() == 270);
@@ -65,41 +66,53 @@ public class OI extends OutliersProxy {
             Shooter shooter,
             Intake intake,
             Deflector deflector,
+            Climber climber,
             VisionProcessor visionProcessor,
-            RobotState robotState
-            ) {
-        _driverLeftTrigger.whileTrue(new IntakeCommand(intake, this));
+            RobotState robotState) {
+        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, deflector, intake, drivetrain, robotState));
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
-        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI/2)));
+        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
-        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3*Math.PI/2)));
+        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
 
-        //_driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new Pose2d(2, 2, new Rotation2d())));
-        _povButtonUp.whileTrue(new DriveToNote(drivetrain, visionProcessor));
-        
+        // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
+        // Pose2d(2, 2, new Rotation2d())));
+        _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
+
+        _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
+
         _povButtonDown.onTrue(new ZeroDeflector(deflector));
     }
 
     public boolean shiftUp() {
-        return _driverGamepad.getRightBumper().getAsBoolean();
+        // return _driverGamepad.getLeftBumper().getAsBoolean();
+        return false;
     }
 
     public boolean shiftDown() {
-        return _driverGamepad.getLeftBumper().getAsBoolean(); 
+        return _driverGamepad.getLeftBumper().getAsBoolean();
     }
 
     public boolean shiftOverride() {
         return _driverGamepad.getBackButton().getAsBoolean();
     }
 
-    public boolean getSlowMode() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
-    }
+    // public boolean getSlowMode() {
+    //     return _driverGamepad.getLeftBumper().getAsBoolean();
+    // }
 
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();
+    }
+
+    public boolean getClimbButton() {
+        return _operatorGamepad.getAButton().getAsBoolean();
+    }
+
+    public boolean getStowButton() {
+        return _operatorGamepad.getBButton().getAsBoolean();
     }
 
     public double getDriveY() {
@@ -113,10 +126,16 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.DriveTrain.TRANSLATION_DEADBAND);
         return speed;
     }
-
+ 
     public double getRotationX() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.ROTATION_DEADBAND);
+        return speed;
+    }
+
+    public double getClimbY() {
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber());
+        speed = applyDeadband(speed, Constants.Climber.CLIMBER_TRANSLATION);
         return speed;
     }
 

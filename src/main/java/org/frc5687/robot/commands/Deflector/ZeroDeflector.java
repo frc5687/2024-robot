@@ -19,7 +19,7 @@ public class ZeroDeflector extends OutliersCommand {
     public boolean isFinished() {
         return _deflector.getHall();
     }
-    
+
     @Override
     public void end(boolean interrupted) {
         // TODO Auto-generated method stub

@@ -10,6 +10,8 @@ public class ChangeDeflectorAngle extends OutliersCommand{
     public ChangeDeflectorAngle(Deflector deflector, double change) {
         _deflector = deflector;
         _change = change;
+
+        addRequirements(_deflector);
     }
 
     @Override
@@ -21,6 +23,4 @@ public class ChangeDeflectorAngle extends OutliersCommand{
     public boolean isFinished() {
         return _deflector.isAtTargetAngle();
     }
-
-    
 }

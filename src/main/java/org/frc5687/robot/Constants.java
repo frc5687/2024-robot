@@ -6,6 +6,8 @@ import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -34,7 +36,8 @@ public class Constants {
 
         public static final double WHEEL_RADIUS = 0.04445; // 3.5in diameter
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.1904
+        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
+                * (16.0 / 36.0); // 4.1904
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.05; // mps
@@ -52,7 +55,7 @@ public class Constants {
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
             CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
-
+ 
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.1;
@@ -67,7 +70,8 @@ public class Constants {
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
             STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
-            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current 
+            STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify
+                                                  // max_current
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
@@ -146,7 +150,6 @@ public class Constants {
 
         public static final double MAX_FALCON_FOC_RPM = 6080.0;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
-
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
         public static final double MAX_LOW_GEAR_MPS = (
             Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
@@ -154,6 +157,9 @@ public class Constants {
         public static final double MAX_HIGH_GEAR_MPS = (
             Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
             / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+
+        public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
+
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
@@ -215,13 +221,11 @@ public class Constants {
         /*
          * How to find offsets:
          * 
-         * 1) Set the offset in code to 0
-         * 2) Find your CANcoder on Phoenix Tuner X by its device ID
-         * 3) Open the Plot window and check the Position box
-         * 4) Turn the module back to its intended position
-         * 5) Set the offset in code to the opposite of what Phoenix Tuner is reading
-         * ex. -0.5 should be 0.5 in code
-         * 6) Repeat with all modules
+         * 1) Open Phoenix Tuner
+         * 2) Zero CanCoder
+         * 3) Config Tab
+         * 4) Refresh
+         * 5) Use "magnet offset" as offset in code
          */
 
         public static final ModuleConfiguration SOUTH_EAST_CONFIG = new ModuleConfiguration();
@@ -245,7 +249,7 @@ public class Constants {
             NORTH_EAST_CONFIG.encoderInverted = false;
             NORTH_EAST_CONFIG.encoderOffset = 0.256591796875;
         }
-        
+
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
 
         static {
@@ -254,7 +258,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = 0.41455078125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.204346;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -357,25 +361,34 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            {2.87020574, 2600},
-            {3.17500635, 2600},
-            {3.47980696, 2350},
-            {3.784607569, 1900},
-            {4.089408179, 1750},
-            {4.394208788, 1700},
-            {4.699009398, 1690}
+                { 2.87020574, 2600 },
+                { 3.17500635, 2600 },
+                { 3.47980696, 2350 },
+                { 3.784607569, 1900 },
+                { 4.089408179, 1750 },
+                { 4.394208788, 1700 },
+                { 4.699009398, 1690 }
         };
 
         public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
         public static final double MAX_DEFLECTOR_DISTANCE = 2.6;
         public static double[][] kDeflectorValues = {
-            {1.041402083, 2.45}, // all at 2600 rpm
-            {1.346202692, 2.4},
-            {1.651003302, 2.35},
-            {1.955803912, 2.25},
-            {2.260604521, 2.15},
-            {2.565405131, 2.05}
+                { 1.041402083, 2.45 }, // all at 2600 rpm
+                { 1.346202692, 2.4 },
+                { 1.651003302, 2.35 },
+                { 1.955803912, 2.25 },
+                { 2.260604521, 2.15 },
+                { 2.565405131, 2.05 }
         };
+
+        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
+        
+        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
+
+        public static final double AMP_SHOT_SPEED = 810;
+
+        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
+
 
         static {
             for (double[] pair : kRPMValues) {
@@ -389,7 +402,6 @@ public class Constants {
             kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
             kRPMRegression = new PolynomialRegression(kRPMValues, 1);
         }
-
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -428,7 +440,7 @@ public class Constants {
 
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 0.9;
+        public static final double INTAKE_SPEED = 1.2;
         public static final double INDEX_SPEED = 0.4;
         public static final double SLOW_INDEX_SPEED = 0.4;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -459,7 +471,7 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.01;
         public static final double LOWER_HALL_ANGLE = 0.0;
         public static final double UPPER_HALL_ANGLE = 2.5;
-        public static final double IDLE_ANGLE = 1.0;
+        public static final double IDLE_ANGLE = 0.5;
 
         // regression equation
         public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
@@ -493,6 +505,59 @@ public class Constants {
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
+    }
+
+    public static class Climber{
+        public static final String CAN_BUS = "CANivore";
+        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+
+        static {
+            CONFIG.TIME_OUT = 0.1;
+
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            CONFIG.MAX_VOLTAGE = 12.0;
+
+            CONFIG.MAX_STATOR_CURRENT = 60;
+            CONFIG.MAX_CURRENT = 60;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.USE_FOC = true;
+        }
+
+        public static double UPPER_LIMIT = 4.0;
+        public static double LOWER_LIMIT = 0.0;
+
+        public static double PREP_METERS = 2.0; //TODO: change
+        public static double CLIMB_METERS = 0.5; //TODO: change
+
+        public static double CLIMBER_TRANSLATION = .05;
+
+        public static double CLIMBER_GEAR_RATIO = 25.0;//25:1
+
+        public static double WINCH_RADIUS = 0.035052; 
+
+        public static double CLIMBER_TOLERANCE = .05;
+        public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        static {
+            CLOSED_LOOP_CONFIG.SLOT = 0;
+            CLOSED_LOOP_CONFIG.kP = 4;
+            CLOSED_LOOP_CONFIG.kI = 0;
+            CLOSED_LOOP_CONFIG.kD = 0;
+            CLOSED_LOOP_CONFIG.kF = 0;
+
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
+            CLOSED_LOOP_CONFIG.JERK = 10;
+
+            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
+        }
+    }
+
+    public static class FieldConstants {
+        public static final double FIELD_LENGTH = 16.54175;
+        public static final double FIELD_WIDTH = 8.0137;
     }
 
     public static class CANdle {
