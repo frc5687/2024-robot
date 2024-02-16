@@ -526,18 +526,18 @@ public class Constants {
             CONFIG.USE_FOC = true;
         }
 
-        public static double UPPER_LIMIT = -2.0;
-        public static double LOWER_LIMIT = 0.25;
+        public static double UPPER_LIMIT = -2.25;
+        public static double LOWER_LIMIT = 0.0;
 
         // This represents where the climber assumes zero is when it starts, should be when hook touches lightbar
         public static double ZERO_VALUE = 0.0; 
 
-        public static double PREP_METERS = -1.3;
-        public static double CLIMB_METERS = 0.2; // FIXME decrease this if the climber goes too far
+        public static double PREP_METERS = -1.55;
+        public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;
 
-        public static double CLIMBER_GEAR_RATIO = 25.0;//25:1
+        public static double CLIMBER_GEAR_RATIO = 25.0; // FIXME: actually 48 - freyja
 
         public static double WINCH_RADIUS = 0.035052; 
 
