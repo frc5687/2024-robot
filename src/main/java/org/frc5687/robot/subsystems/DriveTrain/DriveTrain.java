@@ -6,10 +6,14 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
@@ -125,7 +129,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     private final SystemIO _systemIO;
     // private YawDriveController _yawDriveController;
-    private AutoPoseDriveController _poseDriveController;
+    // private AutoPoseDriveController _poseDriveController;
+    private final HolonomicDriveController _poseController;
+
     private RobotState _robotState = RobotState.getInstance();
 
     private boolean _useHeadingController;
@@ -218,9 +224,18 @@ public class DriveTrain extends OutliersSubsystem {
                 });
 
         _headingController = new SwerveHeadingController(Constants.UPDATE_PERIOD);
-
-        _poseDriveController = new AutoPoseDriveController();
-
+        _poseController = new HolonomicDriveController(
+            new PIDController(
+                    Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
+            new PIDController(
+                    Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
+            new ProfiledPIDController(
+                    MAINTAIN_kP,
+                    MAINTAIN_kI,
+                    MAINTAIN_kD,
+                    new TrapezoidProfile.Constraints(
+                            Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
+                            Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
         // this `false` value doesn't mean that the heading controller is disabled.
         // as of 02/13/24, it gets initialized to true in the Drive command
         // this default value can and will be overridden by commands - xavier bradford
@@ -300,13 +315,14 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Heading Controller End */
 
-    private void updateAutoPoseController() {
-        _systemIO.desiredChassisSpeeds = _poseDriveController.updateAutoAlign(_robotState.getEstimatedPose());
+    public void setVelocityPose(Pose2d pose) {
+        ChassisSpeeds speeds = _poseController.calculate(
+                _robotState.getEstimatedPose(), pose, 0.0, _systemIO.heading);
+        _headingController.setMaintainHeading(pose.getRotation());
+        speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
+        _systemIO.desiredChassisSpeeds = speeds;
     }
 
-    public boolean isAutoPoseComplete() {
-        return _poseDriveController.isAutoAlignComplete();
-    }
 
     @Override
     public void periodic() {
@@ -336,13 +352,11 @@ public class DriveTrain extends OutliersSubsystem {
             case MANUAL:
                 break;
             case POSITION: 
-                updateAutoPoseController();
                 break;
             case ROTATION:
                 break;
             case TRAJECTORY:
                 break;
-
         }
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
@@ -464,8 +478,6 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
-        metric("Pose X", _odometry.getPoseMeters().getX());
-        metric("Pose Y", _odometry.getPoseMeters().getY());
         // moduleMetrics();
     }
 
@@ -490,7 +502,6 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setHoverGoal(Pose2d pose) {
         _hoverGoal = pose;
-        _poseDriveController.setTargetPoint(_hoverGoal);
         metric("hoverGoal x", _hoverGoal.getX());
         metric("hoverGoal y", _hoverGoal.getY());
         metric("hoverGoal rotation degrees", _hoverGoal.getRotation().getDegrees());

@@ -54,6 +54,9 @@ public class DriveLights extends OutliersCommand {
         if (!DriverStation.isDSAttached()) {
             _lights.switchAnimation(AnimationType.RAINBOW);
         //Is in optimal shooting range
+        } else if (DriverStation.isDisabled()) {
+            _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
+            _lights.switchAnimation(AnimationType.STATIC);
         } else if (_robotState.isWithinOptimalRange() && _intake.isTopDetected()) {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STROBE);
@@ -70,9 +73,6 @@ public class DriveLights extends OutliersCommand {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STATIC);
         //No other condition is true, use alliance color
-        } else if (DriverStation.isDisabled()) {
-            _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
-            _lights.switchAnimation(AnimationType.STATIC);
         } else {
             _lights.setColor(
                 DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE

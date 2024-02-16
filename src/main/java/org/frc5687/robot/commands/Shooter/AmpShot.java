@@ -29,11 +29,11 @@ public class AmpShot extends SequentialCommandGroup{
                 new RPMForAmpShot(shooter),
                 new SetDeflectorAngle(deflector, Constants.Shooter.AMP_SHOT_DEFLECTOR_ANGLE),
                 new DriveToPose(driveTrain, 
-                    alliance == Alliance.Red ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
+                    false ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
                 )
             ),
             new DriveToPose(driveTrain, 
-                    alliance == Alliance.Red ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
+                    false ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE
             ),
             new TimedIntake(intake, 1000)
         );
