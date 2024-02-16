@@ -9,8 +9,6 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 
-import java.util.Optional;
-
 import org.frc5687.robot.Constants;
 
 import edu.wpi.first.wpilibj.DriverStation;
