@@ -34,7 +34,7 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = 0.04445; // 3.5in diameter
+        public static final double WHEEL_RADIUS = 0.04699; // 3.5in diameter
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
                 * (16.0 / 36.0); // 4.1904
@@ -141,7 +141,7 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;
 
-        // Size of the robot chassis in meters
+        // Size of the wheelbase in meters
         public static final double WIDTH = 0.5461; // meters
         public static final double LENGTH = 0.5461; // meters
         // Distance of swerve modules from center of robot
@@ -348,7 +348,7 @@ public class Constants {
     public static class Shooter {
         public static final double SHOOT_RPM = 500;
 
-        public static final double VELOCITY_TOLERANCE = 10;
+        public static final double VELOCITY_TOLERANCE = 30; // FIXME: inaccurate???
 
         public static final double IDLE_RPM = 500;
 
@@ -365,9 +365,9 @@ public class Constants {
                 { 3.17500635, 2600 },
                 { 3.47980696, 2350 },
                 { 3.784607569, 1900 },
-                { 4.089408179, 1750 },
-                { 4.394208788, 1700 },
-                { 4.699009398, 1690 }
+                { 4.089408179, 1800 }, // 1750
+                { 4.394208788, 1750 }, // 1700
+                { 4.699009398, 1730 } // 1690
         };
 
         public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
@@ -407,10 +407,10 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.45;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.5;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.125;
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.115;
 
             // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
             SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
@@ -440,7 +440,7 @@ public class Constants {
 
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 1.2;
+        public static final double INTAKE_SPEED = 1.0;
         public static final double INDEX_SPEED = 0.4;
         public static final double SLOW_INDEX_SPEED = 0.4;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();

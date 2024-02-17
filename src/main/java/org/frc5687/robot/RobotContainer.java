@@ -2,34 +2,41 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import java.util.Optional;
+
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Deflector.IdleDeflector;
+import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Shooter.EjectNote;
+import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
-import org.frc5687.robot.commands.Shooter.Shoot;
-import org.frc5687.robot.subsystems.*;
+import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Deflector;
+import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
+import org.frc5687.robot.subsystems.OutliersSubsystem;
+import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
-import org.frc5687.robot.util.*;
+import org.frc5687.robot.util.OutliersContainer;
+import org.frc5687.robot.util.PhotonProcessor;
+import org.frc5687.robot.util.VisionProcessor;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
@@ -59,13 +66,6 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
         _oi = new OI();
-        // Build an auto chooser. This will use Commands.none() as the default option.
-        _autoChooser = AutoBuilder.buildAutoChooser();
-
-        // Another option that allows you to specify the default auto by its name
-        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
-
-        SmartDashboard.putData("Auto Chooser", _autoChooser);
         // create the vision processor
         _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
@@ -86,6 +86,9 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
+       
+
+
 
         // Grab instance such that we can initalize with drivetrain and processor
         _robotState.initializeRobotState(_driveTrain, _photonProcessor);
@@ -96,14 +99,17 @@ public class RobotContainer extends OutliersContainer {
         _climber = new Climber(this);
         _lights = new Lights(this);
 
-        registerNamedCommands();
-
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _driveTrain, _oi));
         setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
+
+        registerNamedCommands();
+        _autoChooser = AutoBuilder.buildAutoChooser("");
+
+        SmartDashboard.putData("Auto Chooser", _autoChooser);
         
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
     }
@@ -142,16 +148,36 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Command getAutoCommand() {
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("C3_TO_SHOOT_TO_F3");
+        // // Follow a path
+        // // Load the path you want to follow using its name in the GUI
+        // PathPlannerPath path = PathPlannerPath.fromPathFile("C3_TO_SHOOT_TO_F3");
 
-        // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path);
-        // return _autoChooser.getSelected();
+        // // Create a path following command using AutoBuilder. This will also trigger event markers.
+        // return AutoBuilder.followPath(path);
+        // // return _autoChooser.getSelected();
+
+        /*
+         * Warning
+         * This method will load all autos in the deploy directory. Since the deploy process does not automatically clear the deploy directory, old auto files that have since been deleted from the project could remain on the RIO, therefore being added to the auto chooser.
+         * To remove old options, the deploy directory will need to be cleared manually via SSH, WinSCP, reimaging the RIO, etc.
+         */
+
+         return _autoChooser.getSelected();
     }
 
+    public Optional<Rotation2d> getRotationTargetOverride(){
+        // Some condition that should decide if we want to override rotation
+        if(_shooter.isAutoShooting()) {
+            // Return an optional containing the rotation override (this should be a field relative rotation)
+            return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        } else {
+            // return an empty optional when we don't want to override the path's rotation
+            return Optional.empty();
+    }
+}
+
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new EjectNote(_shooter, _intake));
-        NamedCommands.registerCommand("Intake", new IntakeCommand(_intake, _oi));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _deflector, _intake));
+        NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
     }
 }
