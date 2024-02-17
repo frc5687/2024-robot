@@ -117,6 +117,7 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+        metric("Robot Esitmated Pose", _robotState.getEstimatedPose().toString());
         SmartDashboard.putData(_field);
     }
 

@@ -7,9 +7,12 @@ import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveToNote;
 import org.frc5687.robot.commands.SnapTo;
+import org.frc5687.robot.commands.Deflector.SetDeflectorAngle;
 import org.frc5687.robot.commands.Deflector.ZeroDeflector;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.AmpShot;
+import org.frc5687.robot.commands.Shooter.AutoShoot;
+import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.Deflector;
@@ -39,6 +42,10 @@ public class OI extends OutliersProxy {
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
     protected Trigger _povButtonDown;
+    protected Trigger _opPovButtonDown;
+    protected Trigger _opPovButtonRight;
+    protected Trigger _opPovButtonUp;
+    protected Trigger _opPovButtonLeft;
     
     public OI() {
 
@@ -50,6 +57,11 @@ public class OI extends OutliersProxy {
         _povButtonRight = new Trigger(() -> _driverGamepad.getPOV() == 90);
         _povButtonUp = new Trigger(() -> _driverGamepad.getPOV() == 0);
         _povButtonDown = new Trigger(() -> _driverGamepad.getPOV() == 180);
+        _opPovButtonDown = new Trigger(() -> _operatorGamepad.getPOV() == 180);
+        _opPovButtonRight = new Trigger(() -> _operatorGamepad.getPOV() == 90);
+        _opPovButtonUp = new Trigger(() -> _operatorGamepad.getPOV() == 270);
+        _opPovButtonLeft = new Trigger(() -> _operatorGamepad.getPOV() == 0);
+
         _driverLeftTrigger = new Trigger(
                 new AxisButton(_driverGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), 0.05)::get);
         _driverRightTrigger = new Trigger(
@@ -81,9 +93,16 @@ public class OI extends OutliersProxy {
         // Pose2d(2, 2, new Rotation2d())));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
-        _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
+        // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
         _povButtonDown.onTrue(new ZeroDeflector(deflector));
+
+        _povButtonUp.whileTrue(new ManualShoot(shooter, deflector, intake));
+
+        // _opPovButtonDown.onTrue(new SetDeflectorAngle(deflector, 0));
+        // _opPovButtonRight.onTrue(new SetDeflectorAngle(deflector, 0.8));
+        // _opPovButtonUp.onTrue(new SetDeflectorAngle(deflector, 1.6));
+        // _opPovButtonLeft.onTrue(new SetDeflectorAngle(deflector, 2.4));
     }
 
     public boolean shiftUp() {

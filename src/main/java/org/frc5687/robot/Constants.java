@@ -290,7 +290,7 @@ public class Constants {
         public static final double SNAP_kI = 0.0;
         public static final double SNAP_kD = 0.1;
 
-        public static final double SNAP_TOLERANCE = Units.degreesToRadians(5.0);
+        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
 
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 4.0;
         public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 8.0;

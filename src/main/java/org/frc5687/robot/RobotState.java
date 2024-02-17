@@ -113,7 +113,7 @@ public class RobotState {
 
     public Pose3d getSpeakerTagPose() {
         return _layout.getTagPose(
-            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
+            _driveTrain.isRedAlliance() ? 4 : 7
         ).get();
     }
 
@@ -128,7 +128,9 @@ public class RobotState {
             Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
         );
 
-        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
+        // flip because intake is pi radians from shooter
+        double angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI)).getRadians();
+
 
         // using a pair here to return both values without doing excess math in multiple methods
         return new Pair<Double, Double>(distance, angle);

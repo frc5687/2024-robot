@@ -538,9 +538,10 @@ public class DriveTrain extends OutliersSubsystem {
     public boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
+            metric("Alliance", alliance.get() == Alliance.Red);
             return alliance.get() == Alliance.Red;
         }
-        error("Could not check if alliance was red, driver station was not connected");
+        metric("Alliance", false);
         return false;
     }
 
