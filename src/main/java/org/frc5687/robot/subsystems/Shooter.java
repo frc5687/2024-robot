@@ -1,6 +1,7 @@
 package org.frc5687.robot.subsystems;
 
 import org.frc5687.lib.drivers.OutliersTalon;
+import org.frc5687.lib.sensors.ProximitySensor;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.controls.Follower;
@@ -23,6 +24,7 @@ public class Shooter extends OutliersSubsystem {
 
         _bottomTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
         _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
+
     }
 
     public void setIdle() {
@@ -48,7 +50,7 @@ public class Shooter extends OutliersSubsystem {
     public boolean isAtTargetRPM(){
         return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
-
+    
     public boolean isAutoShooting() {
         return _isAutoShooting;
     }
@@ -65,5 +67,6 @@ public class Shooter extends OutliersSubsystem {
         metric("Shooter RPM", getMotorRPM());
         metric("Target RPM", _targetRPM);
         metric("At Target RPM", isAtTargetRPM());
+
     }
 }

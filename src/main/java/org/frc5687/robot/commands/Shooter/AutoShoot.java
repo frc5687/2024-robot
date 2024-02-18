@@ -6,7 +6,6 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.Intake;
 
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -19,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class AutoShoot extends OutliersCommand{
     private Shooter _shooter;
-    private Deflector _deflector;
     private Intake _intake;
     private RobotState _robotState;
 
@@ -28,14 +26,12 @@ public class AutoShoot extends OutliersCommand{
 
     public AutoShoot(
         Shooter shooter,
-        Deflector deflector,
         Intake intake
     ) {
         _shooter = shooter;
-        _deflector = deflector;
         _intake = intake;
         _robotState = RobotState.getInstance();
-        addRequirements(_shooter, _intake, _deflector);
+        addRequirements(_shooter, _intake);
     }
 
     @Override
@@ -51,18 +47,10 @@ public class AutoShoot extends OutliersCommand{
         double distance = distanceAndAngle.getFirst();
 
         double angle = distanceAndAngle.getSecond();
+        _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
+        _shooter.setToTarget();
 
-        if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
-            _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
-            _shooter.setToTarget();
-            _deflector.setTargetAngle(_deflector.calculateAngleFromDistance(distance));
-        } else {
-            _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
-            _shooter.setToTarget();
-            _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE);
-        }
-
-        if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle()) { 
+        if (_shooter.isAtTargetRPM()) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
             _timestamp = System.currentTimeMillis();
         }

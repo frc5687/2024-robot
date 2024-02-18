@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
-import org.frc5687.robot.commands.Deflector.IdleDeflector;
 import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
@@ -15,7 +14,6 @@ import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.Climber;
-import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
@@ -47,7 +45,6 @@ public class RobotContainer extends OutliersContainer {
     private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
-    private Deflector _deflector;
     private Climber _climber;
     private Lights _lights;
 
@@ -95,7 +92,6 @@ public class RobotContainer extends OutliersContainer {
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
-        _deflector = new Deflector(this);
         _climber = new Climber(this);
         _lights = new Lights(this);
 
@@ -103,7 +99,6 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _driveTrain, _oi));
-        setDefaultCommand(_deflector, new IdleDeflector(_deflector));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
 
         registerNamedCommands();
@@ -111,7 +106,7 @@ public class RobotContainer extends OutliersContainer {
 
         SmartDashboard.putData("Auto Chooser", _autoChooser);
         
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
+        _oi.initializeButtons(_driveTrain, _shooter, _intake, _climber, _visionProcessor, _robotState);
     }
 
     public void periodic() {
@@ -178,7 +173,7 @@ public class RobotContainer extends OutliersContainer {
 }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _deflector, _intake));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
     }
 }

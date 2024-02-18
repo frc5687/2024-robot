@@ -1,6 +1,14 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
+import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
+import org.frc5687.lib.cheesystuff.PolynomialRegression;
+import org.frc5687.lib.drivers.OutliersTalon;
+import org.frc5687.lib.drivers.OutliersTalon.ClosedLoopConfiguration;
+import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
+import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
+
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -10,13 +18,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-
-import org.frc5687.lib.cheesystuff.InterpolatingDouble;
-import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
-import org.frc5687.lib.cheesystuff.PolynomialRegression;
-import org.frc5687.lib.drivers.OutliersTalon;
-import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
-import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
@@ -352,12 +353,14 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
+        public static final double DUNKER_IN_RPM = 100; //FIXME
+        public static final double DUNKER_OUT_RPM = 200; //FIXME
+
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
 
-        public static PolynomialRegression kDeflectorRegression;
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
@@ -370,36 +373,19 @@ public class Constants {
                 { 4.699009398, 1730 } // 1690
         };
 
-        public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
-        public static final double MAX_DEFLECTOR_DISTANCE = 2.6;
-        public static double[][] kDeflectorValues = {
-                { 1.041402083, 2.45 }, // all at 2600 rpm
-                { 1.346202692, 2.4 },
-                { 1.651003302, 2.35 },
-                { 1.955803912, 2.25 },
-                { 2.260604521, 2.15 },
-                { 2.565405131, 2.05 }
-        };
-
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
         
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
-
+        
         public static final double AMP_SHOT_SPEED = 700;
-
-        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
-
+        
+        public static final double DUNKER_GEAR_RATIO = 0; //FIXME
 
         static {
             for (double[] pair : kRPMValues) {
                 kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
             }
 
-            for (double[] pair : kDeflectorValues) {
-                kHoodMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
-            }
-
-            kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
             kRPMRegression = new PolynomialRegression(kRPMValues, 1);
         }
 
@@ -421,10 +407,10 @@ public class Constants {
         }
 
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-        // this is the motor config for the swerve motors
+
         static {
             CONFIG.TIME_OUT = 0.1;
-
+            
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
@@ -462,24 +448,13 @@ public class Constants {
         }
     }
 
-    public static class Deflector {
+    public static class Dunker {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-
-        public static final double GEAR_RATIO = 56.0; // 56:1
-
-        public static final double ANGLE_TOLERANCE = 0.01;
-        public static final double LOWER_HALL_ANGLE = 0.0;
-        public static final double UPPER_HALL_ANGLE = 2.5;
-        public static final double IDLE_ANGLE = 0.5;
-
-        // regression equation
-        public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
-        public static final double OFFSET_COEFFICIENT = 2.75678571428571;
-
+        
         static {
             CONFIG.TIME_OUT = 0.1;
-
+            
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
@@ -491,22 +466,28 @@ public class Constants {
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }
-        public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        
+        public static final ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 15;
+            CLOSED_LOOP_CONFIG.kP = 4;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
-            CLOSED_LOOP_CONFIG.JERK = 5000;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
+            CLOSED_LOOP_CONFIG.JERK = 10;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
-    }
 
+        public static final double BACK_ANGLE = 0.0; //FIXME
+        public static final double UP_ANGLE = 0.5; //FIXME
+        public static final double FRONT_ANGLE = 1.0; //FIXME.
+    }
+    
     public static class Climber {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
