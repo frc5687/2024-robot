@@ -122,6 +122,7 @@ public class DriveTrain extends OutliersSubsystem {
     // IMU (Pigeon)
     private final Pigeon2 _imu;
     private double _yawOffset;
+    private double _yawAllianceOffset;
 
     private Pose2d _hoverGoal;
 
@@ -199,8 +200,8 @@ public class DriveTrain extends OutliersSubsystem {
         // frequency in Hz
         configureSignalFrequency(250);
 
-        // configure startup offset.
-        _yawOffset = _imu.getYaw().getValue();
+        // configure startup offset
+        _yawOffset = _imu.getYaw().getValue() ; 
         readIMU();
 
         _kinematics = new SwerveDriveKinematics(
