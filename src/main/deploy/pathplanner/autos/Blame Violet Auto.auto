@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2121856743675397,
+      "y": 4.615116322818976
+    },
+    "rotation": -50.060353694850924
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New New New Path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New New New New Path"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

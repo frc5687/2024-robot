@@ -4,8 +4,8 @@ import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.Intake;
 
@@ -16,37 +16,41 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shoot extends OutliersCommand{
+public class AutoShoot extends OutliersCommand{
     private Shooter _shooter;
     private Deflector _deflector;
     private Intake _intake;
-    private DriveTrain _driveTrain;
     private RobotState _robotState;
 
-    public Shoot(
+    private boolean _done = false;
+    private long _timestamp = Long.MAX_VALUE - 100000; // don't worry about it - xavier bradford
+
+    public AutoShoot(
         Shooter shooter,
         Deflector deflector,
-        Intake intake,
-        DriveTrain driveTrain,
-        RobotState robotState
+        Intake intake
     ) {
         _shooter = shooter;
         _deflector = deflector;
         _intake = intake;
-        _driveTrain = driveTrain;
-        _robotState = robotState;
+        _robotState = RobotState.getInstance();
         addRequirements(_shooter, _intake, _deflector);
+    }
+
+    @Override
+    public void initialize() {
+        _shooter.flagAutoShooting(true);
     }
 
     @Override
     public void execute() {
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
+        error("shootinSHOOTSHOOTSHOOTg");
 
         double distance = distanceAndAngle.getFirst();
 
-        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
+        double angle = distanceAndAngle.getSecond();
 
         if (distance < Constants.Shooter.MAX_DEFLECTOR_DISTANCE) {
             _shooter.setTargetRPM(Constants.Shooter.SHOOTER_RPM_WHEN_DEFLECTOR);
@@ -57,23 +61,21 @@ public class Shoot extends OutliersCommand{
             _shooter.setToTarget();
             _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE);
         }
-        _driveTrain.setSnapHeading(angle);
-        boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
-        metric("IsInAngle", isInAngle);
-        if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle() && isInAngle) { 
-            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
-        }
 
-        SmartDashboard.putNumber("Angle to shoot", angle.getRadians());
+        if (_shooter.isAtTargetRPM() && _deflector.isAtTargetAngle()) { 
+            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+            _timestamp = System.currentTimeMillis();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return System.currentTimeMillis() > _timestamp + 1000; // 1000ms intake
     }
 
     @Override
     public void end(boolean interrupted) {
-        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
+        // FIXME: intake might still be running at the end of autos
+        _shooter.flagAutoShooting(false);
     }
 }

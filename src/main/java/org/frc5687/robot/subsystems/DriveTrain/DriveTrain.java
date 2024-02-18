@@ -3,15 +3,16 @@ package org.frc5687.robot.subsystems.DriveTrain;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
@@ -22,8 +23,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static org.frc5687.robot.Constants.DriveTrain.*;
 
 import java.util.Optional;
@@ -38,7 +37,6 @@ import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.SwerveModule;
-import org.frc5687.robot.Constants.FieldConstants;
 import org.frc5687.robot.util.*;
 
 public class DriveTrain extends OutliersSubsystem {
@@ -118,6 +116,7 @@ public class DriveTrain extends OutliersSubsystem {
     // IMU (Pigeon)
     private final Pigeon2 _imu;
     private double _yawOffset;
+    private double _yawAllianceOffset;
 
     private Pose2d _hoverGoal;
 
@@ -135,6 +134,8 @@ public class DriveTrain extends OutliersSubsystem {
     private RobotState _robotState = RobotState.getInstance();
 
     private boolean _useHeadingController;
+
+    private boolean _fieldCentric = true;
 
     public DriveTrain(
             OutliersContainer container,
@@ -193,8 +194,8 @@ public class DriveTrain extends OutliersSubsystem {
         // frequency in Hz
         configureSignalFrequency(250);
 
-        // configure startup offset.
-        _yawOffset = _imu.getYaw().getValue();
+        // configure startup offset
+        _yawOffset = _imu.getYaw().getValue(); 
         readIMU();
 
         _kinematics = new SwerveDriveKinematics(
@@ -251,6 +252,36 @@ public class DriveTrain extends OutliersSubsystem {
         setSetpointFromMeasuredModules();
 
         // logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
+
+        // Configure AutoBuilder last
+        AutoBuilder.configureHolonomic(
+                _robotState::getEstimatedPose, // Robot pose supplier
+                _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                // FIXME: this might be field relative
+                this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                // FIXME: this might be field relative
+                this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(10.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        3.9, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
+
     }
 
     protected void configureSignalFrequency(double frequency) {
@@ -378,6 +409,18 @@ public class DriveTrain extends OutliersSubsystem {
         return _systemIO.setpoint;
     }
 
+    public boolean isFieldCentric() {
+        return _fieldCentric;
+    }
+
+    public void setFieldCentric() {
+        _fieldCentric = true;
+    }
+
+    public void setRobotCentric() {
+        _fieldCentric = false;
+    }
+
     public void updateDesiredStates() {
         // This is to avoid skew when driving and rotating.
         Pose2d robotPoseVel = new Pose2d(
@@ -490,9 +533,10 @@ public class DriveTrain extends OutliersSubsystem {
     public boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
+            metric("Alliance", alliance.get() == Alliance.Red);
             return alliance.get() == Alliance.Red;
         }
-        error("Could not check if alliance was red, driver station was not connected");
+        metric("Alliance", false);
         return false;
     }
 
@@ -604,7 +648,8 @@ public class DriveTrain extends OutliersSubsystem {
     public void readIMU() {
         double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
                 _imu.getAngularVelocityZDevice());
-        _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset);
+        double yawAllianceOffsetDegrees = isRedAlliance() ? 180.0 : 0;
+        _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset + yawAllianceOffsetDegrees);
         _systemIO.pitch = Units.degreesToRadians(_imu.getPitch().getValue());
     }
 }

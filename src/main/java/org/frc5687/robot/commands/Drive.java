@@ -2,6 +2,7 @@
 package org.frc5687.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -87,12 +88,24 @@ public class Drive extends OutliersCommand {
         vx = vec.x() * max_mps;
         vy = vec.y() * max_mps;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-        _driveTrain.setVelocity(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                vx, vy, rot + controllerPower,
-                _driveTrain.getHeading()
-            )
-        );
+
+        Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
+
+        if (_driveTrain.isFieldCentric()) {
+            _driveTrain.setVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    vx, vy, rot + controllerPower,
+                    rotation
+                )
+            );
+        } else {
+            _driveTrain.setVelocity(
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    vx, vy, rot + controllerPower,
+                    rotation
+                )
+            );
+        }
     }
 
     @Override
