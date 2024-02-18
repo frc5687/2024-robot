@@ -22,7 +22,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 
 public class RobotState {
@@ -103,10 +102,11 @@ public class RobotState {
     }
 
     private boolean isValidMeasurement(Pose3d measurement) {
-        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getX() > 0
-         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getY() > 0){
+        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getX() > 0
+         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getY() > 0){
             return true;
         } else {
+            DriverStation.reportError("Robot not on field!!", false);
             return false;
         }
     }
@@ -129,11 +129,10 @@ public class RobotState {
         );
 
         // flip because intake is pi radians from shooter
-        double angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI)).getRadians();
-
+        Rotation2d angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI));
 
         // using a pair here to return both values without doing excess math in multiple methods
-        return new Pair<Double, Double>(distance, angle);
+        return new Pair<Double, Double>(distance, angle.getRadians());
     }
 
     // edit this as needed to reflect the optimal range to shoot from

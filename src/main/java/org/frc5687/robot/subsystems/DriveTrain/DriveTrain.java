@@ -8,14 +8,11 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
@@ -26,8 +23,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static org.frc5687.robot.Constants.DriveTrain.*;
 
 import java.util.Optional;
@@ -42,7 +37,6 @@ import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.SwerveModule;
-import org.frc5687.robot.Constants.FieldConstants;
 import org.frc5687.robot.util.*;
 
 public class DriveTrain extends OutliersSubsystem {
@@ -201,7 +195,7 @@ public class DriveTrain extends OutliersSubsystem {
         configureSignalFrequency(250);
 
         // configure startup offset
-        _yawOffset = _imu.getYaw().getValue() ; 
+        _yawOffset = _imu.getYaw().getValue(); 
         readIMU();
 
         _kinematics = new SwerveDriveKinematics(
@@ -654,7 +648,8 @@ public class DriveTrain extends OutliersSubsystem {
     public void readIMU() {
         double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
                 _imu.getAngularVelocityZDevice());
-        _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset);
+        double yawAllianceOffsetDegrees = isRedAlliance() ? 180.0 : 0;
+        _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset + yawAllianceOffsetDegrees);
         _systemIO.pitch = Units.degreesToRadians(_imu.getPitch().getValue());
     }
 }

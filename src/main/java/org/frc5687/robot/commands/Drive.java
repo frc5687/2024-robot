@@ -90,6 +90,7 @@ public class Drive extends OutliersCommand {
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
 
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
+
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
