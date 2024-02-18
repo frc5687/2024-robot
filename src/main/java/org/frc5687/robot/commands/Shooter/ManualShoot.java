@@ -7,7 +7,6 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
-import org.frc5687.robot.subsystems.Deflector;
 import org.frc5687.robot.subsystems.Intake;
 
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -21,19 +20,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ManualShoot extends OutliersCommand{
     private Shooter _shooter;
-    private Deflector _deflector;
     private Intake _intake;
     private RobotState _robotState = RobotState.getInstance();
 
     public ManualShoot(
         Shooter shooter,
-        Deflector deflector,
         Intake intake
     ) {
         _shooter = shooter;
-        _deflector = deflector;
         _intake = intake;
-        addRequirements(_shooter, _intake, _deflector);
+        addRequirements(_shooter, _intake);
     }
 
     @Override
@@ -46,9 +42,8 @@ public class ManualShoot extends OutliersCommand{
 
             _shooter.setTargetRPM(2000);
             _shooter.setToTarget();
-            _deflector.setTargetAngle(Constants.Deflector.IDLE_ANGLE);
 
-        if (_shooter.isAtTargetRPM() /*&& _deflector.isAtTargetAngle()*/) { 
+        if (_shooter.isAtTargetRPM()) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
 
