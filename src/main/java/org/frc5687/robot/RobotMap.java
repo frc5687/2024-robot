@@ -99,6 +99,7 @@ public class RobotMap {
      */
     public static class DIO {
         public static final int DUNKER_PROXIMITY_SENSOR = 0; //FIXME
+        public static final int DUNKER_ABS_ENCODER = 1; //FIXME
 
         public static final int LOWER_HALL = 9;
 

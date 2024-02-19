@@ -460,9 +460,9 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_STATOR_CURRENT = 60;
             CONFIG.MAX_CURRENT = 60;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_SUPPLY_CURRENT = 60;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }
@@ -483,9 +483,19 @@ public class Constants {
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
 
+        public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
+
         public static final double BACK_ANGLE = 0.0; //FIXME
         public static final double UP_ANGLE = 0.5; //FIXME
         public static final double FRONT_ANGLE = 1.0; //FIXME.
+
+        public static final double STOWED_ANGLE = 0.0; // FIXME
+        public static final double PREP_ANGLE = 1.0; // FIXME
+        public static final double DUNK_ANGLE = 2.0; // FIXME 
+        public static final double ANGLE_TOLERANCE = 0;
+        public static final long EJECT_TIME = 250;
+        public static final double DUNK_RPM = 500;
+
     }
     
     public static class Climber {

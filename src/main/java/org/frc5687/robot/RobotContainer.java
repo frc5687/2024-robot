@@ -8,12 +8,14 @@ import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
+import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
@@ -29,6 +31,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -45,6 +48,7 @@ public class RobotContainer extends OutliersContainer {
     private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
+    private Dunker _dunker;
     private Climber _climber;
     private Lights _lights;
 
@@ -83,20 +87,20 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-       
-
-
 
         // Grab instance such that we can initalize with drivetrain and processor
         _robotState.initializeRobotState(_driveTrain, _photonProcessor);
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
+        _dunker = new Dunker(this);
+
         _climber = new Climber(this);
         _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
+        setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
@@ -105,15 +109,12 @@ public class RobotContainer extends OutliersContainer {
         _autoChooser = AutoBuilder.buildAutoChooser("");
 
         SmartDashboard.putData("Auto Chooser", _autoChooser);
-        
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _climber, _visionProcessor, _robotState);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
     }
 
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
-        metric("Robot Esitmated Pose", _robotState.getEstimatedPose().toString());
-        SmartDashboard.putData(_field);
     }
 
     public void disabledPeriodic() {

@@ -7,12 +7,15 @@ import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveToNote;
 import org.frc5687.robot.commands.SnapTo;
+import org.frc5687.robot.commands.Dunker.DunkNote;
+import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
@@ -72,6 +75,7 @@ public class OI extends OutliersProxy {
     public void initializeButtons(
             DriveTrain drivetrain,
             Shooter shooter,
+            Dunker dunker,
             Intake intake,
             Climber climber,
             VisionProcessor visionProcessor,
@@ -88,6 +92,9 @@ public class OI extends OutliersProxy {
         // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
         // Pose2d(2, 2, new Rotation2d())));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
+
+        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter));
+        _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }
