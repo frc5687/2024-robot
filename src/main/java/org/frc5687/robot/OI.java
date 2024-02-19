@@ -9,6 +9,8 @@ import org.frc5687.robot.commands.DriveTrain.DriveToNote;
 import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
+import org.frc5687.robot.commands.Dunker.DunkNote;
+import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
@@ -16,6 +18,7 @@ import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersProxy;
@@ -74,6 +77,7 @@ public class OI extends OutliersProxy {
     public void initializeButtons(
             DriveTrain drivetrain,
             Shooter shooter,
+            Dunker dunker,
             Intake intake,
             Climber climber,
             VisionProcessor visionProcessor,
@@ -98,6 +102,9 @@ public class OI extends OutliersProxy {
         // _opPovButtonRight.onTrue(new SetDeflectorAngle(deflector, 0.8));
         // _opPovButtonUp.onTrue(new SetDeflectorAngle(deflector, 1.6));
         // _opPovButtonLeft.onTrue(new SetDeflectorAngle(deflector, 2.4));
+        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter));
+        _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
+
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }
 
