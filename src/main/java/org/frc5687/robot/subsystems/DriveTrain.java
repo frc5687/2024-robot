@@ -1,5 +1,5 @@
 /* Team 5687 (C)2020-2022 */
-package org.frc5687.robot.subsystems.DriveTrain;
+package org.frc5687.robot.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -35,8 +35,6 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
-import org.frc5687.robot.subsystems.OutliersSubsystem;
-import org.frc5687.robot.subsystems.SwerveModule;
 import org.frc5687.robot.util.*;
 
 public class DriveTrain extends OutliersSubsystem {
@@ -124,6 +122,7 @@ public class DriveTrain extends OutliersSubsystem {
     private long _shiftTime = 0;
 
     private boolean _hasShiftInit = false;
+    private boolean _lockHeading = false;
     private boolean _isLowGear;
 
     private final SystemIO _systemIO;
@@ -132,8 +131,6 @@ public class DriveTrain extends OutliersSubsystem {
     private final HolonomicDriveController _poseController;
 
     private RobotState _robotState = RobotState.getInstance();
-
-    private boolean _useHeadingController;
 
     private boolean _fieldCentric = true;
 
@@ -237,13 +234,10 @@ public class DriveTrain extends OutliersSubsystem {
                     new TrapezoidProfile.Constraints(
                             Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
                             Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
-        // this `false` value doesn't mean that the heading controller is disabled.
-        // as of 02/13/24, it gets initialized to true in the Drive command
-        // this default value can and will be overridden by commands - xavier bradford
-        _useHeadingController = false;
 
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
+        _lockHeading = false;
         _isLowGear = true;
 
         zeroGyroscope();
@@ -343,6 +337,14 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setMaintainHeading(Rotation2d heading) {
         _headingController.setMaintainHeading(heading);
+    }
+
+    public void setLockHeading(boolean lock) {
+        _lockHeading = lock;
+    }
+
+    public boolean isHeadingLocked() {
+        return _lockHeading;
     }
     /* Heading Controller End */
 
@@ -599,7 +601,6 @@ public class DriveTrain extends OutliersSubsystem {
         if (speed > Constants.DriveTrain.SHIFT_UP_SPEED_MPS && getDesiredSpeed() > SHIFT_UP_SPEED_MPS) {
             if (!_shiftLockout) {
                 _shiftLockout = true;
-                error("Shifting up");
                 _shiftTime = System.currentTimeMillis();
                 shiftUpModules();
             }

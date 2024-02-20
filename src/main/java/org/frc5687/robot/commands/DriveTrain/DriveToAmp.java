@@ -1,9 +1,10 @@
-package org.frc5687.robot.commands;
+package org.frc5687.robot.commands.DriveTrain;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain.ControlState;
+import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain.ControlState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 

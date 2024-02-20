@@ -4,11 +4,11 @@ package org.frc5687.robot;
 
 import java.util.Optional;
 
-import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.Deflector.IdleDeflector;
+import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
@@ -16,11 +16,11 @@ import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.Deflector;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;

@@ -5,10 +5,12 @@ import static org.frc5687.robot.util.Helpers.applyDeadband;
 
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
-import org.frc5687.robot.commands.DriveToNote;
-import org.frc5687.robot.commands.SnapTo;
 import org.frc5687.robot.commands.Deflector.SetDeflectorAngle;
 import org.frc5687.robot.commands.Deflector.ZeroDeflector;
+import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.ShiftDown;
+import org.frc5687.robot.commands.DriveTrain.SnapTo;
+import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
@@ -16,9 +18,9 @@ import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.Deflector;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
 
@@ -89,10 +91,10 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
 
-        // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
-        // Pose2d(2, 2, new Rotation2d())));
+        _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
+        _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
         _povButtonDown.onTrue(new ZeroDeflector(deflector));
@@ -108,22 +110,6 @@ public class OI extends OutliersProxy {
     public boolean shiftUp() {
         // return _driverGamepad.getLeftBumper().getAsBoolean();
         return false;
-    }
-
-    public boolean shiftDown() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
-    }
-
-    public boolean shiftOverride() {
-        return _driverGamepad.getBackButton().getAsBoolean();
-    }
-
-    // public boolean getSlowMode() {
-    //     return _driverGamepad.getLeftBumper().getAsBoolean();
-    // }
-
-    public boolean zeroIMU() {
-        return _driverGamepad.getStartButton().getAsBoolean();
     }
 
     public boolean getClimbButton() {

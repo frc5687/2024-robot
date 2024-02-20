@@ -6,8 +6,8 @@ import org.frc5687.robot.Robot;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.subsystems.Deflector;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 
 import edu.wpi.first.apriltag.AprilTagFields;
