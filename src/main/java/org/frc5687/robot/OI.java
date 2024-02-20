@@ -11,6 +11,11 @@ import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
+import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
+import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.ShiftDown;
+import org.frc5687.robot.commands.DriveTrain.SnapTo;
+import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -19,6 +24,8 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.Dunker.DunkerState;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
 
@@ -91,6 +98,9 @@ public class OI extends OutliersProxy {
         _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
+        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
+        _operatorGamepad.getXButton().and(() -> dunker.getDunkerState() == DunkerState.READY_TO_DUNK).onTrue(new DriveToAmp(drivetrain).andThen(new DunkNote(dunker, shooter)));
+        _operatorGamepad.getBackButton().onTrue(new DunkNote(dunker, shooter));
         _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
