@@ -102,7 +102,7 @@ public class OI extends OutliersProxy {
         // _opPovButtonRight.onTrue(new SetDeflectorAngle(deflector, 0.8));
         // _opPovButtonUp.onTrue(new SetDeflectorAngle(deflector, 1.6));
         // _opPovButtonLeft.onTrue(new SetDeflectorAngle(deflector, 2.4));
-        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter));
+        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));

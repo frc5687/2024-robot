@@ -98,7 +98,7 @@ public class DriveTrain extends OutliersSubsystem {
     private KinematicLimits _kinematicLimits = LOW_KINEMATIC_LIMITS;
 
     private final DoubleSolenoid _shift;
-    private final Compressor _compressor;
+    // private final Compressor _compressor;
     private boolean _compressInit;
 
     private final BaseStatusSignal[] _moduleSignals;
@@ -144,8 +144,8 @@ public class DriveTrain extends OutliersSubsystem {
                 RobotMap.PCM.SHIFTER_HIGH,
                 RobotMap.PCM.SHIFTER_LOW);
         // create compressor, compressor logic
-        _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressInit = false;
+        // _compressor = new Compressor(PneumaticsModuleType.REVPH);
+        // _compressInit = false;
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -360,19 +360,19 @@ public class DriveTrain extends OutliersSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        if (!_hasShiftInit) {
-            shiftDownModules();
-            _hasShiftInit = true;
-        }
+        // if (!_hasShiftInit) {
+        //     shiftDownModules();
+        //     _hasShiftInit = true;
+        // }
 
-        if(!_compressInit){
-            _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
-            if (!_compressor.getPressureSwitchValue() && !_compressInit){
-                _compressor.disable();
-                _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
-                _compressInit = true;
-            }
-        }
+        // if(!_compressInit){
+        //     _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
+        //     if (!_compressor.getPressureSwitchValue() && !_compressInit){
+        //         _compressor.disable();
+        //         _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
+        //         _compressInit = true;
+        //     }
+        // }
 
         readSignals();
 
@@ -522,7 +522,7 @@ public class DriveTrain extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
-        metric("Tank Pressure PSI", _compressor.getPressure());
+        // metric("Tank Pressure PSI", _compressor.getPressure());
         // moduleMetrics();
     }
 
