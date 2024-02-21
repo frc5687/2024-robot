@@ -93,7 +93,7 @@ public class OI extends OutliersProxy {
         // Pose2d(2, 2, new Rotation2d())));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
-        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter));
+        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));

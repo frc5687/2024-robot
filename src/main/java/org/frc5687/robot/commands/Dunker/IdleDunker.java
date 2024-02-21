@@ -19,9 +19,15 @@ public class IdleDunker extends OutliersCommand{
 
     @Override
     public void execute() {
-        if (_dunker.getDunkerState() != DunkerState.UNKNOWN || _dunker.getDunkerState() != DunkerState.DUNKED_NOTE) {
+        if (_dunker.getDunkerState() == DunkerState.UNKNOWN || _dunker.getDunkerState() == DunkerState.DUNKED_NOTE) {
+            _dunker.setDunkerState(DunkerState.STOWING);
+        }
+        
+        if (_dunker.getDunkerState() == DunkerState.STOWING) {
             _dunker.setDunkerAngle(Constants.Dunker.STOWED_ANGLE);
-            _dunker.setDunkerState(DunkerState.STOWED);
+            if (_dunker.isAtAngle(Constants.Dunker.STOWED_ANGLE)) {
+                _dunker.setDunkerState(DunkerState.STOWED);
+            }
         }
     }
 

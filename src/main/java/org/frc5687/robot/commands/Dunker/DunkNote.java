@@ -22,7 +22,8 @@ public class DunkNote extends OutliersCommand {
         super.initialize();
         if (_dunker.getDunkerState() != DunkerState.READY_TO_DUNK) {
             error("Dunk note called without being ready!");
-            // maybe set state back to unknown such that idle command stows the dunker
+            //cancels the command, then runs end(). end() will set the state to dunkednote, and idledunker will stow it again.
+            this.cancel();
         }
         _ejectTime = System.currentTimeMillis() + Constants.Dunker.EJECT_TIME;
     }
@@ -30,9 +31,9 @@ public class DunkNote extends OutliersCommand {
     @Override
     public void execute() {
         super.execute();
-        _shooter.setTargetRPM(Constants.Dunker.DUNK_RPM);
-        _shooter.setToTarget();
+        _shooter.setToDunkOutRPM();
     }
+
     @Override
     public boolean isFinished() {
         return (System.currentTimeMillis() > _ejectTime);

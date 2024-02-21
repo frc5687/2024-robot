@@ -108,6 +108,8 @@ public class RobotContainer extends OutliersContainer {
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
 
+        SmartDashboard.putData(_field);
+
         SmartDashboard.putData("Auto Chooser", _autoChooser);
         _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
     }
@@ -170,8 +172,8 @@ public class RobotContainer extends OutliersContainer {
         } else {
             // return an empty optional when we don't want to override the path's rotation
             return Optional.empty();
+        }
     }
-}
 
     public void registerNamedCommands() {
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake));

@@ -14,7 +14,7 @@ public class IdleShooter extends OutliersCommand{
     }
 
     public void execute() {
-        _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
+        _shooter.setTargetRPM(0);
         _shooter.setToTarget();
     }
 

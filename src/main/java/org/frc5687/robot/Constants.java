@@ -353,8 +353,8 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
-        public static final double DUNKER_IN_RPM = 100; //FIXME
-        public static final double DUNKER_OUT_RPM = 200; //FIXME
+        public static final double DUNKER_IN_RPM = 300;
+        public static final double DUNKER_OUT_RPM = 500;
 
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
 
@@ -378,8 +378,6 @@ public class Constants {
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
         
         public static final double AMP_SHOT_SPEED = 700;
-        
-        public static final double DUNKER_GEAR_RATIO = 0; //FIXME
 
         static {
             for (double[] pair : kRPMValues) {
@@ -427,8 +425,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.4;
-        public static final double SLOW_INDEX_SPEED = 0.4;
+        public static final double INDEX_SPEED = 0.3;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
         static {
@@ -451,12 +448,14 @@ public class Constants {
     public static class Dunker {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+
+        public static final double DUNKER_GEAR_RATIO = (84.0/8.0); //8:84
         
         static {
             CONFIG.TIME_OUT = 0.1;
             
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
-            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+            CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
@@ -471,31 +470,25 @@ public class Constants {
 
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 4;
+            CLOSED_LOOP_CONFIG.kP = 2; //FIXME 4
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
-            CLOSED_LOOP_CONFIG.JERK = 10;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 10;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 5;
+            CLOSED_LOOP_CONFIG.JERK = 1;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
-        public static final double BACK_ANGLE = 0.0; //FIXME
-        public static final double UP_ANGLE = 0.5; //FIXME
-        public static final double FRONT_ANGLE = 1.0; //FIXME.
-
-        public static final double STOWED_ANGLE = 0.0; // FIXME
-        public static final double PREP_ANGLE = 1.0; // FIXME
-        public static final double DUNK_ANGLE = 2.0; // FIXME 
+        public static final double PREP_ANGLE = 3.42;
+        public static final double DUNK_ANGLE = 4.4; // FIXME 
+        public static final double STOWED_ANGLE = 3.42; // 6.5;
         public static final double ANGLE_TOLERANCE = 0;
         public static final long EJECT_TIME = 250;
-        public static final double DUNK_RPM = 500;
-
     }
     
     public static class Climber {
