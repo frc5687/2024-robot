@@ -28,10 +28,7 @@ public class HandoffDunker extends OutliersCommand {
     public void execute() {
         switch (_dunker.getDunkerState()) {
             case STOWING: // this case should be taken care of by IdleDunker, but just in case...
-                _dunker.setDunkerAngle(Constants.Dunker.STOWED_ANGLE);
-                if (_dunker.isAtAngle(Constants.Dunker.STOWED_ANGLE)) {
-                    _dunker.setDunkerState(DunkerState.STOWED);
-                }
+                _dunker.setDunkerState(DunkerState.STOWED);
                 break;
             case STOWED:
                 _dunker.setDunkerAngle(Constants.Dunker.PREP_ANGLE);
@@ -41,7 +38,7 @@ public class HandoffDunker extends OutliersCommand {
                 break;
             case PREPARED_FOR_NOTE:
                 _shooter.setToDunkInRPM();
-                _intake.setSpeed(0.25);
+                _intake.setSpeed(Constants.Intake.HANDOFF_SPEED);
                 if (_dunker.isNoteInDunker()) {
                     _shooter.setToStop();
                     _intake.setSpeed(0);

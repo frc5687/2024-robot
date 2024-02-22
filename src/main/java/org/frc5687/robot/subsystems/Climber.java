@@ -81,11 +81,12 @@ public class Climber extends OutliersSubsystem{
 
     public enum ClimberStep { 
         STOWED(0),
-        RAISING(1),
-        RAISED(2),
-        LOWERING(3),
-        LOWERED(4),
-        STOWING(5);
+        CLEARING_DUNKER(1),
+        RAISING(2),
+        RAISED(3),
+        LOWERING(4),
+        LOWERED(5),
+        STOWING(6);
 
         private final int _value;
         ClimberStep(int value) { 
