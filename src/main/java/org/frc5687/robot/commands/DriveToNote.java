@@ -77,17 +77,20 @@ public class DriveToNote extends OutliersCommand {
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
 
-                double angleToNote = Math.atan2(y, x);
+                double currentHeadingRadians = _driveTrain.getHeading().getRadians(); // Current heading in radians
 
-                double headingAdjustment = angleToNote - _driveTrain.getHeading().getRadians();
-                // [-180, 180]
-                headingAdjustment = (headingAdjustment + Math.PI * 3) % (Math.PI * 2) - Math.PI;
-                _yawController.setGoal(headingAdjustment);
+                double angleToNoteRadians = Math.atan2(y, x);
+
+                double headingAdjustmentRadians = angleToNoteRadians - currentHeadingRadians;
+
+                headingAdjustmentRadians = (headingAdjustmentRadians + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+                _yawController.setGoal(headingAdjustmentRadians);
+
 
                 metric("Note x", x);
                 metric("Note y", y);
-                metric("Angle to note", angleToNote);
-                rot = _yawController.calculate(_driveTrain.getHeading().getRadians());
+                metric("Angle to note", headingAdjustmentRadians);
+                rot = -_yawController.calculate(_driveTrain.getHeading().getRadians());
             }
         } else {
             error(" _visionProcessor.getDetectedObjects() returned null ");
