@@ -237,7 +237,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.064208984375;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.4819;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -248,7 +248,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.256591796875;
+            NORTH_EAST_CONFIG.encoderOffset = -0.2715;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -259,7 +259,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.204346;
+            NORTH_WEST_CONFIG.encoderOffset = -0.3381;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -270,7 +270,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.165771484375;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.4993;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -347,14 +347,12 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static final double SHOOT_RPM = 500;
-
         public static final double VELOCITY_TOLERANCE = 30; // FIXME: inaccurate???
 
         public static final double IDLE_RPM = 500;
 
-        public static final double DUNKER_IN_RPM = 300;
-        public static final double DUNKER_OUT_RPM = 500;
+        public static final double DUNKER_IN_RPM = 600;
+        public static final double DUNKER_OUT_RPM = 3000;
 
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
 
@@ -396,11 +394,6 @@ public class Constants {
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
             SHOOTER_CONTROLLER_CONFIG.kF = 0.115;
 
-            // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
-            SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
-            SHOOTER_CONTROLLER_CONFIG.ACCELERATION = 4000;
-            SHOOTER_CONTROLLER_CONFIG.JERK = 10000;
-
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
 
@@ -414,9 +407,8 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_STATOR_CURRENT = 60;
-            CONFIG.MAX_CURRENT = 60;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_SUPPLY_CURRENT = 60;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }
@@ -470,25 +462,25 @@ public class Constants {
 
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 2; //FIXME 4
+            CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
-            CLOSED_LOOP_CONFIG.kD = 0;
+            CLOSED_LOOP_CONFIG.kD = 0.001;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 10;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 5;
-            CLOSED_LOOP_CONFIG.JERK = 1;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
+            CLOSED_LOOP_CONFIG.JERK = 5000;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
-        public static final double PREP_ANGLE = 3.42;
-        public static final double DUNK_ANGLE = 4.4; // FIXME 
-        public static final double STOWED_ANGLE = 3.42; // 6.5;
-        public static final double ANGLE_TOLERANCE = 0;
-        public static final long EJECT_TIME = 250;
+        public static final double PREP_ANGLE = 2.35;
+        public static final double DUNK_ANGLE = 3.36;
+        public static final double STOWED_ANGLE = 3.36; // is actually 5.2681, but we are using the dunk angle to make sure it doesn't break the robot - xavier bradford 02/21/24
+        public static final double ANGLE_TOLERANCE = 0.02;
+        public static final long EJECT_TIME = 1000; // 1 second
     }
     
     public static class Climber {
@@ -534,7 +526,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 500;
             CLOSED_LOOP_CONFIG.JERK = 10;
 

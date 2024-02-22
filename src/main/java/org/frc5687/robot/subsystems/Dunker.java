@@ -51,8 +51,7 @@ public class Dunker extends OutliersSubsystem{
     }
 
     public void setDunkerAngle(double angle) {
-        _dunkerArmTalon.setMotionMagic(angle * Constants.Dunker.DUNKER_GEAR_RATIO);
-        warn(" Setting Dunker Angle to " + angle);
+        _dunkerArmTalon.setMotionMagic(OutliersTalon.radiansToRotations(angle, Constants.Dunker.DUNKER_GEAR_RATIO));
     }
 
     public double getDunkerAngle() {
@@ -100,5 +99,6 @@ public class Dunker extends OutliersSubsystem{
         metric("Note in Dunker", isNoteInDunker());
         metric("Dunker absolute angle radians", getDunkerAbsAngleRadians());
         metric("Dunker at target angle", isAtAngle(_dunkerArmTalon.getClosedLoopReference().getValue()));
+        metric("State", _dunkerState.name());
     }
 }
