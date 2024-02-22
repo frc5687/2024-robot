@@ -5,9 +5,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.Messages.VisionPose;
+import org.frc5687.Messages.VisionPoseArray;
+import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.PhotonProcessor;
+import org.frc5687.robot.util.VisionProcessor;
 import org.photonvision.EstimatedRobotPose;
+
+import com.neilalexander.jnacl.crypto.poly1305;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -18,20 +23,25 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 
 public class RobotState {
     private DriveTrain _driveTrain;
     private PhotonProcessor _photonProcessor;
+    private VisionProcessor _visionProcessor;
     private SwerveDrivePoseEstimator _poseEstimator;
 
     private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     private static RobotState _instance;
+
+    private Transform3d _robotToCamera;
 
     public static RobotState getInstance() {
         if (_instance == null) _instance = new RobotState();
@@ -40,9 +50,11 @@ public class RobotState {
 
     public RobotState() {}
 
-    public void initializeRobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor) {
+    public void initializeRobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
         _photonProcessor = photonProcessor;
+        _visionProcessor = visionProcessor;
+        _robotToCamera = new Transform3d(0.0, 0.0, 0.0, new Rotation3d());
         initPoseEstimator();
     }
 
@@ -91,33 +103,24 @@ public class RobotState {
     public void periodic() {
         updateOdometry();
         updateWithVision();
-
-        SmartDashboard.putNumber("Estimated X", getEstimatedPose().getX());
-        SmartDashboard.putNumber("Estimated Y", getEstimatedPose().getY());
     }
 
     public Pose2d getEstimatedPose() {
         return _poseEstimator.getEstimatedPosition();
     }
 
-    public void setEstimatedPose(Pose2d pose) {
-        // FIXME: these values might not be right
-        _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
-    }
-
     private boolean isValidMeasurement(Pose3d measurement) {
-        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getX() > 0
-         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getY() > 0){
+        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getX() > 0
+         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getY() > 0){
             return true;
         } else {
-            DriverStation.reportError("Robot not on field!!", false);
             return false;
         }
     }
 
     public Pose3d getSpeakerTagPose() {
         return _layout.getTagPose(
-            _driveTrain.isRedAlliance() ? 4 : 7
+            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
         ).get();
     }
 
@@ -132,11 +135,10 @@ public class RobotState {
             Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
         );
 
-        // flip because intake is pi radians from shooter
-        Rotation2d angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI));
+        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
 
         // using a pair here to return both values without doing excess math in multiple methods
-        return new Pair<Double, Double>(distance, angle.getRadians());
+        return new Pair<Double, Double>(distance, angle);
     }
 
     // edit this as needed to reflect the optimal range to shoot from
@@ -178,5 +180,27 @@ public class RobotState {
         return createStandardDeviations(x, y, angle);
     }
 
-    
+    public Pose2d getClosesetNote() {
+        VisionPoseArray poses = _visionProcessor.getDetectedObjects();
+        VisionPose pose = null;
+        
+        for (int i = 0; i < poses.posesLength(); i++) {
+            if (pose == null) {
+                pose = poses.poses(i);
+            } else {
+                if (poses.poses(i).x() < pose.x() && poses.poses(i).y() < pose.y()) {
+                    pose = poses.poses(i);
+                }
+            }
+        }
+        if (pose != null) {
+            if (Double.isNaN(pose.x()) || Double.isNaN(pose.y())) {
+            } else {
+                // pose3d from zed camera reference
+                Pose3d pose3d = new Pose3d(pose.x(), pose.y(), pose.z(), new Rotation3d());
+                return pose3d.toPose2d();
+            }
+        }
+        return new Pose2d();
+    }
 }
