@@ -29,6 +29,7 @@ public class IdleDunker extends OutliersCommand{
                 _dunker.setDunkerState(DunkerState.STOWED);
             }
         }
+        // _dunker.setDunkerState(DunkerState.READY_TO_DUNK);
     }
 
     @Override

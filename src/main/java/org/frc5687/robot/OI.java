@@ -103,7 +103,7 @@ public class OI extends OutliersProxy {
         // return _driverGamepad.getLeftBumper().getAsBoolean();
         return false;
     }
-
+    
     public boolean shiftDown() {
         return _driverGamepad.getLeftBumper().getAsBoolean();
     }
