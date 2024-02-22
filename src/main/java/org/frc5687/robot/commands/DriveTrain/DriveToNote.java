@@ -73,6 +73,7 @@ public class DriveToNote extends OutliersCommand{
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
 
+                // FIXME use IMU data
                 double currentHeadingRadians = _driveTrain.getHeading().getRadians(); // Current heading in radians
 
                 double angleToNoteRadians = Math.atan2(y, x);
@@ -80,13 +81,13 @@ public class DriveToNote extends OutliersCommand{
                 double headingAdjustmentRadians = angleToNoteRadians - currentHeadingRadians;
 
                 headingAdjustmentRadians = (headingAdjustmentRadians + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-                _yawController.setGoal(headingAdjustmentRadians);
+                _yawController.setGoal(angleToNoteRadians);
 
 
                 metric("Note x", x);
                 metric("Note y", y);
                 metric("Angle to note", headingAdjustmentRadians);
-                rot = -_yawController.calculate(_driveTrain.getHeading().getRadians());
+                rot = -_yawController.calculate(angleToNoteRadians);
             }
         } else {
             error(" _visionProcessor.getDetectedObjects() returned null ");
