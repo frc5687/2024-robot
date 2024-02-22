@@ -17,6 +17,7 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -74,7 +75,7 @@ public class RobotContainer extends OutliersContainer {
         _driveTrain = new DriveTrain(this, _imu);
 
         // Grab instance such that we can initalize with drivetrain and processor
-        _robotState.initializeRobotState(_driveTrain, _photonProcessor);
+        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessonr);
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
@@ -95,6 +96,8 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+        Pose2d notePose = _robotState.getClosesetNote();
+        _field.getObject("note").setPose(notePose);
         SmartDashboard.putData(_field);
     }
 
