@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
@@ -192,25 +193,30 @@ public class RobotState {
 
     public Pose2d getClosestNote() {
         VisionPoseArray poses = _visionProcessor.getDetectedObjects();
-        VisionPose pose = null;
-        
+        double closestDistance = Double.MAX_VALUE;
+        Pose2d closestNotePose = new Pose2d(); 
+
         for (int i = 0; i < poses.posesLength(); i++) {
-            if (pose == null) {
-                pose = poses.poses(i);
-            } else {
-                if (poses.poses(i).x() < pose.x() && poses.poses(i).y() < pose.y()) {
-                    pose = poses.poses(i);
+            VisionPose pose = poses.poses(i);
+            if (!Double.isNaN(pose.x()) && !Double.isNaN(pose.y())) {
+                double distance = Math.hypot(pose.x(), pose.y());
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestNotePose = new Pose2d(pose.x(), pose.y(), new Rotation2d());
                 }
             }
         }
-        if (pose != null) {
-            if (Double.isNaN(pose.x()) || Double.isNaN(pose.y())) {
-            } else {
-                // pose3d from zed camera reference
-                Pose3d pose3d = new Pose3d(pose.x(), pose.y(), pose.z(), new Rotation3d());
-                return pose3d.toPose2d();
-            }
-        }
-        return new Pose2d();
+
+        return closestNotePose;
+    }
+
+    public Pose2d getClosestNoteRelativeField() {
+        Pose2d robotPose = getEstimatedPose(); 
+        Pose2d notePoseRelativeRobot = getClosestNote(); 
+        
+        Transform2d noteTransform = new Transform2d(notePoseRelativeRobot.getTranslation(), notePoseRelativeRobot.getRotation());
+        Pose2d notePoseRelativeField = robotPose.transformBy(noteTransform);
+        
+        return notePoseRelativeField;
     }
 }
