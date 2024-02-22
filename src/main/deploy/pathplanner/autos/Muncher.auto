@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3880268362040489,
+      "y": 5.555162990025228
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_TO_SHOOT_TO_C2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C2_TO_SHOOT_TO_C3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C3_TO_SHOOT_TO_F3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "F3_TO_SHOOT"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

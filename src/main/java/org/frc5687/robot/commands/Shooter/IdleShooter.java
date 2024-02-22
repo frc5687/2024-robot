@@ -1,10 +1,12 @@
 package org.frc5687.robot.commands.Shooter;
 
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
 public class IdleShooter extends OutliersCommand{
-    public Shooter _shooter;
+    private Shooter _shooter;
+    private RobotState _robotState = RobotState.getInstance();
 
     public IdleShooter(Shooter shooter) {
         _shooter = shooter;
@@ -12,7 +14,8 @@ public class IdleShooter extends OutliersCommand{
     }
 
     public void execute() {
-        _shooter.setIdle();
+        _shooter.setTargetRPM(0);
+        _shooter.setToTarget();
     }
 
     public boolean isFinished() {

@@ -22,7 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class RobotState {
@@ -91,24 +91,33 @@ public class RobotState {
     public void periodic() {
         updateOdometry();
         updateWithVision();
+
+        SmartDashboard.putNumber("Estimated X", getEstimatedPose().getX());
+        SmartDashboard.putNumber("Estimated Y", getEstimatedPose().getY());
     }
 
     public Pose2d getEstimatedPose() {
         return _poseEstimator.getEstimatedPosition();
     }
 
+    public void setEstimatedPose(Pose2d pose) {
+        // FIXME: these values might not be right
+        _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
+    }
+
     private boolean isValidMeasurement(Pose3d measurement) {
-        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getX() > 0
-         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getY() > 0){
+        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getX() > 0
+         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getY() > 0){
             return true;
         } else {
+            DriverStation.reportError("Robot not on field!!", false);
             return false;
         }
     }
 
     public Pose3d getSpeakerTagPose() {
         return _layout.getTagPose(
-            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
+            _driveTrain.isRedAlliance() ? 4 : 7
         ).get();
     }
 
@@ -123,10 +132,11 @@ public class RobotState {
             Math.pow(xDistance, 2) + Math.pow(yDistance, 2)
         );
 
-        double angle = Math.atan2(yDistance, xDistance) + Math.PI;
+        // flip because intake is pi radians from shooter
+        Rotation2d angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI));
 
         // using a pair here to return both values without doing excess math in multiple methods
-        return new Pair<Double, Double>(distance, angle);
+        return new Pair<Double, Double>(distance, angle.getRadians());
     }
 
     // edit this as needed to reflect the optimal range to shoot from

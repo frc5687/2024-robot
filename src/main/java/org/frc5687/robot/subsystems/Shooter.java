@@ -1,6 +1,7 @@
 package org.frc5687.robot.subsystems;
 
 import org.frc5687.lib.drivers.OutliersTalon;
+import org.frc5687.lib.sensors.ProximitySensor;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.controls.Follower;
@@ -13,6 +14,7 @@ public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
     private double _targetRPM = 0;
+    private boolean _isAutoShooting;
     public Shooter(OutliersContainer container) {
         super(container);
         _bottomTalon = new OutliersTalon(RobotMap.CAN.TALONFX.BOTTOM_SHOOTER, "CANivore", "Left Shooter");
@@ -22,10 +24,23 @@ public class Shooter extends OutliersSubsystem {
 
         _bottomTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
         _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
+
     }
 
-    public void setIdle() {
+    public void setToIdle() {
         _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
+    }
+
+    public void setToStop() {
+        _bottomTalon.setVelocity(0);
+    }
+
+    public void setToDunkInRPM() {
+        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_IN_RPM);
+    }
+
+    public void setToDunkOutRPM() {
+        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_OUT_RPM);
     }
 
     public void setTargetRPM(double speed) {
@@ -47,14 +62,23 @@ public class Shooter extends OutliersSubsystem {
     public boolean isAtTargetRPM(){
         return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
+    
+    public boolean isAutoShooting() {
+        return _isAutoShooting;
+    }
+
+    public void flagAutoShooting(boolean isAutoShooting) {
+        _isAutoShooting = isAutoShooting;
+    }
 
     public double calculateRPMFromDistance(double distance) {
-        return Constants.Shooter.kRPMRegression.predict(distance);
+        return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));
     }
 
     public void updateDashboard() {
         metric("Shooter RPM", getMotorRPM());
         metric("Target RPM", _targetRPM);
         metric("At Target RPM", isAtTargetRPM());
+
     }
 }

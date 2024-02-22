@@ -2,37 +2,53 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import java.util.Optional;
+
 import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
-import org.frc5687.robot.commands.Deflector.IdleDeflector;
+import org.frc5687.robot.commands.Dunker.IdleDunker;
+import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
+import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
-import org.frc5687.robot.subsystems.*;
+import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Dunker;
+import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
+import org.frc5687.robot.subsystems.OutliersSubsystem;
+import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
-import org.frc5687.robot.util.*;
+import org.frc5687.robot.util.OutliersContainer;
+import org.frc5687.robot.util.PhotonProcessor;
+import org.frc5687.robot.util.VisionProcessor;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
-    private AutoChooser _autoChooser;
+    private SendableChooser<Command> _autoChooser;
     private VisionProcessor _visionProcessor;
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
-    private Deflector _deflector;
+    private Dunker _dunker;
     private Climber _climber;
     private Lights _lights;
 
@@ -51,7 +67,6 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
         _oi = new OI();
-        _autoChooser = new AutoChooser();
         // create the vision processor
         _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
@@ -78,28 +93,35 @@ public class RobotContainer extends OutliersContainer {
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
-        _deflector = new Deflector(this);
+        _dunker = new Dunker(this);
+
         _climber = new Climber(this);
         _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
+        setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        setDefaultCommand(_climber, new AutoClimb(_climber, _oi));
-        setDefaultCommand(_deflector, new IdleDeflector(_deflector));
+        setDefaultCommand(_climber, new AutoClimb(_climber, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
-        
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
+
+        registerNamedCommands();
+        _autoChooser = AutoBuilder.buildAutoChooser("");
+
+        SmartDashboard.putData(_field);
+
+        SmartDashboard.putData("Auto Chooser", _autoChooser);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
     }
 
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
-        SmartDashboard.putData(_field);
     }
 
     public void disabledPeriodic() {
-        _autoChooser.updateChooser();
+        // FIXME: what should we do here with default pathplanner autochooser?? xavier bradford 02/16/24
+        // _autoChooser.updateChooser();
     }
 
     @Override
@@ -112,7 +134,8 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void autonomousInit() {
-        _autoChooser.updateChooser();
+        // FIXME: what should we do here with default pathplanner autochooser?? xavier bradford 02/16/24
+        // _autoChooser.updateChooser();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -124,6 +147,36 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Command getAutoCommand() {
-        return new WaitCommand(15);
+        // // Follow a path
+        // // Load the path you want to follow using its name in the GUI
+        // PathPlannerPath path = PathPlannerPath.fromPathFile("C3_TO_SHOOT_TO_F3");
+
+        // // Create a path following command using AutoBuilder. This will also trigger event markers.
+        // return AutoBuilder.followPath(path);
+        // // return _autoChooser.getSelected();
+
+        /*
+         * Warning
+         * This method will load all autos in the deploy directory. Since the deploy process does not automatically clear the deploy directory, old auto files that have since been deleted from the project could remain on the RIO, therefore being added to the auto chooser.
+         * To remove old options, the deploy directory will need to be cleared manually via SSH, WinSCP, reimaging the RIO, etc.
+         */
+
+         return _autoChooser.getSelected();
+    }
+
+    public Optional<Rotation2d> getRotationTargetOverride(){
+        // Some condition that should decide if we want to override rotation
+        if(_shooter.isAutoShooting()) {
+            // Return an optional containing the rotation override (this should be a field relative rotation)
+            return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        } else {
+            // return an empty optional when we don't want to override the path's rotation
+            return Optional.empty();
+        }
+    }
+
+    public void registerNamedCommands() {
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake));
+        NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
     }
 }

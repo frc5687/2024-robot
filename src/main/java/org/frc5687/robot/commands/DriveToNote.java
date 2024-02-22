@@ -10,19 +10,24 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
-public class DriveToNote extends OutliersCommand{
+public class DriveToNote extends OutliersCommand {
     private final DriveTrain _driveTrain;
     private final ProfiledPIDController _xController;
     private final ProfiledPIDController _yController;
     private final ProfiledPIDController _yawController;
-    private final VisionProcessor _VisionProcessor;
+    private final VisionProcessor _visionProcessor;
 
     public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
-        _VisionProcessor = visionProcessor;
-        _xController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yawController = new ProfiledPIDController(3.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL*4.0));
+        _visionProcessor = visionProcessor;
+        _xController = new ProfiledPIDController(2.0, 0.0, 0.0,
+                new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
+                        Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
+        _yController = new ProfiledPIDController(2.0, 0.0, 0.0,
+                new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
+                        Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
+        _yawController = new ProfiledPIDController(3.0, 0.0, 0.0,
+                new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL * 4.0));
         addRequirements(_driveTrain);
     }
 
@@ -38,9 +43,9 @@ public class DriveToNote extends OutliersCommand{
         double vx = 0;
         double vy = 0;
         double rot = 0;
-        VisionPoseArray poses = _VisionProcessor.getDetectedObjects();
+        VisionPoseArray poses = _visionProcessor.getDetectedObjects();
         VisionPose pose = null;
-        
+
         if (!_driveTrain.isLowGear()) {
             _driveTrain.shiftDownModules();
         }
@@ -52,6 +57,10 @@ public class DriveToNote extends OutliersCommand{
             } else {
                 if (poses.poses(i).x() < pose.x() && poses.poses(i).y() < pose.y()) {
                     pose = poses.poses(i);
+                } else {
+                    if (poses.poses(i).x() < pose.x()) {
+                        pose = poses.poses(i);
+                    }
                 }
             }
         }
@@ -80,6 +89,8 @@ public class DriveToNote extends OutliersCommand{
                 metric("Angle to note", angleToNote);
                 rot = _yawController.calculate(_driveTrain.getHeading().getRadians());
             }
+        } else {
+            error(" _visionProcessor.getDetectedObjects() returned null ");
         }
         metric("Note vx", vx);
         metric("Note vy", vy);

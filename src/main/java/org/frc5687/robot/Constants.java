@@ -1,6 +1,14 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
+import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
+import org.frc5687.lib.cheesystuff.PolynomialRegression;
+import org.frc5687.lib.drivers.OutliersTalon;
+import org.frc5687.lib.drivers.OutliersTalon.ClosedLoopConfiguration;
+import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
+import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
+
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -10,13 +18,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-
-import org.frc5687.lib.cheesystuff.InterpolatingDouble;
-import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
-import org.frc5687.lib.cheesystuff.PolynomialRegression;
-import org.frc5687.lib.drivers.OutliersTalon;
-import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
-import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
@@ -34,7 +35,7 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = 0.04445; // 3.5in diameter
+        public static final double WHEEL_RADIUS = 0.04699; // 3.5in diameter
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
                 * (16.0 / 36.0); // 4.1904
@@ -141,7 +142,7 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;
 
-        // Size of the robot chassis in meters
+        // Size of the wheelbase in meters
         public static final double WIDTH = 0.5461; // meters
         public static final double LENGTH = 0.5461; // meters
         // Distance of swerve modules from center of robot
@@ -236,7 +237,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.05737304687;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.4819;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -247,7 +248,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.256591796875;
+            NORTH_EAST_CONFIG.encoderOffset = -0.2715;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -258,7 +259,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.204346;
+            NORTH_WEST_CONFIG.encoderOffset = -0.3381;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -269,7 +270,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.165771484375;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.4993;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -290,7 +291,7 @@ public class Constants {
         public static final double SNAP_kI = 0.0;
         public static final double SNAP_kD = 0.1;
 
-        public static final double SNAP_TOLERANCE = Units.degreesToRadians(5.0);
+        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
 
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 4.0;
         public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 8.0;
@@ -314,7 +315,7 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
-        public static final double HEADING_TOLERANCE = 0.15; // rad
+        public static final double HEADING_TOLERANCE = 0.02; // rad
         public static final double BUMP_DEGREES = 7;
 
         public static final double PITCH_LOOKING_ANGLE = Units.degreesToRadians(15.0); // this is degrees because sad.
@@ -339,25 +340,25 @@ public class Constants {
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
                                                                                 // more;
 
-        public static double VISION_STD_DEV_X = 0.5;
-        public static double VISION_STD_DEV_Y = 0.5;
-        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(70); // imu deviations lower number to trust
+        public static double VISION_STD_DEV_X = 0.45;
+        public static double VISION_STD_DEV_Y = 0.45;
+        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(90); // imu deviations lower number to trust
                                                                                 // more;
     }
 
     public static class Shooter {
-        public static final double SHOOT_RPM = 500;
-
-        public static final double VELOCITY_TOLERANCE = 10;
+        public static final double VELOCITY_TOLERANCE = 30; // FIXME: inaccurate???
 
         public static final double IDLE_RPM = 500;
+
+        public static final double DUNKER_IN_RPM = 600;
+        public static final double DUNKER_OUT_RPM = 3000;
 
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
 
-        public static PolynomialRegression kDeflectorRegression;
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
@@ -365,41 +366,22 @@ public class Constants {
                 { 3.17500635, 2600 },
                 { 3.47980696, 2350 },
                 { 3.784607569, 1900 },
-                { 4.089408179, 1750 },
-                { 4.394208788, 1700 },
-                { 4.699009398, 1690 }
-        };
-
-        public static final double SHOOTER_RPM_WHEN_DEFLECTOR = 2600;
-        public static final double MAX_DEFLECTOR_DISTANCE = 2.6;
-        public static double[][] kDeflectorValues = {
-                { 1.041402083, 2.45 }, // all at 2600 rpm
-                { 1.346202692, 2.4 },
-                { 1.651003302, 2.35 },
-                { 1.955803912, 2.25 },
-                { 2.260604521, 2.15 },
-                { 2.565405131, 2.05 }
+                { 4.089408179, 1800 }, // 1750
+                { 4.394208788, 1750 }, // 1700
+                { 4.699009398, 1730 } // 1690
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
         
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
-
-        public static final double AMP_SHOT_SPEED = 810;
-
-        public static final double AMP_SHOT_DEFLECTOR_ANGLE = 2.1;
-
+        
+        public static final double AMP_SHOT_SPEED = 700;
 
         static {
             for (double[] pair : kRPMValues) {
                 kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
             }
 
-            for (double[] pair : kDeflectorValues) {
-                kHoodMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
-            }
-
-            kDeflectorRegression = new PolynomialRegression(kDeflectorValues, 1);
             kRPMRegression = new PolynomialRegression(kRPMValues, 1);
         }
 
@@ -407,32 +389,26 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.45;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.5;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.125;
-
-            // THESE VALUES ARE GUESSES BASED ON LITERALLY NOTHING
-            SHOOTER_CONTROLLER_CONFIG.CRUISE_VELOCITY = (int) (SHOOT_RPM / 60);
-            SHOOTER_CONTROLLER_CONFIG.ACCELERATION = 4000;
-            SHOOTER_CONTROLLER_CONFIG.JERK = 10000;
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.115;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
 
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-        // this is the motor config for the swerve motors
+
         static {
             CONFIG.TIME_OUT = 0.1;
-
+            
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_STATOR_CURRENT = 60;
-            CONFIG.MAX_CURRENT = 60;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_SUPPLY_CURRENT = 60;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }
@@ -440,9 +416,8 @@ public class Constants {
 
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
-        public static final double INTAKE_SPEED = 1.2;
-        public static final double INDEX_SPEED = 0.4;
-        public static final double SLOW_INDEX_SPEED = 0.4;
+        public static final double INTAKE_SPEED = 1.0;
+        public static final double INDEX_SPEED = 0.3;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
         static {
@@ -462,41 +437,34 @@ public class Constants {
         }
     }
 
-    public static class Deflector {
+    public static class Dunker {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
 
-        public static final double GEAR_RATIO = 56.0; // 56:1
-
-        public static final double ANGLE_TOLERANCE = 0.01;
-        public static final double LOWER_HALL_ANGLE = 0.0;
-        public static final double UPPER_HALL_ANGLE = 2.5;
-        public static final double IDLE_ANGLE = 0.5;
-
-        // regression equation
-        public static final double LINEAR_COEFFIECIENT = -0.267153571428569;
-        public static final double OFFSET_COEFFICIENT = 2.75678571428571;
-
+        public static final double DUNKER_GEAR_RATIO = (84.0/8.0); //8:84
+        
         static {
             CONFIG.TIME_OUT = 0.1;
-
+            
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
-            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+            CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_STATOR_CURRENT = 60;
             CONFIG.MAX_CURRENT = 60;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.MAX_SUPPLY_CURRENT = 60;
+            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
         }
-        public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        
+        public static final ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
             CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
-            CLOSED_LOOP_CONFIG.kD = 0;
+            CLOSED_LOOP_CONFIG.kD = 0.001;
             CLOSED_LOOP_CONFIG.kF = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
@@ -505,9 +473,17 @@ public class Constants {
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
-    }
 
-    public static class Climber{
+        public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
+
+        public static final double PREP_ANGLE = 2.35;
+        public static final double DUNK_ANGLE = 3.36;
+        public static final double STOWED_ANGLE = 3.36; // is actually 5.2681, but we are using the dunk angle to make sure it doesn't break the robot - xavier bradford 02/21/24
+        public static final double ANGLE_TOLERANCE = 0.02;
+        public static final long EJECT_TIME = 1000; // 1 second
+    }
+    
+    public static class Climber {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
 
@@ -526,15 +502,18 @@ public class Constants {
             CONFIG.USE_FOC = true;
         }
 
-        public static double UPPER_LIMIT = 4.0;
+        public static double UPPER_LIMIT = -2.25;
         public static double LOWER_LIMIT = 0.0;
 
-        public static double PREP_METERS = 2.0; //TODO: change
-        public static double CLIMB_METERS = 0.5; //TODO: change
+        // This represents where the climber assumes zero is when it starts, should be when hook touches lightbar
+        public static double ZERO_VALUE = 0.0; 
+
+        public static double PREP_METERS = -1.55;
+        public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;
 
-        public static double CLIMBER_GEAR_RATIO = 25.0;//25:1
+        public static double CLIMBER_GEAR_RATIO = 25.0; // FIXME: actually 48 - freyja
 
         public static double WINCH_RADIUS = 0.035052; 
 
@@ -547,7 +526,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kD = 0;
             CLOSED_LOOP_CONFIG.kF = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 1000;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 500;
             CLOSED_LOOP_CONFIG.JERK = 10;
 
