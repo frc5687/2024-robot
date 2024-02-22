@@ -23,7 +23,7 @@ public class VisionProcessor {
     private boolean firstRun = true;
     private ReentrantLock _mtx;
 
-    private VisionPoseArray _detectedObjects;
+    private VisionPoseArray _detectedObjects = new VisionPoseArray();
     private final Notifier _receiveNotifier =
             new Notifier(
                     () -> {

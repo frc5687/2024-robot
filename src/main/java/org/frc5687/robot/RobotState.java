@@ -190,7 +190,7 @@ public class RobotState {
         return createStandardDeviations(x, y, angle);
     }
 
-    public Pose2d getClosesetNote() {
+    public Pose2d getClosestNote() {
         VisionPoseArray poses = _visionProcessor.getDetectedObjects();
         VisionPose pose = null;
         

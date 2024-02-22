@@ -117,7 +117,7 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
-        Pose2d notePose = _robotState.getClosesetNote();
+        Pose2d notePose = _robotState.getClosestNote();
         _field.getObject("note").setPose(notePose);
         SmartDashboard.putData(_field);
     }
