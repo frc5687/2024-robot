@@ -418,6 +418,7 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
         public static final double INDEX_SPEED = 0.3;
+        public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
         static {
@@ -476,9 +477,10 @@ public class Constants {
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
-        public static final double PREP_ANGLE = 2.35;
-        public static final double DUNK_ANGLE = 3.36;
-        public static final double STOWED_ANGLE = 3.36; // is actually 5.2681, but we are using the dunk angle to make sure it doesn't break the robot - xavier bradford 02/21/24
+        public static final double PREP_ANGLE = 1.25;
+        public static final double DUNK_ANGLE = 2.18;
+        public static final double STOWED_ANGLE = 4.16;
+        public static final double CLIMB_ANGLE = 1.05;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
     }
@@ -508,7 +510,7 @@ public class Constants {
         // This represents where the climber assumes zero is when it starts, should be when hook touches lightbar
         public static double ZERO_VALUE = 0.0; 
 
-        public static double PREP_METERS = -1.55;
+        public static double PREP_METERS = -2.15;
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;

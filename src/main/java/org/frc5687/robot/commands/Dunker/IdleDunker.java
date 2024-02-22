@@ -27,6 +27,7 @@ public class IdleDunker extends OutliersCommand{
             _dunker.setDunkerAngle(Constants.Dunker.STOWED_ANGLE);
             if (_dunker.isAtAngle(Constants.Dunker.STOWED_ANGLE)) {
                 _dunker.setDunkerState(DunkerState.STOWED);
+                _dunker.disable(); // stop controlling the dunker, it rests on the hard stop to save energy
             }
         }
         // _dunker.setDunkerState(DunkerState.READY_TO_DUNK);
