@@ -352,7 +352,7 @@ public class Constants {
         public static final double IDLE_RPM = 500;
 
         public static final double DUNKER_IN_RPM = 600;
-        public static final double DUNKER_OUT_RPM = 3000;
+        public static final double DUNKER_OUT_RPM = 1000;
 
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
 
@@ -389,10 +389,10 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.53;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.43;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.115;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.15;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
