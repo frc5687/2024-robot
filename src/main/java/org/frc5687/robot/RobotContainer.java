@@ -12,6 +12,9 @@ import org.frc5687.robot.util.*;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -85,6 +88,16 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
         
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
+
+        registerNamedCommands();
+        _autoChooser = AutoBuilder.buildAutoChooser("");
+
+        SmartDashboard.putData(_field);
+
+        SmartDashboard.putData("Auto Chooser", _autoChooser);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
+
+        PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
     public void periodic() {
@@ -122,5 +135,42 @@ public class RobotContainer extends OutliersContainer {
 
     public Command getAutoCommand() {
         return new WaitCommand(15);
+        // // Follow a path
+        // // Load the path you want to follow using its name in the GUI
+        // PathPlannerPath path = PathPlannerPath.fromPathFile("C3_TO_SHOOT_TO_F3");
+
+        // // Create a path following command using AutoBuilder. This will also trigger
+        // event markers.
+        // return AutoBuilder.followPath(path);
+        // // return _autoChooser.getSelected();
+
+        /*
+         * Warning
+         * This method will load all autos in the deploy directory. Since the deploy
+         * process does not automatically clear the deploy directory, old auto files
+         * that have since been deleted from the project could remain on the RIO,
+         * therefore being added to the auto chooser.
+         * To remove old options, the deploy directory will need to be cleared manually
+         * via SSH, WinSCP, reimaging the RIO, etc.
+         */
+
+        return _autoChooser.getSelected();
+    }
+
+    public Optional<Rotation2d> getRotationTargetOverride() {
+        // Some condition that should decide if we want to override rotation
+        if (_shooter.getCurrentCommand() instanceof AutoShoot) {
+            // Return an optional containing the rotation override (this should be a field
+            // relative rotation)
+            return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        } else {
+            // return an empty optional when we don't want to override the path's rotation
+            return Optional.empty();
+        }
+    }
+
+    public void registerNamedCommands() {
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake));
+        NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
     }
 }

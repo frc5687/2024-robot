@@ -9,12 +9,12 @@ import com.ctre.phoenix6.controls.Follower;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.commands.Shooter.AutoShoot;
 
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
     private double _targetRPM = 0;
-    private boolean _isAutoShooting;
     public Shooter(OutliersContainer container) {
         super(container);
         _bottomTalon = new OutliersTalon(RobotMap.CAN.TALONFX.BOTTOM_SHOOTER, "CANivore", "Left Shooter");
@@ -63,13 +63,6 @@ public class Shooter extends OutliersSubsystem {
         return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
     
-    public boolean isAutoShooting() {
-        return _isAutoShooting;
-    }
-
-    public void flagAutoShooting(boolean isAutoShooting) {
-        _isAutoShooting = isAutoShooting;
-    }
 
     public double calculateRPMFromDistance(double distance) {
         return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));

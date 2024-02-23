@@ -36,7 +36,7 @@ public class AutoShoot extends OutliersCommand{
 
     @Override
     public void initialize() {
-        _shooter.flagAutoShooting(true);
+        super.initialize();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AutoShoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
+        super.end(interrupted);
         // FIXME: intake might still be running at the end of autos
-        _shooter.flagAutoShooting(false);
     }
 }
