@@ -1,7 +1,6 @@
 package org.frc5687.robot.subsystems;
 
 import org.frc5687.lib.drivers.OutliersTalon;
-import org.frc5687.lib.sensors.ProximitySensor;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.controls.Follower;
@@ -9,7 +8,6 @@ import com.ctre.phoenix6.controls.Follower;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
-import org.frc5687.robot.commands.Shooter.AutoShoot;
 
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
@@ -55,12 +53,16 @@ public class Shooter extends OutliersSubsystem {
         return _targetRPM;
     }
 
-    public double getMotorRPM() {
+    public double getBottomMotorRPM() {
+        return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
+    }
+
+    public double getTopMotorRPM() {
         return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
     }
 
     public boolean isAtTargetRPM(){
-        return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
+        return getTargetRPM() > 0 && Math.abs(getTargetRPM() - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
     
 
@@ -69,9 +71,9 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public void updateDashboard() {
-        metric("Shooter RPM", getMotorRPM());
-        metric("Target RPM", _targetRPM);
+        metric("Bottom Motor RPM", getBottomMotorRPM());
+        metric("Top Motor RPM", getTopMotorRPM());
+        metric("Target RPM", getTargetRPM());
         metric("At Target RPM", isAtTargetRPM());
-
     }
 }
