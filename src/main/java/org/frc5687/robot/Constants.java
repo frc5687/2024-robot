@@ -389,7 +389,7 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.5;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.53;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0001;
             SHOOTER_CONTROLLER_CONFIG.kF = 0.115;
@@ -465,7 +465,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.SLOT = 0;
             CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
-            CLOSED_LOOP_CONFIG.kD = 0.001;
+            CLOSED_LOOP_CONFIG.kD = 0.0001;
             CLOSED_LOOP_CONFIG.kF = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;

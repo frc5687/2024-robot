@@ -55,7 +55,9 @@ public class RobotState {
         _driveTrain = driveTrain;
         _photonProcessor = photonProcessor;
         _visionProcessor = visionProcessor;
-        _robotToCamera = new Transform3d(0.0, 0.0, 0.0, new Rotation3d());
+        _robotToCamera = new Transform3d(
+            0.381, 0.0158, 0.2794, 
+            new Rotation3d());
         initPoseEstimator();
     }
 

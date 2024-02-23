@@ -72,7 +72,7 @@ public class DriveToNote extends OutliersCommand {
             } else {
                 /* Drive to note portion */
                 double x = pose.x();
-                double y = pose.y() + 0.08;
+                double y = pose.y() + 0.01588;
 
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
