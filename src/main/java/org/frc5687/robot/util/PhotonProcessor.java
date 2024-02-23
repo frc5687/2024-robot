@@ -37,25 +37,25 @@ public class PhotonProcessor {
         // z taken from floor
         Transform3d robotToSouthEastCam =
             new Transform3d(
-                new Translation3d(-0.163482, -0.137455, 0.554292),
+                new Translation3d(-0.107009, -0.104835, 0.57991),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5))
             );
 
         Transform3d robotToNorthEastCam =
             new Transform3d(
-                new Translation3d(-0.105059, -0.15118, 0.554292), 
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(-25))
+                new Translation3d(0.098849, -0.179256, 0.276706),
+                new Rotation3d(0.0, Units.degreesToRadians(15), Units.degreesToRadians(-25))
             );
 
         Transform3d robotToNorthWestCam =
             new Transform3d(
-                new Translation3d(-0.105059, 0.15118, 0.554292),
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(25))
+                new Translation3d(0.098849, 0.179256, 0.276706),
+                new Rotation3d(0.0, Units.degreesToRadians(15), Units.degreesToRadians(25))
             );
 
         Transform3d robotToSouthWestCam =
             new Transform3d(
-                new Translation3d(-0.163482, 0.137455, 0.554292),
+                new Translation3d(-0.107009, 0.104835, 0.57991),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(-162.5))
             );
 
