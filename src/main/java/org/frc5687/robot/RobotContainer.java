@@ -29,6 +29,7 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -112,6 +113,8 @@ public class RobotContainer extends OutliersContainer {
 
         SmartDashboard.putData("Auto Chooser", _autoChooser);
         _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
+
+        PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
     public void periodic() {
@@ -176,7 +179,7 @@ public class RobotContainer extends OutliersContainer {
 
     public Optional<Rotation2d> getRotationTargetOverride() {
         // Some condition that should decide if we want to override rotation
-        if (_shooter.isAutoShooting()) {
+        if (_shooter.getCurrentCommand() instanceof AutoShoot) {
             // Return an optional containing the rotation override (this should be a field
             // relative rotation)
             return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
