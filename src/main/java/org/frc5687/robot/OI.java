@@ -86,10 +86,10 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, drivetrain, robotState));
 
-        _driverGamepad.getYButton().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-        _driverGamepad.getBButton().whileTrue(shooter.sysIdDynamic(Direction.kForward));
-        _driverGamepad.getAButton().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
-        _driverGamepad.getXButton().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+        _driverGamepad.getYButton().whileTrue(drivetrain.moduleQuasistatic(Direction.kForward));
+        _driverGamepad.getBButton().whileTrue(drivetrain.moduleDynamic(Direction.kForward));
+        _driverGamepad.getAButton().whileTrue(drivetrain.moduleQuasistatic(Direction.kReverse));
+        _driverGamepad.getXButton().whileTrue(drivetrain.moduleDynamic(Direction.kReverse));
 
         // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
         // Pose2d(2, 2, new Rotation2d())));

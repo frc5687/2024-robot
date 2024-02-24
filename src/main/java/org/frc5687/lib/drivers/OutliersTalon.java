@@ -16,7 +16,14 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.configs.VoltageConfigs;
-import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -186,11 +193,15 @@ public class OutliersTalon extends TalonFX {
     }
 
     public void configureClosedLoop(ClosedLoopConfiguration config) {
-        _slot0Configs.kV = config.kF;
+        _slot0Configs.kS = config.kS;
+        _slot0Configs.kA = config.kA;
+        _slot0Configs.kV = config.kV;
         _slot0Configs.kP = config.kP;
         _slot0Configs.kI = config.kI;
         _slot0Configs.kD = config.kD; // Defaults to config 0
-        _slot1Configs.kV = config.kF1;
+        _slot0Configs.kS = config.kS1;
+        _slot0Configs.kA = config.kA1;
+        _slot1Configs.kV = config.kV1;
         _slot1Configs.kP = config.kP1;
         _slot1Configs.kI = config.kI1;
         _slot1Configs.kD = config.kD1;
@@ -223,10 +234,12 @@ public class OutliersTalon extends TalonFX {
         public double TIME_OUT = 0.1;
         public int SLOT = 0;
 
+        public double kS = 0.0;
+        public double kA = 0.0;
         public double kP = 0.0;
         public double kI = 0.0;
         public double kD = 0.0;
-        public double kF = 0.0;
+        public double kV = 0.0;
         public double MAX_INTEGRAL_ACCUMULATOR = 0;
         public int I_ZONE = 0; // Ticks
         public int TOLERANCE = 0; // Ticks
@@ -237,10 +250,12 @@ public class OutliersTalon extends TalonFX {
         public int ACCELERATION = 0; // RPS / Second
         public int JERK = 0; // RPS / Second / Second
 
+        public double kS1 = 0.0;
+        public double kA1 = 0.0;
         public double kP1 = 0.0;
         public double kI1 = 0.0;
         public double kD1 = 0.0;
-        public double kF1 = 0.0;
+        public double kV1 = 0.0;
 
         public boolean IS_CONTINUOUS = false;
     }

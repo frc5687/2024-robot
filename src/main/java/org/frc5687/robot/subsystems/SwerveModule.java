@@ -1,17 +1,24 @@
 /* Team 5687  */
 package org.frc5687.robot.subsystems;
 
-import static org.frc5687.robot.Constants.SwerveModule.*;
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static org.frc5687.robot.Constants.SwerveModule.WHEEL_RADIUS;
+import static org.frc5687.robot.Constants.SwerveModule.kDt;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -20,15 +27,23 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 // Swerve Module Code Created in the shadow of
 // the death of diffy swerve by Linus Krenkel
 // using VelocityFOC and PositionVoltage 
-public class SwerveModule {
+public class SwerveModule extends SubsystemBase{
 
     private final OutliersTalon _driveMotor;
     private final OutliersTalon _steeringMotor;
@@ -56,6 +71,21 @@ public class SwerveModule {
     private boolean _isLowGear;
     private String _moduleName;
 
+    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+    private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+    // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+    private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+        // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+    private final MutableMeasure<Voltage> m_appliedVoltageSteer = mutable(Volts.of(0));
+    // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+    private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
+    // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+    private final MutableMeasure<Velocity<Angle>> m_velocitySteer = mutable(RotationsPerSecond.of(0));
+
+    private final SysIdRoutine m_sysIdRoutine;
     public SwerveModule(
             SwerveModule.ModuleConfiguration config,
             int steeringMotorID,
@@ -105,6 +135,39 @@ public class SwerveModule {
         // _controlState = ControlState.OFF;
         _moduleName = config.moduleName;
         System.out.println(_moduleName + " Module has been constructed!!");
+        m_sysIdRoutine = new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motors.
+              (Measure<Voltage> volts) -> {
+                _driveMotor.setVoltage(volts.in(Volts));
+                _steeringMotor.setVoltage(volts.in(Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the left motors.  Since these share an encoder, we consider
+                // the entire group to be one motor.
+                log.motor(_moduleName + "_drive")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(_driveMotor.getMotorVoltage().getValueAsDouble(), Volts))
+                    .linearPosition(m_distance.mut_replace(getDistance(), Meters))
+                    .linearVelocity(
+                        m_velocity.mut_replace(getWheelVelocity(), MetersPerSecond));
+                // Record a frame for the right motors.  Since these share an encoder, we consider
+                // the entire group to be one motor.
+                log.motor(_moduleName + "_steer")
+                    .voltage(
+                        m_appliedVoltageSteer.mut_replace(
+                            _steeringMotor.getMotorVoltage().getValueAsDouble(), Volts))
+                    .angularPosition(m_angle.mut_replace(_steeringMotor.getRotorPosition().getValueAsDouble(), Rotations))
+                    .angularVelocity(
+                        m_velocitySteer.mut_replace(_steeringMotor.getRotorVelocity().getValueAsDouble(), RotationsPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("drive")
+              this));
     }
 
     private void initializeSignals() {
@@ -327,5 +390,13 @@ public class SwerveModule {
         public boolean encoderInverted = false;
 
         public String canBus = "CANivore";
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
     }
 }

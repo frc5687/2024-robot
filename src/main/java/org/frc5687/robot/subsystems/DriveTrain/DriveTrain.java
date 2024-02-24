@@ -23,6 +23,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import static org.frc5687.robot.Constants.DriveTrain.*;
 
 import java.util.Optional;
@@ -292,6 +296,23 @@ public class DriveTrain extends OutliersSubsystem {
         _imu.getPitch().setUpdateFrequency(frequency);
         _imu.getRoll().setUpdateFrequency(frequency);
         _imu.getAngularVelocityZDevice().setUpdateFrequency(frequency);
+    }
+
+    public Command moduleQuasistatic(SysIdRoutine.Direction direction) {
+        return new ParallelCommandGroup(
+            _modules[0].sysIdQuasistatic(direction),
+            _modules[1].sysIdQuasistatic(direction),
+            _modules[2].sysIdQuasistatic(direction),
+            _modules[3].sysIdQuasistatic(direction)
+        );
+    }
+    public Command moduleDynamic(SysIdRoutine.Direction direction) {
+        return new ParallelCommandGroup(
+            _modules[0].sysIdDynamic(direction),
+            _modules[1].sysIdDynamic(direction),
+            _modules[2].sysIdDynamic(direction),
+            _modules[3].sysIdDynamic(direction)
+        );
     }
 
     public void readSignals() {

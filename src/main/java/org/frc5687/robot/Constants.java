@@ -88,13 +88,13 @@ public class Constants {
             DRIVE_CONTROLLER_CONFIG.kP = 15.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.00;
-            DRIVE_CONTROLLER_CONFIG.kF = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.0;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 45.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
 
-            DRIVE_CONTROLLER_CONFIG.kF1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
 
             DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1500;
             DRIVE_CONTROLLER_CONFIG.ACCELERATION = 750;
@@ -107,7 +107,7 @@ public class Constants {
             STEER_CONTROLLER_CONFIG.kP = 70;
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.7;
-            STEER_CONTROLLER_CONFIG.kF = 0.0;
+            STEER_CONTROLLER_CONFIG.kV = 0.0;
 
             STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
             STEER_CONTROLLER_CONFIG.ACCELERATION = 4000;
@@ -386,10 +386,12 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.2288;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.047935;
             SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.147;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.14128;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -463,7 +465,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kP = 15;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0.0001;
-            CLOSED_LOOP_CONFIG.kF = 0;
+            CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
@@ -523,7 +525,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kP = 4;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
-            CLOSED_LOOP_CONFIG.kF = 0;
+            CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 500;
