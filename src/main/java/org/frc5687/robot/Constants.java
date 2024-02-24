@@ -237,7 +237,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.4819;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.4846;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -248,7 +248,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.2715;
+            NORTH_EAST_CONFIG.encoderOffset = -0.2512;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -259,7 +259,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.3381;
+            NORTH_WEST_CONFIG.encoderOffset = -0.3396;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -270,7 +270,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.4993;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.4974;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -324,8 +324,8 @@ public class Constants {
         public static final double DRIVING_UP_RAMP_SPEEDS_VX = 2.0;
         public static final double DRIVING_DOWN_RAMP_SPEEDS_VX = 1.0;
 
-        public static final double MIN_PSI = 60.0;
-        public static final double MAX_PSI = 100.0;
+        public static final double MIN_PSI = 80.0;
+        public static final double MAX_PSI = 120.0;
     }
 
     public static class Vision {
@@ -351,7 +351,7 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
-        public static final double DUNKER_IN_RPM = 600;
+        public static final double DUNKER_IN_RPM = 700;
         public static final double DUNKER_OUT_RPM = 1000;
 
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
@@ -362,13 +362,10 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-                { 2.87020574, 2600 },
-                { 3.17500635, 2600 },
-                { 3.47980696, 2350 },
-                { 3.784607569, 1900 },
-                { 4.089408179, 1800 }, // 1750
-                { 4.394208788, 1750 }, // 1700
-                { 4.699009398, 1730 } // 1690
+            { 3.2, 2600 },
+            { 3.65, 2200 },
+            { 4.26, 1900 },
+            { 4.86, 1780 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
@@ -389,10 +386,10 @@ public class Constants {
 
         static {
             SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.43;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.15;
+            SHOOTER_CONTROLLER_CONFIG.kF = 0.147;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }

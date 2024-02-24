@@ -145,7 +145,7 @@ public class DriveTrain extends OutliersSubsystem {
                 RobotMap.PCM.SHIFTER_LOW);
         // create compressor, compressor logic
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressInit = false;
+        _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -365,15 +365,17 @@ public class DriveTrain extends OutliersSubsystem {
             shiftDownModules();
             _hasShiftInit = true;
         }
-
-        if(!_compressInit){
-            _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
-            if (!_compressor.getPressureSwitchValue() && !_compressInit){
-                _compressor.disable();
-                _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
-                _compressInit = true;
-            }
-        }
+        // if (!_pressureInTolerance) {
+        //     _compressor.enableAnalog(ANGLE_TRAJECTORY_kI, ANGLE_TRAJECTORY_kD);
+        // }
+        // // if(!_compressInit){
+        //     _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
+        //     if (!_compressor.getPressure() > MAX_PSI){
+        //         _compressor.disable();
+        //         _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
+        //         _compressInit = true;
+        //     }
+        // }
 
         readSignals();
 
@@ -462,7 +464,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.length; module++) {
-            _modules[module].setModuleState(states[module]);
+            _modules[module].setIdealState(states[module]);
         }
     }
 
@@ -523,7 +525,7 @@ public class DriveTrain extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
-        // metric("Tank Pressure PSI", _compressor.getPressure());
+        metric("Tank Pressure PSI", _compressor.getPressure());
         // moduleMetrics();
     }
 

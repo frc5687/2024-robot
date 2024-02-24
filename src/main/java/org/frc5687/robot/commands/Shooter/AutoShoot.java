@@ -58,7 +58,7 @@ public class AutoShoot extends OutliersCommand{
 
     @Override
     public boolean isFinished() {
-        return System.currentTimeMillis() > _timestamp + 1000; // 1000ms intake
+        return System.currentTimeMillis() > _timestamp + 500; // 1000ms intake
     }
 
     @Override

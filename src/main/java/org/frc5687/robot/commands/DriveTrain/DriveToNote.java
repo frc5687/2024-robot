@@ -8,6 +8,7 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
@@ -32,6 +33,7 @@ public class DriveToNote extends OutliersCommand{
         super.initialize();
         _xController.setGoal(0.0);
         _yController.setGoal(0.0);
+        _yawController.setGoal(0.0);
     }
 
     @Override
@@ -68,7 +70,7 @@ public class DriveToNote extends OutliersCommand{
             } else {
                 /* Drive to note portion */
                 double x = pose.x();
-                double y = pose.y() + 0.01588;
+                double y = pose.y() + 0.0285; // make constant for ZED y offset
 
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
@@ -80,13 +82,11 @@ public class DriveToNote extends OutliersCommand{
 
                 double headingAdjustmentRadians = angleToNoteRadians - currentHeadingRadians;
 
-                headingAdjustmentRadians = (headingAdjustmentRadians + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-                _yawController.setGoal(angleToNoteRadians);
-
+                headingAdjustmentRadians = Rotation2d.fromRadians(headingAdjustmentRadians).getRadians(); // normalize -pi to pi
 
                 metric("Note x", x);
                 metric("Note y", y);
-                metric("Angle to note", headingAdjustmentRadians);
+                metric("Angle to note", angleToNoteRadians);
                 rot = -_yawController.calculate(angleToNoteRadians);
             }
         } else {

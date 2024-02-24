@@ -169,13 +169,9 @@ public class SwerveModule {
     }
 
     public void setIdealState(SwerveModuleState state) {
-        if (Math.abs(state.speedMetersPerSecond) < 0.05) {
-            stopAll();
-        } else {
-            state = SwerveModuleState.optimize(state, getCanCoderAngle());
-            _goal = state;
-            setModuleState(_goal);
-        }
+        state = SwerveModuleState.optimize(state, getCanCoderAngle());
+        _goal = state;
+        setModuleState(_goal);
     }
 
     private double calculateWantedSpeed(SwerveModuleState state) {
