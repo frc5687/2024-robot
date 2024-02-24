@@ -5,12 +5,12 @@ import static org.frc5687.robot.util.Helpers.applyDeadband;
 
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
+import org.frc5687.robot.commands.DriveToAmp;
 import org.frc5687.robot.commands.DriveToNote;
 import org.frc5687.robot.commands.SnapTo;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Shooter.AmpShot;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
@@ -20,6 +20,7 @@ import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.subsystems.Dunker.DunkerState;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
 
@@ -95,7 +96,8 @@ public class OI extends OutliersProxy {
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
-        _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
+        _operatorGamepad.getXButton().and(() -> dunker.getDunkerState() == DunkerState.READY_TO_DUNK).onTrue(new DriveToAmp(drivetrain).andThen(new DunkNote(dunker, shooter)));
+        _operatorGamepad.getBackButton().onTrue(new DunkNote(dunker, shooter));
 
         _operatorGamepad.getLeftBumper().onTrue(new ChangeRPM(shooter, -10));
         _operatorGamepad.getRightBumper().onTrue(new ChangeRPM(shooter, 10));
