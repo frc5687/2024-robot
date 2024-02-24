@@ -148,7 +148,7 @@ public class DriveTrain extends OutliersSubsystem {
                 RobotMap.PCM.SHIFTER_LOW);
         // create compressor, compressor logic
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
+        // _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
 
         // configure our system IO and pigeon;
         _imu = imu;

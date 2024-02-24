@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
@@ -85,10 +86,10 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, drivetrain, robotState));
 
-        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
-        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
-        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
-        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
+        _driverGamepad.getYButton().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+        _driverGamepad.getBButton().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+        _driverGamepad.getAButton().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+        _driverGamepad.getXButton().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
 
         // _driverGamepad.getBackButton().whileTrue(new DriveToPose(drivetrain, new
         // Pose2d(2, 2, new Rotation2d())));
