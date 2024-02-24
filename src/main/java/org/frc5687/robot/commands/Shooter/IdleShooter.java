@@ -14,7 +14,7 @@ public class IdleShooter extends OutliersCommand{
     }
 
     public void execute() {
-        _shooter.setToIdle();
+        _shooter.setToStop();
     }
 
     public boolean isFinished() {

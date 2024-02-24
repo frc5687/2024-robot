@@ -30,8 +30,8 @@ public class ManualShoot extends OutliersCommand{
 
         double angle = distanceAndAngle.getSecond();
 
-            _shooter.setTargetRPM(3000);
-            _shooter.setToTarget();
+            // _shooter.setTargetRPM(3000);
+        _shooter.setToTarget();
 
         if (_shooter.isAtTargetRPM()) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);

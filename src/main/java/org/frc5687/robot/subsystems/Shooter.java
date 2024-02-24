@@ -1,5 +1,6 @@
 package org.frc5687.robot.subsystems;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
 
@@ -66,7 +67,8 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public double calculateRPMFromDistance(double distance) {
-        return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));
+        return Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(distance)).value;
+        // return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));
     }
 
     public void updateDashboard() {

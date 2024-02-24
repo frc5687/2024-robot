@@ -99,6 +99,8 @@ public class OI extends OutliersProxy {
 
         _operatorGamepad.getLeftBumper().onTrue(new ChangeRPM(shooter, -10));
         _operatorGamepad.getRightBumper().onTrue(new ChangeRPM(shooter, 10));
+        _operatorGamepad.getAButton().onTrue(new ChangeRPM(shooter, 100));
+        _operatorGamepad.getBButton().onTrue(new ChangeRPM(shooter, -100));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }
@@ -125,11 +127,13 @@ public class OI extends OutliersProxy {
     }
 
     public boolean getClimbButton() {
-        return _operatorGamepad.getAButton().getAsBoolean();
+        // return _operatorGamepad.getAButton().getAsBoolean();
+        return false; // FIXME
     }
 
     public boolean getStowButton() {
-        return _operatorGamepad.getBButton().getAsBoolean();
+        // return _operatorGamepad.getBButton().getAsBoolean();
+        return false; // FIXME
     }
 
     public double getDriveY() {
