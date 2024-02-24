@@ -5,10 +5,21 @@ package org.frc5687.robot;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
+import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.subsystems.*;
 import org.frc5687.robot.util.*;
+import org.frc5687.robot.commands.Shooter.Shoot;
+import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.Dunker;
+import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
+import org.frc5687.robot.subsystems.OutliersSubsystem;
+import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.util.OutliersContainer;
+import org.frc5687.robot.util.PhotonProcessor;
+import org.frc5687.robot.util.VisionProcessor;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -84,7 +95,7 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        setDefaultCommand(_climber, new AutoClimb(_climber, _oi));
+        setDefaultCommand(_climber, new AutoClimb(_climber, null, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
         
         _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
@@ -93,8 +104,8 @@ public class RobotContainer extends OutliersContainer {
         _autoChooser = AutoBuilder.buildAutoChooser("");
 
         SmartDashboard.putData(_field);
-
         SmartDashboard.putData("Auto Chooser", _autoChooser);
+
         _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
@@ -103,8 +114,13 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
-        Pose2d notePose = _robotState.getClosestNote();
-        // _field.getObject("note").setPose(notePose);
+        // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
+        // if (optionalClosestNote.isPresent()) {
+        //     Pose2d notePose = optionalClosestNote.get();
+        //     _field.getObject("note").setPose(notePose);
+        // } else {
+        //     // TODO remove note from glass
+        // }
         SmartDashboard.putData(_field);
     }
 
@@ -118,11 +134,13 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
+        _driveTrain.setToCoast();
     }
 
     @Override
     public void autonomousInit() {
         _autoChooser.updateChooser();
+        _driveTrain.setToBrake();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -158,19 +176,21 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride() {
-        // Some condition that should decide if we want to override rotation
-        if (/*_shooter.getCurrentCommand() instanceof AutoShoot*/ true) {
-            // Return an optional containing the rotation override (this should be a field
-            // relative rotation)
-            return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
-        } else {
-            // return an empty optional when we don't want to override the path's rotation
+        // // Some condition that should decide if we want to override rotation
+        // if (_shooter.getAutoShootFlag()) {
+        //     // Return an optional containing the rotation override (this should be a field
+        //     // relative rotation)
+        //     return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        // } else {
+        //     // return an empty optional when we don't want to override the path's rotation
             return Optional.empty();
-        }
+        // }
+
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
+
     }
 }

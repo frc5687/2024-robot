@@ -25,42 +25,27 @@ public class AutoIntake extends OutliersCommand {
             case NO_NOTE_YET:
                 _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isBottomDetected()) {
-                    _intake.setSpeed(0.5); // FIXME: random untested value
-                    error("Going to Bottom Sensor Detected");
+                    error("GOING TO BOTTOM_SENSOR_DETECTED");
                     _state = IndexState.BOTTOM_SENSOR_DETECTED;
                 }
             break;
             case BOTTOM_SENSOR_DETECTED:
+                _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                 if (_intake.isTopDetected()) {
-                    _intake.setSpeed(0.0);
-                    error("Going to Top Sensor Detected");
                     _state = IndexState.TOP_SENSOR_DETECTED;
-                } else {
-                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                 }
                 break;
             case TOP_SENSOR_DETECTED:
-                if (_intake.isBottomDetected()) {
-                    _intake.setSpeed(0.0);
-                    error("Going to Bottom Sensor Again");
-                    _state = IndexState.BOTTOM_SENSOR_AGAIN;
-                } else {
-                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
-                }
-                break;
-            case BOTTOM_SENSOR_AGAIN:
-                error("Stopping");
-                _intake.setSpeed(0.0);
+                _intake.setSpeed(0.0); // doubt this will run, but the end() should work.
                 break;
             default:
                 break;
-            
         }
     }
 
     @Override
     public boolean isFinished() {
-       return _state == IndexState.BOTTOM_SENSOR_AGAIN;
+       return _state == IndexState.TOP_SENSOR_DETECTED;
     }
 
     @Override
@@ -73,8 +58,7 @@ public class AutoIntake extends OutliersCommand {
     private enum IndexState {
         NO_NOTE_YET(0),
         BOTTOM_SENSOR_DETECTED(1),
-        TOP_SENSOR_DETECTED(2),
-        BOTTOM_SENSOR_AGAIN(3);
+        TOP_SENSOR_DETECTED(2);
 
         private final int _value;
 

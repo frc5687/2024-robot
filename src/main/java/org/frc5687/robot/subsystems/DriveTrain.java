@@ -1,29 +1,14 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot.subsystems;
 
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import static org.frc5687.robot.Constants.DriveTrain.*;
+import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kD;
+import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kI;
+import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kP;
+import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
+import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
+import static org.frc5687.robot.Constants.DriveTrain.TRAJECTORY_FOLLOWING;
 
 import java.util.Optional;
 
@@ -36,6 +21,39 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.util.*;
+import org.frc5687.robot.subsystems.OutliersSubsystem;
+import org.frc5687.robot.subsystems.SwerveModule;
+import org.frc5687.robot.util.OutliersContainer;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class DriveTrain extends OutliersSubsystem {
     public enum ControlState {
@@ -257,8 +275,8 @@ public class DriveTrain extends OutliersSubsystem {
                 this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(10.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        3.9, // Max module speed, in m/s
+                        new PIDConstants(5.5, 0.0, 0.0), // Rotation PID constants
+                        Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
@@ -526,6 +544,7 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
+        metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
         // moduleMetrics();
     }
 
@@ -647,6 +666,18 @@ public class DriveTrain extends OutliersSubsystem {
     public void setGyroscopeAngle(Rotation2d rotation) {
         _yawOffset = _imu.getYaw().getValue() + rotation.getDegrees();
         readIMU();
+    }
+
+    public void setToBrake() {
+        for (SwerveModule module : _modules) {
+            module.setToBrake();
+        }
+    }
+
+    public void setToCoast() {
+        for (SwerveModule module : _modules) {
+            module.setToCoast();
+        }
     }
 
     public void readIMU() {

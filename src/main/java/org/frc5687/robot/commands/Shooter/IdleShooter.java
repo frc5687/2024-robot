@@ -14,7 +14,8 @@ public class IdleShooter extends OutliersCommand{
     }
 
     public void execute() {
-        _shooter.setToStop();
+        _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
+        _shooter.setToTarget();
     }
 
     public boolean isFinished() {

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3935117917629198,
-      "y": 3.2973358837712925
+      "x": 1.4519767344255718,
+      "y": 3.498942845525176
     },
     "rotation": 0
   },
@@ -14,25 +14,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LW_TO_SHOOT_TO_F5"
+            "pathName": "Right to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F5_TO_SHOOT_TO_F4"
+            "pathName": "Shoot to F5 to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F4_TO_SHOOT_TO_F3"
+            "pathName": "Shoot to F4 To Shoot"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "C3_TO_SHOOT"
+            "name": "Shoot"
           }
         }
       ]

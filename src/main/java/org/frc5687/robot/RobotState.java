@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.swing.text.html.Option;
+
 import org.frc5687.Messages.VisionPose;
 import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.robot.subsystems.DriveTrain;
@@ -171,7 +173,7 @@ public class RobotState {
 
     /**
      * @param x     in meters of how much we trust x component
-     * @param y     in meters of how much we trust x component
+     * @param y     in meters of how much we trust y component
      * @param angle in radians of how much we trust the IMU;
      * @return Standard Deivation of the pose;
      */
@@ -183,10 +185,10 @@ public class RobotState {
         return createStandardDeviations(x, y, angle);
     }
 
-    public Pose2d getClosestNote() {
+    public Optional<Pose2d> getClosestNote() {
         VisionPoseArray poses = _visionProcessor.getDetectedObjects();
         double closestDistance = Double.MAX_VALUE;
-        Pose2d closestNotePose = new Pose2d(); 
+        Optional<Pose2d> closestNotePose = Optional.empty();
 
         for (int i = 0; i < poses.posesLength(); i++) {
             VisionPose pose = poses.poses(i);
@@ -194,7 +196,7 @@ public class RobotState {
                 double distance = Math.hypot(pose.x(), pose.y());
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestNotePose = new Pose2d(pose.x(), pose.y(), new Rotation2d());
+                    closestNotePose = Optional.of(new Pose2d(pose.x(), pose.y(), new Rotation2d()));
                 }
             }
         }
@@ -202,13 +204,27 @@ public class RobotState {
         return closestNotePose;
     }
 
-    public Pose2d getClosestNoteRelativeField() {
+    public Optional<Rotation2d> getAngleToClosestNote() {
+        Optional<Pose2d> optionalPose = getClosestNote();
+        if (optionalPose.isEmpty()) {
+            return Optional.empty();
+        }
+        Pose2d pose = optionalPose.get();
+        _driveTrain.readIMU();
+        return Optional.of(Rotation2d.fromRadians(Math.atan2(pose.getY(), pose.getY())).minus(_driveTrain.getHeading()));
+    }
+
+    public Optional<Pose2d> getClosestNoteRelativeField() {
         Pose2d robotPose = getEstimatedPose(); 
-        Pose2d notePoseRelativeRobot = getClosestNote(); 
+        Optional<Pose2d> optionalPose = getClosestNote();
+        if (optionalPose.isEmpty()) {
+            return Optional.empty();
+        }
+        Pose2d notePoseRelativeRobot = optionalPose.get();
         
         Transform2d noteTransform = new Transform2d(notePoseRelativeRobot.getTranslation(), notePoseRelativeRobot.getRotation());
         Pose2d notePoseRelativeField = robotPose.transformBy(noteTransform);
         
-        return notePoseRelativeField;
+        return Optional.of(notePoseRelativeField);
     }
 }

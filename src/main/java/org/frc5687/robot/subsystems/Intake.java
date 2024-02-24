@@ -12,6 +12,8 @@ public class Intake extends OutliersSubsystem {
     private final OutliersTalon _talon;
     private final ProximitySensor _top;
     private final ProximitySensor _bottom;
+    private boolean _autoIntakeFlag = false;
+
     public Intake(OutliersContainer container) {
         super(container);
         _talon = new OutliersTalon(RobotMap.CAN.TALONFX.INTAKE, Constants.Intake.CAN_BUS, "Intake");
@@ -32,10 +34,19 @@ public class Intake extends OutliersSubsystem {
         _talon.setPercentOutput(intakeSpeed);
     }
 
+    public void setAutoIntakeFlag(boolean flag) {
+        _autoIntakeFlag = flag;
+    }
+
+    public boolean getAutoIntakeFlag() {
+        return _autoIntakeFlag;
+    }
+
     @Override
     public void updateDashboard() {
         metric("Top Detected", isTopDetected());
         metric("Bottom Detected", isBottomDetected());
+        metric("AutoIntake Flag", getAutoIntakeFlag());
     }
     
 }
