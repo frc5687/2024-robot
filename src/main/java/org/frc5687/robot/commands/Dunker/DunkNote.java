@@ -20,11 +20,11 @@ public class DunkNote extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
-        if (_dunker.getDunkerState() != DunkerState.READY_TO_DUNK) {
-            error("Dunk note called without being ready!");
-            //cancels the command, then runs end(). end() will set the state to dunkednote, and idledunker will stow it again.
-            this.cancel();
-        }
+        // if (_dunker.getDunkerState() != DunkerState.READY_TO_DUNK) {
+        //     error("Dunk note called without being ready!");
+        //     //cancels the command, then runs end(). end() will set the state to dunkednote, and idledunker will stow it again.
+        //     this.cancel();
+        // }
         _ejectTime = System.currentTimeMillis() + Constants.Dunker.EJECT_TIME;
     }
 

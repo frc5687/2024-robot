@@ -11,20 +11,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class DriveToAmp extends OutliersCommand {
     private final DriveTrain _driveTrain;
     private final RobotState _robotState = RobotState.getInstance();
-    private boolean _isRed;
+    private Pose2d _goalPose;
 
     public DriveToAmp(DriveTrain driveTrain) {
         _driveTrain = driveTrain;
-        _isRed = false;
+        addRequirements(driveTrain);
     }
 
     @Override
     public void initialize() {
         _driveTrain.setControlState(ControlState.POSITION);
-        _isRed = _driveTrain.isRedAlliance();
-        Pose2d goal =_isRed ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE;
-        metric("Goal pose alliance", _isRed);
-        new DriveToPose(_driveTrain, goal).schedule();
+        _goalPose = _driveTrain.isRedAlliance() ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE;
+        new DriveToPose(_driveTrain, _goalPose).schedule();
     }
 
     @Override
@@ -33,7 +31,9 @@ public class DriveToAmp extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return (Math.abs(_robotState.getEstimatedPose().getX() - _goalPose.getX()) < Constants.DriveTrain.POSITION_TOLERANCE) && 
+        (Math.abs(_robotState.getEstimatedPose().getY() - _goalPose.getY()) < Constants.DriveTrain.POSITION_TOLERANCE) &&
+        (Math.abs(_robotState.getEstimatedPose().getRotation().minus(_goalPose.getRotation()).getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE);
     }
 
     @Override

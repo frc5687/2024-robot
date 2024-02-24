@@ -12,9 +12,6 @@ import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Shooter.AmpShot;
-import org.frc5687.robot.commands.Shooter.AutoShoot;
-import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
@@ -105,11 +102,6 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
 
-        _operatorGamepad.getLeftBumper().onTrue(new ChangeRPM(shooter, -10));
-        _operatorGamepad.getRightBumper().onTrue(new ChangeRPM(shooter, 10));
-        _operatorGamepad.getAButton().onTrue(new ChangeRPM(shooter, 100));
-        _operatorGamepad.getBButton().onTrue(new ChangeRPM(shooter, -100));
-
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }
 
@@ -119,13 +111,11 @@ public class OI extends OutliersProxy {
     }
 
     public boolean getClimbButton() {
-        // return _operatorGamepad.getAButton().getAsBoolean();
-        return false; // FIXME
+        return _operatorGamepad.getAButton().getAsBoolean();
     }
 
     public boolean getStowButton() {
-        // return _operatorGamepad.getBButton().getAsBoolean();
-        return false; // FIXME
+        return _operatorGamepad.getBButton().getAsBoolean();
     }
 
     public double getDriveY() {
