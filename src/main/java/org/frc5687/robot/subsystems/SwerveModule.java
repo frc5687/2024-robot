@@ -1,26 +1,27 @@
 /* Team 5687  */
 package org.frc5687.robot.subsystems;
 
-import static org.frc5687.robot.Constants.SwerveModule.*;
+import static org.frc5687.robot.Constants.SwerveModule.WHEEL_RADIUS;
+import static org.frc5687.robot.Constants.SwerveModule.kDt;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -228,6 +229,14 @@ public class SwerveModule {
     public void stopAll() {
         _driveMotor.stopMotor();
         _steeringMotor.stopMotor();
+    }
+
+    public void setToBrake() {
+        _driveMotor.setNeutralMode(NeutralModeValue.Brake);
+    }
+
+    public void setToCoast() {
+        _driveMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     public double getEncoderAngleDouble() {

@@ -3,55 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.290831218253917,
-        "y": 0.7715504152812825
+        "x": 3.0,
+        "y": 3.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.172797229504022,
-        "y": 0.7715504152812827
+        "x": 4.815045025389196,
+        "y": 2.2217523031912156
+      },
+      "isLocked": false,
+      "linkedName": "LW_SHOOT"
+    },
+    {
+      "anchor": {
+        "x": 8.295717911178311,
+        "y": 0.7824669154345462
+      },
+      "prevControl": {
+        "x": 6.387360634407878,
+        "y": 1.5695291112804453
+      },
+      "nextControl": {
+        "x": 8.63720258119275,
+        "y": 0.6416286785378772
       },
       "isLocked": false,
       "linkedName": "F5"
     },
     {
       "anchor": {
-        "x": 3.0660175380609016,
-        "y": 2.9181943442796503
+        "x": 3.0,
+        "y": 3.0
       },
       "prevControl": {
-        "x": 4.217275296100091,
-        "y": 1.1605973785835668
+        "x": 5.525830350093748,
+        "y": 1.8859108052973936
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LW_SHOOT"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.9,
-      "rotationDegrees": -44.93426326841561,
+      "rotationDegrees": -21.233532182193397,
       "rotateFast": false
     }
   ],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.9,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 0.3,
-        "maxAcceleration": 6.0,
-        "maxAngularVelocity": 1433.0,
-        "maxAngularAcceleration": 1000.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -59,7 +63,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "Intake"
               }
             }
           ]
@@ -69,17 +73,17 @@
   ],
   "globalConstraints": {
     "maxVelocity": 3.5,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 10.0,
     "maxAngularVelocity": 1433.0,
     "maxAngularAcceleration": 1000.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.25348550581312,
+    "rotation": -40.128447623572576,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

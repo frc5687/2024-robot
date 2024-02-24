@@ -13,6 +13,7 @@ public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
     private double _targetRPM = 0;
+    private boolean _autoShootFlag = false;
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -66,6 +67,14 @@ public class Shooter extends OutliersSubsystem {
                 && Math.abs(getTargetRPM() - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
+    public void setAutoShootFlag(boolean flag) {
+        _autoShootFlag = flag;
+    }
+
+    public boolean getAutoShootFlag() {
+        return _autoShootFlag;
+    }
+
     public double calculateRPMFromDistance(double distance) {
         return Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(distance)).value;
         // return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));
@@ -76,5 +85,6 @@ public class Shooter extends OutliersSubsystem {
         metric("Top Motor RPM", getTopMotorRPM());
         metric("Target RPM", getTargetRPM());
         metric("At Target RPM", isAtTargetRPM());
+        metric("AutoShoot Flag", getAutoShootFlag());
     }
 }

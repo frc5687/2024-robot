@@ -283,13 +283,13 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MAINTAIN_kP = 5.5;
+        public static final double MAINTAIN_kP = 6.5;
         public static final double MAINTAIN_kI = 0.0;
         public static final double MAINTAIN_kD = 0.3;
 
-        public static final double SNAP_kP = 4.0;
+        public static final double SNAP_kP = 8.0;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 0.1;
+        public static final double SNAP_kD = 0.5;
 
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
 

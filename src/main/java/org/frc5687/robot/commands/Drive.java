@@ -39,7 +39,6 @@ public class Drive extends OutliersCommand {
     @Override
     public void initialize() {
         _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
-
     }
 
     @Override
