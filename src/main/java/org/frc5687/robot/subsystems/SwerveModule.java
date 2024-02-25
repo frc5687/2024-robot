@@ -1,26 +1,27 @@
 /* Team 5687  */
 package org.frc5687.robot.subsystems;
 
-import static org.frc5687.robot.Constants.SwerveModule.*;
+import static org.frc5687.robot.Constants.SwerveModule.WHEEL_RADIUS;
+import static org.frc5687.robot.Constants.SwerveModule.kDt;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -72,7 +73,6 @@ public class SwerveModule {
         _isLowGear = false;
 
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
-        _velocityTorqueCurrentFOC.OverrideCoastDurNeutral = true;
         // _positionVoltage = new PositionVoltage(0.0);
 
         _encoder = new CANcoder(encoderPort, config.canBus);
@@ -83,9 +83,6 @@ public class SwerveModule {
         CANfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
         _encoder.getConfigurator().apply(CANfig);
-
-        _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
-        _velocityTorqueCurrentFOC.OverrideCoastDurNeutral = true;
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
@@ -169,13 +166,9 @@ public class SwerveModule {
     }
 
     public void setIdealState(SwerveModuleState state) {
-        if (Math.abs(state.speedMetersPerSecond) < 0.05) {
-            stopAll();
-        } else {
-            state = SwerveModuleState.optimize(state, getCanCoderAngle());
-            _goal = state;
-            setModuleState(_goal);
-        }
+        state = SwerveModuleState.optimize(state, getCanCoderAngle());
+        _goal = state;
+        setModuleState(_goal);
     }
 
     private double calculateWantedSpeed(SwerveModuleState state) {
@@ -232,6 +225,14 @@ public class SwerveModule {
     public void stopAll() {
         _driveMotor.stopMotor();
         _steeringMotor.stopMotor();
+    }
+
+    public void setToBrake() {
+        _driveMotor.setNeutralMode(NeutralModeValue.Brake);
+    }
+
+    public void setToCoast() {
+        _driveMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     public double getEncoderAngleDouble() {

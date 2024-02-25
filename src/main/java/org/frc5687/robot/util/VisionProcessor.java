@@ -23,7 +23,7 @@ public class VisionProcessor {
     private boolean firstRun = true;
     private ReentrantLock _mtx;
 
-    private VisionPoseArray _detectedObjects;
+    private VisionPoseArray _detectedObjects = new VisionPoseArray();
     private final Notifier _receiveNotifier =
             new Notifier(
                     () -> {
@@ -61,7 +61,7 @@ public class VisionProcessor {
 
     public void start() {
         running = true;
-        _receiveNotifier.startPeriodic(0.02);
+        _receiveNotifier.startPeriodic(0.01);
     }
 
     public void stop() {
@@ -110,10 +110,12 @@ public class VisionProcessor {
                             ByteBuffer bb = ByteBuffer.wrap(data);
                             bb.order(ByteOrder.LITTLE_ENDIAN);
                             _detectedObjects = VisionPoseArray.getRootAsVisionPoseArray(bb);
-                            //for (int i = 0; i < visionPoseArray.posesLength(); i++) {
-                            //    VisionPose visionPose = visionPoseArray.poses(i);
-                            //    System.out.println("VisionPose " + i + "{ x: " + visionPose.x() + ", y: " + visionPose.y() + ", z: " + visionPose.z() + " }");
-                            //}
+                            long receiveTimestampMs = System.currentTimeMillis();
+                            if (_detectedObjects.posesLength() > 0) {
+                                long sendTimestampMs = _detectedObjects.poses(0).timestamp();
+                                long latencyMs = receiveTimestampMs - sendTimestampMs;
+                                // System.out.println("Relative latency is: " + latencyMs);
+                            }
                         } catch (IndexOutOfBoundsException e) {
                             System.err.println("Failed to process VisionPoseArray due to IndexOutOfBoundsException.");
                             // Log additional details here
