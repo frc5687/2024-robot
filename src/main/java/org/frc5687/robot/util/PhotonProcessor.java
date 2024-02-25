@@ -9,9 +9,11 @@ import java.util.concurrent.CompletableFuture;
 //import java.util.concurrent.ExecutorService;
 //import java.util.concurrent.Executors;
 
+import org.frc5687.robot.Constants;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 public class PhotonProcessor {
 
@@ -37,25 +39,25 @@ public class PhotonProcessor {
         // z taken from floor
         Transform3d robotToSouthEastCam =
             new Transform3d(
-                new Translation3d(-0.163482, -0.137455, 0.554292),
+                new Translation3d(-0.107009, -0.104835, 0.57991),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5))
             );
 
         Transform3d robotToNorthEastCam =
             new Transform3d(
-                new Translation3d(-0.105059, -0.15118, 0.554292), 
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(-25))
+                new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(-7.05), Units.inchesToMeters(11.00)),
+                new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(-25.5))
             );
 
         Transform3d robotToNorthWestCam =
             new Transform3d(
-                new Translation3d(-0.105059, 0.15118, 0.554292),
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(25))
+                new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(7.05), Units.inchesToMeters(11.00)),
+                new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(25.5))
             );
 
         Transform3d robotToSouthWestCam =
             new Transform3d(
-                new Translation3d(-0.163482, 0.137455, 0.554292),
+                new Translation3d(-0.107009, 0.104835, 0.57991),
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(-162.5))
             );
 
@@ -65,7 +67,7 @@ public class PhotonProcessor {
                 PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                 _southEastCamera,
                 robotToSouthEastCam);
-
+            
         _northEastCameraEstimator =
             new PhotonPoseEstimator(
                 layout,
@@ -136,6 +138,44 @@ public class PhotonProcessor {
         return _southWestCamera.getLatestResult().hasTargets();
     }
 
+    public boolean isSouthEastTargetsWithinAmbiguity(double ambiguityTolerance) {
+        var tags = _southEastCamera.getLatestResult().targets;
+        for (var tag : tags) {
+            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
+                return false;
+            }
+        } 
+        return true;
+    }
+    public boolean isNorthEastTargetsWithinAmbiguity(double ambiguityTolerance) {
+        var tags = _northEastCamera.getLatestResult().targets;
+        for (var tag : tags) {
+            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
+                return false;
+            }
+        } 
+        return true;
+    }
+    public boolean isNorthWestTargetsWithinAmbiguity(double ambiguityTolerance) {
+        var tags = _northWestCamera.getLatestResult().targets;
+        for (var tag : tags) {
+            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
+                return false;
+            }
+        } 
+        return true;
+    }
+
+    public boolean isSouthWestTargetsWithinAmbiguity(double ambiguityTolerance) {
+        var tags = _southWestCamera.getLatestResult().targets;
+        for (var tag : tags) {
+            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
+                return false;
+            }
+        } 
+        return true;
+    }
+
     public void setLowestAmbiguity() {
         _southEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _northEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
@@ -146,24 +186,40 @@ public class PhotonProcessor {
     public Optional<EstimatedRobotPose> getSouthEastCameraEstimatedGlobalPose(
             Pose2d prevEstimatedPose) {
         _southEastCameraEstimator.setReferencePose(prevEstimatedPose);
-        return _southEastCameraEstimator.update();
+        PhotonPipelineResult results = _southEastCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        return _southEastCameraEstimator.update(results);
     }
 
     public Optional<EstimatedRobotPose> getNorthEastCameraEstimatedGlobalPose(
             Pose2d prevEstimatedPose) {
         _northEastCameraEstimator.setReferencePose(prevEstimatedPose);
-        return _northEastCameraEstimator.update();
+        PhotonPipelineResult results = _northEastCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        return _northEastCameraEstimator.update(results);
     }
 
     public Optional<EstimatedRobotPose> getNorthWestCameraEstimatedGlobalPose(
             Pose2d prevEstimatedPose) {
         _northWestCameraEstimator.setReferencePose(prevEstimatedPose);
-        return _northWestCameraEstimator.update();
+        PhotonPipelineResult results = _northWestCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        return _northWestCameraEstimator.update(results);
     }
 
     public Optional<EstimatedRobotPose> getSouthWestCameraEstimatedGlobalPose(
             Pose2d prevEstimatedPose) {
         _southWestCameraEstimator.setReferencePose(prevEstimatedPose);
+        PhotonPipelineResult results = _southWestCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
         return _southWestCameraEstimator.update();
     }
 

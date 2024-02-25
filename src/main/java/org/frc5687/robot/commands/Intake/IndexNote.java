@@ -31,15 +31,7 @@ public class IndexNote extends OutliersCommand {
                 }
                 break;
             case TOP_SENSOR_DETECTED:
-                if (_intake.isBottomDetected()) {
-                    _intake.setSpeed(0.0);
-                    _state = IndexState.BOTTOM_SENSOR_AGAIN;
-                } else {
-                    _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
-                }
-                break;
-            case BOTTOM_SENSOR_AGAIN:
-                _intake.setSpeed(0.0);
+                _intake.setSpeed(0.0); // doubt this will run, but the end() should work.
                 break;
             default:
                 break;
@@ -49,7 +41,7 @@ public class IndexNote extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-       return _state == IndexState.BOTTOM_SENSOR_AGAIN;
+       return _state == IndexState.TOP_SENSOR_DETECTED;
     }
 
     @Override
@@ -60,8 +52,7 @@ public class IndexNote extends OutliersCommand {
 
     public enum IndexState {
         BOTTOM_SENSOR_DETECTED(0),
-        TOP_SENSOR_DETECTED(1),
-        BOTTOM_SENSOR_AGAIN(2);
+        TOP_SENSOR_DETECTED(1);
 
         private final int _value;
 
