@@ -17,7 +17,7 @@ public class IdleShooter extends OutliersCommand{
     }
 
     public void execute() {
-        if (_dunker.getDunkerState() == Dunker.DunkerState.READY_TO_DUNK) {
+        if (_dunker.isNoteInDunker()) {
             _shooter.setToStop(); // keep the note in while ready to dunk
         } else {
             _shooter.setToIdle();
