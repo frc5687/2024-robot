@@ -57,9 +57,7 @@ public class RobotState {
     private final double _period = 1.0 / 250.0; // Run at 250Hz
 
     public RobotState() {
-        _periodicThread = new Thread(this::run);
-        _periodicThread.setDaemon(true);
-        _lastTimestamp = Timer.getFPGATimestamp();
+
     }
 
     public static RobotState getInstance() {
@@ -78,6 +76,9 @@ public class RobotState {
         //     0.381, 0.0285, 0.3556, 
         //     new Rotation3d());
         initPoseEstimator();
+        _periodicThread = new Thread(this::run);
+        _periodicThread.setDaemon(true);
+        _lastTimestamp = Timer.getFPGATimestamp();
     }
 
     private void initPoseEstimator() {
@@ -163,7 +164,7 @@ public class RobotState {
                     .collect(Collectors.toList());
     
             cameraPoses.forEach(cameraPose -> {
-                dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
                 _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(), cameraPose.timestampSeconds);
             });
         } finally {
@@ -204,13 +205,7 @@ public class RobotState {
     }
 
     private boolean isValidMeasurement(Pose3d measurement) {
-        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getX() > 0
-         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getY() > 0){
-            return true;
-        } else {
-            DriverStation.reportError("Robot not on field!!", false);
-            return false;
-        }
+        return true; // TODO: reject high ambiguity measurements
     }
 
     public Pose3d getSpeakerTagPose() {
