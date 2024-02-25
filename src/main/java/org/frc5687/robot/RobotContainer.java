@@ -1,29 +1,26 @@
-/* Team 5687 (C)2021 */
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
 import java.util.Optional;
 
-import org.frc5687.robot.commands.Drive;
 import org.frc5687.robot.commands.DriveLights;
-import org.frc5687.robot.commands.DriveToNote;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
+import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
@@ -79,11 +76,8 @@ public class RobotContainer extends OutliersContainer {
 
         _field = new Field2d();
 
-        try {
-            _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-        } catch (Exception e) {
-            e.getMessage();
-        }
+        _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
@@ -195,6 +189,6 @@ public class RobotContainer extends OutliersContainer {
     public void registerNamedCommands() {
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
-        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
+
     }
 }

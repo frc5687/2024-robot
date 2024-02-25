@@ -11,18 +11,19 @@ public class AutoIntake extends OutliersCommand {
 
     public AutoIntake(Intake intake) {
         _intake = intake;
-        _state = IndexState.NO_NOTE_YET;
         addRequirements(_intake);
     }
     @Override
     public void initialize() {
         super.initialize();
+        _state = IndexState.NO_NOTE_YET;
     }
 
     @Override
     public void execute() {
         switch(_state) {
             case NO_NOTE_YET:
+                metric("STATE", 0);
                 _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isBottomDetected()) {
                     error("GOING TO BOTTOM_SENSOR_DETECTED");
@@ -30,12 +31,15 @@ public class AutoIntake extends OutliersCommand {
                 }
             break;
             case BOTTOM_SENSOR_DETECTED:
+                metric("STATE", 1);
                 _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                 if (_intake.isTopDetected()) {
+                    error("GOING TO TOP_SENSOR_DETECTED. this should end the command");
                     _state = IndexState.TOP_SENSOR_DETECTED;
                 }
                 break;
             case TOP_SENSOR_DETECTED:
+                metric("STATE", 2);
                 _intake.setSpeed(0.0); // doubt this will run, but the end() should work.
                 break;
             default:

@@ -1,22 +1,15 @@
 package org.frc5687.robot.commands.Shooter;
 
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
 
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class AutoShoot extends OutliersCommand{
     private Shooter _shooter;

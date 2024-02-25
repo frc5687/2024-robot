@@ -1,38 +1,31 @@
 /* Team 5687 (C)2021-2022 */
-package org.frc5687.robot.commands;
+package org.frc5687.robot.commands.DriveTrain;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.frc5687.lib.control.SwerveHeadingController;
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.Helpers;
 
 public class Drive extends OutliersCommand {
 
     private final DriveTrain _driveTrain;
     private final OI _oi;
-    private boolean _isOverride = false;
     private int segmentationArray[] = new int[360 / 5];
-    private boolean _lockHeading;
-
 
     public Drive(DriveTrain driveTrain, OI oi) {
         _driveTrain = driveTrain;
-
         _oi = oi;
 
         for (int i = 0; i < segmentationArray.length; i++) {
             double angle = 360 / segmentationArray.length;
             segmentationArray[i] = (int) angle * i;
         }
-        _lockHeading = false;
         addRequirements(_driveTrain);
     }
 
@@ -43,22 +36,22 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void execute() {
-        // Constantly polling OI can be expensive, make these commands potentially?
+
         if (_oi.zeroIMU()) {
             _driveTrain.zeroGyroscope();
-            _driveTrain.setHeadingControllerState(SwerveHeadingController.HeadingState.OFF);
-            _lockHeading = false;
+            _driveTrain.setHeadingControllerState(HeadingState.OFF);
+            _driveTrain.setLockHeading(false);
         }
 
         if (_oi.shiftUp()) {
-            _driveTrain.shiftUpModules();
+            _driveTrain.shiftDownModules();
         } else if (_oi.shiftDown()) {
             _driveTrain.shiftDownModules();
-        } else if (!_isOverride) {
+        } else {
             _driveTrain.autoShifter();
         }
 
-        // driveX and driveY are swapped due to coordinate system that WPILib uses.
+
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
         double vx;
@@ -72,17 +65,16 @@ public class Drive extends OutliersCommand {
         rot = Math.signum(rot) * rot * rot;
 
         if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-            if (!_lockHeading) {
+            if (!_driveTrain.isHeadingLocked()) {
                 _driveTrain.temporaryDisabledHeadingController();
             }
-            _lockHeading = true;
+            _driveTrain.setLockHeading(true);
         } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
             _driveTrain.disableHeadingController();
-            _lockHeading = false;
+            _driveTrain.setLockHeading(false);
         }
 
         double controllerPower = _driveTrain.getRotationCorrection();
-
 
         vx = vec.x() * max_mps;
         vy = vec.y() * max_mps;

@@ -2,19 +2,18 @@ package org.frc5687.robot;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.swing.text.html.Option;
-
 import org.frc5687.Messages.VisionPose;
 import org.frc5687.Messages.VisionPoseArray;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.photonvision.EstimatedRobotPose;
-
-import com.neilalexander.jnacl.crypto.poly1305;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -25,42 +24,61 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 public class RobotState {
+    private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+    private Thread _periodicThread;
+    private volatile boolean _running = false;
+
+    private final ReadWriteLock stateLock = new ReentrantReadWriteLock();
+    private final Lock readLock = stateLock.readLock();
+    private final Lock writeLock = stateLock.writeLock();
+
     private DriveTrain _driveTrain;
     private PhotonProcessor _photonProcessor;
     private VisionProcessor _visionProcessor;
     private SwerveDrivePoseEstimator _poseEstimator;
+    private Translation2d _velocity = new Translation2d();
+    private Pose2d _lastPose = new Pose2d(); // To store the last pose for velocity calculation
 
-    private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
     private static RobotState _instance;
+    private double _lastTimestamp;
+    private final double _period = 1.0 / 250.0; // Run at 250Hz
 
-    private Transform3d _robotToCamera;
+    public RobotState() {
 
-    public static RobotState getInstance() {
-        if (_instance == null) _instance = new RobotState();
-        return _instance;
     }
 
-    public RobotState() {}
+    public static RobotState getInstance() {
+        if (_instance == null) {
+            _instance = new RobotState();
+        }
+        return _instance;
+    }
 
     public void initializeRobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
         _photonProcessor = photonProcessor;
         _visionProcessor = visionProcessor;
-        _robotToCamera = new Transform3d(
-            0.381, 0.0285, 0.3556, 
-            new Rotation3d());
+        _lastTimestamp = Timer.getFPGATimestamp();
+        // _robotToCamera = new Transform3d(
+        //     0.381, 0.0285, 0.3556, 
+        //     new Rotation3d());
         initPoseEstimator();
+        _periodicThread = new Thread(this::run);
+        _periodicThread.setDaemon(true);
+        _lastTimestamp = Timer.getFPGATimestamp();
     }
 
     private void initPoseEstimator() {
@@ -80,41 +98,105 @@ public class RobotState {
             );
     }
 
-    public void updateOdometry() {
-        SwerveModulePosition[] positions = _driveTrain.getSwerveModuleMeasuredPositions();
-        Rotation2d heading = _driveTrain.getHeading();
-        _poseEstimator.update(heading, positions);
+    private void run() {
+        _running = true;
+        while (_running) {
+            double startTime = Timer.getFPGATimestamp();
+            
+            periodic();
+            
+            double endTime = Timer.getFPGATimestamp();
+            double duration = endTime - startTime;
+            double sleepTime = _period - duration;
+            
+            if (sleepTime > 0) {
+                Timer.delay(sleepTime);
+            }
+        }
     }
 
-    public void updateWithVision() {
-        Pose2d prevEstimatedPose = _poseEstimator.getEstimatedPosition();
-        List<EstimatedRobotPose> cameraPoses = Stream.of(
-                _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose))
-                .flatMap(Optional::stream)
-                .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
-                .collect(Collectors.toList());
+    public void start() {
+        if (!_periodicThread.isAlive()) {
+            _periodicThread.start();
+        }
+    }
 
-        cameraPoses.forEach(cameraPose -> {
-            dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-            _poseEstimator.addVisionMeasurement(
-                    cameraPose.estimatedPose.toPose2d(),
-                    cameraPose.timestampSeconds);
-        });
+    public void stop() {
+        _running = false;
+        try {
+            _periodicThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void updateOdometry() {
+        writeLock.lock();
+        try {
+            SwerveModulePosition[] positions = _driveTrain.getSwerveModuleMeasuredPositions();
+            Rotation2d heading = _driveTrain.getHeading();
+            Pose2d currentPose = _poseEstimator.getEstimatedPosition();
+            double currentTime = Timer.getFPGATimestamp();
+            double deltaTime = currentTime - _lastTimestamp;
+            if (deltaTime > 0) {
+                Translation2d deltaPose =_lastPose.getTranslation().minus(currentPose.getTranslation());
+                _velocity = deltaPose.div(deltaTime);
+                _lastPose = new Pose2d(currentPose.getTranslation(), new Rotation2d());
+            }
+            _poseEstimator.update(heading, positions);
+            _lastTimestamp = currentTime;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    private void updateWithVision() {
+        writeLock.lock();
+        try {
+            Pose2d prevEstimatedPose = getEstimatedPoseThreadSafe();
+            List<EstimatedRobotPose> cameraPoses = Stream.of(
+                    _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                    _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+                    _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+                    _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose))
+                    .flatMap(Optional::stream)
+                    .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+                    .collect(Collectors.toList());
+    
+            cameraPoses.forEach(cameraPose -> {
+                // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(), cameraPose.timestampSeconds);
+            });
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public void periodic() {
         updateOdometry();
         updateWithVision();
 
-        SmartDashboard.putNumber("Estimated X", getEstimatedPose().getX());
-        SmartDashboard.putNumber("Estimated Y", getEstimatedPose().getY());
+        readLock.lock();
+        try {
+            SmartDashboard.putNumber("Estimated X", getEstimatedPose().getX());
+            SmartDashboard.putNumber("Estimated Y", getEstimatedPose().getY());
+        } finally {
+            readLock.unlock();
+        }
     }
 
+    private Pose2d getEstimatedPoseThreadSafe() {
+        readLock.lock();
+        try {
+            Pose2d pose = _poseEstimator.getEstimatedPosition();
+            return pose;
+        } finally {
+            readLock.unlock();
+        }
+    }
+    
     public Pose2d getEstimatedPose() {
-        return _poseEstimator.getEstimatedPosition();
+        return getEstimatedPoseThreadSafe(); //  thread-safe (probably)
     }
 
     public void setEstimatedPose(Pose2d pose) {
@@ -123,13 +205,7 @@ public class RobotState {
     }
 
     private boolean isValidMeasurement(Pose3d measurement) {
-        if (measurement.toPose2d().getX() < Constants.FieldConstants.FIELD_LENGTH && measurement.toPose2d().getX() > 0
-         && measurement.toPose2d().getY() < Constants.FieldConstants.FIELD_WIDTH && measurement.toPose2d().getY() > 0){
-            return true;
-        } else {
-            DriverStation.reportError("Robot not on field!!", false);
-            return false;
-        }
+        return true; // TODO: reject high ambiguity measurements
     }
 
     public Pose3d getSpeakerTagPose() {
@@ -156,12 +232,42 @@ public class RobotState {
         return new Pair<Double, Double>(distance, angle.getRadians());
     }
 
+    public Pair<Double, Double> calculateAdjustedAngleToTarget(double shooterRPM) {
+        Pair<Double, Double> distanceAndAngleToTarget = getDistanceAndAngleToSpeaker();
+        double shotTravelTime = calculateShotTravelTime(distanceAndAngleToTarget.getFirst(), shooterRPM);
+        
+        double futureX = _lastPose.getX() + _velocity.getX() * shotTravelTime;
+        double futureY = _lastPose.getY() + _velocity.getY() * shotTravelTime;
+        Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
+
+        Pose3d targetPose = getSpeakerTagPose();
+        double adjustedXDistance = targetPose.getX() - futurePose.getX();
+        double adjustedYDistance = targetPose.getY() - futurePose.getY();
+        
+        double adjustedDistance = Math.hypot(adjustedXDistance, adjustedYDistance);
+        Rotation2d adjustedAngle = new Rotation2d(Math.atan2(adjustedYDistance, adjustedXDistance));
+
+        return new Pair<>(adjustedDistance, adjustedAngle.getRadians());
+    }
+
+    private double calculateShotTravelTime(double distance, double outputVelocity) {
+        return distance / getInitialVelocity(outputVelocity);
+    }
+
+    private double getInitialVelocity(double flywheelMapRPM) {
+        double flywheelRadius = 0.1; 
+
+        double flywheelAngularVelocity = flywheelMapRPM* (2 * Math.PI / 60);
+        double initialVelocity = flywheelAngularVelocity * flywheelRadius;
+
+        return initialVelocity; 
+    }
+
+
     // edit this as needed to reflect the optimal range to shoot from
     public boolean isWithinOptimalRange() {
         return getDistanceAndAngleToSpeaker().getFirst() < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_THRESHOLD;
     }
-
-
 
     /**
      * This changes the standard deviations to trust vision measurements less the
@@ -210,7 +316,6 @@ public class RobotState {
                 }
             }
         }
-
         return closestNotePose;
     }
 

@@ -1,7 +1,8 @@
-package org.frc5687.robot.commands;
+package org.frc5687.robot.commands.DriveTrain;
 
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.subsystems.DriveTrain;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 

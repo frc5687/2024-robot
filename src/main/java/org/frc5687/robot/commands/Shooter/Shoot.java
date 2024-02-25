@@ -5,16 +5,11 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.DriveTrain;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoot extends OutliersCommand{
@@ -42,11 +37,12 @@ public class Shoot extends OutliersCommand{
 
         double distance = distanceAndAngle.getFirst();
 
-        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
-
         // add max distance conditional?
-        _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
+        double requestRPM = _shooter.calculateRPMFromDistance(distance);
+        _shooter.setTargetRPM(requestRPM);
         _shooter.setToTarget();
+        // Pair<Double, Double> distanceAndAngleMoving = _robotState.calculateAdjustedAngleToTarget(requestRPM);
+        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
         _driveTrain.setSnapHeading(angle);
         boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
         metric("IsInAngle", isInAngle);
