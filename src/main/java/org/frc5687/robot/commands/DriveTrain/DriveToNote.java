@@ -8,7 +8,6 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
@@ -22,9 +21,6 @@ public class DriveToNote extends OutliersCommand{
     public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
         _visionProcessor = visionProcessor;
-        _xController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(2.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity, Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yawController = new ProfiledPIDController(3.0, 0.0, 0.0, new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL*4.0));
         _xController = new ProfiledPIDController(3.0, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));

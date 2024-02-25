@@ -1,4 +1,3 @@
-/* Team 5687 (C)2020-2022 */
 package org.frc5687.robot.subsystems;
 
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
@@ -8,7 +7,6 @@ import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kI;
 import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kP;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
 import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
-import static org.frc5687.robot.Constants.DriveTrain.TRAJECTORY_FOLLOWING;
 
 import java.util.Optional;
 
@@ -20,9 +18,6 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
-import org.frc5687.robot.util.*;
-import org.frc5687.robot.subsystems.OutliersSubsystem;
-import org.frc5687.robot.subsystems.SwerveModule;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -41,12 +36,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -54,7 +46,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import org.frc5687.robot.util.*;
 
 public class DriveTrain extends OutliersSubsystem {
     public enum ControlState {
@@ -118,12 +109,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
-    private boolean _compressInit;
 
     private final BaseStatusSignal[] _moduleSignals;
 
     private final SwerveDriveKinematics _kinematics;
-    private final SwerveDriveOdometry _odometry;
 
     private final SwerveHeadingController _headingController;
 
@@ -133,7 +122,6 @@ public class DriveTrain extends OutliersSubsystem {
     // IMU (Pigeon)
     private final Pigeon2 _imu;
     private double _yawOffset;
-    private double _yawAllianceOffset;
 
     private Pose2d _hoverGoal;
 
@@ -145,8 +133,6 @@ public class DriveTrain extends OutliersSubsystem {
     private boolean _isLowGear;
 
     private final SystemIO _systemIO;
-    // private YawDriveController _yawDriveController;
-    // private AutoPoseDriveController _poseDriveController;
     private final HolonomicDriveController _poseController;
 
     private RobotState _robotState = RobotState.getInstance();
@@ -220,17 +206,6 @@ public class DriveTrain extends OutliersSubsystem {
                 _modules[SOUTH_EAST_IDX].getModuleLocation(),
                 _modules[NORTH_EAST_IDX].getModuleLocation());
 
-        _odometry = new SwerveDriveOdometry(
-                _kinematics,
-                getHeading(),
-                new SwerveModulePosition[] {
-                        _modules[NORTH_WEST_IDX].getPosition(),
-                        _modules[SOUTH_WEST_IDX].getPosition(),
-                        _modules[SOUTH_EAST_IDX].getPosition(),
-                        _modules[NORTH_EAST_IDX].getPosition()
-                },
-                new Pose2d(0, 0, getHeading()));
-
         _swerveSetpointGenerator = new SwerveSetpointGenerator(
                 _kinematics,
                 new Translation2d[] {
@@ -241,6 +216,7 @@ public class DriveTrain extends OutliersSubsystem {
                 });
 
         _headingController = new SwerveHeadingController(Constants.UPDATE_PERIOD);
+
         _poseController = new HolonomicDriveController(
             new PIDController(
                     Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
@@ -375,7 +351,6 @@ public class DriveTrain extends OutliersSubsystem {
         _systemIO.desiredChassisSpeeds = speeds;
     }
 
-
     @Override
     public void periodic() {
         super.periodic();
@@ -384,35 +359,7 @@ public class DriveTrain extends OutliersSubsystem {
             shiftDownModules();
             _hasShiftInit = true;
         }
-        // if (!_pressureInTolerance) {
-        //     _compressor.enableAnalog(ANGLE_TRAJECTORY_kI, ANGLE_TRAJECTORY_kD);
-        // }
-        // // if(!_compressInit){
-        //     _compressor.enableAnalog(Constants.DriveTrain.MAX_PSI, Constants.DriveTrain.MAX_PSI + 3);
-        //     if (!_compressor.getPressure() > MAX_PSI){
-        //         _compressor.disable();
-        //         _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
-        //         _compressInit = true;
-        //     }
-        // }
-
         readSignals();
-
-        /* Update odometry */
-        _odometry.update(getHeading(), _systemIO.measuredPositions);
-
-        switch (_controlState) {
-            case NEUTRAL:
-                break;
-            case MANUAL:
-                break;
-            case POSITION: 
-                break;
-            case ROTATION:
-                break;
-            case TRAJECTORY:
-                break;
-        }
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
@@ -504,17 +451,6 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Module Control End */
 
-    public SwerveDriveKinematicsConstraint getKinematicConstraint() {
-        return new SwerveDriveKinematicsConstraint(_kinematics, TRAJECTORY_FOLLOWING.maxDriveAcceleration);
-    }
-
-    public TrajectoryConfig getConfig() {
-        return new TrajectoryConfig(TRAJECTORY_FOLLOWING.maxDriveVelocity, TRAJECTORY_FOLLOWING.maxDriveAcceleration)
-                .setKinematics(_kinematics)
-                .addConstraint(getKinematicConstraint());
-    }
-    /* Trajectory Info End */
-
     /* Kinematics Stuff Start */
     public SwerveDriveKinematics getKinematics() {
         return _kinematics;
@@ -531,10 +467,6 @@ public class DriveTrain extends OutliersSubsystem {
         return _kinematicLimits;
     }
     /* Kinematics End */
-
-    public Pose2d getOdometryPose() {
-        return _odometry.getPoseMeters();
-    }
 
     public boolean isTopSpeed() {
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
@@ -646,7 +578,6 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Shift stuff end */
     
-
     public double getYaw() {
         return _systemIO.heading.getRadians();
     }

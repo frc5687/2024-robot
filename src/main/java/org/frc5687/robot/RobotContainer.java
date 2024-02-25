@@ -1,27 +1,22 @@
-/* Team 5687 (C)2021 */
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
-import org.frc5687.robot.commands.DriveLights;
-import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.commands.Climber.AutoClimb;
-import org.frc5687.robot.commands.DriveTrain.Drive;
 import java.util.Optional;
 
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
-import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.DriveTrain.Drive;
+import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
+import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
-import org.frc5687.robot.subsystems.*;
-import org.frc5687.robot.util.*;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
-import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
@@ -38,21 +33,23 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
-    private AutoChooser _autoChooser;
+    private SendableChooser<Command> _autoChooser;
     private VisionProcessor _visionProcessor;
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
     private Shooter _shooter;
     private Intake _intake;
+    private Dunker _dunker;
     private Climber _climber;
     private Lights _lights;
 
@@ -71,7 +68,6 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
         _oi = new OI();
-        _autoChooser = new AutoChooser();
         // create the vision processor
         _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
@@ -98,18 +94,17 @@ public class RobotContainer extends OutliersContainer {
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
+        _dunker = new Dunker(this);
+
         _climber = new Climber(this);
         _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
-        setDefaultCommand(_climber, new AutoClimb(_climber, null, _driveTrain, _oi));
+        setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
-        
-        _oi.initializeButtons(_driveTrain, _shooter, _intake, _deflector, _climber, _visionProcessor, _robotState);
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -136,7 +131,6 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void disabledPeriodic() {
-        _autoChooser.updateChooser();
     }
 
     @Override
@@ -149,8 +143,6 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void autonomousInit() {
-        _autoChooser.updateChooser();
-        _driveTrain.setToBrake();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -162,7 +154,6 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Command getAutoCommand() {
-        return new WaitCommand(15);
         // // Follow a path
         // // Load the path you want to follow using its name in the GUI
         // PathPlannerPath path = PathPlannerPath.fromPathFile("C3_TO_SHOOT_TO_F3");
