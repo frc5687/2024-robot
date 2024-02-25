@@ -77,11 +77,8 @@ public class RobotContainer extends OutliersContainer {
 
         _field = new Field2d();
 
-        try {
-            _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-        } catch (Exception e) {
-            e.getMessage();
-        }
+        _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");

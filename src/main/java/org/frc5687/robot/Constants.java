@@ -35,10 +35,9 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = 0.04445; // 3.5in diameter
-        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.36734693877551
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
-                * (16.0 / 36.0); // 4.1904
+        public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with calipers on 02/25/24
+        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.857142857142858
+        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.512820512820512
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.05; // mps
@@ -332,6 +331,7 @@ public class Constants {
         public static final double VISION_kP = 3.0;
         public static final double VISION_kI = 0.0;
         public static final double VISION_kD = 0.2;
+        public static final double AMBIGUITY_TOLERANCE = 0.4;
     }
 
     public static class VisionConfig {
@@ -340,9 +340,9 @@ public class Constants {
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
                                                                                 // more;
 
-        public static double VISION_STD_DEV_X = 0.45;
-        public static double VISION_STD_DEV_Y = 0.45;
-        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(90); // imu deviations lower number to trust
+        public static double VISION_STD_DEV_X = 0.55;
+        public static double VISION_STD_DEV_Y = 0.55;
+        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
                                                                                 // more;
     }
 
