@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4519767344255718,
-      "y": 3.498942845525176
+      "x": 1.4068385294890244,
+      "y": 6.506472218784894
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Start to Source Side Shoot"
+            "pathName": "Amp Side Start to Amp Side Shoot "
           }
         },
         {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Shoot to F5 to Source Side Shoot"
+            "pathName": "Amp Side Shoot to F1 to Amp Side Shoot "
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Shoot to F4 To Source Side Shoot"
+            "pathName": "Amp Side Shoot to F2 to Amp Side Shoot "
           }
         },
         {
