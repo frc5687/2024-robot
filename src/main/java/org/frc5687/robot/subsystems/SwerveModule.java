@@ -73,7 +73,6 @@ public class SwerveModule {
         _isLowGear = false;
 
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
-        _velocityTorqueCurrentFOC.OverrideCoastDurNeutral = true;
         // _positionVoltage = new PositionVoltage(0.0);
 
         _encoder = new CANcoder(encoderPort, config.canBus);
@@ -84,9 +83,6 @@ public class SwerveModule {
         CANfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
         _encoder.getConfigurator().apply(CANfig);
-
-        _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
-        _velocityTorqueCurrentFOC.OverrideCoastDurNeutral = true;
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 

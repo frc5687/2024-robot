@@ -21,10 +21,10 @@ public class DriveToNote extends OutliersCommand {
     public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
         _visionProcessor = visionProcessor;
-        _xController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _xController = new ProfiledPIDController(3.0, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _yController = new ProfiledPIDController(3.0, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
         _yawController = new ProfiledPIDController(3.0, 0.0, 0.0,
@@ -74,19 +74,14 @@ public class DriveToNote extends OutliersCommand {
             } else {
                 /* Drive to note portion */
                 double x = pose.x();
-                double y = pose.y() + 0.0285; // make constant for ZED y offset
+                double y = pose.y() - 0.0285; // make constant for ZED y offset
 
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
 
                 // FIXME use IMU data
-                double currentHeadingRadians = _driveTrain.getHeading().getRadians(); // Current heading in radians
 
                 double angleToNoteRadians = Math.atan2(y, x);
-
-                double headingAdjustmentRadians = angleToNoteRadians - currentHeadingRadians;
-
-                headingAdjustmentRadians = Rotation2d.fromRadians(headingAdjustmentRadians).getRadians(); // normalize -pi to pi
 
                 metric("Note x", x);
                 metric("Note y", y);
