@@ -668,18 +668,6 @@ public class DriveTrain extends OutliersSubsystem {
         readIMU();
     }
 
-    public void setToBrake() {
-        for (SwerveModule module : _modules) {
-            module.setToBrake();
-        }
-    }
-
-    public void setToCoast() {
-        for (SwerveModule module : _modules) {
-            module.setToCoast();
-        }
-    }
-
     public void readIMU() {
         double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
                 _imu.getAngularVelocityZDevice());

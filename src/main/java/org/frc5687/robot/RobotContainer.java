@@ -94,6 +94,8 @@ public class RobotContainer extends OutliersContainer {
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter));
+        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker));
+        setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, null, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
@@ -134,7 +136,6 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
-        _driveTrain.setToCoast();
     }
 
     @Override
