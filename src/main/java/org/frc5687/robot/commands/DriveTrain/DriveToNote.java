@@ -8,10 +8,11 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
-public class DriveToNote extends OutliersCommand{
+public class DriveToNote extends OutliersCommand {
     private final DriveTrain _driveTrain;
     private final ProfiledPIDController _xController;
     private final ProfiledPIDController _yController;
@@ -47,7 +48,7 @@ public class DriveToNote extends OutliersCommand{
         double rot = 0;
         VisionPoseArray poses = _visionProcessor.getDetectedObjects();
         VisionPose pose = null;
-        
+
         if (!_driveTrain.isLowGear()) {
             _driveTrain.shiftDownModules();
         }
