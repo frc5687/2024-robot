@@ -13,6 +13,7 @@ import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -194,6 +195,6 @@ public class RobotContainer extends OutliersContainer {
     public void registerNamedCommands() {
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
-
+        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
     }
 }
