@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Start to Source Side Shoot"
+            "pathName": "Source Side Start to Source Side Shoot "
           }
         },
         {
@@ -26,19 +26,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Shoot to F5 to Source Side Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "pathName": "Source Side Shoot to F5 "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Shoot to F4 To Source Side Shoot"
+            "pathName": "F5 to F1 "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "F1 to Amp Side Shoot "
           }
         },
         {
