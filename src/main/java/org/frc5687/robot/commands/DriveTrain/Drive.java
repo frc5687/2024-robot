@@ -1,12 +1,9 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot.commands.DriveTrain;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.frc5687.lib.control.SwerveHeadingController;
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
@@ -39,7 +36,21 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void execute() {
-        _driveTrain.autoShifter();
+
+        if (_oi.zeroIMU()) {
+            _driveTrain.zeroGyroscope();
+            _driveTrain.setHeadingControllerState(HeadingState.OFF);
+            _driveTrain.setLockHeading(false);
+        }
+
+        if (_oi.shiftUp()) {
+            _driveTrain.shiftDownModules();
+        } else if (_oi.shiftDown()) {
+            _driveTrain.shiftDownModules();
+        } else {
+            _driveTrain.autoShifter();
+        }
+
 
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);

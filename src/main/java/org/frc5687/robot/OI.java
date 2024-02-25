@@ -88,10 +88,10 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
 
-        _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
+        // _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
-        _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
+        // _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
 
@@ -103,6 +103,14 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
+    }
+
+    public boolean shiftDown() {
+        return _driverGamepad.getLeftBumper().getAsBoolean();
+    }
+
+    public boolean zeroIMU() {
+        return _driverGamepad.getStartButton().getAsBoolean();
     }
 
     public boolean shiftUp() {
