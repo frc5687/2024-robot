@@ -8,14 +8,43 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.070187201985778,
-        "y": 6.584945113018188
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Amp Side Shoot to F1 to Amp Side Shoot.path
+        "x": 5.5237290567173725,
+        "y": 6.775803213287338
       },
       "isLocked": false,
       "linkedName": "G_SHOOT_CLOSE"
     },
     {
       "anchor": {
+        "x": 8.28,
+        "y": 7.4332980675975655
+      },
+      "prevControl": {
+        "x": 6.9197897076791435,
+        "y": 7.147581008998107
+      },
+      "nextControl": {
+        "x": 8.455062976476666,
+        "y": 7.470070674738507
+========
+        "x": 5.070187201985778,
+        "y": 6.584945113018188
+>>>>>>>> origin/Autos/#42-AmoryAutos:src/main/deploy/pathplanner/paths/Amp Side Shoot to F2 to Amp Side Shoot.path
+      },
+      "isLocked": false,
+      "linkedName": "G_SHOOT_CLOSE"
+    },
+    {
+      "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Amp Side Shoot to F1 to Amp Side Shoot.path
+        "x": 3.971649816519006,
+        "y": 6.482398705538152
+      },
+      "prevControl": {
+        "x": 5.351560040726919,
+        "y": 6.759129907148703
+========
         "x": 8.28970984956188,
         "y": 5.787359442017461
       },
@@ -38,6 +67,7 @@
       "prevControl": {
         "x": 6.504520612118418,
         "y": 6.584528578044343
+>>>>>>>> origin/Autos/#42-AmoryAutos:src/main/deploy/pathplanner/paths/Amp Side Shoot to F2 to Amp Side Shoot.path
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +77,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Amp Side Shoot to F1 to Amp Side Shoot.path
+      "rotationDegrees": 17.441794776408386,
+========
       "rotationDegrees": -21.801409486351613,
+>>>>>>>> origin/Autos/#42-AmoryAutos:src/main/deploy/pathplanner/paths/Amp Side Shoot to F2 to Amp Side Shoot.path
       "rotateFast": false
     }
   ],
@@ -59,6 +93,20 @@
       "constraints": {
         "maxVelocity": 1.5,
         "maxAcceleration": 10.0,
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Amp Side Shoot to F1 to Amp Side Shoot.path
+========
+        "maxAngularVelocity": 1433.0,
+        "maxAngularAcceleration": 1000.0
+      }
+    },
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 1.9,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 10.0,
+>>>>>>>> origin/Autos/#42-AmoryAutos:src/main/deploy/pathplanner/paths/Amp Side Shoot to F2 to Amp Side Shoot.path
         "maxAngularVelocity": 1433.0,
         "maxAngularAcceleration": 1000.0
       }
@@ -90,7 +138,11 @@
     "maxAngularAcceleration": 1000.0
   },
   "goalEndState": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Amp Side Shoot to F1 to Amp Side Shoot.path
+    "velocity": 0.0,
+========
     "velocity": 0,
+>>>>>>>> origin/Autos/#42-AmoryAutos:src/main/deploy/pathplanner/paths/Amp Side Shoot to F2 to Amp Side Shoot.path
     "rotation": 17.44,
     "rotateFast": false
   },
