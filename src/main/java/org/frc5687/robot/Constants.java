@@ -354,6 +354,7 @@ public class Constants {
         public static final double DUNKER_IN_RPM = 700;
         public static final double DUNKER_OUT_RPM = 1000;
 
+        public static final double OVERRIDE_EJECT_RPM = 300;// FIXME: needs testing :3
         public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
@@ -417,6 +418,8 @@ public class Constants {
         public static final double INDEX_SPEED = 0.3;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        
+        public static final double REVERSE_INTAKE_SPEED = -0.5;
         // this is the motor config for the swerve motors
         static {
             CONFIG.TIME_OUT = 0.1;
