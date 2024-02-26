@@ -1,6 +1,10 @@
 /* Team 5687 (C)2022 */
 package org.frc5687.lib.drivers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -25,36 +29,72 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
  * set call).
  */
 public class OutliersTalon extends TalonFX {
-    // private final String _name;
+
+    private Map<String, Object> lastValues = new HashMap<>();
+
     private final TalonFXConfigurator _configurator;
     private TalonFXConfiguration _configuration = new TalonFXConfiguration();
-
     private ClosedLoopGeneralConfigs _closedLoopGenConfig = new ClosedLoopGeneralConfigs();
+
 
     private Slot0Configs _slot0Configs = new Slot0Configs();
     private Slot1Configs _slot1Configs = new Slot1Configs();
     private MotorOutputConfigs _motorConfigs = new MotorOutputConfigs();
     private TorqueCurrentConfigs _torqueCurrentConfigs = new TorqueCurrentConfigs();
+
     private final VoltageConfigs _voltageConfigs = new VoltageConfigs();
     private final MotionMagicConfigs _motionMagicConfigs = new MotionMagicConfigs();
     private final CurrentLimitsConfigs _currentLimitsConfigs = new CurrentLimitsConfigs();
     private final FeedbackConfigs _feedbackConfigs = new FeedbackConfigs();
 
     private final DutyCycleOut _percentOutput = new DutyCycleOut(0.0);
-    private final TorqueCurrentFOC _torqueCurrentFOC = new TorqueCurrentFOC(0.0);
     private final VoltageOut _voltageOut = new VoltageOut(0.0);
-    private final MotionMagicVoltage _motionMagicVoltage = new MotionMagicVoltage(0.0);
+
+    private final TorqueCurrentFOC _torqueCurrentFOC = new TorqueCurrentFOC(0.0);
+
+    /* Position Control */
     private final PositionVoltage _positionVoltage = new PositionVoltage(0.0);
+    private final MotionMagicVoltage _motionMagicVoltage = new MotionMagicVoltage(0.0);
     private final PositionDutyCycle _positionDutyCycle = new PositionDutyCycle(0.0);
 
-    private final VelocityVoltage _velocityVoltage = new VelocityVoltage(0.0, 0.0, true, 0, 0, false, false, false);
+    /* Velocity Control */
+    public VelocityVoltage _velocityVoltage = new VelocityVoltage(0.0, 0.0, true, 0, 0, false, false, false);
 
     public OutliersTalon(int port, String canBus, String name) {
         super(port, canBus);
         _configurator = this.getConfigurator();
         _configurator.apply(_configuration);
-        setPercentOutput(0.0);
-        // _name = name;
+    }
+
+    @Override
+    public StatusCode setControl(ControlRequest request) {
+        if (isNewRequest(request)) {
+            StatusCode statusCode= super.setControl(request);
+            if (statusCode == StatusCode.OK) {
+                updateLastValues(request);
+            }
+            return statusCode;
+        }
+        return StatusCode.OK;
+    }
+
+    private boolean isNewRequest(ControlRequest request) {
+        Map<String, String> controlInfo = request.getControlInfo();
+        for (Map.Entry<String, String> entry : controlInfo.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (!value.equals(lastValues.getOrDefault(key, null))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateLastValues(ControlRequest request) {
+        Map<String, String> controlInfo = request.getControlInfo();
+        for (Map.Entry<String, String> entry : controlInfo.entrySet()) {
+            lastValues.put(entry.getKey(), entry.getValue());
+        }
     }
 
     public void setPercentOutput(double output) {
@@ -125,11 +165,14 @@ public class OutliersTalon extends TalonFX {
         _feedbackConfigs.FeedbackSensorSource = config.FEEDBACK_SENSOR;
         _feedbackConfigs.SensorToMechanismRatio = config.SENSOR_TO_MECHANISM_RATIO;
 
-        _voltageOut.EnableFOC = config.USE_FOC;
-        _motionMagicVoltage.EnableFOC = config.USE_FOC;
-        _percentOutput.EnableFOC = config.USE_FOC;
-        _velocityVoltage.EnableFOC = config.USE_FOC;
         _torqueCurrentFOC.Deadband = config.CURRENT_DEADBAND;
+
+        _percentOutput.EnableFOC = config.USE_FOC;
+        _voltageOut.EnableFOC = config.USE_FOC;
+
+        _motionMagicVoltage.EnableFOC = config.USE_FOC;
+
+        _velocityVoltage.EnableFOC = config.USE_FOC;
 
         _configurator.apply(_motorConfigs, config.TIME_OUT);
         _configurator.apply(_torqueCurrentConfigs, config.TIME_OUT);
@@ -163,35 +206,17 @@ public class OutliersTalon extends TalonFX {
         _configurator.apply(_motionMagicConfigs);
     }
 
-    public static double ticksToRadians(double ticks, double gearRatio) {
-        return ticks * ((2.0 * Math.PI) / (gearRatio * 2048.0));
-    }
-
     public static double radiansToRotations(double radians, double gearRatio) {
         return radians / ((2.0 * Math.PI) / gearRatio);
-    }
-
-    public static double radiansToTicks(double degrees, double gearRatio) {
-        return degrees / ((2.0 * Math.PI) / (gearRatio * 2048.0));
     }
 
     public static double rotationsToRadians(double rotations, double gearRatio) {
         return rotations * ((2.0 * Math.PI) / gearRatio);
     }
 
-    public static double ticksPer100msToRPM(double velocityCounts, double gearRatio) {
-        double RPM = velocityCounts * (600.0 / 2048.0);
-        return RPM / gearRatio;
-    }
-
     public static double rotationsPerSecToRPM(double velocity, double gearRatio) {
         double RPM = velocity * (60.0);
         return RPM / gearRatio;
-    }
-
-    public static double RPMToTicksPer100ms(double RPM, double gearRatio) {
-        double motorRPM = RPM * gearRatio;
-        return motorRPM * (2048.0 / 600.0);
     }
 
     public static class ClosedLoopConfiguration {
