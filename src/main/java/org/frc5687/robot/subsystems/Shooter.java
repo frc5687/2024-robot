@@ -1,49 +1,90 @@
 package org.frc5687.robot.subsystems;
 
+import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.controls.Follower;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 
 public class Shooter extends OutliersSubsystem {
-    public OutliersTalon _leftTalon;
-    public OutliersTalon _rightTalon;
+    private OutliersTalon _bottomTalon;
+    private OutliersTalon _topTalon;
     private double _targetRPM = 0;
+    private boolean _autoShootFlag = false;
+
     public Shooter(OutliersContainer container) {
         super(container);
-        _leftTalon = new OutliersTalon(RobotMap.CAN.TALONFX.LEFT_SHOOTER, "CANivore", "Left Shooter");
-        _rightTalon = new OutliersTalon(RobotMap.CAN.TALONFX.RIGHT_SHOOTER, "CANivore", "Right Shooter");
-        _leftTalon.configure(Constants.Shooter.CONFIG);
-        _rightTalon.configure(Constants.Shooter.CONFIG);
+        _bottomTalon = new OutliersTalon(RobotMap.CAN.TALONFX.BOTTOM_SHOOTER, "CANivore", "Bottom Shooter");
+        _topTalon = new OutliersTalon(RobotMap.CAN.TALONFX.TOP_SHOOTER, "CANivore", "Top Shooter");
+        _bottomTalon.configure(Constants.Shooter.CONFIG);
+        _topTalon.configure(Constants.Shooter.CONFIG);
 
-        _leftTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
-        _rightTalon.setControl(new Follower(_leftTalon.getDeviceID(), true));
+        _bottomTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
+        _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
+    }
+
+    public void setToIdle() {
+        _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
+    }
+
+    public void setToStop() {
+        _bottomTalon.setVelocity(0);
+    }
+
+    public void setToDunkInRPM() {
+        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_IN_RPM);
+    }
+
+    public void setToDunkOutRPM() {
+        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_OUT_RPM);
     }
 
     public void setTargetRPM(double speed) {
         _targetRPM = speed;
     }
 
+    public void setToTarget() {
+        _bottomTalon.setVelocity(_targetRPM);
+    }
+
     public double getTargetRPM() {
         return _targetRPM;
     }
 
-    public void enableMotor() {
-        _leftTalon.setVelocity(_targetRPM);
+    public double getBottomMotorRPM() {
+        return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
     }
 
-    public void disableMotor() {
-        // TODO: coast
-        _leftTalon.setVelocity(0);
+    public double getTopMotorRPM() {
+        return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
+    }
+
+    public boolean isAtTargetRPM() {
+        return getTargetRPM() > 0
+                && Math.abs(getTargetRPM() - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
+    }
+
+    public void setAutoShootFlag(boolean flag) {
+        _autoShootFlag = flag;
+    }
+
+    public boolean getAutoShootFlag() {
+        return _autoShootFlag;
+    }
+
+    public double calculateRPMFromDistance(double distance) {
+        return Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(distance)).value;
+        // return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));
     }
 
     public void updateDashboard() {
-        SmartDashboard.putNumber("_leftTalon RPM Shooter", _leftTalon.getVelocity().getValue() * 60);
-        SmartDashboard.putNumber("Targt RPM Shooter", _targetRPM);
+        metric("Bottom Motor RPM", getBottomMotorRPM());
+        metric("Top Motor RPM", getTopMotorRPM());
+        metric("Target RPM", getTargetRPM());
+        metric("At Target RPM", isAtTargetRPM());
+        metric("AutoShoot Flag", getAutoShootFlag());
     }
 }

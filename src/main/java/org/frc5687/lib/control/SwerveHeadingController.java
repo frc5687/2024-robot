@@ -100,7 +100,7 @@ public class SwerveHeadingController {
             default:
                 break;
         }
-        if (Math.abs(heading.getRadians() - _targetHeading.getRadians())
+        if (Math.abs(heading.minus(_targetHeading).getRadians())
                 < Units.degreesToRadians(1.0)) {
             power = 0.0;
         }
