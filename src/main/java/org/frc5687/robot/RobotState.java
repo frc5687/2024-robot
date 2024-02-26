@@ -92,9 +92,9 @@ public class RobotState {
                 Constants.VisionConfig.STATE_STD_DEV_Y,
                 Constants.VisionConfig.STATE_STD_DEV_ANGLE),
             createVisionStandardDeviations(
-                        Constants.VisionConfig.VISION_STD_DEV_X,
-                        Constants.VisionConfig.VISION_STD_DEV_Y,
-                        Constants.VisionConfig.VISION_STD_DEV_ANGLE)
+                        Constants.VisionConfig.Auto.VISION_STD_DEV_X,
+                        Constants.VisionConfig.Auto.VISION_STD_DEV_Y,
+                        Constants.VisionConfig.Auto.VISION_STD_DEV_ANGLE)
             );
     }
 
@@ -205,7 +205,26 @@ public class RobotState {
     }
 
     private boolean isValidMeasurement(Pose3d measurement) {
-        return true; // TODO: reject high ambiguity measurements
+        if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
+            DriverStation.reportError("Robot is off the field in +x direction", false);
+            return false;
+        } else if (measurement.getX() < 0) {
+            DriverStation.reportError("Robot is off the field in -x direction", false);
+            return false;
+        } else if (measurement.getY() > Constants.FieldConstants.FIELD_WIDTH) {
+            DriverStation.reportError("Robot is off the field in +y direction", false);
+            return false;
+        } else if (measurement.getY() < 0) {
+            DriverStation.reportError("Robot is off the field in the -y direction", false);
+            return false;
+        } else if (measurement.getZ() < -0.15) {
+            DriverStation.reportError("Robot is inside the floor :(((", false);
+            return false;
+        } else if (measurement.getZ() > 0.15) {
+            DriverStation.reportError("Robot is floating above the floor :(((", false);
+            return false;
+        }
+        return true;
     }
 
     public Pose3d getSpeakerTagPose() {
@@ -281,6 +300,20 @@ public class RobotState {
         double positionDev = Math.abs(0.2 * dist + 0.2);
         _poseEstimator.setVisionMeasurementStdDevs(
                 createVisionStandardDeviations(positionDev, positionDev, Units.degreesToRadians(400)));
+    }
+
+    public void useAutoStandardDeviations() {
+        _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
+            Constants.VisionConfig.Auto.VISION_STD_DEV_X,
+            Constants.VisionConfig.Auto.VISION_STD_DEV_Y,
+            Constants.VisionConfig.Auto.VISION_STD_DEV_ANGLE));
+    }
+
+    public void useTeleopStandardDeviations() {
+        _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
+            Constants.VisionConfig.Teleop.VISION_STD_DEV_X,
+            Constants.VisionConfig.Teleop.VISION_STD_DEV_Y,
+            Constants.VisionConfig.Teleop.VISION_STD_DEV_ANGLE));
     }
 
     protected Vector<N3> createStandardDeviations(double x, double y, double z) {

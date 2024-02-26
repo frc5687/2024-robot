@@ -136,10 +136,12 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
+        _robotState.useTeleopStandardDeviations();
     }
 
     @Override
     public void autonomousInit() {
+        _robotState.useAutoStandardDeviations();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
