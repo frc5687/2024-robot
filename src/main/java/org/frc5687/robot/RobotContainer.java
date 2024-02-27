@@ -117,6 +117,7 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+        _field.getObject("futurePose").setPose(_robotState.predictedPositionWithVelocity(0.75));
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
         //     Pose2d notePose = optionalClosestNote.get();
