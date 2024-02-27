@@ -165,6 +165,8 @@ public class OutliersTalon extends TalonFX {
         _feedbackConfigs.FeedbackSensorSource = config.FEEDBACK_SENSOR;
         _feedbackConfigs.SensorToMechanismRatio = config.SENSOR_TO_MECHANISM_RATIO;
 
+        _velocityVoltage.OverrideBrakeDurNeutral = true;
+
         _torqueCurrentFOC.Deadband = config.CURRENT_DEADBAND;
 
         _percentOutput.EnableFOC = config.USE_FOC;

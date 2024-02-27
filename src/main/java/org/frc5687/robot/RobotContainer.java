@@ -97,7 +97,7 @@ public class RobotContainer extends OutliersContainer {
         _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker));
+        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
