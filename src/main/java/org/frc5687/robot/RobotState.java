@@ -26,8 +26,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -56,11 +56,9 @@ public class RobotState {
 
     private static RobotState _instance;
     private double _lastTimestamp;
-    private final double _period = 1.0 / 250.0; // Run at 250Hz
+    private final double _period = 1.0 / 200.0; // Run at 200Hz
 
-    public RobotState() {
-
-    }
+    public RobotState() {}
 
     public static RobotState getInstance() {
         if (_instance == null) {
@@ -135,24 +133,14 @@ public class RobotState {
     private void updateOdometry() {
         writeLock.lock();
         try {
+            _driveTrain.readSignals();
             SwerveModulePosition[] positions = _driveTrain.getSwerveModuleMeasuredPositions();
             Rotation2d heading = _driveTrain.getHeading();
             Pose2d currentPose = _poseEstimator.getEstimatedPosition();
             double currentTime = Timer.getFPGATimestamp();
             double deltaTime = currentTime - _lastTimestamp;
-
-            if (deltaTime > 0) {
-                Translation2d deltaPose = _lastPose.getTranslation().minus(currentPose.getTranslation());
-                Translation2d linearVelocity = deltaPose.div(deltaTime);
-
-                double deltaHeading = _lastPose.getRotation().minus(heading).getRadians();
-                double angularVelocity = deltaHeading / deltaTime;
-
-                _velocity = new Twist2d(linearVelocity.getX(), linearVelocity.getY(), angularVelocity);
-
-                _lastPose = new Pose2d(currentPose.getTranslation(), heading);
-            }
-
+            ChassisSpeeds measured = _driveTrain.getMeasuredChassisSpeeds();
+            _velocity = new Twist2d(measured.vxMetersPerSecond, measured.vyMetersPerSecond, measured.omegaRadiansPerSecond);
             _poseEstimator.update(heading, positions);
             _lastTimestamp = currentTime;
         } finally {
@@ -261,7 +249,6 @@ public class RobotState {
         return new Pair<Double, Double>(distance, angle.getRadians());
     }
 
-
     // Return a pair of <Shooter RPM, AngleToTarget>
     public Pair<Double, Double> calculateAdjustedRPMAndAngleToTarget() {
         Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
@@ -284,32 +271,45 @@ public class RobotState {
         return new Pair<>(adjustedShooterRPM, adjustedAngle.getRadians());
     }
 
+        // Return a pair of <Shooter RPM, AngleToTarget>
+        public Pose2d calculateAdjustedRPMAndAngleToTargetPose() {
+            Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
+            double initialDistance = initialDistanceAndAngle.getFirst();
+        
+            double initialShooterRPM = Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(initialDistance)).value;
+        
+            double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM) + 0.15; 
+            double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
+            double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
+        
+            Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
+            Pose3d targetPose = getSpeakerTagPose();
+        
+            Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
+            return new Pose2d(futureX, futureY, adjustedAngle);
+        }
+
     public Pose2d predictedPositionWithVelocity(double shootTime) {
         double futureX = _lastPose.getX() + _velocity.dx * shootTime;
         double futureY = _lastPose.getY() + _velocity.dy * shootTime;
     
-        Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
+        Pose2d futurePose = new Pose2d(futureX, futureY,_driveTrain.getHeading());
+        Pose3d targetPose = getSpeakerTagPose();
+        Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
+        futurePose = new Pose2d(futureX, futureY, adjustedAngle);
         return futurePose;
     }
 
     private double calculateShotTravelTime(double distance, double shooterRPM) {
         double wheelDiameterMeters = 0.1016;
-        double gearRatio = 1.25; 
+        double gearRatio = 0.625; 
         double wheelCircumference = Math.PI * wheelDiameterMeters;
-        double wheelRPS = shooterRPM / 60.0; 
-        double linearVelocity = wheelRPS * wheelCircumference * gearRatio; 
-        
+        double wheelRPS = (shooterRPM / gearRatio) / 60.0; 
+        double linearVelocity = wheelRPS * wheelCircumference; // just hack in ;).
+
         return distance / linearVelocity;
+        // return 0.05;
     }
-    private double getInitialVelocity(double flywheelMapRPM) {
-        double flywheelRadius = 0.1; 
-
-        double flywheelAngularVelocity = flywheelMapRPM* (2 * Math.PI / 60);
-        double initialVelocity = flywheelAngularVelocity * flywheelRadius;
-
-        return initialVelocity; 
-    }
-
 
     // edit this as needed to reflect the optimal range to shoot from
     public boolean isWithinOptimalRange() {

@@ -40,6 +40,7 @@ public class HandoffDunker extends OutliersCommand {
                 _shooter.setToDunkInRPM();
                 _intake.setSpeed(Constants.Intake.HANDOFF_SPEED);
                 if (_dunker.isNoteInDunker()) {
+                    _shooter.setConfigSlot(1);
                     _shooter.setToStop();
                     _intake.setSpeed(0);
                     _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);

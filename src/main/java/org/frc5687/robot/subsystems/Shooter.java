@@ -24,6 +24,13 @@ public class Shooter extends OutliersSubsystem {
 
         _bottomTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
         _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
+        _bottomTalon.setConfigSlot(0);
+        _topTalon.setConfigSlot(0);
+    }
+
+    public void setConfigSlot(int slot) {
+        _bottomTalon.setConfigSlot(slot);
+        _topTalon.setConfigSlot(slot);
     }
 
     public void setToIdle() {

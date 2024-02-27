@@ -31,6 +31,8 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void initialize() {
+        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
+        _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
         _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
     }
 
@@ -64,12 +66,18 @@ public class Drive extends OutliersCommand {
 
         rot = Math.signum(rot) * rot * rot;
 
-        if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
+        if (
+            rot == 0 && 
+            (_driveTrain.getHeadingControllerState() != HeadingState.SNAP || 
+            _driveTrain.getHeadingControllerState() != HeadingState.TRACKING)) {
             if (!_driveTrain.isHeadingLocked()) {
                 _driveTrain.temporaryDisabledHeadingController();
             }
             _driveTrain.setLockHeading(true);
-        } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
+        } else if (
+            _driveTrain.getHeadingControllerState() != HeadingState.SNAP || 
+            _driveTrain.getHeadingControllerState() != HeadingState.TRACKING) {
+
             _driveTrain.disableHeadingController();
             _driveTrain.setLockHeading(false);
         }
