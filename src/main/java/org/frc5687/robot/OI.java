@@ -113,6 +113,10 @@ public class OI extends OutliersProxy {
         return _driverGamepad.getStartButton().getAsBoolean();
     }
 
+    public boolean isShooting() {
+        return _driverRightTrigger.getAsBoolean();
+    }
+
     public boolean shiftUp() {
         // return _driverGamepad.getLeftBumper().getAsBoolean();
         return false;

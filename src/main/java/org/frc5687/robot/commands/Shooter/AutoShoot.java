@@ -1,5 +1,7 @@
 package org.frc5687.robot.commands.Shooter;
 
+import static org.frc5687.robot.Constants.DriveTrain.VISION_KINEMATIC_LIMITS;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
@@ -35,6 +37,7 @@ public class AutoShoot extends OutliersCommand{
     public void initialize() {
         super.initialize();
         _endingTimestamp = Long.MAX_VALUE; // it will never be this big
+        _driveTrain.setKinematicLimits(VISION_KINEMATIC_LIMITS);
     }
 
     @Override

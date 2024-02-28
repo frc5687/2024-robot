@@ -18,6 +18,7 @@ import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -26,9 +27,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -141,6 +144,26 @@ public class RobotState {
             double deltaTime = currentTime - _lastTimestamp;
             ChassisSpeeds measured = _driveTrain.getMeasuredChassisSpeeds();
             _velocity = new Twist2d(measured.vxMetersPerSecond, measured.vyMetersPerSecond, measured.omegaRadiansPerSecond);
+
+            // _velocityPredictor.update(
+            //     _driveTrain.getDesiredChassisSpeeds(),
+            //     _driveTrain.getAccelerationIMU(),
+            //     deltaTime
+            // );
+
+            if (deltaTime > 0) {
+                // Translation2d deltaPose = _lastPose.getTranslation().minus(currentPose.getTranslation());
+                // Translation2d linearVelocity = deltaPose.div(deltaTime);
+
+                // double deltaHeading = _lastPose.getRotation().minus(heading).getRadians();
+                // double angularVelocity = deltaHeading / deltaTime;
+
+                // _velocity = new Twist2d(linearVelocity.getX(), linearVelocity.getY(), angularVelocity);
+                // _velocity = _velocityPredictor.getEstimatedVelocity();
+
+                _lastPose = new Pose2d(currentPose.getTranslation(), heading);
+            }
+
             _poseEstimator.update(heading, positions);
             _lastTimestamp = currentTime;
         } finally {
@@ -256,7 +279,7 @@ public class RobotState {
     
         double initialShooterRPM = Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(initialDistance)).value;
     
-        double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM) + 0.5; 
+        double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM); 
         double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
         double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
     
@@ -268,6 +291,7 @@ public class RobotState {
     
         Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
     
+        // return new Pair<>(initialShooterRPM, adjustedAngle.getRadians());
         return new Pair<>(adjustedShooterRPM, adjustedAngle.getRadians());
     }
 
@@ -278,7 +302,7 @@ public class RobotState {
         
             double initialShooterRPM = Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(initialDistance)).value;
         
-            double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM) + 0.15; 
+            double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM); 
             double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
             double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
         
