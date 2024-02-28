@@ -24,13 +24,26 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "Source Side Shoot to F3 to Source Side Shoot "
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Source Side Shoot to F3"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "F3 to Source Side Shoot"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -40,6 +53,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "F3 to Source Side Shoot"
           }
         },
         {

@@ -61,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Node end",
   "previewStartingState": {
     "rotation": -40.129999999999995,
     "velocity": 0

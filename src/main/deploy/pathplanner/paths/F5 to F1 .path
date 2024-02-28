@@ -96,7 +96,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Node Start",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

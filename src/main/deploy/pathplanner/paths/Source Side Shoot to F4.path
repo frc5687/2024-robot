@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.607231918654421,
-        "y": 2.1136859829766874
+        "x": 3.966807705695183,
+        "y": 1.6254874674991522
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
@@ -20,8 +20,8 @@
         "y": 2.444946203994972
       },
       "prevControl": {
-        "x": 5.800605206436402,
-        "y": 1.1405555579472746
+        "x": 7.486748192869604,
+        "y": 1.7892056296933105
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Node end",
   "previewStartingState": null,
   "useDefaultConstraints": true
 }
