@@ -96,15 +96,15 @@ public class Drive extends OutliersCommand {
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
 
         // set kinematics limits if shooting.
-        if (_oi.isShooting()) {
-            _driveTrain.setKinematicLimits(VISION_KINEMATIC_LIMITS);
-        } else {
-            _driveTrain.setKinematicLimits(
-                _driveTrain.isLowGear() ? 
-                LOW_KINEMATIC_LIMITS :
-                HIGH_KINEMATIC_LIMITS
-            );
-        }
+        // if (_oi.isShooting()) {
+        //     _driveTrain.setKinematicLimits(VISION_KINEMATIC_LIMITS);
+        // } else {
+        //     _driveTrain.setKinematicLimits(
+        //         _driveTrain.isLowGear() ? 
+        //         LOW_KINEMATIC_LIMITS :
+        //         HIGH_KINEMATIC_LIMITS
+        //     );
+        // }
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(

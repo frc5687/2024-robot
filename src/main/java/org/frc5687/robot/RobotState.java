@@ -136,7 +136,7 @@ public class RobotState {
     private void updateOdometry() {
         writeLock.lock();
         try {
-            _driveTrain.readSignals();
+            // _driveTrain.readSignals();
             SwerveModulePosition[] positions = _driveTrain.getSwerveModuleMeasuredPositions();
             Rotation2d heading = _driveTrain.getHeading();
             Pose2d currentPose = _poseEstimator.getEstimatedPosition();
@@ -291,8 +291,8 @@ public class RobotState {
     
         Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
     
-        // return new Pair<>(initialShooterRPM, adjustedAngle.getRadians());
-        return new Pair<>(adjustedShooterRPM, adjustedAngle.getRadians());
+        return new Pair<>(initialShooterRPM, adjustedAngle.getRadians());
+        // return new Pair<>(adjustedShooterRPM, adjustedAngle.getRadians());
     }
 
         // Return a pair of <Shooter RPM, AngleToTarget>
