@@ -58,7 +58,7 @@ public class OutliersTalon extends TalonFX {
     private final PositionDutyCycle _positionDutyCycle = new PositionDutyCycle(0.0);
 
     /* Velocity Control */
-    public VelocityVoltage _velocityVoltage = new VelocityVoltage(0.0, 0.0, true, 0, 0, false, false, false);
+    public VelocityVoltage _velocityVoltage = new VelocityVoltage(0.0, 0.0, true, 0, 0, true, false, false);
 
     public OutliersTalon(int port, String canBus, String name) {
         super(port, canBus);
@@ -130,7 +130,7 @@ public class OutliersTalon extends TalonFX {
     public void setVelocity(double rpm) {
         double rps = rpm / 60;
         if (_velocityVoltage.Velocity != rps) {
-            this.setControl(_velocityVoltage.withVelocity(rps));
+            this.setControl(_velocityVoltage.withVelocity(rps).withOverrideBrakeDurNeutral(true));
         }
     }
 
@@ -142,6 +142,11 @@ public class OutliersTalon extends TalonFX {
         if (_torqueCurrentFOC.Output != current) {
             this.setControl(_torqueCurrentFOC.withOutput(current));
         }
+    }
+
+    public void setConfigSlot(int slot) {
+        _velocityVoltage.withSlot(slot);
+        _motionMagicVoltage.withSlot(slot);
     }
 
     public void configure(Configuration config) {
@@ -165,6 +170,8 @@ public class OutliersTalon extends TalonFX {
         _feedbackConfigs.FeedbackSensorSource = config.FEEDBACK_SENSOR;
         _feedbackConfigs.SensorToMechanismRatio = config.SENSOR_TO_MECHANISM_RATIO;
 
+        _velocityVoltage.OverrideBrakeDurNeutral = true;
+
         _torqueCurrentFOC.Deadband = config.CURRENT_DEADBAND;
 
         _percentOutput.EnableFOC = config.USE_FOC;
@@ -186,11 +193,16 @@ public class OutliersTalon extends TalonFX {
     }
 
     public void configureClosedLoop(ClosedLoopConfiguration config) {
-        _slot0Configs.kV = config.kF;
+        _slot0Configs.kA = config.kA;
+        _slot0Configs.kS = config.kS;
+        _slot0Configs.kV = config.kV;
         _slot0Configs.kP = config.kP;
         _slot0Configs.kI = config.kI;
         _slot0Configs.kD = config.kD; // Defaults to config 0
-        _slot1Configs.kV = config.kF1;
+
+        _slot1Configs.kA = config.kA1;
+        _slot1Configs.kS = config.kS1;
+        _slot1Configs.kV = config.kV1;
         _slot1Configs.kP = config.kP1;
         _slot1Configs.kI = config.kI1;
         _slot1Configs.kD = config.kD1;
@@ -223,10 +235,12 @@ public class OutliersTalon extends TalonFX {
         public double TIME_OUT = 0.1;
         public int SLOT = 0;
 
+        public double kS = 0.0;
+        public double kA = 0.0;
         public double kP = 0.0;
         public double kI = 0.0;
         public double kD = 0.0;
-        public double kF = 0.0;
+        public double kV = 0.0;
         public double MAX_INTEGRAL_ACCUMULATOR = 0;
         public int I_ZONE = 0; // Ticks
         public int TOLERANCE = 0; // Ticks
@@ -237,10 +251,13 @@ public class OutliersTalon extends TalonFX {
         public int ACCELERATION = 0; // RPS / Second
         public int JERK = 0; // RPS / Second / Second
 
+        public double kS1 = 0.0;
+        public double kA1 = 0.0;
         public double kP1 = 0.0;
         public double kI1 = 0.0;
         public double kD1 = 0.0;
-        public double kF1 = 0.0;
+        public double kV1 = 0.0;
+
 
         public boolean IS_CONTINUOUS = false;
     }

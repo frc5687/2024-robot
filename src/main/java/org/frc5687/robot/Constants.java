@@ -87,13 +87,12 @@ public class Constants {
             DRIVE_CONTROLLER_CONFIG.kP = 15.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.00;
-            DRIVE_CONTROLLER_CONFIG.kF = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.0;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 45.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
-
-            DRIVE_CONTROLLER_CONFIG.kF1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
 
             DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1500;
             DRIVE_CONTROLLER_CONFIG.ACCELERATION = 750;
@@ -106,7 +105,7 @@ public class Constants {
             STEER_CONTROLLER_CONFIG.kP = 70;
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.7;
-            STEER_CONTROLLER_CONFIG.kF = 0.0;
+            STEER_CONTROLLER_CONFIG.kV = 0.0;
 
             STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
             STEER_CONTROLLER_CONFIG.ACCELERATION = 4000;
@@ -213,9 +212,9 @@ public class Constants {
         public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
-            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1; // m/s
+            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1.5; // m/s
             VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
-            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
+            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
 
         /*
@@ -247,7 +246,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.2512;
+            NORTH_EAST_CONFIG.encoderOffset = 0.267578125;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -286,14 +285,19 @@ public class Constants {
         public static final double MAINTAIN_kI = 0.0;
         public static final double MAINTAIN_kD = 0.3;
 
-        public static final double SNAP_kP = 8.0;
+        public static final double SNAP_kP = 6.0;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 0.5;
+        public static final double SNAP_kD = 1.0;
 
+        public static final double TRACKING_kP = 10.0;
+        public static final double TRACKING_kI = 0.0;
+        public static final double TRACKING_kD = 3.0;
+ 
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
+        public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
-        public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 4.0;
-        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 8.0;
+        public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 6.0;
+        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 12.0;
 
         // AutoAlignDriveController PID
         public static final double kP = 3.3;
@@ -337,13 +341,20 @@ public class Constants {
     public static class VisionConfig {
         public static double STATE_STD_DEV_X = 0.01;
         public static double STATE_STD_DEV_Y = 0.01;
-        public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
-                                                                                // more;
+        public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust more
 
-        public static double VISION_STD_DEV_X = 0.55;
-        public static double VISION_STD_DEV_Y = 0.55;
-        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
-                                                                                // more;
+        // we can't change the odometry stddev easily,,,, just change the vision stddev --xavier bradford 02/25/24
+        public static class Auto {
+            public static double VISION_STD_DEV_X = 0.35 ;
+            public static double VISION_STD_DEV_Y = 0.35;
+            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
+        }
+
+        public static class Teleop {
+            public static double VISION_STD_DEV_X = 0.15;
+            public static double VISION_STD_DEV_Y = 0.15;
+            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
+        }
     }
 
     public static class Shooter {
@@ -362,10 +373,13 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            { 3.2, 2600 },
-            { 3.65, 2200 },
-            { 4.26, 1900 },
-            { 4.86, 1780 },
+            { 3.0, 2700},
+            { 3.2, 2600},
+            { 3.6, 2300},
+            { 4.0, 1950},
+            // { 4.0, 2050},
+            { 4.4, 1800},
+            { 4.8, 1710 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
@@ -385,11 +399,20 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.SLOT = 0;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.2288;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.047935;
             SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kF = 0.147;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.14128;
+
+            SHOOTER_CONTROLLER_CONFIG.kS1 = 0.2288;
+            SHOOTER_CONTROLLER_CONFIG.kA1= 0.047935;
+            SHOOTER_CONTROLLER_CONFIG.kP1= 0.1;
+            SHOOTER_CONTROLLER_CONFIG.kI1= 0;
+            SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
+            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.14128;
+
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -460,10 +483,10 @@ public class Constants {
 
         static {
             CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 15;
+            CLOSED_LOOP_CONFIG.kP = 12;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0.0001;
-            CLOSED_LOOP_CONFIG.kF = 0;
+            CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
@@ -523,7 +546,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kP = 4;
             CLOSED_LOOP_CONFIG.kI = 0;
             CLOSED_LOOP_CONFIG.kD = 0;
-            CLOSED_LOOP_CONFIG.kF = 0;
+            CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
             CLOSED_LOOP_CONFIG.ACCELERATION = 500;

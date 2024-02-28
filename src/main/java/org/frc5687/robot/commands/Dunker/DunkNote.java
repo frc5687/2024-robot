@@ -20,6 +20,7 @@ public class DunkNote extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
+        _shooter.setConfigSlot(0);
         // if (_dunker.getDunkerState() != DunkerState.READY_TO_DUNK) {
         //     error("Dunk note called without being ready!");
         //     //cancels the command, then runs end(). end() will set the state to dunkednote, and idledunker will stow it again.

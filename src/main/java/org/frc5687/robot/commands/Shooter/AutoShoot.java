@@ -1,5 +1,7 @@
 package org.frc5687.robot.commands.Shooter;
 
+import static org.frc5687.robot.Constants.DriveTrain.VISION_KINEMATIC_LIMITS;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
@@ -35,6 +37,7 @@ public class AutoShoot extends OutliersCommand{
     public void initialize() {
         super.initialize();
         _endingTimestamp = Long.MAX_VALUE; // it will never be this big
+        _driveTrain.setKinematicLimits(VISION_KINEMATIC_LIMITS);
     }
 
     @Override
@@ -42,7 +45,6 @@ public class AutoShoot extends OutliersCommand{
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
 
         double distance = distanceAndAngle.getFirst();
-
         Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
 
         // add max distance conditional?
@@ -50,7 +52,8 @@ public class AutoShoot extends OutliersCommand{
         _shooter.setToTarget();
         // pid
         Rotation2d currentHeading = _driveTrain.getHeading();
-        _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, angle.minus(currentHeading).getRadians() * 7.0));
+        _driveTrain.setSnapHeading(angle);
+        _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
         error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
         boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
         metric("IsInAngle", isInAngle);
@@ -58,7 +61,7 @@ public class AutoShoot extends OutliersCommand{
             // trigger intake only once.... it has been triggered already if it is not MAX_VALUE O-O
             if (_endingTimestamp == Long.MAX_VALUE) {
                 _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
-                _endingTimestamp = System.currentTimeMillis() + 1000; // 1000ms intake
+                _endingTimestamp = System.currentTimeMillis() + 250; // 250ms intake
             }
         }
     }
@@ -71,6 +74,7 @@ public class AutoShoot extends OutliersCommand{
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        _driveTrain.disableHeadingController();
         _shooter.setToStop();
     }
 }

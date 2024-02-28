@@ -24,9 +24,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source Side Shoot to F5 to Source Side Shoot "
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Source Side Shoot to F5 "
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "F5 to Source Side Shoot "
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -36,9 +62,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Source Side Shoot to F4 To Source Side Shoot "
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Source Side Shoot to F4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "F4 to Source Side Shoot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {

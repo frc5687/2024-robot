@@ -27,6 +27,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,6 +41,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
@@ -91,6 +96,7 @@ public class DriveTrain extends OutliersSubsystem {
                 new SwerveModulePosition()
         };
         Rotation2d heading = new Rotation2d(0.0);
+        Matrix<N3, N1> accelerationVector = VecBuilder.fill(0, 0, 0);
         double pitch = 0.0;
         Pose2d odometryPose = new Pose2d();
 
@@ -110,7 +116,7 @@ public class DriveTrain extends OutliersSubsystem {
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
 
-    private final BaseStatusSignal[] _moduleSignals;
+    private final BaseStatusSignal[] _signals;
 
     private final SwerveDriveKinematics _kinematics;
 
@@ -184,14 +190,21 @@ public class DriveTrain extends OutliersSubsystem {
 
         // module CAN bus sensor outputs (position, velocity of each motor) all of them
         // are called once per loop at the start.
-        _moduleSignals = new BaseStatusSignal[NUM_MODULES * 4];
+        _signals = new BaseStatusSignal[NUM_MODULES * 4 + 7];
         for (int i = 0; i < NUM_MODULES; ++i) {
             var signals = _modules[i].getSignals();
-            _moduleSignals[(i * 4)] = signals[0];
-            _moduleSignals[(i * 4) + 1] = signals[1];
-            _moduleSignals[(i * 4) + 2] = signals[2];
-            _moduleSignals[(i * 4) + 3] = signals[3];
+            _signals[(i * 4)] = signals[0];
+            _signals[(i * 4) + 1] = signals[1];
+            _signals[(i * 4) + 2] = signals[2];
+            _signals[(i * 4) + 3] = signals[3];
         }
+        _signals[NUM_MODULES * 4] = _imu.getYaw();
+        _signals[NUM_MODULES * 4 + 1] = _imu.getPitch();
+        _signals[NUM_MODULES * 4 + 2] = _imu.getRoll();
+        _signals[NUM_MODULES * 4 + 3] = _imu.getAngularVelocityZDevice();
+        _signals[NUM_MODULES * 4 + 4] = _imu.getAccelerationX();
+        _signals[NUM_MODULES * 4 + 5] = _imu.getAccelerationY();
+        _signals[NUM_MODULES * 4 + 6] = _imu.getAccelerationZ();
 
         // frequency in Hz
         configureSignalFrequency(250);
@@ -251,8 +264,8 @@ public class DriveTrain extends OutliersSubsystem {
                 // FIXME: this might be field relative
                 this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(10.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.5, 0.0, 0.0), // Rotation PID constants
+                        new PIDConstants(3.3, 0.0, 0.05), // Translation PID constants
+                        new PIDConstants(5, 0.0, 0.001), // Rotation PID constants
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -274,17 +287,13 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     protected void configureSignalFrequency(double frequency) {
-        for (var signal : _moduleSignals) {
+        for (var signal : _signals) {
             signal.setUpdateFrequency(frequency);
         }
-        _imu.getYaw().setUpdateFrequency(frequency);
-        _imu.getPitch().setUpdateFrequency(frequency);
-        _imu.getRoll().setUpdateFrequency(frequency);
-        _imu.getAngularVelocityZDevice().setUpdateFrequency(frequency);
     }
 
     public void readSignals() {
-        BaseStatusSignal.waitForAll(0.1, _moduleSignals);
+        BaseStatusSignal.waitForAll(0.1, _signals);
         readIMU();
         readModules();
     }
@@ -334,6 +343,10 @@ public class DriveTrain extends OutliersSubsystem {
         _headingController.setMaintainHeading(heading);
     }
 
+    public void setTrackingHeading(Rotation2d heading) {
+        _headingController.setTrackingHeading(heading);
+    }
+
     public void setLockHeading(boolean lock) {
         _lockHeading = lock;
     }
@@ -359,6 +372,7 @@ public class DriveTrain extends OutliersSubsystem {
             shiftDownModules();
             _hasShiftInit = true;
         }
+        // State estimation thread is doing this now. Might cause issues
         readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
@@ -600,10 +614,19 @@ public class DriveTrain extends OutliersSubsystem {
         readIMU();
     }
 
+    public Matrix<N3, N1> getAccelerationIMU() {
+        return _systemIO.accelerationVector;
+    }
+
     public void readIMU() {
         double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
                 _imu.getAngularVelocityZDevice());
         double yawAllianceOffsetDegrees = isRedAlliance() ? 180.0 : 0;
+        _systemIO.accelerationVector= VecBuilder.fill(
+            _imu.getAccelerationX().getValueAsDouble(),
+            _imu.getAccelerationY().getValueAsDouble(),
+            _imu.getAccelerationZ().getValueAsDouble()
+        );
         _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset + yawAllianceOffsetDegrees);
         _systemIO.pitch = Units.degreesToRadians(_imu.getPitch().getValue());
     }

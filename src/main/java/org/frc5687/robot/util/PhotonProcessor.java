@@ -37,6 +37,8 @@ public class PhotonProcessor {
 
         // setPipeline(Pipeline.FAR);
         // z taken from floor
+
+        // FIXME: look at the order the rotation transformations are applied -xavier bradford
         Transform3d robotToSouthEastCam =
             new Transform3d(
                 new Translation3d(-0.107009, -0.104835, 0.57991),

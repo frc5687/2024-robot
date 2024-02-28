@@ -31,26 +31,39 @@ public class Shoot extends OutliersCommand{
         addRequirements(_shooter, _intake);
     }
 
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        _shooter.setConfigSlot(0);
+    }
+
     @Override
     public void execute() {
+        // Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
+        // _shooter.setTargetRPM(shooterRPMAndAngle.getFirst());
+        // Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
+        // _driveTrain.setTrackingHeading(angle);
+
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-
         double distance = distanceAndAngle.getFirst();
-
         // add max distance conditional?
         double requestRPM = _shooter.calculateRPMFromDistance(distance);
         _shooter.setTargetRPM(requestRPM);
-        _shooter.setToTarget();
-        // Pair<Double, Double> distanceAndAngleMoving = _robotState.calculateAdjustedAngleToTarget(requestRPM);
         Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
         _driveTrain.setSnapHeading(angle);
-        boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
+
+
+
+        _shooter.setToTarget();
+        boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.TARGET_TOLERANCE;
         metric("IsInAngle", isInAngle);
         if (_shooter.isAtTargetRPM() && isInAngle) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
 
         SmartDashboard.putNumber("Angle to shoot", angle.getRadians());
+        SmartDashboard.putNumber("Angle Error", Math.abs(_driveTrain.getHeading().minus(angle).getRadians()));
     }
 
     @Override
@@ -60,6 +73,7 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
+        _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
         _driveTrain.setMaintainHeading(_driveTrain.getHeading());
     }
 }

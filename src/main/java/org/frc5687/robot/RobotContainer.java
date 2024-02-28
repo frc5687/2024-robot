@@ -97,7 +97,7 @@ public class RobotContainer extends OutliersContainer {
         _lights = new Lights(this);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker));
+        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
@@ -117,6 +117,7 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+        // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
         //     Pose2d notePose = optionalClosestNote.get();
@@ -136,10 +137,12 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
+        _robotState.useTeleopStandardDeviations();
     }
 
     @Override
     public void autonomousInit() {
+        _robotState.useAutoStandardDeviations();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
