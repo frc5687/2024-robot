@@ -373,10 +373,12 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            { 3.2, 2600 },
-            { 3.65, 2200 },
-            { 4.26, 1900 },
-            { 4.86, 1780 },
+            { 3.0, 2700},
+            { 3.2, 2600},
+            { 3.6, 2300},
+            { 4.0, 2050},
+            { 4.4, 1800},
+            { 4.8, 1760 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
