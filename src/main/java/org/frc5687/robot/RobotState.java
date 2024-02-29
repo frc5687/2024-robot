@@ -15,11 +15,9 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -28,11 +26,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -137,7 +133,7 @@ public class RobotState {
     private void updateOdometry() {
         writeLock.lock();
         try {
-            // _driveTrain.readSignals();
+            _driveTrain.readSignals();
             SwerveModulePosition[] positions = _driveTrain.getSwerveModuleMeasuredPositions();
             Rotation2d heading = _driveTrain.getHeading();
             Pose2d currentPose = _poseEstimator.getEstimatedPosition();
@@ -145,12 +141,6 @@ public class RobotState {
             double deltaTime = currentTime - _lastTimestamp;
             ChassisSpeeds measured = _driveTrain.getMeasuredChassisSpeeds();
             _velocity = new Twist2d(measured.vxMetersPerSecond, measured.vyMetersPerSecond, measured.omegaRadiansPerSecond);
-
-            // _velocityPredictor.update(
-            //     _driveTrain.getDesiredChassisSpeeds(),
-            //     _driveTrain.getAccelerationIMU(),
-            //     deltaTime
-            // );
 
             if (deltaTime > 0) {
                 // Translation2d deltaPose = _lastPose.getTranslation().minus(currentPose.getTranslation());
@@ -176,19 +166,35 @@ public class RobotState {
         writeLock.lock();
         try {
             Pose2d prevEstimatedPose = getEstimatedPoseThreadSafe();
-            List<EstimatedRobotPose> cameraPoses = Stream.of(
-                    _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                    _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                    _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                    _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose))
-                    .flatMap(Optional::stream)
-                    .filter(cameraPose -> isValidMeasurement(cameraPose))
-                    .collect(Collectors.toList());
-    
+
+            List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
+                _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
+                _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
+            .map(pair -> new Pair<>(pair.getFirst().stream(), pair.getSecond())) 
+            .flatMap(pair -> pair.getFirst().map(estimate -> new Pair<>(estimate, pair.getSecond()))) // Handle Stream<Optional<EstimatedRobotPose>>
+            .filter(pair -> isValidMeasurementTest(pair))
+            .collect(Collectors.toList());
+        
             cameraPoses.forEach(cameraPose -> {
                 // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
-                _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(), cameraPose.timestampSeconds);
+                _poseEstimator.addVisionMeasurement(cameraPose.getFirst().estimatedPose.toPose2d(), cameraPose.getFirst().timestampSeconds);
             });
+
+            // List<EstimatedRobotPose> cameraPoses = Stream.of(
+            //         _photonProcessor.getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+            //         _photonProcessor.getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
+            //         _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
+            //         _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose))
+            //         .flatMap(Optional::stream)
+            //         .filter(cameraPose -> isValidMeasurement(cameraPose))
+            //         .collect(Collectors.toList());
+    
+            // cameraPoses.forEach(cameraPose -> {
+            //     // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+            //     _poseEstimator.addVisionMeasurement(cameraPose.estimatedPose.toPose2d(), cameraPose.timestampSeconds);
+            // });
         } finally {
             writeLock.unlock();
         }
@@ -225,28 +231,55 @@ public class RobotState {
         // FIXME: these values might not be right
         _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
     }
+    private boolean isValidMeasurementTest(Pair<EstimatedRobotPose, String> estimatedRobotPose) {
+        Pose3d measurement = estimatedRobotPose.getFirst().estimatedPose;
+        // PhotonTrackedTarget[] tagsUsed = estimatedRobotPose.targetsUsed.;
+
+        String cameraName = estimatedRobotPose.getSecond();
+        if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +x direction", false);
+            return false;
+        } else if (measurement.getX() < 0) {
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in -x direction", false);
+            return false;
+        } else if (measurement.getY() > Constants.FieldConstants.FIELD_WIDTH) {
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +y direction", false);
+            return false;
+        } else if (measurement.getY() < 0) {
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in the -y direction", false);
+            return false;
+        } else if (measurement.getZ() < -0.15) {
+            DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
+            return false;
+        } else if (measurement.getZ() > 0.15) {
+            DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
+            return false;
+        }
+        return true;
+    }
 
     private boolean isValidMeasurement(EstimatedRobotPose estimatedRobotPose) {
         Pose3d measurement = estimatedRobotPose.estimatedPose;
         // PhotonTrackedTarget[] tagsUsed = estimatedRobotPose.targetsUsed.;
+
         String cameraName = "none";
         if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
-            DriverStation.reportError("According to " + cameraName+", Robot is off the field in +x direction", false);
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +x direction", false);
             return false;
         } else if (measurement.getX() < 0) {
-            DriverStation.reportError("According to " + cameraName+", Robot is off the field in -x direction", false);
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in -x direction", false);
             return false;
         } else if (measurement.getY() > Constants.FieldConstants.FIELD_WIDTH) {
-            DriverStation.reportError("According to " + cameraName+", Robot is off the field in +y direction", false);
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +y direction", false);
             return false;
         } else if (measurement.getY() < 0) {
-            DriverStation.reportError("According to " + cameraName+", Robot is off the field in the -y direction", false);
+            DriverStation.reportError("According to " + cameraName +", Robot is off the field in the -y direction", false);
             return false;
         } else if (measurement.getZ() < -0.15) {
-            DriverStation.reportError("According to " + cameraName+", Robot is inside the floor :(((", false);
+            DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
             return false;
         } else if (measurement.getZ() > 0.15) {
-            DriverStation.reportError("According to " + cameraName+", Robot is floating above the floor :(((", false);
+            DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
             return false;
         }
         return true;
@@ -434,5 +467,12 @@ public class RobotState {
         Pose2d notePoseRelativeField = robotPose.transformBy(noteTransform);
         
         return Optional.of(notePoseRelativeField);
+    }
+    public Lock getWriteLock() {
+        return writeLock;
+    }
+
+    public Lock getReadLock() {
+        return readLock;
     }
 }

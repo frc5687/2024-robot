@@ -5,7 +5,6 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotMap;
-import org.frc5687.robot.commands.Climber.Climb;
 import org.frc5687.robot.util.OutliersContainer;
 
 // import edu.wpi.first.math.util.Units;

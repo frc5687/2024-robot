@@ -1,6 +1,7 @@
 package org.frc5687.robot.util;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 
@@ -222,8 +223,24 @@ public class PhotonProcessor {
         if (results.hasTargets()) {
             results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
         }
-        return _southWestCameraEstimator.update();
+        return _southWestCameraEstimator.update(results);
     }
+
+    public Pair<Optional<EstimatedRobotPose>, String> getNorthEastCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
+        return new Pair<Optional<EstimatedRobotPose>, String>(getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose), "NorthEast");
+    } 
+
+    public Pair<Optional<EstimatedRobotPose>, String> getNorthWestCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
+        return new Pair<Optional<EstimatedRobotPose>, String>(getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose), "NorthWest");
+    } 
+
+    public Pair<Optional<EstimatedRobotPose>, String> getSouthEastCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
+        return new Pair<Optional<EstimatedRobotPose>, String>(getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose), "SouthEast");
+    } 
+
+    public Pair<Optional<EstimatedRobotPose>, String> getSouthWestCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
+        return new Pair<Optional<EstimatedRobotPose>, String>(getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose), "SouthWest");
+    } 
 
     public CompletableFuture<Optional<EstimatedRobotPose>> getSouthEastCameraEstimatedGlobalPoseAsync(
             Pose2d prevEstimatedPose) {

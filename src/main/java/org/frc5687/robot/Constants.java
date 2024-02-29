@@ -40,7 +40,7 @@ public class Constants {
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.512820512820512
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
-        public static final double IDLE_MPS_LIMIT = 0.05; // mps
+        public static final double IDLE_MPS_LIMIT = 0.005; // mps
         public static final double SHIFT_TIME_SECONDS = 0.1; // 100ms time to shift
 
         // this is the motor config for the swerve motors
@@ -86,17 +86,15 @@ public class Constants {
             // use these PID values when shifted down
             DRIVE_CONTROLLER_CONFIG.kP = 15.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.00;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.0;
             DRIVE_CONTROLLER_CONFIG.kV = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kA = 0.1;
+            // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
-            DRIVE_CONTROLLER_CONFIG.kP1 = 45.0;
+            DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
             DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
-
-            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1500;
-            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 750;
-            DRIVE_CONTROLLER_CONFIG.JERK = 1000;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -106,10 +104,6 @@ public class Constants {
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.7;
             STEER_CONTROLLER_CONFIG.kV = 0.0;
-
-            STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
-            STEER_CONTROLLER_CONFIG.ACCELERATION = 4000;
-            STEER_CONTROLLER_CONFIG.JERK = 10000;
 
             STEER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
         }
@@ -277,9 +271,9 @@ public class Constants {
         public static final double MAINTAIN_kI = 0.0;
         public static final double MAINTAIN_kD = 0.3;
 
-        public static final double SNAP_kP = 7.4;
+        public static final double SNAP_kP = 6.5;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 0.1;
+        public static final double SNAP_kD = 0.4;
 
         public static final double TRACKING_kP = 10.0;
         public static final double TRACKING_kI = 0.0;
@@ -357,8 +351,8 @@ public class Constants {
         public static final double DUNKER_IN_RPM = 500;
         public static final double DUNKER_OUT_RPM = 1000;
 
-        public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.2;
-        public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.0;
+        public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
+        public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();

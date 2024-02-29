@@ -11,8 +11,6 @@ import org.frc5687.Messages.VisionPoseArray;
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 
-import com.google.flatbuffers.FlatBufferBuilder;
-
 import edu.wpi.first.wpilibj.Notifier;
 
 public class VisionProcessor {

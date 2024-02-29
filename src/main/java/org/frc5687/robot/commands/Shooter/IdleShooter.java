@@ -48,10 +48,8 @@ public class IdleShooter extends OutliersCommand{
             }
             
             if (onSpeakerFieldHalf && hasNote && _shooter.getSpinUpAutomatically()) {
-                _shooter.setToIdle();
-
-                // _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
-                // _shooter.setToTarget();
+                _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
+                _shooter.setToTarget();
             } else {
                 _shooter.setToIdle();
             }

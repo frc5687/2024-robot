@@ -7,13 +7,10 @@ import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
-import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
-import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.SetAutoSpinUp;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -28,7 +25,9 @@ import org.frc5687.robot.util.VisionProcessor;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;

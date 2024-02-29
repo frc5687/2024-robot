@@ -33,6 +33,7 @@ public class Dunker extends OutliersSubsystem{
     private DutyCycleEncoder _dunkerAbsEncoder;
     private ProximitySensor _dunkerProx;
     private DunkerState _dunkerState;
+    private int _tickCounter = 0;
 
     public Dunker(OutliersContainer container) {
         super(container);
@@ -47,6 +48,9 @@ public class Dunker extends OutliersSubsystem{
         _dunkerAbsEncoder = new DutyCycleEncoder(RobotMap.DIO.DUNKER_ABS_ENCODER);
         _dunkerAbsEncoder.setDistancePerRotation(Math.PI * 2.0);  
         _dunkerState = DunkerState.STOWED;
+
+        // Only check every 10 ticks (200ms);
+        _tickCounter = 0;
     }
 
     public void setDunkerAngle(double angle) {
@@ -91,8 +95,10 @@ public class Dunker extends OutliersSubsystem{
     public void periodic() {
         super.periodic();
         // Check if the abs encoder and the relative encoder are not in sync, if so reset relative to abs
-        if (Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE) {
+        _tickCounter++;
+        if (Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE && _tickCounter % 10 == 0) {
             resetMotorEncoderFromAbs();
+            _tickCounter = 0;
         }
     }
 
