@@ -15,6 +15,7 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -181,7 +182,7 @@ public class RobotState {
                     _photonProcessor.getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
                     _photonProcessor.getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose))
                     .flatMap(Optional::stream)
-                    .filter(cameraPose -> isValidMeasurement(cameraPose.estimatedPose))
+                    .filter(cameraPose -> isValidMeasurement(cameraPose))
                     .collect(Collectors.toList());
     
             cameraPoses.forEach(cameraPose -> {
@@ -225,24 +226,27 @@ public class RobotState {
         _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
     }
 
-    private boolean isValidMeasurement(Pose3d measurement) {
+    private boolean isValidMeasurement(EstimatedRobotPose estimatedRobotPose) {
+        Pose3d measurement = estimatedRobotPose.estimatedPose;
+        // PhotonTrackedTarget[] tagsUsed = estimatedRobotPose.targetsUsed.;
+        String cameraName = "none";
         if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
-            DriverStation.reportError("Robot is off the field in +x direction", false);
+            DriverStation.reportError("According to " + cameraName+", Robot is off the field in +x direction", false);
             return false;
         } else if (measurement.getX() < 0) {
-            DriverStation.reportError("Robot is off the field in -x direction", false);
+            DriverStation.reportError("According to " + cameraName+", Robot is off the field in -x direction", false);
             return false;
         } else if (measurement.getY() > Constants.FieldConstants.FIELD_WIDTH) {
-            DriverStation.reportError("Robot is off the field in +y direction", false);
+            DriverStation.reportError("According to " + cameraName+", Robot is off the field in +y direction", false);
             return false;
         } else if (measurement.getY() < 0) {
-            DriverStation.reportError("Robot is off the field in the -y direction", false);
+            DriverStation.reportError("According to " + cameraName+", Robot is off the field in the -y direction", false);
             return false;
         } else if (measurement.getZ() < -0.15) {
-            DriverStation.reportError("Robot is inside the floor :(((", false);
+            DriverStation.reportError("According to " + cameraName+", Robot is inside the floor :(((", false);
             return false;
         } else if (measurement.getZ() > 0.15) {
-            DriverStation.reportError("Robot is floating above the floor :(((", false);
+            DriverStation.reportError("According to " + cameraName+", Robot is floating above the floor :(((", false);
             return false;
         }
         return true;
@@ -337,7 +341,11 @@ public class RobotState {
 
     // edit this as needed to reflect the optimal range to shoot from
     public boolean isWithinOptimalRange() {
-        return getDistanceAndAngleToSpeaker().getFirst() < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_THRESHOLD;
+        double distance = getDistanceAndAngleToSpeaker().getFirst();
+        return 
+            distance > Constants.Shooter.OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT
+            && distance < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT
+        ;
     }
 
     /**

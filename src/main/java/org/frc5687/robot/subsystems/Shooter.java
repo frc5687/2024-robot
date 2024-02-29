@@ -13,7 +13,7 @@ public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
     private double _targetRPM = 0;
-    private boolean _autoShootFlag = false;
+    private boolean _spinUpAutomatically = true;
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -34,6 +34,10 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public void setToIdle() {
+        _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
+    }
+
+    public void setToPassthrough() {
         _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
     }
 
@@ -74,12 +78,18 @@ public class Shooter extends OutliersSubsystem {
                 && Math.abs(getTargetRPM() - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
-    public void setAutoShootFlag(boolean flag) {
-        _autoShootFlag = flag;
+    /**
+     * @return if we automatically spin up the shooter in idleshooter
+     */
+    public boolean getSpinUpAutomatically() {
+        return _spinUpAutomatically;
     }
 
-    public boolean getAutoShootFlag() {
-        return _autoShootFlag;
+    /**
+     * @param value true if we want to spin up automatically, false otherwise. this happens in idleshooter
+     */
+    public void setSpinUpAutomatically(boolean value) {
+        _spinUpAutomatically = value;
     }
 
     public double calculateRPMFromDistance(double distance) {
@@ -92,6 +102,6 @@ public class Shooter extends OutliersSubsystem {
         metric("Top Motor RPM", getTopMotorRPM());
         metric("Target RPM", getTargetRPM());
         metric("At Target RPM", isAtTargetRPM());
-        metric("AutoShoot Flag", getAutoShootFlag());
+        metric("Spin Up Automatically?", getSpinUpAutomatically());
     }
 }

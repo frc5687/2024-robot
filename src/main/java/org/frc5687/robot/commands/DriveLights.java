@@ -6,6 +6,7 @@ import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
+import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Lights.AnimationType;
 import org.frc5687.robot.util.VisionProcessor;
 
@@ -20,12 +21,14 @@ public class DriveLights extends OutliersCommand {
     private Intake _intake;
     private VisionProcessor _visionProcessor;
     private RobotState _robotState;
-    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, RobotState robotState) {
+    private Shooter _shooter;
+    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, RobotState robotState, Shooter shooter) {
         _lights = lights;
         _driveTrain = driveTrain;
         _intake = intake;
         _visionProcessor = visionProcessor;
         _robotState = robotState;
+        _shooter = shooter;
         addRequirements(lights);
     }
     
@@ -56,6 +59,10 @@ public class DriveLights extends OutliersCommand {
         //Disabled, static alliance color
         } else if (DriverStation.isDisabled()) {
             _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
+            _lights.switchAnimation(AnimationType.STATIC);
+        // Is in amp mode
+        } else if (!_shooter.getSpinUpAutomatically()) {
+            _lights.setColor(Constants.CANdle.PURPLER);
             _lights.switchAnimation(AnimationType.STATIC);
         // Is in optimal shooting range
         } else if (_robotState.isWithinOptimalRange() && (_intake.isTopDetected() || _intake.isBottomDetected())) {

@@ -6,7 +6,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
-import static org.frc5687.robot.Constants.DriveTrain.VISION_KINEMATIC_LIMITS;
 
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
@@ -97,7 +96,6 @@ public class Drive extends OutliersCommand {
 
         // set kinematics limits if shooting.
         // if (_oi.isShooting()) {
-        //     _driveTrain.setKinematicLimits(VISION_KINEMATIC_LIMITS);
         // } else {
         //     _driveTrain.setKinematicLimits(
         //         _driveTrain.isLowGear() ? 

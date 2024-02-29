@@ -209,14 +209,6 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
-        public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
-
-        static {
-            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1.5; // m/s
-            VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
-            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
-        }
-
         /*
          * How to find offsets:
          * 
@@ -281,13 +273,13 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MAINTAIN_kP = 6.5;
+        public static final double MAINTAIN_kP = 7.0;
         public static final double MAINTAIN_kI = 0.0;
         public static final double MAINTAIN_kD = 0.3;
 
-        public static final double SNAP_kP = 6.0;
+        public static final double SNAP_kP = 7.4;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 1.0;
+        public static final double SNAP_kD = 0.1;
 
         public static final double TRACKING_kP = 10.0;
         public static final double TRACKING_kI = 0.0;
@@ -362,10 +354,11 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
-        public static final double DUNKER_IN_RPM = 700;
+        public static final double DUNKER_IN_RPM = 500;
         public static final double DUNKER_OUT_RPM = 1000;
 
-        public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
+        public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.2;
+        public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.0;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
@@ -427,6 +420,7 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
+            // not sure which limit it is
             CONFIG.MAX_SUPPLY_CURRENT = 60;
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
@@ -437,7 +431,8 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.3;
+        public static final double INDEX_SPEED = 0.25
+        ;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors

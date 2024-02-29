@@ -34,7 +34,7 @@ public class ManualShoot extends OutliersCommand{
         _shooter.setTargetRPM(2700);
         _shooter.setToTarget();
 
-        if (_shooter.isAtTargetRPM()) { 
+        if (_shooter.getBottomMotorRPM() > 2600 && _shooter.getBottomMotorRPM() < 2800) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
 
