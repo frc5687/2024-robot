@@ -87,7 +87,7 @@ public class DriveToNote extends OutliersCommand{
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
 
-                // FIXME use IMU data
+                // TODO use IMU data
 
                 double angleToNoteRadians = Math.atan2(y, x);
 

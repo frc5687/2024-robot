@@ -350,7 +350,7 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static final double VELOCITY_TOLERANCE = 30; // FIXME: inaccurate???
+        public static final double VELOCITY_TOLERANCE = 30;
 
         public static final double IDLE_RPM = 500;
 

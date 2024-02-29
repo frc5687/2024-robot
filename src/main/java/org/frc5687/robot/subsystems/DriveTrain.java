@@ -259,9 +259,7 @@ public class DriveTrain extends OutliersSubsystem {
         AutoBuilder.configureHolonomic(
                 _robotState::getEstimatedPose, // Robot pose supplier
                 _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
-                // FIXME: this might be field relative
                 this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                // FIXME: this might be field relative
                 this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(3.3, 0.0, 0.05), // Translation PID constants
