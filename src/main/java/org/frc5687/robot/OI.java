@@ -12,6 +12,7 @@ import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
@@ -88,6 +89,11 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
 
+        // _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
+        // _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
+        // _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
+        // _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -100));
+
         // _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
@@ -111,6 +117,10 @@ public class OI extends OutliersProxy {
 
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();
+    }
+
+    public boolean isShooting() {
+        return _driverRightTrigger.getAsBoolean();
     }
 
     public boolean shiftUp() {

@@ -212,9 +212,9 @@ public class Constants {
         public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
-            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1; // m/s
+            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1.5; // m/s
             VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
-            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
+            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
 
         /*
@@ -246,7 +246,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.2512;
+            NORTH_EAST_CONFIG.encoderOffset = 0.267578125;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -291,10 +291,10 @@ public class Constants {
 
         public static final double TRACKING_kP = 10.0;
         public static final double TRACKING_kI = 0.0;
-        public static final double TRACKING_kD = 0.0;
-
+        public static final double TRACKING_kD = 3.0;
+ 
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
-        public static final double TARGET_TOLERANCE = Units.degreesToRadians(3);
+        public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 6.0;
         public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 12.0;
@@ -376,9 +376,10 @@ public class Constants {
             { 3.0, 2700},
             { 3.2, 2600},
             { 3.6, 2300},
-            { 4.0, 2050},
+            { 4.0, 1950},
+            // { 4.0, 2050},
             { 4.4, 1800},
-            { 4.8, 1760 },
+            { 4.8, 1710 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp

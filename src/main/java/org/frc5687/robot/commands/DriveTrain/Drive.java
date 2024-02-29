@@ -4,6 +4,10 @@ package org.frc5687.robot.commands.DriveTrain;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
+import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.VISION_KINEMATIC_LIMITS;
+
 import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
@@ -54,6 +58,7 @@ public class Drive extends OutliersCommand {
         }
 
 
+
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
         double vx;
@@ -89,6 +94,17 @@ public class Drive extends OutliersCommand {
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
 
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
+
+        // set kinematics limits if shooting.
+        // if (_oi.isShooting()) {
+        //     _driveTrain.setKinematicLimits(VISION_KINEMATIC_LIMITS);
+        // } else {
+        //     _driveTrain.setKinematicLimits(
+        //         _driveTrain.isLowGear() ? 
+        //         LOW_KINEMATIC_LIMITS :
+        //         HIGH_KINEMATIC_LIMITS
+        //     );
+        // }
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(

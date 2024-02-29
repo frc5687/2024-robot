@@ -373,7 +373,7 @@ public class DriveTrain extends OutliersSubsystem {
             _hasShiftInit = true;
         }
         // State estimation thread is doing this now. Might cause issues
-        // readSignals();
+        readSignals();
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
