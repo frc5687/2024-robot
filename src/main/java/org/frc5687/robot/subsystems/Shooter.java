@@ -65,6 +65,10 @@ public class Shooter extends OutliersSubsystem {
         return _targetRPM;
     }
 
+    public void setPercentRPM(){
+        _bottomTalon.setPercentOutput(.75);
+    }
+
     public double getBottomMotorRPM() {
         return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
     }

@@ -377,6 +377,8 @@ public class Constants {
         
         public static final double AMP_SHOT_SPEED = 700;
 
+        public static final double OVERRIDE_EJECT_RPM = 500;// FIXME: needs testing :3
+
         static {
             for (double[] pair : kRPMValues) {
                 kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
@@ -427,8 +429,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.2
-        ;
+        public static final double INDEX_SPEED = 0.25;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -480,8 +481,8 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
-            CLOSED_LOOP_CONFIG.JERK = 5000;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            CLOSED_LOOP_CONFIG.JERK = 500;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
