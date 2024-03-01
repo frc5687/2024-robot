@@ -362,13 +362,13 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            { 3.0, 2700},
-            { 3.2, 2600},
-            { 3.6, 2300},
-            { 4.0, 1950},
+            { 3.0, 3800},
+            { 3.2, 3500},
+            { 3.6, 2600},
+            { 4.0, 2100},
             // { 4.0, 2050},
-            { 4.4, 1800},
-            { 4.8, 1710 },
+            { 4.4, 1880},
+            { 4.8, 1880 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
@@ -395,14 +395,14 @@ public class Constants {
             SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kV = 0.14128;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.117;
 
             SHOOTER_CONTROLLER_CONFIG.kS1 = 0.2288;
             SHOOTER_CONTROLLER_CONFIG.kA1= 0.047935;
             SHOOTER_CONTROLLER_CONFIG.kP1= 0.1;
             SHOOTER_CONTROLLER_CONFIG.kI1= 0;
             SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
-            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.14128;
+            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.117;
 
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;

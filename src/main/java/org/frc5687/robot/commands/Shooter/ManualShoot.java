@@ -31,14 +31,15 @@ public class ManualShoot extends OutliersCommand{
 
         double angle = distanceAndAngle.getSecond();
 
-        _shooter.setTargetRPM(2700);
+        // _shooter.setTargetRPM(2700); //FIXME
         _shooter.setToTarget();
 
-        if (_shooter.getBottomMotorRPM() > 2600 && _shooter.getBottomMotorRPM() < 2800) { 
+        // if (_shooter.getBottomMotorRPM() > 2600 && _shooter.getBottomMotorRPM() < 2800) { 
+        if (_shooter.isAtTargetRPM()) {
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
 
-        SmartDashboard.putNumber("Angle to shoot", angle);
+        // SmartDashboard.putNumber("Angle to shoot", angle);
     }
 
     @Override
