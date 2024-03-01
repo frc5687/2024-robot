@@ -25,17 +25,6 @@ public class RevShooter extends OutliersCommand{
         super.initialize();
     }
     public void execute() {
-            boolean onSpeakerFieldHalf = false;
-            Optional<Alliance> optionalAlliance = DriverStation.getAlliance();
-            if (optionalAlliance.isPresent()) {
-                Alliance alliance = optionalAlliance.get();
-                if (alliance == Alliance.Blue && _robotState.getEstimatedPose().getX() < Constants.FieldConstants.FIELD_LENGTH / 2) {
-                    onSpeakerFieldHalf = true;
-                } else if (alliance == Alliance.Red && _robotState.getEstimatedPose().getX() > Constants.FieldConstants.FIELD_LENGTH / 2) {
-                    onSpeakerFieldHalf = true;
-                }
-            }
-
                 _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
                 _shooter.setToTarget();
         }

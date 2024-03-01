@@ -111,6 +111,7 @@ public class DriveTrain extends OutliersSubsystem {
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
 
+
     private final BaseStatusSignal[] _signals;
 
     private final SwerveDriveKinematics _kinematics;
