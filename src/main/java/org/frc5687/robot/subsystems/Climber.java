@@ -83,9 +83,7 @@ public class Climber extends OutliersSubsystem{
         CLEARING_DUNKER(1),
         RAISING(2),
         RAISED(3),
-        LOWERING(4),
-        LOWERED(5),
-        STOWING(6);
+        STOWING(4);
 
         private final int _value;
         ClimberStep(int value) { 

@@ -38,7 +38,7 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public void setToPassthrough() {
-        _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
+        _bottomTalon.setVelocity(Constants.Shooter.PASSTHROUGH_RPM);
     }
 
     public void setToStop() {

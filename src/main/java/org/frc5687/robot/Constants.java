@@ -351,6 +351,8 @@ public class Constants {
         public static final double DUNKER_IN_RPM = 500;
         public static final double DUNKER_OUT_RPM = 1000;
 
+        public static final double PASSTHROUGH_RPM = 1000;
+
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
 

@@ -54,21 +54,6 @@ public class AutoClimb extends OutliersCommand{
             case RAISED:
                 _driveTrain.setKinematicLimits(SLOW_KINEMATIC_LIMITS);
                 if (_oi.getClimbButton()) {
-                    _climber.setStep(ClimberStep.LOWERING);
-                }
-                if (_oi.getStowButton()) {
-                    _climber.setStep(ClimberStep.STOWING);
-                }
-                break;
-            case LOWERING:
-                _climber.setPositionMeters(Constants.Climber.CLIMB_METERS);
-                if (Math.abs(_climber.getPositionMeters() - Constants.Climber.CLIMB_METERS) < Constants.Climber.CLIMBER_TOLERANCE) {
-                    _climber.setStep(ClimberStep.LOWERED);
-                }
-                break;
-            case LOWERED:
-                // maybe add "press a button to go back to RAISING here?"
-                if (_oi.getStowButton()) {
                     _climber.setStep(ClimberStep.STOWING);
                 }
                 break;
