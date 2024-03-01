@@ -50,13 +50,13 @@ public class Drive extends OutliersCommand {
 
         /*if (_oi.shiftUp()) {
             _driveTrain.shiftUpModules();
-        } else*/ if (_driveTrain.isShiftingDown()) {
+        } else*/ 
+
+        if (_driveTrain.isShiftingDown()) {
             _driveTrain.shiftDownModules();
         } else {
             _driveTrain.autoShifter();
         }
-
-
 
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);

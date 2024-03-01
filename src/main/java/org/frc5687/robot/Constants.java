@@ -279,7 +279,7 @@ public class Constants {
         public static final double TRACKING_kI = 0.0;
         public static final double TRACKING_kD = 3.0;
  
-        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
+        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 6.0;
