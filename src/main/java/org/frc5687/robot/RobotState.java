@@ -237,22 +237,22 @@ public class RobotState {
 
         String cameraName = estimatedRobotPose.getSecond();
         if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +x direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in +x direction", false);
             return false;
         } else if (measurement.getX() < 0) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in -x direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in -x direction", false);
             return false;
         } else if (measurement.getY() > Constants.FieldConstants.FIELD_WIDTH) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +y direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in +y direction", false);
             return false;
         } else if (measurement.getY() < 0) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in the -y direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in the -y direction", false);
             return false;
         } else if (measurement.getZ() < -0.15) {
-            DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
             return false;
         } else if (measurement.getZ() > 0.15) {
-            DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
             return false;
         }
         return true;
@@ -264,22 +264,22 @@ public class RobotState {
 
         String cameraName = "none";
         if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +x direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in +x direction", false);
             return false;
         } else if (measurement.getX() < 0) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in -x direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in -x direction", false);
             return false;
         } else if (measurement.getY() > Constants.FieldConstants.FIELD_WIDTH) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in +y direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in +y direction", false);
             return false;
         } else if (measurement.getY() < 0) {
-            DriverStation.reportError("According to " + cameraName +", Robot is off the field in the -y direction", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is off the field in the -y direction", false);
             return false;
         } else if (measurement.getZ() < -0.15) {
-            DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
             return false;
         } else if (measurement.getZ() > 0.15) {
-            DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
+            // DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
             return false;
         }
         return true;
