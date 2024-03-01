@@ -79,6 +79,7 @@ public class Shooter extends OutliersSubsystem {
     }
 
     /**
+     * TODO either remove this or move it to robotstate... either way rename it speaker mode amp mode seems nicer.
      * @return if we automatically spin up the shooter in idleshooter
      */
     public boolean getSpinUpAutomatically() {

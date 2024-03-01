@@ -427,7 +427,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.25
+        public static final double INDEX_SPEED = 0.2
         ;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -479,7 +479,7 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kD = 0.0001;
             CLOSED_LOOP_CONFIG.kV = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
             CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
             CLOSED_LOOP_CONFIG.JERK = 5000;
 

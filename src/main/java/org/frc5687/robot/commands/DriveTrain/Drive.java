@@ -11,19 +11,29 @@ import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.Helpers;
 
 public class Drive extends OutliersCommand {
 
     private final DriveTrain _driveTrain;
     private final OI _oi;
+    // TODO: move some of these to robotState for more elegant shared state. - xavier bradford 03/01/24
+    private final Intake _intake;
+    private final Shooter _shooter;
+    private final RobotState _robotState;
     private int segmentationArray[] = new int[360 / 5];
 
-    public Drive(DriveTrain driveTrain, OI oi) {
+    public Drive(DriveTrain driveTrain, OI oi, Intake intake, Shooter shooter, RobotState robotState) {
         _driveTrain = driveTrain;
         _oi = oi;
+        _intake = intake;
+        _shooter = shooter;
+        _robotState = robotState;
 
         for (int i = 0; i < segmentationArray.length; i++) {
             double angle = 360 / segmentationArray.length;
@@ -103,6 +113,16 @@ public class Drive extends OutliersCommand {
         //         HIGH_KINEMATIC_LIMITS
         //     );
         // }
+
+        // if has note and is within shooting range and is in speaker mode
+        boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();
+        
+        metric("Auto Aiming at Speaker?", shouldAutoAim);
+
+        // note: this uses maintain heading not snap heading
+        if (shouldAutoAim) {
+            _driveTrain.setMaintainHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        }
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(
