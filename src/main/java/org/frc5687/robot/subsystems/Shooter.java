@@ -45,14 +45,6 @@ public class Shooter extends OutliersSubsystem {
         _bottomTalon.setVelocity(0);
     }
 
-    public void setToDunkInRPM() {
-        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_IN_RPM);
-    }
-
-    public void setToDunkOutRPM() {
-        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_OUT_RPM);
-    }
-
     public void setTargetRPM(double speed) {
         _targetRPM = speed;
     }

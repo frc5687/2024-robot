@@ -32,7 +32,7 @@ public class DunkNote extends OutliersCommand {
     @Override
     public void execute() {
         super.execute();
-        _shooter.setToDunkOutRPM();
+        _dunker.setToDunkRPM();
     }
 
     @Override

@@ -8,9 +8,9 @@ import org.frc5687.robot.util.OutliersContainer;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
-public class Dunker extends OutliersSubsystem{
+public class Dunker extends OutliersSubsystem {
 
-    public enum DunkerState { 
+    public enum DunkerState {
         UNKNOWN(0),
         STOWING(1),
         STOWED(2),
@@ -20,16 +20,18 @@ public class Dunker extends OutliersSubsystem{
         DUNKED_NOTE(6);
 
         private final int _value;
-        DunkerState (int value) { 
-            _value = value; 
+
+        DunkerState(int value) {
+            _value = value;
         }
 
-        public int getValue() { 
-            return _value; 
+        public int getValue() {
+            return _value;
         }
     }
 
     private OutliersTalon _dunkerArmTalon;
+    private OutliersTalon _dunkerDriveTalon;
     private DutyCycleEncoder _dunkerAbsEncoder;
     private ProximitySensor _dunkerProx;
     private DunkerState _dunkerState;
@@ -39,14 +41,14 @@ public class Dunker extends OutliersSubsystem{
         super(container);
 
         _dunkerArmTalon = new OutliersTalon(RobotMap.CAN.TALONFX.DUNKER_ARM, Constants.Dunker.CAN_BUS, "Dunker Arm");
-        _dunkerArmTalon.configure(Constants.Dunker.CONFIG);
+        _dunkerArmTalon.configure(Constants.Dunker.ARM_CONFIG);
 
-        _dunkerArmTalon.configureClosedLoop(Constants.Dunker.CLOSED_LOOP_CONFIG);
+        _dunkerArmTalon.configureClosedLoop(Constants.Dunker.ARM_CLOSED_LOOP_CONFIG);
 
         _dunkerProx = new ProximitySensor(RobotMap.DIO.DUNKER_PROXIMITY_SENSOR);
 
         _dunkerAbsEncoder = new DutyCycleEncoder(RobotMap.DIO.DUNKER_ABS_ENCODER);
-        _dunkerAbsEncoder.setDistancePerRotation(Math.PI * 2.0);  
+        _dunkerAbsEncoder.setDistancePerRotation(Math.PI * 2.0);
         _dunkerState = DunkerState.STOWED;
 
         // Only check every 10 ticks (200ms);
@@ -54,7 +56,7 @@ public class Dunker extends OutliersSubsystem{
     }
 
     public void setDunkerAngle(double angle) {
-        _dunkerArmTalon.setMotionMagic(OutliersTalon.radiansToRotations(angle, Constants.Dunker.DUNKER_GEAR_RATIO));
+        _dunkerArmTalon.setMotionMagic(OutliersTalon.radiansToRotations(angle, Constants.Dunker.DUNKER_ARM_GEAR_RATIO));
     }
 
     public void disable() {
@@ -62,7 +64,8 @@ public class Dunker extends OutliersSubsystem{
     }
 
     public double getDunkerAngle() {
-        return OutliersTalon.rotationsToRadians(_dunkerArmTalon.getPosition().getValueAsDouble(), Constants.Dunker.DUNKER_GEAR_RATIO);
+        return OutliersTalon.rotationsToRadians(_dunkerArmTalon.getPosition().getValueAsDouble(),
+                Constants.Dunker.DUNKER_ARM_GEAR_RATIO);
     }
 
     public double getDunkerAbsAngleRadians() {
@@ -70,7 +73,8 @@ public class Dunker extends OutliersSubsystem{
     }
 
     public void resetMotorEncoderFromAbs() {
-        double rotations = OutliersTalon.radiansToRotations(getDunkerAbsAngleRadians(), Constants.Dunker.DUNKER_GEAR_RATIO);
+        double rotations = OutliersTalon.radiansToRotations(getDunkerAbsAngleRadians(),
+                Constants.Dunker.DUNKER_ARM_GEAR_RATIO);
         _dunkerArmTalon.setPosition(rotations);
     }
 
@@ -78,9 +82,21 @@ public class Dunker extends OutliersSubsystem{
     public boolean isAtAngle(double angle) {
         return Math.abs(getDunkerAngle() - angle) < Constants.Dunker.ANGLE_TOLERANCE;
     }
-    
+
     public boolean isNoteInDunker() {
         return _dunkerProx.get();
+    }
+
+    public void setToStop() {
+        _dunkerDriveTalon.setVelocity(0);
+    }
+
+    public void setToHandoffRPM() {
+        _dunkerDriveTalon.setVelocity(Constants.Dunker.DUNKER_IN_RPM);
+    }
+
+    public void setToDunkRPM() {
+        _dunkerDriveTalon.setVelocity(Constants.Dunker.DUNKER_OUT_RPM);
     }
 
     public DunkerState getDunkerState() {
@@ -94,9 +110,11 @@ public class Dunker extends OutliersSubsystem{
     @Override
     public void periodic() {
         super.periodic();
-        // Check if the abs encoder and the relative encoder are not in sync, if so reset relative to abs
+        // Check if the abs encoder and the relative encoder are not in sync, if so
+        // reset relative to abs
         _tickCounter++;
-        if (Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE && _tickCounter % 10 == 0) {
+        if (Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE
+                && _tickCounter % 10 == 0) {
             resetMotorEncoderFromAbs();
             _tickCounter = 0;
         }

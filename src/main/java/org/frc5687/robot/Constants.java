@@ -348,9 +348,6 @@ public class Constants {
 
         public static final double IDLE_RPM = 500;
 
-        public static final double DUNKER_IN_RPM = 500;
-        public static final double DUNKER_OUT_RPM = 1000;
-
         public static final double PASSTHROUGH_RPM = 1000;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
@@ -452,39 +449,77 @@ public class Constants {
 
     public static class Dunker {
         public static final String CAN_BUS = "CANivore";
-        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        public static final OutliersTalon.Configuration ARM_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double DUNKER_GEAR_RATIO = (84.0/8.0); //8:84
+        public static final double DUNKER_IN_RPM = 500; // FIXME random value
+        public static final double DUNKER_OUT_RPM = 1000; // FIXME random value
+
+        public static final double DUNKER_ARM_GEAR_RATIO = (84.0/8.0); //8:84
         
         static {
-            CONFIG.TIME_OUT = 0.1;
+            ARM_CONFIG.TIME_OUT = 0.1;
             
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
-            CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+            ARM_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            ARM_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
-            CONFIG.MAX_VOLTAGE = 12.0;
+            ARM_CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_CURRENT = 60;
-            CONFIG.MAX_SUPPLY_CURRENT = 60;
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
-            CONFIG.CURRENT_DEADBAND = 0.1;
-            CONFIG.USE_FOC = true;
+            ARM_CONFIG.MAX_CURRENT = 60;
+            ARM_CONFIG.MAX_SUPPLY_CURRENT = 60;
+            ARM_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            ARM_CONFIG.CURRENT_DEADBAND = 0.1;
+            ARM_CONFIG.USE_FOC = true;
         }
         
-        public static final ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        public static final ClosedLoopConfiguration ARM_CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 12;
-            CLOSED_LOOP_CONFIG.kI = 0;
-            CLOSED_LOOP_CONFIG.kD = 0.0001;
-            CLOSED_LOOP_CONFIG.kV = 0;
+            ARM_CLOSED_LOOP_CONFIG.SLOT = 0;
+            ARM_CLOSED_LOOP_CONFIG.kP = 12;
+            ARM_CLOSED_LOOP_CONFIG.kI = 0;
+            ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
+            ARM_CLOSED_LOOP_CONFIG.kV = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 100;
-            CLOSED_LOOP_CONFIG.JERK = 500;
+            ARM_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
+            ARM_CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            ARM_CLOSED_LOOP_CONFIG.JERK = 500;
 
-            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
+            ARM_CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
+        }
+
+        public static final OutliersTalon.Configuration DRIVE_CONFIG = new OutliersTalon.Configuration();
+
+        public static final double DUNKER_DRIVE_GEAR_RATIO = 1.0; // TODO
+
+        static {
+            DRIVE_CONFIG.TIME_OUT = 0.1;
+
+            DRIVE_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            DRIVE_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+
+            DRIVE_CONFIG.MAX_VOLTAGE = 12.0;
+
+            DRIVE_CONFIG.MAX_CURRENT = 60;
+            DRIVE_CONFIG.MAX_SUPPLY_CURRENT = 60;
+            DRIVE_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            DRIVE_CONFIG.CURRENT_DEADBAND = 0.1;
+            DRIVE_CONFIG.USE_FOC = true;
+        }
+
+        public static final ClosedLoopConfiguration DRIVE_CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
+        static {
+            DRIVE_CLOSED_LOOP_CONFIG.SLOT = 0;
+            DRIVE_CLOSED_LOOP_CONFIG.kP = 12;
+            DRIVE_CLOSED_LOOP_CONFIG.kI = 0;
+            DRIVE_CLOSED_LOOP_CONFIG.kD = 0.0001;
+            DRIVE_CLOSED_LOOP_CONFIG.kV = 0;
+
+            DRIVE_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
+            DRIVE_CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            DRIVE_CLOSED_LOOP_CONFIG.JERK = 500;
+
+            DRIVE_CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
