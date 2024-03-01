@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
-    public static final double METRIC_FLUSH_PERIOD = 0.02;
+    public static final double METRIC_FLUSH_PERIOD = 5;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double CONTROL_PERIOD = 0.02; // 10 ms
     public static final double DATA_PERIOD = 0.01; // 20 ms
@@ -540,8 +540,8 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
-            CLOSED_LOOP_CONFIG.JERK = 10;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
+            CLOSED_LOOP_CONFIG.JERK = 5000;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }

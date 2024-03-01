@@ -51,7 +51,7 @@ public class AutoShoot extends OutliersCommand{
         Rotation2d currentHeading = _driveTrain.getHeading();
         _driveTrain.setSnapHeading(angle);
         _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
-        error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
+        // error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
         boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
         metric("IsInAngle", isInAngle);
         if (_shooter.isAtTargetRPM() && isInAngle) {

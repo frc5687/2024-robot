@@ -7,6 +7,7 @@ import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
@@ -101,6 +102,7 @@ public class OI extends OutliersProxy {
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
         
         _driverGamepad.getLeftBumper().and(_driverGamepad.getRightBumper()).whileTrue(new DriveToAmp(drivetrain, this));
+        _driverGamepad.getLeftBumper().whileTrue(new ShiftDown(drivetrain));
 
         // _opPovButtonDown.onTrue(new SetDeflectorAngle(deflector, 0));
         // _opPovButtonRight.onTrue(new SetDeflectorAngle(deflector, 0.8));
@@ -116,7 +118,8 @@ public class OI extends OutliersProxy {
     }
 
     public boolean shiftDown() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
+        // return _driverGamepad.getLeftBumper().getAsBoolean();
+        return false;
     }
 
     public boolean zeroIMU() {

@@ -128,6 +128,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     private boolean _shiftLockout = false;
     private long _shiftTime = 0;
+    private boolean _shiftingDown = false;
 
     private boolean _hasShiftInit = false;
     private boolean _lockHeading = false;
@@ -557,6 +558,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     public boolean isLowGear() {
         return _isLowGear;
+    }
+
+    public boolean isShiftingDown(){
+        return _shiftingDown;
     }
 
     public void setShiftLockout(boolean lock) {

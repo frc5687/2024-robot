@@ -65,10 +65,6 @@ public class DriveLights extends OutliersCommand {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STROBE);
         // Is in amp mode
-        } else if (!_shooter.getSpinUpAutomatically()) {
-            _lights.setColor(Constants.CANdle.PURPLER);
-            _lights.switchAnimation(AnimationType.STATIC);
-        //Has Note
         } else if (_intake.isTopDetected() || _intake.isBottomDetected()) {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STATIC);

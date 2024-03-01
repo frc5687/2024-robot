@@ -12,7 +12,7 @@ public class ShiftDown extends OutliersCommand {
 
     @Override
     public void initialize() {
-        _driveTrain.shiftUpModules();
+        _driveTrain.shiftDownModules();
     }
 
     @Override
