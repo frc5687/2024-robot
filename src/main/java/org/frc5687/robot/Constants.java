@@ -347,6 +347,7 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 30;
 
         public static final double IDLE_RPM = 500;
+        public static final double DUNKER_IN_RPM = 500;
 
         public static final double PASSTHROUGH_RPM = 1000;
 
@@ -510,7 +511,7 @@ public class Constants {
 
         static {
             DRIVE_CLOSED_LOOP_CONFIG.SLOT = 0;
-            DRIVE_CLOSED_LOOP_CONFIG.kP = 1;
+            DRIVE_CLOSED_LOOP_CONFIG.kP = 10;
             DRIVE_CLOSED_LOOP_CONFIG.kI = 0;
             DRIVE_CLOSED_LOOP_CONFIG.kD = 0.0001;
             DRIVE_CLOSED_LOOP_CONFIG.kV = 0;
