@@ -25,7 +25,7 @@ public class ManualShoot extends OutliersCommand{
 
     @Override
     public void execute() {
-        _shooter.setTargetRPM(2700);
+        _shooter.setTargetRPM(3200);
         _shooter.setToTarget();
 
        
