@@ -13,7 +13,7 @@ public class ShooterEject extends OutliersCommand {
         _intake = intake;
         _shooter = shooter;
         addRequirements(_shooter, _intake);
-        }
+    }
 
     @Override
     public void execute(){
@@ -27,5 +27,12 @@ public class ShooterEject extends OutliersCommand {
     public boolean isFinished() {
         return false;
     }
-}
+
+
+@Override
+public void end(boolean interrupted) {
+    super.end(interrupted);
+    _intake.setSpeed(0);
+    _shooter.setToStop();
+}}
 
