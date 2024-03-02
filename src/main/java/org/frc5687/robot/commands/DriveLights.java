@@ -10,6 +10,8 @@ import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Lights.AnimationType;
 import org.frc5687.robot.util.VisionProcessor;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -60,6 +62,33 @@ public class DriveLights extends OutliersCommand {
         } else if (DriverStation.isDisabled()) {
             _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
             _lights.switchAnimation(AnimationType.STATIC);
+        // Is AutoShooting (shooter debug flag)
+        } else if (_shooter.getDebugLightsEnabled()) {
+            Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
+
+            Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
+            Rotation2d currentHeading = _driveTrain.getHeading();
+            // error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
+            boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
+            boolean isAtRPM = _shooter.isAtTargetRPM();
+            // show distinct colors for each state
+            if (isAtRPM && isInAngle) {
+                // both are true
+                _lights.setColor(Constants.CANdle.WHITE);
+                _lights.switchAnimation(AnimationType.STROBE);
+            } else if (isAtRPM) {
+                // only rpm is true
+                _lights.setColor(Constants.CANdle.PURPLER);
+                _lights.switchAnimation(AnimationType.STROBE);
+            } else if (isInAngle) {
+                // only angle is true
+                _lights.setColor(Constants.CANdle.RED);
+                _lights.switchAnimation(AnimationType.STROBE);
+            } else {
+                // neither are true
+                _lights.setColor(Constants.CANdle.YELLOW);
+                _lights.switchAnimation(AnimationType.STROBE);
+            }
         // Is in optimal shooting range
         } else if (_robotState.isWithinOptimalRange() && (_intake.isTopDetected() || _intake.isBottomDetected())) {
             _lights.setColor(Constants.CANdle.GREEN);
