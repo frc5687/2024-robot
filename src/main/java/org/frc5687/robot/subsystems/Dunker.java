@@ -36,6 +36,7 @@ public class Dunker extends OutliersSubsystem {
     private ProximitySensor _dunkerProx;
     private DunkerState _dunkerState;
     private int _tickCounter = 0;
+    private double _targetRPM = 0;
 
     public Dunker(OutliersContainer container) {
         super(container);
@@ -93,14 +94,17 @@ public class Dunker extends OutliersSubsystem {
 
     public void setToStop() {
         _dunkerDriveTalon.setVelocity(0);
+        _targetRPM = 0;
     }
 
     public void setToHandoffRPM() {
         _dunkerDriveTalon.setVelocity(Constants.Dunker.DUNKER_IN_RPM);
+        _targetRPM = Constants.Dunker.DUNKER_IN_RPM;
     }
 
     public void setToDunkRPM() {
         _dunkerDriveTalon.setVelocity(Constants.Dunker.DUNKER_OUT_RPM);
+        _targetRPM = Constants.Dunker.DUNKER_OUT_RPM;
     }
 
     public DunkerState getDunkerState() {
@@ -130,6 +134,8 @@ public class Dunker extends OutliersSubsystem {
         metric("Note in Dunker", isNoteInDunker());
         metric("Dunker absolute angle radians", getDunkerAbsAngleRadians());
         metric("Dunker target angle", _dunkerArmTalon.getClosedLoopReference().getValue());
+        metric("Dunker Drive Target RPM", _targetRPM);
+        metric("Dunker RPM", OutliersTalon.rotationsPerSecToRPM(_dunkerDriveTalon.getVelocity().getValue(), 1));
         metric("State", _dunkerState.name());
     }
 }
