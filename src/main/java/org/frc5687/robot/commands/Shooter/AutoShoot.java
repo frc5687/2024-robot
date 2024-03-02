@@ -19,9 +19,7 @@ public class AutoShoot extends OutliersCommand{
     private RobotState _robotState;
     private Lights _lights;
     private long _endingTimestamp;
-
-    private boolean _isInAngle = false;
-    private boolean _isAtTargetRPM = false;
+    private long _giveUpTime;
 
     public AutoShoot(
         Shooter shooter,
@@ -41,6 +39,7 @@ public class AutoShoot extends OutliersCommand{
     @Override
     public void initialize() {
         super.initialize();
+        _giveUpTime = System.currentTimeMillis();
         _endingTimestamp = Long.MAX_VALUE; // it will never be this big
         _lights.setDebugLightsEnabled(true);
     }
@@ -77,7 +76,7 @@ public class AutoShoot extends OutliersCommand{
 
     @Override
     public boolean isFinished() {
-        return System.currentTimeMillis() > _endingTimestamp;
+        return System.currentTimeMillis() > _endingTimestamp || System.currentTimeMillis() - _giveUpTime > 4500;
     }
 
     @Override
