@@ -13,6 +13,7 @@ import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
+import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.SetAutoSpinUp;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -106,13 +107,15 @@ public class OI extends OutliersProxy {
         _driverGamepad.getLeftBumper().and(_driverGamepad.getRightBumper()).whileTrue(new DriveToAmp(drivetrain, this));
         _driverGamepad.getLeftBumper().whileTrue(new ShiftDown(drivetrain));
 
-        // _opPovButtonDown.onTrue(new SetDeflectorAngle(deflector, 0));
-        // _opPovButtonRight.onTrue(new SetDeflectorAngle(deflector, 0.8));
-        // _opPovButtonUp.onTrue(new SetDeflectorAngle(deflector, 1.6));
-        // _opPovButtonLeft.onTrue(new SetDeflectorAngle(deflector, 2.4));
+        // _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
+        // _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
+        // _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
+        // _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
+
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
         _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
+        // _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
         _operatorGamepad.getRightBumper().onTrue(new SetAutoSpinUp(shooter, false));
         _operatorGamepad.getLeftBumper().onTrue(new SetAutoSpinUp(shooter, true));

@@ -53,8 +53,7 @@ public class AutoShoot extends OutliersCommand{
         Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
 
         // add max distance conditional?
-        _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
-        _shooter.setToTarget();
+        _shooter.setRPMFromDistance(distance);
         
         Rotation2d currentHeading = _driveTrain.getHeading();
         _driveTrain.setSnapHeading(angle);

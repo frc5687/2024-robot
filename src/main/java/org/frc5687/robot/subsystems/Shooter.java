@@ -12,7 +12,7 @@ import org.frc5687.robot.RobotMap;
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
-    private double _targetRPM = 0;
+    private double _targetRPM = 3200;
     private boolean _spinUpAutomatically = true;
 
     public Shooter(OutliersContainer container) {
@@ -64,6 +64,22 @@ public class Shooter extends OutliersSubsystem {
 
     public void setPercentRPM(){
         _bottomTalon.setPercentOutput(.75);
+    }
+
+    public void setNegativePercentRPM(){
+        _bottomTalon.setPercentOutput(-0.75);
+    }
+
+    /**
+     * @param distance meters
+     */
+    public void setRPMFromDistance(double distance) {
+        /*
+         * replacing this code:
+         * _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
+            _shooter.setToTarget();
+         */
+        _bottomTalon.setVelocity(calculateRPMFromDistance(distance));
     }
 
     public double getBottomMotorRPM() {

@@ -476,7 +476,7 @@ public class Constants {
 
         static {
             ARM_CLOSED_LOOP_CONFIG.SLOT = 0;
-            ARM_CLOSED_LOOP_CONFIG.kP = 12;
+            ARM_CLOSED_LOOP_CONFIG.kP = 8;
             ARM_CLOSED_LOOP_CONFIG.kI = 0;
             ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
             ARM_CLOSED_LOOP_CONFIG.kV = 0;
