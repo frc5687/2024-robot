@@ -43,6 +43,7 @@ public class DunkNote extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        _dunker.setToStop();
         _dunker.setDunkerState(DunkerState.DUNKED_NOTE);
     }
 }

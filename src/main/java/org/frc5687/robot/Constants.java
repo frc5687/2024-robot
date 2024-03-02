@@ -452,8 +452,8 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration ARM_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double DUNKER_IN_RPM = 1500; // FIXME random value
-        public static final double DUNKER_OUT_RPM = 1000; // FIXME random value
+        public static final double DUNKER_IN_RPM = Shooter.DUNKER_IN_RPM * 7.4375;
+        public static final double DUNKER_OUT_RPM = 6000;
 
         public static final double DUNKER_ARM_GEAR_RATIO = (84.0/8.0); //8:84
         
@@ -511,13 +511,13 @@ public class Constants {
 
         static {
             DRIVE_CLOSED_LOOP_CONFIG.SLOT = 0;
-            DRIVE_CLOSED_LOOP_CONFIG.kP = 5;
+            DRIVE_CLOSED_LOOP_CONFIG.kP = 0.25;
             DRIVE_CLOSED_LOOP_CONFIG.kI = 0;
             DRIVE_CLOSED_LOOP_CONFIG.kD = 0.0001;
-            DRIVE_CLOSED_LOOP_CONFIG.kV = 0;
+            DRIVE_CLOSED_LOOP_CONFIG.kV = 0.1;
 
-            DRIVE_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
-            DRIVE_CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            DRIVE_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 6000;
+            DRIVE_CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
             DRIVE_CLOSED_LOOP_CONFIG.JERK = 500;
 
             DRIVE_CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
