@@ -42,8 +42,12 @@ public class Dunker extends OutliersSubsystem {
 
         _dunkerArmTalon = new OutliersTalon(RobotMap.CAN.TALONFX.DUNKER_ARM, Constants.Dunker.CAN_BUS, "Dunker Arm");
         _dunkerArmTalon.configure(Constants.Dunker.ARM_CONFIG);
-
         _dunkerArmTalon.configureClosedLoop(Constants.Dunker.ARM_CLOSED_LOOP_CONFIG);
+
+        _dunkerDriveTalon = new OutliersTalon(RobotMap.CAN.TALONFX.DUNKER_DRIVE, Constants.Dunker.CAN_BUS, "Dunker Drive");
+        _dunkerDriveTalon.configure(Constants.Dunker.DRIVE_CONFIG);
+        _dunkerDriveTalon.configureClosedLoop(Constants.Dunker.DRIVE_CLOSED_LOOP_CONFIG);
+
 
         _dunkerProx = new ProximitySensor(RobotMap.DIO.DUNKER_PROXIMITY_SENSOR);
 
