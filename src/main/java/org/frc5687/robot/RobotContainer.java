@@ -189,7 +189,7 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState, _lights));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));

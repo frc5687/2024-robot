@@ -63,7 +63,7 @@ public class DriveLights extends OutliersCommand {
             _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
             _lights.switchAnimation(AnimationType.STATIC);
         // Is AutoShooting (shooter debug flag)
-        } else if (_shooter.getDebugLightsEnabled()) {
+        } else if (_lights.getDebugLightsEnabled()) {
             Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
 
             Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());

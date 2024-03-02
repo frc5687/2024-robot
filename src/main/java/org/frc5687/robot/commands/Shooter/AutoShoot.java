@@ -6,6 +6,7 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,18 +17,24 @@ public class AutoShoot extends OutliersCommand{
     private Intake _intake;
     private DriveTrain _driveTrain;
     private RobotState _robotState;
+    private Lights _lights;
     private long _endingTimestamp;
+
+    private boolean _isInAngle = false;
+    private boolean _isAtTargetRPM = false;
 
     public AutoShoot(
         Shooter shooter,
         Intake intake,
         DriveTrain driveTrain,
-        RobotState robotState
+        RobotState robotState,
+        Lights lights
     ) {
         _shooter = shooter;
         _intake = intake;
         _driveTrain = driveTrain;
         _robotState = robotState;
+        _lights = lights;
         addRequirements(_shooter, _intake, _driveTrain);
     }
 
@@ -35,7 +42,7 @@ public class AutoShoot extends OutliersCommand{
     public void initialize() {
         super.initialize();
         _endingTimestamp = Long.MAX_VALUE; // it will never be this big
-        _shooter.setDebugLightsEnabled(true);
+        _lights.setDebugLightsEnabled(true);
     }
 
     @Override
@@ -48,15 +55,17 @@ public class AutoShoot extends OutliersCommand{
         // add max distance conditional?
         _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(distance));
         _shooter.setToTarget();
-        // pid
+        
         Rotation2d currentHeading = _driveTrain.getHeading();
         _driveTrain.setSnapHeading(angle);
         _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
-        // error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
+
         boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);
+        _lights.setDebugValues(isInAngle, isAtTargetRPM);
+
         if (isAtTargetRPM && isInAngle) {
             // trigger intake only once.... it has been triggered already if it is not MAX_VALUE O-O
             if (_endingTimestamp == Long.MAX_VALUE) {
@@ -75,7 +84,7 @@ public class AutoShoot extends OutliersCommand{
     public void end(boolean interrupted) {
         super.end(interrupted);
         _driveTrain.disableHeadingController();
-        _shooter.setDebugLightsEnabled(false);
+        _lights.setDebugLightsEnabled(false);
         _shooter.setToStop();
     }
 }

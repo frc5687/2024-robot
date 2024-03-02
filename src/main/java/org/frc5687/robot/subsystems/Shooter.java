@@ -14,7 +14,6 @@ public class Shooter extends OutliersSubsystem {
     private OutliersTalon _topTalon;
     private double _targetRPM = 0;
     private boolean _spinUpAutomatically = true;
-    private boolean _debugLightsEnabled = false;
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -88,14 +87,6 @@ public class Shooter extends OutliersSubsystem {
      */
     public void setSpinUpAutomatically(boolean value) {
         _spinUpAutomatically = value;
-    }
-
-    public void setDebugLightsEnabled(boolean value) {
-        _debugLightsEnabled = value;
-    }
-
-    public boolean getDebugLightsEnabled() {
-        return _debugLightsEnabled;
     }
 
     public double calculateRPMFromDistance(double distance) {
