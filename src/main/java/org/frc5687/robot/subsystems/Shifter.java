@@ -15,7 +15,6 @@ public class Shifter extends OutliersSubsystem {
     private final DriveTrain _driveTrain;
 
     private boolean _isLowGear;
-    // TODO shift the drive train to low gear at 40psi -- ask simeon about this
 
     public Shifter (OutliersContainer container, DriveTrain driveTrain) {
         super(container);
@@ -27,6 +26,7 @@ public class Shifter extends OutliersSubsystem {
         // create compressor, compressor logic
         _compressor = new Compressor(PneumaticsModuleType.REVPH);
         _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
+        shiftDown();
     }
 
     @Override
