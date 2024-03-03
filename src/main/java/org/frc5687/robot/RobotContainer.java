@@ -12,9 +12,10 @@ import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shifter.AutoShift;
+import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
-import org.frc5687.robot.commands.Shooter.Shoot;
+import org.frc5687.robot.commands.Shooter.RevShooter;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
@@ -34,7 +35,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -81,7 +81,6 @@ public class RobotContainer extends OutliersContainer {
 
         _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
 
-
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
         var pigeonConfig = new Pigeon2Configuration();
@@ -100,12 +99,12 @@ public class RobotContainer extends OutliersContainer {
         _lights = new Lights(this);
         _shifter = new Shifter(this, _driveTrain);
 
-        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker, _intake));
+        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter, _robotState));
+        setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState, _shooter));
         setDefaultCommand(_shifter, new AutoShift(_shifter, _driveTrain));
 
         registerNamedCommands();
@@ -114,7 +113,8 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState, _shifter);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState,
+                _shifter);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
@@ -125,10 +125,10 @@ public class RobotContainer extends OutliersContainer {
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
-        //     Pose2d notePose = optionalClosestNote.get();
-        //     _field.getObject("note").setPose(notePose);
+        // Pose2d notePose = optionalClosestNote.get();
+        // _field.getObject("note").setPose(notePose);
         // } else {
-        //     // TODO remove note from glass
+        // // TODO remove note from glass
         // }
         SmartDashboard.putData(_field);
     }
@@ -184,19 +184,23 @@ public class RobotContainer extends OutliersContainer {
     public Optional<Rotation2d> getRotationTargetOverride() {
         // // Some condition that should decide if we want to override rotation
         // if (_shooter.getAutoShootFlag()) {
-        //     // Return an optional containing the rotation override (this should be a field
-        //     // relative rotation)
-        //     return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        // // Return an optional containing the rotation override (this should be a
+        // field
+        // // relative rotation)
+        // return Optional.of(new
+        // Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         // } else {
-        //     // return an empty optional when we don't want to override the path's rotation
-            return Optional.empty();
+        // // return an empty optional when we don't want to override the path's
+        // rotation
+        return Optional.empty();
         // }
 
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState, _lights));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
-
+        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
+        NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
     }
 }

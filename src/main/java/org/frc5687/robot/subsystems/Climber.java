@@ -5,7 +5,6 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotMap;
-import org.frc5687.robot.commands.Climber.Climb;
 import org.frc5687.robot.util.OutliersContainer;
 
 // import edu.wpi.first.math.util.Units;
@@ -84,9 +83,7 @@ public class Climber extends OutliersSubsystem{
         CLEARING_DUNKER(1),
         RAISING(2),
         RAISED(3),
-        LOWERING(4),
-        LOWERED(5),
-        STOWING(6);
+        STOWING(4);
 
         private final int _value;
         ClimberStep(int value) { 

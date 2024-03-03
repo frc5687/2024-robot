@@ -6,20 +6,22 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Shifter;
+import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
-public class DriveToNote extends OutliersCommand{
+public class DriveToNote extends OutliersCommand {
     private final DriveTrain _driveTrain;
     private final ProfiledPIDController _xController;
     private final ProfiledPIDController _yController;
     private final ProfiledPIDController _yawController;
     private final VisionProcessor _visionProcessor;
+    private final Intake _intake;
 
-    public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor) {
+    public DriveToNote(DriveTrain driveTrain, VisionProcessor visionProcessor, Intake intake) {
         _driveTrain = driveTrain;
         _visionProcessor = visionProcessor;
         _xController = new ProfiledPIDController(3.0, 0.0, 0.0,
@@ -30,6 +32,7 @@ public class DriveToNote extends OutliersCommand{
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
         _yawController = new ProfiledPIDController(3.0, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL * 4.0));
+        _intake = intake;
         addRequirements(_driveTrain);
     }
 
@@ -39,7 +42,7 @@ public class DriveToNote extends OutliersCommand{
         _xController.setGoal(0.0);
         _yController.setGoal(0.0);
         _yawController.setGoal(0.0);
-        
+
     }
 
     @Override
@@ -49,6 +52,11 @@ public class DriveToNote extends OutliersCommand{
         double rot = 0;
         VisionPoseArray poses = _visionProcessor.getDetectedObjects();
         VisionPose pose = null;
+
+        if (_intake.isBottomDetected() || _intake.isTopDetected()) {
+            // nuhuh there is already a note - xavier bradford 02/28/24
+            return;
+        }
 
         metric("Jetson Note Detected", poses.posesLength() > 0);
         for (int i = 0; i < poses.posesLength(); i++) {
@@ -77,7 +85,7 @@ public class DriveToNote extends OutliersCommand{
                 vx = -_xController.calculate(x);
                 vy = -_xController.calculate(y);
 
-                // FIXME use IMU data
+                // TODO use IMU data
 
                 double angleToNoteRadians = Math.atan2(y, x);
 

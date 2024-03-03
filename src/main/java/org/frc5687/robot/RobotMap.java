@@ -34,6 +34,8 @@ public class RobotMap {
             public static final int NORTH_WEST_TRANSLATION = 10;
             public static final int SOUTH_WEST_ROTATION = 11;
             public static final int SOUTH_WEST_TRANSLATION = 12;
+
+            public static final int DUNKER_DRIVE = 13;
         }
 
         public static class CANCODER {
