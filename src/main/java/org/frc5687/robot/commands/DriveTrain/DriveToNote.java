@@ -5,6 +5,7 @@ import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.subsystems.Shifter;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,6 +39,7 @@ public class DriveToNote extends OutliersCommand{
         _xController.setGoal(0.0);
         _yController.setGoal(0.0);
         _yawController.setGoal(0.0);
+        
     }
 
     @Override
@@ -47,10 +49,6 @@ public class DriveToNote extends OutliersCommand{
         double rot = 0;
         VisionPoseArray poses = _visionProcessor.getDetectedObjects();
         VisionPose pose = null;
-        
-        if (!_driveTrain.isLowGear()) {
-            _driveTrain.shiftDownModules();
-        }
 
         metric("Jetson Note Detected", poses.posesLength() > 0);
         for (int i = 0; i < poses.posesLength(); i++) {
@@ -104,6 +102,7 @@ public class DriveToNote extends OutliersCommand{
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+
     }
 
 }

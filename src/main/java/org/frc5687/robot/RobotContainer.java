@@ -11,6 +11,7 @@ import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shifter.AutoShift;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -20,6 +21,7 @@ import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
+import org.frc5687.robot.subsystems.Shifter;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
@@ -52,6 +54,7 @@ public class RobotContainer extends OutliersContainer {
     private Dunker _dunker;
     private Climber _climber;
     private Lights _lights;
+    private Shifter _shifter;
 
     private Field2d _field;
 
@@ -95,6 +98,7 @@ public class RobotContainer extends OutliersContainer {
 
         _climber = new Climber(this);
         _lights = new Lights(this);
+        _shifter = new Shifter(this, _driveTrain);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker, _intake));
@@ -102,6 +106,7 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
+        setDefaultCommand(_shifter, new AutoShift(_shifter, _driveTrain));
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -109,7 +114,7 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState, _shifter);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }

@@ -6,12 +6,12 @@ import static org.frc5687.robot.util.Helpers.applyDeadband;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
-import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shifter.HoldLowGear;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -19,6 +19,7 @@ import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Shifter;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
@@ -79,9 +80,10 @@ public class OI extends OutliersProxy {
             Intake intake,
             Climber climber,
             VisionProcessor visionProcessor,
-            RobotState robotState) {
+            RobotState robotState,
+            Shifter shifter) {
 
-        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new IntakeCommand(intake, this)));
+        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor).alongWith(new HoldLowGear(shifter)).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, drivetrain, robotState));
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
@@ -94,7 +96,7 @@ public class OI extends OutliersProxy {
         // _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
         // _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -100));
 
-        // _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
+        _driverGamepad.getLeftBumper().whileTrue(new HoldLowGear(shifter));
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         // _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));

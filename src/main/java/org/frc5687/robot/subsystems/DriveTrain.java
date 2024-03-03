@@ -6,7 +6,6 @@ import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kD;
 import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kI;
 import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kP;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
-import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
 
 import java.util.Optional;
 
@@ -113,9 +112,6 @@ public class DriveTrain extends OutliersSubsystem {
     private final SwerveSetpointGenerator _swerveSetpointGenerator;
     private KinematicLimits _kinematicLimits = LOW_KINEMATIC_LIMITS;
 
-    private final DoubleSolenoid _shift;
-    private final Compressor _compressor;
-
     private final BaseStatusSignal[] _signals;
 
     private final SwerveDriveKinematics _kinematics;
@@ -131,12 +127,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     private Pose2d _hoverGoal;
 
-    private boolean _shiftLockout = false;
-    private long _shiftTime = 0;
+    private boolean _isLowGear = false; // we can also keep track of it here for drive logic, but keep in mind that this is primarily tracked by Shifter subsystem and all shifting logic should happen there. - xavier bradford 03/02/24
 
-    private boolean _hasShiftInit = false;
     private boolean _lockHeading = false;
-    private boolean _isLowGear;
 
     private final SystemIO _systemIO;
     private final HolonomicDriveController _poseController;
@@ -149,14 +142,6 @@ public class DriveTrain extends OutliersSubsystem {
             OutliersContainer container,
             Pigeon2 imu) {
         super(container);
-
-        _shift = new DoubleSolenoid(
-                PneumaticsModuleType.REVPH,
-                RobotMap.PCM.SHIFTER_HIGH,
-                RobotMap.PCM.SHIFTER_LOW);
-        // create compressor, compressor logic
-        _compressor = new Compressor(PneumaticsModuleType.REVPH);
-        _compressor.enableAnalog(Constants.DriveTrain.MIN_PSI, Constants.DriveTrain.MAX_PSI);
 
         // configure our system IO and pigeon;
         _imu = imu;
@@ -246,7 +231,6 @@ public class DriveTrain extends OutliersSubsystem {
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
         _lockHeading = false;
-        _isLowGear = true;
 
         zeroGyroscope();
 
@@ -368,10 +352,6 @@ public class DriveTrain extends OutliersSubsystem {
     public void periodic() {
         super.periodic();
 
-        if (!_hasShiftInit) {
-            shiftDownModules();
-            _hasShiftInit = true;
-        }
         // State estimation thread is doing this now. Might cause issues
         readSignals();
         updateDesiredStates();
@@ -490,7 +470,6 @@ public class DriveTrain extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
-        metric("Tank Pressure PSI", _compressor.getPressure());
         metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
         // moduleMetrics();
     }
@@ -538,59 +517,43 @@ public class DriveTrain extends OutliersSubsystem {
         return Math.hypot(getMeasuredChassisSpeeds().vxMetersPerSecond, getMeasuredChassisSpeeds().vyMetersPerSecond);
     }
 
-    /* Shift stuff start */
+
+    /**
+     * DO NOT CALL THIS DIRECTLY!!!!! Use Shifter.shiftUp() instead.
+     * 
+     * deprecated so people see this
+     * 
+     * @deprecated
+     */
     public void shiftUpModules() {
-        _shift.set(Value.kForward);
         _isLowGear = false;
         setKinematicLimits(HIGH_KINEMATIC_LIMITS);
-        for (int i = 0; i < _modules.length; i++) {
-            _modules[i].shiftUp();
+        for (var module : _modules) {
+            module.shiftUp();
         }
     }
 
+    /**
+     * DO NOT CALL THIS DIRECTLY!!!!! Use Shifter.shiftDown() instead.
+     * 
+     * deprecated so people see this
+     * 
+     * @deprecated
+     */
     public void shiftDownModules() {
-        _shift.set(Value.kReverse);
-        setKinematicLimits(LOW_KINEMATIC_LIMITS);
-        for (int i = 0; i < _modules.length; i++) {
-            _modules[i].shiftDown();
-        }
         _isLowGear = true;
+        setKinematicLimits(LOW_KINEMATIC_LIMITS);
+        for (var module : _modules) {
+            module.shiftDown();
+        }
     }
 
+    /**
+     * Best practice to use Shifter.isLowGear() instead.
+     */
     public boolean isLowGear() {
         return _isLowGear;
     }
-
-    public void setShiftLockout(boolean lock) {
-        _shiftLockout = lock;
-    }
-
-    public void autoShifter() {
-        double speed = getSpeed();
-        if (speed > Constants.DriveTrain.SHIFT_UP_SPEED_MPS && getDesiredSpeed() > SHIFT_UP_SPEED_MPS) {
-            if (!_shiftLockout) {
-                _shiftLockout = true;
-                _shiftTime = System.currentTimeMillis();
-                shiftUpModules();
-            }
-            if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
-                _shiftLockout = false;
-            }
-        }
-
-        if (speed < Constants.DriveTrain.SHIFT_DOWN_SPEED_MPS) {
-            if (!_shiftLockout) {
-                _shiftTime = System.currentTimeMillis();
-                _shiftLockout = true;
-                shiftDownModules();
-            }
-            if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
-                _shiftLockout = false;
-            }
-        }
-
-    }
-    /* Shift stuff end */
     
     public double getYaw() {
         return _systemIO.heading.getRadians();
