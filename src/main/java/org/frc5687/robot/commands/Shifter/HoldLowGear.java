@@ -12,6 +12,7 @@ public class HoldLowGear extends OutliersCommand {
      */
     public HoldLowGear(Shifter shifter) {
         _shifter = shifter;
+        addRequirements(_shifter);
     }
 
     @Override

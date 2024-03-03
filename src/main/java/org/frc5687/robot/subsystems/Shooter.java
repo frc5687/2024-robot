@@ -6,13 +6,15 @@ import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.controls.Follower;
 
+import edu.wpi.first.math.util.Units;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
-    private double _targetRPM = 3200;
+    private double _manualShootRPM = 3200;
     private boolean _spinUpAutomatically = true;
 
     public Shooter(OutliersContainer container) {
@@ -45,21 +47,20 @@ public class Shooter extends OutliersSubsystem {
         _bottomTalon.setVelocity(0);
     }
 
-    public void setTargetRPM(double speed) {
-        _targetRPM = speed;
+    public void setManualShootRPM(double speed) {
+        _manualShootRPM = speed;
     }
 
     public void setToHandoffRPM(){
-        setTargetRPM(Constants.Shooter.DUNKER_IN_RPM);
-        setToTarget();
+        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_IN_RPM);
     }
 
-    public void setToTarget() {
-        _bottomTalon.setVelocity(_targetRPM);
+    public void setToManualShootRPM() {
+        _bottomTalon.setVelocity(_manualShootRPM);
     }
 
-    public double getTargetRPM() {
-        return _targetRPM;
+    public double getManualShootRPM() {
+        return _manualShootRPM;
     }
 
     public void setPercentRPM(){
@@ -74,12 +75,15 @@ public class Shooter extends OutliersSubsystem {
      * @param distance meters
      */
     public void setRPMFromDistance(double distance) {
-        /*
-         * replacing this code:
-         * _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
-            _shooter.setToTarget();
-         */
         _bottomTalon.setVelocity(calculateRPMFromDistance(distance));
+    }
+
+    /**
+     * Get the target RPM of the motor.
+     * @return Motor angular velocity (RPM)
+     */
+    public double getTargetRPM() {
+        return _bottomTalon.getClosedLoopReference().getValue() * 60; // rotations per second to RPM
     }
 
     public double getBottomMotorRPM() {
@@ -118,8 +122,10 @@ public class Shooter extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Bottom Motor RPM", getBottomMotorRPM());
         metric("Top Motor RPM", getTopMotorRPM());
+        metric("Manual Shoot RPM", getManualShootRPM());
         metric("Target RPM", getTargetRPM());
         metric("At Target RPM", isAtTargetRPM());
         metric("Spin Up Automatically?", getSpinUpAutomatically());
+        metric("PID Output Shooter Voltage", _bottomTalon.getClosedLoopOutput().getValue());
     }
 }

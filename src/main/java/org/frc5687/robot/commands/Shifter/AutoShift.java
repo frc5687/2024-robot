@@ -15,6 +15,7 @@ public class AutoShift extends OutliersCommand {
     public AutoShift(Shifter shifter, DriveTrain driveTrain) {
         _shifter = shifter;
         _driveTrain = driveTrain;
+        addRequirements(_shifter);
     }
 
     @Override

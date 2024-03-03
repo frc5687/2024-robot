@@ -365,8 +365,8 @@ public class Constants {
             { 3.6, 2600},
             { 4.0, 2100},
             // { 4.0, 2050},
-            { 4.4, 1880},
-            { 4.8, 1880 },
+            { 4.4, 1920},
+            { 4.5, 1880 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
@@ -388,20 +388,19 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kS = 0.2288;
-            SHOOTER_CONTROLLER_CONFIG.kA = 0.047935;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.05;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.47935; // 0.04793
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.1;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
             SHOOTER_CONTROLLER_CONFIG.kV = 0.117;
 
-            SHOOTER_CONTROLLER_CONFIG.kS1 = 0.2288;
-            SHOOTER_CONTROLLER_CONFIG.kA1= 0.047935;
+            SHOOTER_CONTROLLER_CONFIG.kS1 = 0.05;
+            SHOOTER_CONTROLLER_CONFIG.kA1= 0.47935; // 0.04793
             SHOOTER_CONTROLLER_CONFIG.kP1= 0.1;
             SHOOTER_CONTROLLER_CONFIG.kI1= 0;
             SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
             SHOOTER_CONTROLLER_CONFIG.kV1 = 0.117;
-
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }

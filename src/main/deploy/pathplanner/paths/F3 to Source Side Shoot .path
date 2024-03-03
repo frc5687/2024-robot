@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.05,
-        "y": 7.4332980675975655
+        "x": 8.280543879383497,
+        "y": 4.114935548166836
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.974051842840528,
-        "y": 7.31429793686655
+        "x": 5.067019652930549,
+        "y": 4.705497532463991
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "F3"
     },
     {
       "anchor": {
-        "x": 3.971649816519006,
-        "y": 6.482398705538152
+        "x": 3.12,
+        "y": 3.058135509809155
       },
       "prevControl": {
-        "x": 5.009170118590864,
-        "y": 6.74849429899361
+        "x": 4.316551182537394,
+        "y": 3.098837028359085
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "G_SHOOT_CLOSE"
+      "linkedName": "LW_SHOOT"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 17.44,
+    "rotation": -40.129999999999995,
     "rotateFast": false
   },
   "reversed": false,

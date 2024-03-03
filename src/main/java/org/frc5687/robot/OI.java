@@ -110,10 +110,10 @@ public class OI extends OutliersProxy {
 
         _driverGamepad.getLeftBumper().and(_driverGamepad.getRightBumper()).whileTrue(new DriveToAmp(drivetrain, this));
 
-        // _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
-        // _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
-        // _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
-        // _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
+        _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
+        _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
+        _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
+        _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
 
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));

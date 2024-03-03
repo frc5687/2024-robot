@@ -25,14 +25,13 @@ public class RevShooter extends OutliersCommand{
         super.initialize();
     }
     public void execute() {
-                _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
-                _shooter.setToTarget();
-        }
-    
-        @Override
-        public void end(boolean interrupted) {
-            super.end(interrupted);
-        }
+            _shooter.setRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst());
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+    }
 
     public boolean isFinished() {
         return false;
