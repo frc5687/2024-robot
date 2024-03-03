@@ -21,7 +21,8 @@ public class SnapTo extends OutliersCommand {
     public void initialize() {
         super.initialize();
         _driveTrain.setControlState(ControlState.MANUAL);
-        _driveTrain.setSnapHeading(_rotation);
+        _driveTrain.setSnapHeading(
+            _driveTrain.isRedAlliance() ? _rotation.minus(new Rotation2d(Math.PI)) : _rotation);
     }
 
     @Override

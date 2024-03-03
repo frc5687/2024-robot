@@ -10,10 +10,10 @@ import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
-import org.frc5687.robot.commands.Intake.IntakeCommand;
+import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
-import org.frc5687.robot.commands.Shooter.Shoot;
+import org.frc5687.robot.commands.Shooter.RevShooter;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
@@ -32,7 +32,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -96,12 +95,12 @@ public class RobotContainer extends OutliersContainer {
         _climber = new Climber(this);
         _lights = new Lights(this);
 
-        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker, _intake));
+        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter, _robotState));
+        setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState, _shooter));
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -190,8 +189,9 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState, _lights));
         NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
-
+        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
+        NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
     }
 }

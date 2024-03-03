@@ -11,6 +11,8 @@ public class HandoffDunker extends OutliersCommand {
     private Dunker _dunker;
     private Shooter _shooter;
     private Intake _intake;
+    private boolean _timeLockout;
+    private long _lockTime;
 
     public HandoffDunker(Dunker dunker, Shooter shooter, Intake intake) {
         _dunker = dunker;
@@ -22,6 +24,8 @@ public class HandoffDunker extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
+        _timeLockout = false;
+        _lockTime = System.currentTimeMillis();
     }
 
     @Override
@@ -37,11 +41,13 @@ public class HandoffDunker extends OutliersCommand {
                 }
                 break;
             case PREPARED_FOR_NOTE:
-                _shooter.setToDunkInRPM();
+                _dunker.setToHandoffRPM();
                 _intake.setSpeed(Constants.Intake.HANDOFF_SPEED);
+                _shooter.setToHandoffRPM();
                 if (_dunker.isNoteInDunker()) {
                     _shooter.setConfigSlot(1);
                     _shooter.setToStop();
+                    _dunker.setToStop();
                     _intake.setSpeed(0);
                     _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
                 }
@@ -60,7 +66,7 @@ public class HandoffDunker extends OutliersCommand {
                 break;
             default:
                 break;
-            
+
         }
 
         super.execute();
@@ -76,4 +82,3 @@ public class HandoffDunker extends OutliersCommand {
         super.end(interrupted);
     }
 }
-

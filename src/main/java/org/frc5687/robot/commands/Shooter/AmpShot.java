@@ -12,7 +12,6 @@ public class AmpShot extends SequentialCommandGroup{
 
     public AmpShot(Shooter shooter, DriveTrain driveTrain, Intake intake) {        
         addCommands(
-            new DriveToAmp(driveTrain),
             new TimedIntake(intake, 1000)
         );
     }

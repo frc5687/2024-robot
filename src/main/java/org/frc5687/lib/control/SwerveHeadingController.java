@@ -3,6 +3,7 @@ package org.frc5687.lib.control;
 
 import org.frc5687.robot.Constants;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -13,20 +14,21 @@ public class SwerveHeadingController {
 
     private HeadingState _headingState;
     private Rotation2d _targetHeading;
-    private final ProfiledPIDController _PIDController;
+    private final PIDController _PIDController;
 
     private long _disableTime;
 
     public SwerveHeadingController(double kDt) {
         _PIDController =
-                new ProfiledPIDController(
+                new PIDController(
                         Constants.DriveTrain.MAINTAIN_kP,
                         Constants.DriveTrain.MAINTAIN_kI,
-                        Constants.DriveTrain.MAINTAIN_kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
-                        kDt);
+                        Constants.DriveTrain.MAINTAIN_kD);
+                        // new TrapezoidProfile.Constraints(
+                        //         Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
+                        //         Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
+                        // kDt);
+                
         _PIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;
         _targetHeading = new Rotation2d();

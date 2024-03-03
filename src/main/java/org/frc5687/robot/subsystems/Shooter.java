@@ -12,8 +12,8 @@ import org.frc5687.robot.RobotMap;
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
-    private double _targetRPM = 0;
-    private boolean _autoShootFlag = false;
+    private double _targetRPM = 3200;
+    private boolean _spinUpAutomatically = true;
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -37,20 +37,21 @@ public class Shooter extends OutliersSubsystem {
         _bottomTalon.setVelocity(Constants.Shooter.IDLE_RPM);
     }
 
+    public void setToPassthrough() {
+        _bottomTalon.setVelocity(Constants.Shooter.PASSTHROUGH_RPM);
+    }
+
     public void setToStop() {
         _bottomTalon.setVelocity(0);
     }
 
-    public void setToDunkInRPM() {
-        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_IN_RPM);
-    }
-
-    public void setToDunkOutRPM() {
-        _bottomTalon.setVelocity(Constants.Shooter.DUNKER_OUT_RPM);
-    }
-
     public void setTargetRPM(double speed) {
         _targetRPM = speed;
+    }
+
+    public void setToHandoffRPM(){
+        setTargetRPM(Constants.Shooter.DUNKER_IN_RPM);
+        setToTarget();
     }
 
     public void setToTarget() {
@@ -59,6 +60,26 @@ public class Shooter extends OutliersSubsystem {
 
     public double getTargetRPM() {
         return _targetRPM;
+    }
+
+    public void setPercentRPM(){
+        _bottomTalon.setPercentOutput(.75);
+    }
+
+    public void setNegativePercentRPM(){
+        _bottomTalon.setPercentOutput(-0.75);
+    }
+
+    /**
+     * @param distance meters
+     */
+    public void setRPMFromDistance(double distance) {
+        /*
+         * replacing this code:
+         * _shooter.setTargetRPM(_shooter.calculateRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst()));
+            _shooter.setToTarget();
+         */
+        _bottomTalon.setVelocity(calculateRPMFromDistance(distance));
     }
 
     public double getBottomMotorRPM() {
@@ -74,12 +95,19 @@ public class Shooter extends OutliersSubsystem {
                 && Math.abs(getTargetRPM() - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
-    public void setAutoShootFlag(boolean flag) {
-        _autoShootFlag = flag;
+    /**
+     * TODO either remove this or move it to robotstate... either way rename it speaker mode amp mode seems nicer.
+     * @return if we automatically spin up the shooter in idleshooter
+     */
+    public boolean getSpinUpAutomatically() {
+        return _spinUpAutomatically;
     }
 
-    public boolean getAutoShootFlag() {
-        return _autoShootFlag;
+    /**
+     * @param value true if we want to spin up automatically, false otherwise. this happens in idleshooter
+     */
+    public void setSpinUpAutomatically(boolean value) {
+        _spinUpAutomatically = value;
     }
 
     public double calculateRPMFromDistance(double distance) {
@@ -92,6 +120,6 @@ public class Shooter extends OutliersSubsystem {
         metric("Top Motor RPM", getTopMotorRPM());
         metric("Target RPM", getTargetRPM());
         metric("At Target RPM", isAtTargetRPM());
-        metric("AutoShoot Flag", getAutoShootFlag());
+        metric("Spin Up Automatically?", getSpinUpAutomatically());
     }
 }

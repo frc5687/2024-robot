@@ -25,20 +25,15 @@ public class ManualShoot extends OutliersCommand{
 
     @Override
     public void execute() {
-        Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-
-        double distance = distanceAndAngle.getFirst();
-
-        double angle = distanceAndAngle.getSecond();
-
-        _shooter.setTargetRPM(2700);
+        // _shooter.setTargetRPM(3200);
         _shooter.setToTarget();
 
-        if (_shooter.isAtTargetRPM()) { 
+       
+        if (_shooter.isAtTargetRPM()) {
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
 
-        SmartDashboard.putNumber("Angle to shoot", angle);
+      
     }
 
     @Override

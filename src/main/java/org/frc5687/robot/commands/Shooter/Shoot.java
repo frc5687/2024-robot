@@ -48,14 +48,10 @@ public class Shoot extends OutliersCommand{
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
         // add max distance conditional?
-        double requestRPM = _shooter.calculateRPMFromDistance(distance);
-        _shooter.setTargetRPM(requestRPM);
+        _shooter.setRPMFromDistance(distance);
         Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
         _driveTrain.setSnapHeading(angle);
 
-
-
-        _shooter.setToTarget();
         boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.TARGET_TOLERANCE;
         metric("IsInAngle", isInAngle);
         if (_shooter.isAtTargetRPM() && isInAngle) { 

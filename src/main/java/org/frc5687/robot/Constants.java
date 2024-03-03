@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
-    public static final double METRIC_FLUSH_PERIOD = 0.02;
+    public static final double METRIC_FLUSH_PERIOD = 5;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double CONTROL_PERIOD = 0.02; // 10 ms
     public static final double DATA_PERIOD = 0.01; // 20 ms
@@ -40,7 +40,7 @@ public class Constants {
         public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.512820512820512
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
-        public static final double IDLE_MPS_LIMIT = 0.05; // mps
+        public static final double IDLE_MPS_LIMIT = 0.005; // mps
         public static final double SHIFT_TIME_SECONDS = 0.1; // 100ms time to shift
 
         // this is the motor config for the swerve motors
@@ -86,17 +86,15 @@ public class Constants {
             // use these PID values when shifted down
             DRIVE_CONTROLLER_CONFIG.kP = 15.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.00;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.0;
             DRIVE_CONTROLLER_CONFIG.kV = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kA = 0.1;
+            // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
-            DRIVE_CONTROLLER_CONFIG.kP1 = 45.0;
+            DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
             DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
-
-            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1500;
-            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 750;
-            DRIVE_CONTROLLER_CONFIG.JERK = 1000;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -106,10 +104,6 @@ public class Constants {
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.7;
             STEER_CONTROLLER_CONFIG.kV = 0.0;
-
-            STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
-            STEER_CONTROLLER_CONFIG.ACCELERATION = 4000;
-            STEER_CONTROLLER_CONFIG.JERK = 10000;
 
             STEER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
         }
@@ -209,14 +203,6 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
-        public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
-
-        static {
-            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1.5; // m/s
-            VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
-            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
-        }
-
         /*
          * How to find offsets:
          * 
@@ -281,19 +267,19 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MAINTAIN_kP = 6.5;
+        public static final double MAINTAIN_kP = 7.0;
         public static final double MAINTAIN_kI = 0.0;
         public static final double MAINTAIN_kD = 0.3;
 
-        public static final double SNAP_kP = 6.0;
+        public static final double SNAP_kP = 6.5;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 1.0;
+        public static final double SNAP_kD = 0.4;
 
         public static final double TRACKING_kP = 10.0;
         public static final double TRACKING_kI = 0.0;
         public static final double TRACKING_kD = 3.0;
  
-        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
+        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
         public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 6.0;
@@ -358,14 +344,15 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static final double VELOCITY_TOLERANCE = 30; // FIXME: inaccurate???
+        public static final double VELOCITY_TOLERANCE = 30;
 
         public static final double IDLE_RPM = 500;
+        public static final double DUNKER_IN_RPM = 500;
 
-        public static final double DUNKER_IN_RPM = 700;
-        public static final double DUNKER_OUT_RPM = 1000;
+        public static final double PASSTHROUGH_RPM = 1000;
 
-        public static final double OPTIMAL_SHOT_DISTANCE_THRESHOLD = 4.0;
+        public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
+        public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
@@ -373,13 +360,13 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            { 3.0, 2700},
-            { 3.2, 2600},
-            { 3.6, 2300},
-            { 4.0, 1950},
+            { 3.0, 3800},
+            { 3.2, 3500},
+            { 3.6, 2600},
+            { 4.0, 2100},
             // { 4.0, 2050},
-            { 4.4, 1800},
-            { 4.8, 1710 },
+            { 4.4, 1880},
+            { 4.8, 1880 },
         };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
@@ -387,6 +374,8 @@ public class Constants {
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
         
         public static final double AMP_SHOT_SPEED = 700;
+
+        public static final double OVERRIDE_EJECT_RPM = 500;// FIXME: needs testing :3
 
         static {
             for (double[] pair : kRPMValues) {
@@ -404,14 +393,14 @@ public class Constants {
             SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
             SHOOTER_CONTROLLER_CONFIG.kI = 0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kV = 0.14128;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.117;
 
             SHOOTER_CONTROLLER_CONFIG.kS1 = 0.2288;
             SHOOTER_CONTROLLER_CONFIG.kA1= 0.047935;
             SHOOTER_CONTROLLER_CONFIG.kP1= 0.1;
             SHOOTER_CONTROLLER_CONFIG.kI1= 0;
             SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
-            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.14128;
+            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.117;
 
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
@@ -427,6 +416,7 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
+            // not sure which limit it is
             CONFIG.MAX_SUPPLY_CURRENT = 60;
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
@@ -437,7 +427,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.3;
+        public static final double INDEX_SPEED = 0.25;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -460,39 +450,77 @@ public class Constants {
 
     public static class Dunker {
         public static final String CAN_BUS = "CANivore";
-        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        public static final OutliersTalon.Configuration ARM_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double DUNKER_GEAR_RATIO = (84.0/8.0); //8:84
+        public static final double DUNKER_IN_RPM = Shooter.DUNKER_IN_RPM * 7.4375;
+        public static final double DUNKER_OUT_RPM = 6000;
+
+        public static final double DUNKER_ARM_GEAR_RATIO = (84.0/8.0); //8:84
         
         static {
-            CONFIG.TIME_OUT = 0.1;
+            ARM_CONFIG.TIME_OUT = 0.1;
             
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
-            CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+            ARM_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            ARM_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
-            CONFIG.MAX_VOLTAGE = 12.0;
+            ARM_CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_CURRENT = 60;
-            CONFIG.MAX_SUPPLY_CURRENT = 60;
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
-            CONFIG.CURRENT_DEADBAND = 0.1;
-            CONFIG.USE_FOC = true;
+            ARM_CONFIG.MAX_CURRENT = 60;
+            ARM_CONFIG.MAX_SUPPLY_CURRENT = 60;
+            ARM_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            ARM_CONFIG.CURRENT_DEADBAND = 0.1;
+            ARM_CONFIG.USE_FOC = true;
         }
         
-        public static final ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+        public static final ClosedLoopConfiguration ARM_CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            CLOSED_LOOP_CONFIG.SLOT = 0;
-            CLOSED_LOOP_CONFIG.kP = 12;
-            CLOSED_LOOP_CONFIG.kI = 0;
-            CLOSED_LOOP_CONFIG.kD = 0.0001;
-            CLOSED_LOOP_CONFIG.kV = 0;
+            ARM_CLOSED_LOOP_CONFIG.SLOT = 0;
+            ARM_CLOSED_LOOP_CONFIG.kP = 8;
+            ARM_CLOSED_LOOP_CONFIG.kI = 0;
+            ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
+            ARM_CLOSED_LOOP_CONFIG.kV = 0;
 
-            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
-            CLOSED_LOOP_CONFIG.JERK = 5000;
+            ARM_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
+            ARM_CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            ARM_CLOSED_LOOP_CONFIG.JERK = 500;
 
-            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
+            ARM_CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
+        }
+
+        public static final OutliersTalon.Configuration DRIVE_CONFIG = new OutliersTalon.Configuration();
+
+        public static final double DUNKER_DRIVE_GEAR_RATIO = 1.0; // TODO
+
+        static {
+            DRIVE_CONFIG.TIME_OUT = 0.1;
+
+            DRIVE_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            DRIVE_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+
+            DRIVE_CONFIG.MAX_VOLTAGE = 12.0;
+
+            DRIVE_CONFIG.MAX_CURRENT = 60;
+            DRIVE_CONFIG.MAX_SUPPLY_CURRENT = 60;
+            DRIVE_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
+            DRIVE_CONFIG.CURRENT_DEADBAND = 0.1;
+            DRIVE_CONFIG.USE_FOC = true;
+        }
+
+        public static final ClosedLoopConfiguration DRIVE_CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
+        static {
+            DRIVE_CLOSED_LOOP_CONFIG.SLOT = 0;
+            DRIVE_CLOSED_LOOP_CONFIG.kP = 0.25;
+            DRIVE_CLOSED_LOOP_CONFIG.kI = 0;
+            DRIVE_CLOSED_LOOP_CONFIG.kD = 0.0001;
+            DRIVE_CLOSED_LOOP_CONFIG.kV = 0.1;
+
+            DRIVE_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 6000;
+            DRIVE_CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
+            DRIVE_CLOSED_LOOP_CONFIG.JERK = 500;
+
+            DRIVE_CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
@@ -549,8 +577,8 @@ public class Constants {
             CLOSED_LOOP_CONFIG.kV = 0;
 
             CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 100;
-            CLOSED_LOOP_CONFIG.ACCELERATION = 500;
-            CLOSED_LOOP_CONFIG.JERK = 10;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
+            CLOSED_LOOP_CONFIG.JERK = 5000;
 
             CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.3734805711136846,
-        "y": 2.9721238926941127
+        "x": 3.12,
+        "y": 3.058135509809155
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.098761554691189,
-        "y": 2.3767957396437396
+        "x": 3.845280983577504,
+        "y": 2.462807356758782
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
@@ -30,25 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.75,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Passthrough"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 6.0,

@@ -15,6 +15,9 @@ public class Lights extends OutliersSubsystem{
     private AnimationType _currentAnimation;
     private int[] _color;
     private double _brightness;
+    private boolean _debugLightsEnabled = false;
+    private boolean _isInAngle = false;
+    private boolean _isAtTargetRPM = false;
 
     private boolean _dirty  = true;
 
@@ -176,6 +179,19 @@ public class Lights extends OutliersSubsystem{
         _dirty = false;
 
     } 
+
+    public void setDebugLightsEnabled(boolean value) {
+        _debugLightsEnabled = value;
+    }
+
+    public boolean getDebugLightsEnabled() {
+        return _debugLightsEnabled;
+    }
+
+    public void setDebugValues(boolean isInAngle, boolean isAtTargetRPM) {
+        _isInAngle = isInAngle;
+        _isAtTargetRPM = isAtTargetRPM;
+    }
 
     public void updateDashboard() {}
 
