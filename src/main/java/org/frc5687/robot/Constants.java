@@ -346,7 +346,7 @@ public class Constants {
     public static class Shooter {
         public static final double VELOCITY_TOLERANCE = 30;
 
-        public static final double IDLE_RPM = 500;
+        public static final double IDLE_RPM = 3200;
         public static final double DUNKER_IN_RPM = 500;
 
         public static final double PASSTHROUGH_RPM = 1000;
