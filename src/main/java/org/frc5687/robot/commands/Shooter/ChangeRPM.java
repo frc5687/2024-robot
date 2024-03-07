@@ -14,7 +14,7 @@ public class ChangeRPM extends OutliersCommand{
 
     @Override
     public void initialize() {
-        _shooter.setTargetRPM(_shooter.getTargetRPM() + _value);
+        _shooter.setManualShootRPM(_shooter.getManualShootRPM() + _value);
     }
 
     @Override

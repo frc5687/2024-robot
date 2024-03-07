@@ -7,6 +7,7 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -53,8 +54,11 @@ public class Shoot extends OutliersCommand{
         _driveTrain.setSnapHeading(angle);
 
         boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.TARGET_TOLERANCE;
+        boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         metric("IsInAngle", isInAngle);
-        if (_shooter.isAtTargetRPM() && isInAngle) { 
+        metric("isAtTargetRPM", isAtTargetRPM);
+        
+        if (isAtTargetRPM && isInAngle) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
 
