@@ -83,11 +83,10 @@ public class OI extends OutliersProxy {
             Dunker dunker,
             Intake intake,
             Climber climber,
-            VisionProcessor visionProcessor,
-            RobotState robotState) {
+            VisionProcessor visionProcessor) {
 
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, visionProcessor, intake).alongWith(new IntakeCommand(intake, this)));
-        _driverRightTrigger.whileTrue(new Shoot(shooter, intake, drivetrain, robotState));
+        _driverRightTrigger.whileTrue(new Shoot(shooter, intake, drivetrain));
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
         _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));

@@ -14,21 +14,19 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoot extends OutliersCommand{
-    private Shooter _shooter;
-    private Intake _intake;
-    private DriveTrain _driveTrain;
-    private RobotState _robotState;
+    private final Shooter _shooter;
+    private final Intake _intake;
+    private final DriveTrain _driveTrain;
+    private final RobotState _robotState = RobotState.getInstance();
 
     public Shoot(
         Shooter shooter,
         Intake intake,
-        DriveTrain driveTrain,
-        RobotState robotState
+        DriveTrain driveTrain
     ) {
         _shooter = shooter;
         _intake = intake;
         _driveTrain = driveTrain;
-        _robotState = robotState;
         addRequirements(_shooter, _intake);
     }
 

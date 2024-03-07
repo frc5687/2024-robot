@@ -25,15 +25,14 @@ public class Drive extends OutliersCommand {
     // TODO: move some of these to robotState for more elegant shared state. - xavier bradford 03/01/24
     private final Intake _intake;
     private final Shooter _shooter;
-    private final RobotState _robotState;
+    private final RobotState _robotState = RobotState.getInstance();
     private int segmentationArray[] = new int[360 / 5];
 
-    public Drive(DriveTrain driveTrain, OI oi, Intake intake, Shooter shooter, RobotState robotState) {
+    public Drive(DriveTrain driveTrain, OI oi, Intake intake, Shooter shooter) {
         _driveTrain = driveTrain;
         _oi = oi;
         _intake = intake;
         _shooter = shooter;
-        _robotState = robotState;
 
         for (int i = 0; i < segmentationArray.length; i++) {
             double angle = 360 / segmentationArray.length;

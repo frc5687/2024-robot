@@ -1,6 +1,7 @@
 package org.frc5687.robot.commands;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.Robot;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
@@ -22,14 +23,14 @@ public class DriveLights extends OutliersCommand {
     private DriveTrain _driveTrain;
     private Intake _intake;
     private VisionProcessor _visionProcessor;
-    private RobotState _robotState;
+    private RobotState _robotState = RobotState.getInstance();
     private Shooter _shooter;
-    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, RobotState robotState, Shooter shooter) {
+    
+    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, Shooter shooter) {
         _lights = lights;
         _driveTrain = driveTrain;
         _intake = intake;
         _visionProcessor = visionProcessor;
-        _robotState = robotState;
         _shooter = shooter;
         addRequirements(lights);
     }
