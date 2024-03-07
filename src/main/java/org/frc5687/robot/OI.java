@@ -64,8 +64,8 @@ public class OI extends OutliersProxy {
         _povButtonDown = new Trigger(() -> _driverGamepad.getPOV() == 180);
         _opPovButtonDown = new Trigger(() -> _operatorGamepad.getPOV() == 180);
         _opPovButtonRight = new Trigger(() -> _operatorGamepad.getPOV() == 90);
-        _opPovButtonUp = new Trigger(() -> _operatorGamepad.getPOV() == 270);
-        _opPovButtonLeft = new Trigger(() -> _operatorGamepad.getPOV() == 0);
+        _opPovButtonUp = new Trigger(() -> _operatorGamepad.getPOV() == 0);
+        _opPovButtonLeft = new Trigger(() -> _operatorGamepad.getPOV() == 270);
 
         _driverLeftTrigger = new Trigger(
                 new AxisButton(_driverGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), 0.05)::get);
@@ -106,10 +106,10 @@ public class OI extends OutliersProxy {
         _driverGamepad.getLeftBumper().and(_driverGamepad.getRightBumper()).whileTrue(new DriveToAmp(drivetrain, this));
         _driverGamepad.getLeftBumper().whileTrue(new ShiftDown(drivetrain));
 
-        // _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
-        // _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
-        // _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
-        // _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
+        _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
+        _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
+        _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
+        _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
 
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
