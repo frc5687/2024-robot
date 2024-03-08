@@ -344,6 +344,9 @@ public class Constants {
     }
 
     public static class Shooter {
+        public static final double GEAR_RATIO = 0.625;
+        public static final double WHEEL_DIAMETER_METERS = 0.1016;
+
         public static final double VELOCITY_TOLERANCE = 30;
 
         public static final double IDLE_RPM = 3200;

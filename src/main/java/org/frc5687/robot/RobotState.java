@@ -31,7 +31,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -362,11 +361,9 @@ public class RobotState {
     }
 
     private double calculateShotTravelTime(double distance, double shooterRPM) {
-        double wheelDiameterMeters = 0.1016;
-        double gearRatio = 0.625; 
-        double wheelCircumference = Math.PI * wheelDiameterMeters;
-        double wheelRPS = (shooterRPM / gearRatio) / 60.0; 
-        double linearVelocity = wheelRPS * wheelCircumference; // just hack in ;).
+        double wheelCircumference = Math.PI * Constants.Shooter.WHEEL_DIAMETER_METERS;
+        double wheelRPS = (shooterRPM / Constants.Shooter.GEAR_RATIO) / 60.0; 
+        double linearVelocity = wheelRPS * wheelCircumference;
 
         return distance / linearVelocity;
         // return 0.05;
