@@ -51,6 +51,12 @@ public class DriveLights extends OutliersCommand {
     public void execute() {
         _lights.setBrightness(1);
         boolean hasObjects = false;
+        int[] allianceColor = Constants.CANdle.PURPLER; // this should never make the lights purple, like ever, but we need it for the empty check
+
+        if (DriverStation.getAlliance().isPresent()) {
+            allianceColor = DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE;
+        }
+
         try {
             hasObjects = _visionProcessor.getDetectedObjects().posesLength() > 0;
         } catch (Exception e) {
@@ -61,7 +67,7 @@ public class DriveLights extends OutliersCommand {
             _lights.switchAnimation(AnimationType.RAINBOW);
         //Disabled, static alliance color
         } else if (DriverStation.isDisabled()) {
-            _lights.setColor(DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE);
+            _lights.setColor(allianceColor);
             _lights.switchAnimation(AnimationType.STATIC);
         // Is AutoShooting (shooter debug flag)
         } else if (_lights.getDebugLightsEnabled()) {
@@ -91,8 +97,12 @@ public class DriveLights extends OutliersCommand {
                 _lights.switchAnimation(AnimationType.STROBE);
             }
         // Is in optimal shooting range
-        } else if (_robotState.isWithinOptimalRange() && (_intake.isTopDetected() || _intake.isBottomDetected())) {
-            _lights.setColor(Constants.CANdle.GREEN);
+        } else if (_robotState.isWithinOptimalRange()) {
+            if (_intake.isTopDetected() || _intake.isBottomDetected()) {
+                _lights.setColor(Constants.CANdle.GREEN);
+            } else {
+                _lights.setColor(allianceColor);
+            }
             _lights.switchAnimation(AnimationType.STROBE);
         // Is in amp mode
         } else if (_intake.isTopDetected() || _intake.isBottomDetected()) {
@@ -108,9 +118,7 @@ public class DriveLights extends OutliersCommand {
             _lights.switchAnimation(AnimationType.STATIC);
         //No other condition is true, use breathing alliance color
         } else {
-            _lights.setColor(
-                DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE
-            );
+            _lights.setColor(allianceColor);
             _lights.switchAnimation(AnimationType.SINGLE_FADE);
         }
     }
