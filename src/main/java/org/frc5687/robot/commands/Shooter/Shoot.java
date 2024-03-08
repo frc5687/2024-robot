@@ -39,17 +39,17 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void execute() {
-        // Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
-        // _shooter.setTargetRPM(shooterRPMAndAngle.getFirst());
-        // Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
-        // _driveTrain.setTrackingHeading(angle);
+        Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
+        _shooter.setShooterMotorRPM(shooterRPMAndAngle.getFirst().doubleValue());
+        Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
+        _driveTrain.setTrackingHeading(angle);
 
-        Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-        double distance = distanceAndAngle.getFirst();
-        // add max distance conditional?
-        _shooter.setRPMFromDistance(distance);
-        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
-        _driveTrain.setSnapHeading(angle);
+        // Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
+        // double distance = distanceAndAngle.getFirst();
+        // // add max distance conditional?
+        // _shooter.setRPMFromDistance(distance);
+        // Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
+        // _driveTrain.setSnapHeading(angle);
 
         boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.TARGET_TOLERANCE;
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();

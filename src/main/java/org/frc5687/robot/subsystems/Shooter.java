@@ -92,7 +92,7 @@ public class Shooter extends OutliersSubsystem {
                 && Math.abs(_targetRPM - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
-    private void setShooterMotorRPM(double rpm) {
+    public void setShooterMotorRPM(double rpm) {
         _targetRPM = rpm;
         _bottomTalon.setVelocity(_targetRPM);
     }
