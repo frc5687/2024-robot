@@ -18,7 +18,7 @@ public class IntakeEject extends OutliersCommand {
     @Override
     public void execute(){
     
-        _shooter.setNegativePercentRPM();
+        _shooter.setToIntakeEject();
         _intake.setSpeed(-Constants.Intake.INTAKE_SPEED);
         
     }

@@ -64,12 +64,12 @@ public class Shooter extends OutliersSubsystem {
         return _manualShootRPM;
     }
 
-    public void setPercentRPM(){
-        _bottomTalon.setPercentOutput(.75);
+    public void setToEject(){
+        _bottomTalon.setPercentOutput(Constants.Shooter.EJECT_PERCENT_OUTPUT);
     }
 
-    public void setNegativePercentRPM(){
-        _bottomTalon.setPercentOutput(-0.75);
+    public void setToIntakeEject(){
+        _bottomTalon.setPercentOutput(-Constants.Shooter.EJECT_PERCENT_OUTPUT);
     }
 
     /**

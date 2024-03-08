@@ -354,6 +354,8 @@ public class Constants {
 
         public static final double PASSTHROUGH_RPM = 1000;
 
+        public static final double EJECT_PERCENT_OUTPUT = 0.75;
+
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
 
