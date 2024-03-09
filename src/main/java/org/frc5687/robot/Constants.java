@@ -155,7 +155,7 @@ public class Constants {
 
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
-        public static final double MAX_ANG_ACC = 6.0 * Math.PI; // Max angular acceleration of robot (rads/s^2)
+        public static final double MAX_ANG_ACC = 2.0 * Math.PI; // Max angular acceleration of robot (rads/s^2)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
         public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
@@ -268,9 +268,9 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 10.0;
+        public static final double HEADING_kP = 5.0;
         public static final double HEADING_kI = 0.0;
-        public static final double HEADING_kD = 0.5;
+        public static final double HEADING_kD = 0.3;
 
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);

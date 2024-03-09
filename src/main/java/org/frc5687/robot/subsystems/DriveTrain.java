@@ -297,6 +297,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public double getRotationCorrection() {
+        readIMU();
         return _headingController.getRotationCorrection(getHeading());
     }
 
@@ -331,6 +332,7 @@ public class DriveTrain extends OutliersSubsystem {
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {
+        readIMU();
         ChassisSpeeds speeds = _poseController.calculate(
                 _robotState.getEstimatedPose(), pose, 0.0, _systemIO.heading);
         _headingController.goToHeading(pose.getRotation());
@@ -571,9 +573,6 @@ public class DriveTrain extends OutliersSubsystem {
         return _systemIO.pitch;
     }
 
-    /**
-     * @return the current angle of the robot. this may need to be refreshed.
-     */
     public Rotation2d getHeading() {
         return _systemIO.heading;
     }

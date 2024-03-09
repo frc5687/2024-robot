@@ -32,6 +32,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -178,7 +179,7 @@ public class RobotState {
             .collect(Collectors.toList());
         
             cameraPoses.forEach(cameraPose -> {
-                // dynamicallyChangeDeviations(cameraPose.estimatedPose, prevEstimatedPose);
+                // dynamicallyChangeDeviations(cameraPose.getFirst().estimatedPose, prevEstimatedPose);
                 _poseEstimator.addVisionMeasurement(cameraPose.getFirst().estimatedPose.toPose2d(), cameraPose.getFirst().timestampSeconds);
             });
 
