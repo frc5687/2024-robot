@@ -46,20 +46,7 @@ public class Drive extends OutliersCommand {
     @Override
     public void execute() {
 
-        if (_oi.zeroIMU()) {
-            _driveTrain.zeroGyroscope();
-            _driveTrain.disableHeadingController();
-        }
-
-        /*if (_oi.shiftUp()) {
-            _driveTrain.shiftUpModules();
-        } else*/ 
-
-        if (_driveTrain.isShiftingDown()) {
-            _driveTrain.shiftDownModules();
-        } else {
-            _driveTrain.autoShifter();
-        }
+        _driveTrain.autoShifter();
 
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
@@ -84,7 +71,6 @@ public class Drive extends OutliersCommand {
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
 
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
-
         // set kinematics limits if shooting.
         // if (_oi.isShooting()) {
         // } else {
@@ -98,8 +84,6 @@ public class Drive extends OutliersCommand {
         // if has note and is within shooting range and is in speaker mode
         boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();
         
-        metric("Auto Aiming at Speaker?", shouldAutoAim);
-
         if (shouldAutoAim) {
             _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         }

@@ -12,23 +12,13 @@ public class ZeroIMU extends OutliersCommand {
     }
 
     @Override
-    public void initialize() {
-        _driveTrain.zeroGyroscope();
-        _driveTrain.disableHeadingController();
-    }
-
-    @Override
-    public void execute() {
-        super.execute();
-    }
-
-    @Override
     public boolean isFinished() {
-        return super.isFinished();
+        return true;
     }
     
     @Override
     public void end(boolean interrupted) {
-        super.end(interrupted);
+        _driveTrain.zeroGyroscope();
+        _driveTrain.disableHeadingController();
     }
 }
