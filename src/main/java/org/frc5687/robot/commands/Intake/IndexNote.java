@@ -29,23 +29,23 @@ public class IndexNote extends OutliersCommand {
     public void execute() {
         switch (_state) {
             case START:
-            _intake.setSpeed(1.0);
-            if(_intake.isTopDetected()) {
-                _state = IndexState.TOP_DETECTED;
-            }
-            break;
+                _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+                if(_intake.isTopDetected()) {
+                    _state = IndexState.TOP_DETECTED;
+                }
+                break;
             case TOP_DETECTED:
-            if (!_intake.isTopDetected()) {
-                _intake.setSpeed(-0.2);
-                _state = IndexState.TOP_NOT_DETECTED;
-            }
-            break;
+                if (!_intake.isTopDetected()) {
+                    _intake.setSpeed(Constants.Intake.REVERSE_INDEX_SPEED);
+                    _state = IndexState.TOP_NOT_DETECTED;
+                }
+                break;
             case TOP_NOT_DETECTED:
-            if (_intake.isTopDetected()) {
-                _intake.setSpeed(0);
-                _state = IndexState.FINISH;
-            }
-            break;
+                if (_intake.isTopDetected()) {
+                    _intake.setSpeed(0);
+                    _state = IndexState.FINISH;
+                }
+                break;
         }
     }
 
@@ -57,7 +57,9 @@ public class IndexNote extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        error("Intake interrupt" + interrupted);
+        if (interrupted) {
+            error("Index interrupted");
+        }
         _intake.setSpeed(0);
     }
 

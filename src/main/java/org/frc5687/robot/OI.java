@@ -114,7 +114,7 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
         _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
-        // _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
+        _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
         _operatorGamepad.getRightBumper().onTrue(new SetAutoSpinUp(shooter, false));
         _operatorGamepad.getLeftBumper().onTrue(new SetAutoSpinUp(shooter, true));

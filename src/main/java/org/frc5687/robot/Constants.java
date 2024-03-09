@@ -35,9 +35,11 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with calipers on 02/25/24
+        public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with
+                                                                               // calipers on 02/25/24
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.857142857142858
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.512820512820512
+        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
+                * (16.0 / 36.0); // 4.512820512820512
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.005; // mps
@@ -55,7 +57,7 @@ public class Constants {
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
             CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
- 
+
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.5;
@@ -144,12 +146,10 @@ public class Constants {
         public static final double MAX_FALCON_FOC_RPM = 6080.0;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
-        public static final double MAX_LOW_GEAR_MPS = (
-            Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
-            / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
-        public static final double MAX_HIGH_GEAR_MPS = (
-            Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
-            / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+                / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+                / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
 
         public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
 
@@ -273,12 +273,8 @@ public class Constants {
 
         public static final double SNAP_kP = 5;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 8;
+        public static final double SNAP_kD = 3;
 
-        public static final double TRACKING_kP = 10.0;
-        public static final double TRACKING_kI = 0.0;
-        public static final double TRACKING_kD = 3.0;
- 
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
@@ -327,19 +323,23 @@ public class Constants {
     public static class VisionConfig {
         public static double STATE_STD_DEV_X = 0.01;
         public static double STATE_STD_DEV_Y = 0.01;
-        public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust more
+        public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
+                                                                                // more
 
-        // we can't change the odometry stddev easily,,,, just change the vision stddev --xavier bradford 02/25/24
+        // we can't change the odometry stddev easily,,,, just change the vision stddev
+        // --xavier bradford 02/25/24
         public static class Auto {
-            public static double VISION_STD_DEV_X = 0.35 ;
+            public static double VISION_STD_DEV_X = 0.35;
             public static double VISION_STD_DEV_Y = 0.35;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
+            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to
+                                                                                     // trust
         }
 
         public static class Teleop {
             public static double VISION_STD_DEV_X = 0.15;
             public static double VISION_STD_DEV_Y = 0.15;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
+            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to
+                                                                                     // trust
         }
     }
 
@@ -365,19 +365,23 @@ public class Constants {
         public static PolynomialRegression kRPMRegression;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3800},
-            { 3.2, 3500},
-            { 3.6, 2600},
-            { 4.0, 2100},
-            // { 4.0, 2050},
-            { 4.4, 1880},
-            { 4.8, 1880 },
+                { 3.0, 3800 },
+                { 3.2, 3500 },
+                { 3.6, 2600 },
+                { 4.0, 2100 },
+                // { 4.0, 2050},
+                { 4.4, 1880 },
+                { 4.8, 1880 },
         };
 
-        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
-        
-        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
-        
+        public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82,
+                FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI / 2)); // 1.82 meters from red alliance
+                                                                                      // wall, ~0.75 meters from amp,
+                                                                                      // facing amp
+
+        public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002,
+                new Rotation2d(-Math.PI / 2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
+
         public static final double AMP_SHOT_SPEED = 700;
 
         public static final double OVERRIDE_EJECT_RPM = 500;// FIXME: needs testing :3
@@ -396,9 +400,8 @@ public class Constants {
             SHOOTER_CONTROLLER_CONFIG.kP = 8.5;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0;
 
-            SHOOTER_CONTROLLER_CONFIG.kP1= 8.5;
-            SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
-
+            SHOOTER_CONTROLLER_CONFIG.kP1 = 8.5;
+            SHOOTER_CONTROLLER_CONFIG.kD1 = 0.0;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -407,7 +410,7 @@ public class Constants {
 
         static {
             CONFIG.TIME_OUT = 0.1;
-            
+
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
@@ -425,6 +428,7 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
         public static final double INDEX_SPEED = 0.4;
+        public static final double REVERSE_INDEX_SPEED = -0.2;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -468,11 +472,11 @@ public class Constants {
         public static final double DUNKER_IN_RPM = Shooter.DUNKER_IN_RPM * 7.4375;
         public static final double DUNKER_OUT_RPM = 6000;
 
-        public static final double DUNKER_ARM_GEAR_RATIO = (84.0/8.0); //8:84
-        
+        public static final double DUNKER_ARM_GEAR_RATIO = (84.0 / 8.0); // 8:84
+
         static {
             ARM_CONFIG.TIME_OUT = 0.1;
-            
+
             ARM_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             ARM_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
@@ -484,7 +488,7 @@ public class Constants {
             ARM_CONFIG.CURRENT_DEADBAND = 0.1;
             ARM_CONFIG.USE_FOC = true;
         }
-        
+
         public static final ClosedLoopConfiguration ARM_CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
@@ -545,7 +549,7 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
     }
-    
+
     public static class Climber {
         public static final String CAN_BUS = "CANivore";
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -568,8 +572,9 @@ public class Constants {
         public static double UPPER_LIMIT = -2.25;
         public static double LOWER_LIMIT = 0.0;
 
-        // This represents where the climber assumes zero is when it starts, should be when hook touches lightbar
-        public static double ZERO_VALUE = 0.0; 
+        // This represents where the climber assumes zero is when it starts, should be
+        // when hook touches lightbar
+        public static double ZERO_VALUE = 0.0;
 
         public static double PREP_METERS = -2.15;
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
@@ -578,7 +583,7 @@ public class Constants {
 
         public static double CLIMBER_GEAR_RATIO = 25.0; // FIXME: actually 48 - freyja
 
-        public static double WINCH_RADIUS = 0.035052; 
+        public static double WINCH_RADIUS = 0.035052;
 
         public static double CLIMBER_TOLERANCE = .05;
         public static final OutliersTalon.ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
@@ -608,24 +613,24 @@ public class Constants {
         public static TwinklePercent TWINKLEPERCENT = TwinklePercent.Percent42;
         public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
 
-        public static int[] RED = {255, 0, 0};
-        public static int[] ORANGE = {255, 20, 0};
-        public static int[] YELLOW = {255, 65, 0};
-        public static int[] GREEN = {0, 255, 0};
-        public static int[] CYAN = {0, 255, 255};
-        public static int[] BLUE = {0, 0, 255};
-        public static int[] PURPLE = {128, 0, 128};
-        public static int[] PINK = {255, 105, 18};
-        public static int[] WHITE = {0, 0, 0};
+        public static int[] RED = { 255, 0, 0 };
+        public static int[] ORANGE = { 255, 20, 0 };
+        public static int[] YELLOW = { 255, 65, 0 };
+        public static int[] GREEN = { 0, 255, 0 };
+        public static int[] CYAN = { 0, 255, 255 };
+        public static int[] BLUE = { 0, 0, 255 };
+        public static int[] PURPLE = { 128, 0, 128 };
+        public static int[] PINK = { 255, 105, 18 };
+        public static int[] WHITE = { 0, 0, 0 };
 
-        public static int[] RUFOUS = {128, 0, 0};
-        public static int[] ORANGE_RED = {255, 69, 0};
-        public static int[] MAROON = {128, 0, 0};
-        public static int[] GOLD = {212, 175, 55};
-        public static int[] PURPLER = {64, 0, 64};
-        public static int[] LESS_GREEN = {0, 64, 0};
-        public static int[] MINTISH = {100, 255, 100};
-        public static int[] LEAF00 = {30, 175, 0}; //epic color frfr
-        public static int[] MILO_BLUE = {1, 52, 133};
+        public static int[] RUFOUS = { 128, 0, 0 };
+        public static int[] ORANGE_RED = { 255, 69, 0 };
+        public static int[] MAROON = { 128, 0, 0 };
+        public static int[] GOLD = { 212, 175, 55 };
+        public static int[] PURPLER = { 64, 0, 64 };
+        public static int[] LESS_GREEN = { 0, 64, 0 };
+        public static int[] MINTISH = { 100, 255, 100 };
+        public static int[] LEAF00 = { 30, 175, 0 }; // epic color frfr
+        public static int[] MILO_BLUE = { 1, 52, 133 };
     }
 }

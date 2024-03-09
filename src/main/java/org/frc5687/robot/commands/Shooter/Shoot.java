@@ -42,7 +42,7 @@ public class Shoot extends OutliersCommand{
         // Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
         // _shooter.setShooterMotorRPM(shooterRPMAndAngle.getFirst().doubleValue());
         // Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
-        // _driveTrain.setTrackingHeading(angle);
+        // _driveTrain.setSnapHeading(angle);
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
