@@ -41,7 +41,7 @@ public class DriveToAmp extends OutliersCommand {
         );
 
         Rotation2d headingRot = _driveTrain.isRedAlliance() ? new Rotation2d(-Math.PI / 2) : new Rotation2d(Math.PI / 2);
-        _driveTrain.setSnapHeading(headingRot);
+        _driveTrain.goToHeading(headingRot);
     }
 
     @Override

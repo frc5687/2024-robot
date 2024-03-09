@@ -4,10 +4,6 @@ package org.frc5687.robot.commands.DriveTrain;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
-import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
-import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
-
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
@@ -43,8 +39,7 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void initialize() {
-        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
-        _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
+        _driveTrain.goToHeading(_driveTrain.getHeading());
         _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
     }
 
@@ -53,8 +48,7 @@ public class Drive extends OutliersCommand {
 
         if (_oi.zeroIMU()) {
             _driveTrain.zeroGyroscope();
-            _driveTrain.setHeadingControllerState(HeadingState.OFF);
-            _driveTrain.setLockHeading(false);
+            _driveTrain.disableHeadingController();
         }
 
         /*if (_oi.shiftUp()) {
@@ -79,15 +73,8 @@ public class Drive extends OutliersCommand {
 
         rot = Math.signum(rot) * rot * rot;
 
-        if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-            if (!_driveTrain.isHeadingLocked()) {
-                _driveTrain.temporaryDisabledHeadingController();
-            }
-            _driveTrain.setLockHeading(true);
-        } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-
-            _driveTrain.disableHeadingController();
-            _driveTrain.setLockHeading(false);
+        if (rot != 0) {
+            _driveTrain.temporaryDisableHeadingController();
         }
 
         double controllerPower = _driveTrain.getRotationCorrection();
@@ -113,9 +100,8 @@ public class Drive extends OutliersCommand {
         
         metric("Auto Aiming at Speaker?", shouldAutoAim);
 
-        // note: this uses maintain heading not snap heading
         if (shouldAutoAim) {
-            _driveTrain.setMaintainHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+            _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         }
 
         if (_driveTrain.isFieldCentric()) {
