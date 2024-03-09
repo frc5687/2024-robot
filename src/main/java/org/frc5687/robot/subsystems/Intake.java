@@ -43,28 +43,11 @@ public class Intake extends OutliersSubsystem {
         return _autoIntakeFlag;
     }
 
-    public double getEncoderRotations() {
-        return _talon.getRotorPosition().refresh().getValueAsDouble();
-    }
-
-    public void setTargetAngle(double rotations) {
-        metric("Target Angle", rotations);
-        _talon.setPosition(rotations);
-    }
-
-    public boolean atTargetAngle(double rotations) {
-        return Math.abs(getEncoderRotations() - rotations) < 0.05;
-    }
-    public void resetEncoder() {
-        _talon.setPosition(0);
-    }
-
     @Override
     public void updateDashboard() {
         metric("Top Detected", isTopDetected() ? 1000.0: 0.0);
         metric("Bottom Detected", isBottomDetected() ? 1000.0: 0.0);
         metric("AutoIntake Flag", getAutoIntakeFlag());
-        metric("Current Angle", getEncoderRotations());
     }
     
 }

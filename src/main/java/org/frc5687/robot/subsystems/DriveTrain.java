@@ -345,10 +345,6 @@ public class DriveTrain extends OutliersSubsystem {
         _headingController.setMaintainHeading(heading);
     }
 
-    public void setTrackingHeading(Rotation2d heading) {
-        _headingController.setTrackingHeading(heading);
-    }
-
     public void setLockHeading(boolean lock) {
         _lockHeading = lock;
     }

@@ -57,11 +57,6 @@ public class SwerveHeadingController {
         setState(HeadingState.MAINTAIN);
     }
 
-    public void setTrackingHeading(Rotation2d heading) {
-        _targetHeading = heading;
-        setState(HeadingState.TRACKING);
-    }
-
     public void setSnapHeading(Rotation2d heading) {
         _targetHeading = heading;
         setState(HeadingState.SNAP);
@@ -99,12 +94,6 @@ public class SwerveHeadingController {
                         Constants.DriveTrain.SNAP_kD);
                 power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
                 break;
-            case TRACKING:
-                _PIDController.setPID(
-                        Constants.DriveTrain.TRACKING_kP,
-                        Constants.DriveTrain.TRACKING_kI,
-                        Constants.DriveTrain.TRACKING_kD);
-                power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
             default:
                 break;
         }
@@ -119,8 +108,7 @@ public class SwerveHeadingController {
         OFF(0),
         TEMPORARY_DISABLE(1),
         MAINTAIN(2),
-        SNAP(3),
-        TRACKING(4);
+        SNAP(3);
 
         private final int _value;
 

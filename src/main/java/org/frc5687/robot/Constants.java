@@ -273,11 +273,7 @@ public class Constants {
 
         public static final double SNAP_kP = 5;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 8;
-
-        public static final double TRACKING_kP = 10.0;
-        public static final double TRACKING_kI = 0.0;
-        public static final double TRACKING_kD = 3.0;
+        public static final double SNAP_kD = 3;
  
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
@@ -425,6 +421,7 @@ public class Constants {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
         public static final double INDEX_SPEED = 0.4;
+        public static final double REVERSE_INDEX_SPEED = -0.2;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -538,10 +535,10 @@ public class Constants {
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
-        public static final double PREP_ANGLE = 1.25;
-        public static final double DUNK_ANGLE = 2.18;
-        public static final double STOWED_ANGLE = 4.16;
-        public static final double CLIMB_ANGLE = 1.05;
+        public static final double PREP_ANGLE = 2.21;
+        public static final double DUNK_ANGLE = 3.3;
+        public static final double STOWED_ANGLE = 5.12;
+        public static final double CLIMB_ANGLE = 3.12;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
     }

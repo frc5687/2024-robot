@@ -79,17 +79,12 @@ public class Drive extends OutliersCommand {
 
         rot = Math.signum(rot) * rot * rot;
 
-        if (
-            rot == 0 && 
-            (_driveTrain.getHeadingControllerState() != HeadingState.SNAP || 
-            _driveTrain.getHeadingControllerState() != HeadingState.TRACKING)) {
+        if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
             if (!_driveTrain.isHeadingLocked()) {
                 _driveTrain.temporaryDisabledHeadingController();
             }
             _driveTrain.setLockHeading(true);
-        } else if (
-            _driveTrain.getHeadingControllerState() != HeadingState.SNAP || 
-            _driveTrain.getHeadingControllerState() != HeadingState.TRACKING) {
+        } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
 
             _driveTrain.disableHeadingController();
             _driveTrain.setLockHeading(false);
