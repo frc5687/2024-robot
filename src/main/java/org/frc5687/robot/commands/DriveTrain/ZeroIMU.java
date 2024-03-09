@@ -2,7 +2,6 @@ package org.frc5687.robot.commands.DriveTrain;
 
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.lib.control.SwerveHeadingController;
 
 public class ZeroIMU extends OutliersCommand {
 
@@ -15,8 +14,7 @@ public class ZeroIMU extends OutliersCommand {
     @Override
     public void initialize() {
         _driveTrain.zeroGyroscope();
-        _driveTrain.setHeadingControllerState(SwerveHeadingController.HeadingState.OFF);
-        _driveTrain.setLockHeading(false);
+        _driveTrain.disableHeadingController();
     }
 
     @Override

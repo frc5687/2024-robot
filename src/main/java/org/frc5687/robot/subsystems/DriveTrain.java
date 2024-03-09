@@ -1,17 +1,16 @@
 package org.frc5687.robot.subsystems;
 
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_kD;
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_kI;
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_kP;
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
-import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kD;
-import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kI;
-import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kP;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
 import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
 
 import java.util.Optional;
 
 import org.frc5687.lib.control.SwerveHeadingController;
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -132,7 +131,6 @@ public class DriveTrain extends OutliersSubsystem {
     private boolean _shiftingDown = false;
 
     private boolean _hasShiftInit = false;
-    private boolean _lockHeading = false;
     private boolean _isLowGear;
 
     private final SystemIO _systemIO;
@@ -234,16 +232,15 @@ public class DriveTrain extends OutliersSubsystem {
             new PIDController(
                     Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
             new ProfiledPIDController(
-                    MAINTAIN_kP,
-                    MAINTAIN_kI,
-                    MAINTAIN_kD,
+                    HEADING_kP,
+                    HEADING_kI,
+                    HEADING_kD,
                     new TrapezoidProfile.Constraints(
-                            Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                            Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
+                            Constants.DriveTrain.MAX_ANG_VEL,
+                            Constants.DriveTrain.MAX_ANG_ACC)));
 
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
-        _lockHeading = false;
         _isLowGear = true;
 
         zeroGyroscope();
@@ -300,20 +297,11 @@ public class DriveTrain extends OutliersSubsystem {
         readModules();
     }
 
-    /* Heading Controller Start */
-    public HeadingState getHeadingControllerState() {
-        return _headingController.getHeadingState();
-    }
-
-    public void setHeadingControllerState(HeadingState state) {
-        _headingController.setState(state);
-    }
-
     public double getRotationCorrection() {
         return _headingController.getRotationCorrection(getHeading());
     }
 
-    public void temporaryDisabledHeadingController() {
+    public void temporaryDisableHeadingController() {
         _headingController.temporaryDisable();
     }
 
@@ -322,42 +310,31 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void initializeHeadingController() {
-        _headingController.setMaintainHeading(getHeading());
+        _headingController.goToHeading(getHeading());
     }
 
     public void incrementHeadingControllerAngle() {
         Rotation2d heading = getHeading();
-        _headingController.setMaintainHeading(
+        _headingController.goToHeading(
                 Rotation2d.fromDegrees(heading.getDegrees() + Constants.DriveTrain.BUMP_DEGREES));
     }
 
     public void decrementHeadingControllerAngle() {
         Rotation2d heading = getHeading();
-        _headingController.setMaintainHeading(
+        _headingController.goToHeading(
                 Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
     }
 
-    public void setSnapHeading(Rotation2d heading) {
-        _headingController.setSnapHeading(heading);
+    public void goToHeading(Rotation2d heading) {
+        _headingController.goToHeading(heading);
     }
 
-    public void setMaintainHeading(Rotation2d heading) {
-        _headingController.setMaintainHeading(heading);
-    }
-
-    public void setLockHeading(boolean lock) {
-        _lockHeading = lock;
-    }
-
-    public boolean isHeadingLocked() {
-        return _lockHeading;
-    }
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {
         ChassisSpeeds speeds = _poseController.calculate(
                 _robotState.getEstimatedPose(), pose, 0.0, _systemIO.heading);
-        _headingController.setMaintainHeading(pose.getRotation());
+        _headingController.goToHeading(pose.getRotation());
         speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
         _systemIO.desiredChassisSpeeds = speeds;
     }
@@ -599,6 +576,9 @@ public class DriveTrain extends OutliersSubsystem {
         return _systemIO.pitch;
     }
 
+    /**
+     * @return the current angle of the robot. this may need to be refreshed.
+     */
     public Rotation2d getHeading() {
         return _systemIO.heading;
     }
