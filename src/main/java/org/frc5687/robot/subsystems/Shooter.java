@@ -5,6 +5,7 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 import edu.wpi.first.units.Units;
 
@@ -17,6 +18,7 @@ public class Shooter extends OutliersSubsystem {
     private double _manualShootRPM = 3200;
     private double _targetRPM = 0;
     private boolean _spinUpAutomatically = true;
+    private VelocityTorqueCurrentFOC _foc;
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -29,6 +31,7 @@ public class Shooter extends OutliersSubsystem {
         _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
         _bottomTalon.setConfigSlot(0);
         _topTalon.setConfigSlot(0);
+        _foc = new VelocityTorqueCurrentFOC(0);
     }
 
     public void setConfigSlot(int slot) {
@@ -94,7 +97,7 @@ public class Shooter extends OutliersSubsystem {
 
     public void setShooterMotorRPM(double rpm) {
         _targetRPM = rpm;
-        _bottomTalon.setVelocity(_targetRPM);
+        _bottomTalon.setControl(_foc.withVelocity(rpm / 60.0));
     }
 
     /**

@@ -58,7 +58,7 @@ public class Constants {
  
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
-            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.CURRENT_DEADBAND = 0.5;
         }
 
         static {
@@ -84,11 +84,11 @@ public class Constants {
             // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
-            DRIVE_CONTROLLER_CONFIG.kP = 15.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 8.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kV = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kA = 0.1;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.3;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.75;
+            DRIVE_CONTROLLER_CONFIG.kA = 0.0;
             // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
@@ -269,11 +269,11 @@ public class Constants {
         // PID controller settings
         public static final double MAINTAIN_kP = 7.0;
         public static final double MAINTAIN_kI = 0.0;
-        public static final double MAINTAIN_kD = 0.3;
+        public static final double MAINTAIN_kD = 0;
 
-        public static final double SNAP_kP = 6.5;
+        public static final double SNAP_kP = 5;
         public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 0.4;
+        public static final double SNAP_kD = 8;
 
         public static final double TRACKING_kP = 10.0;
         public static final double TRACKING_kI = 0.0;
@@ -282,8 +282,8 @@ public class Constants {
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
-        public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 6.0;
-        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 12.0;
+        public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 2.0; // FIXME tune this
+        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 6.0;
 
         // AutoAlignDriveController PID
         public static final double kP = 3.3;
@@ -349,7 +349,7 @@ public class Constants {
 
         public static final double VELOCITY_TOLERANCE = 30;
 
-        public static final double IDLE_RPM = 3200;
+        public static final double IDLE_RPM = 0;
         public static final double DUNKER_IN_RPM = 500;
 
         public static final double PASSTHROUGH_RPM = 1000;
@@ -393,19 +393,11 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kS = 0.2288;
-            SHOOTER_CONTROLLER_CONFIG.kA = 0.047935;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
-            SHOOTER_CONTROLLER_CONFIG.kI = 0;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kV = 0.117;
+            SHOOTER_CONTROLLER_CONFIG.kP = 8.5;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.0;
 
-            SHOOTER_CONTROLLER_CONFIG.kS1 = 0.2288;
-            SHOOTER_CONTROLLER_CONFIG.kA1= 0.047935;
-            SHOOTER_CONTROLLER_CONFIG.kP1= 0.1;
-            SHOOTER_CONTROLLER_CONFIG.kI1= 0;
+            SHOOTER_CONTROLLER_CONFIG.kP1= 8.5;
             SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
-            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.117;
 
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
@@ -432,7 +424,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.5;
+        public static final double INDEX_SPEED = 0.4;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -450,6 +442,22 @@ public class Constants {
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
+        }
+
+        public static final ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
+        static {
+            CLOSED_LOOP_CONFIG.SLOT = 0;
+            CLOSED_LOOP_CONFIG.kP = 20;
+            CLOSED_LOOP_CONFIG.kI = 0;
+            CLOSED_LOOP_CONFIG.kD = 0;
+            CLOSED_LOOP_CONFIG.kV = 0;
+
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            CLOSED_LOOP_CONFIG.JERK = 500;
+
+            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
     }
 

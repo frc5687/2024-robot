@@ -85,7 +85,6 @@ public class SwerveModule {
         // Steering Torque Position with exponential curve
         _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
         _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
-
         /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
@@ -207,11 +206,11 @@ public class SwerveModule {
     public void setIdealState(SwerveModuleState state) {
         state = SwerveModuleState.optimize(state, _internalState.angle);
         _goal = state;
-        if (Math.abs(state.speedMetersPerSecond) < Constants.SwerveModule.IDLE_MPS_LIMIT) {
-            stopAll();
-        } else {
-            setModuleState(_goal);
-        }
+        // if (Math.abs(state.speedMetersPerSecond) < Constants.SwerveModule.IDLE_MPS_LIMIT) {
+            // setModuleState(new SwerveModuleState(0.0, _goal.angle));
+        // } else {
+        setModuleState(_goal);
+        // }
     }
 
     private double calculateWantedSpeed(SwerveModuleState state) {

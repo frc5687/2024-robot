@@ -14,20 +14,20 @@ public class SwerveHeadingController {
 
     private HeadingState _headingState;
     private Rotation2d _targetHeading;
-    private final PIDController _PIDController;
+    private final ProfiledPIDController _PIDController;
 
     private long _disableTime;
 
     public SwerveHeadingController(double kDt) {
         _PIDController =
-                new PIDController(
+                new ProfiledPIDController(
                         Constants.DriveTrain.MAINTAIN_kP,
                         Constants.DriveTrain.MAINTAIN_kI,
-                        Constants.DriveTrain.MAINTAIN_kD);
-                        // new TrapezoidProfile.Constraints(
-                        //         Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                        //         Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
-                        // kDt);
+                        Constants.DriveTrain.MAINTAIN_kD,
+                        new TrapezoidProfile.Constraints(
+                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
+                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
+                        kDt);
                 
         _PIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;
