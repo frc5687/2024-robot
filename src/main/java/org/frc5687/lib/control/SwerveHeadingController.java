@@ -3,11 +3,9 @@ package org.frc5687.lib.control;
 
 import org.frc5687.robot.Constants;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // rewritten (probably poorly) by xavier bradford 03/09/24
 public class SwerveHeadingController {
@@ -15,20 +13,16 @@ public class SwerveHeadingController {
     // state machine
     private HeadingState _headingState;
     private Rotation2d _targetHeading;
-    private final ProfiledPIDController _PIDController;
+    private final PIDController _PIDController;
 
     // the timestamp at which the heading controller will enable again (after being temporarily disabled)
     private long _disableTime;
 
     public SwerveHeadingController(double kDt) {
-        _PIDController = new ProfiledPIDController(
+        _PIDController = new PIDController(
             Constants.DriveTrain.HEADING_kP,
             Constants.DriveTrain.HEADING_kI,
-            Constants.DriveTrain.HEADING_kD,
-            new TrapezoidProfile.Constraints(
-                    Constants.DriveTrain.MAX_ANG_VEL,
-                    Constants.DriveTrain.MAX_ANG_ACC),
-            kDt);
+            Constants.DriveTrain.HEADING_kD);
                 
         _PIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;
@@ -89,10 +83,6 @@ public class SwerveHeadingController {
             power = 0.0;
         }
         return power;
-    }
-
-    public void updateDashboard() {
-        // SmartDashboard.putNumber("SwerveHeadingController/MotionMagic");
     }
 
     public enum HeadingState {
