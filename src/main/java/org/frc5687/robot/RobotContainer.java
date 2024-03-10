@@ -3,24 +3,10 @@ package org.frc5687.robot;
 
 import java.util.Optional;
 
-import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
-import org.frc5687.robot.commands.Dunker.IdleDunker;
-import org.frc5687.robot.commands.Intake.AutoIntake;
-import org.frc5687.robot.commands.Intake.IdleIntake;
-import org.frc5687.robot.commands.Intake.IntakeCommand;
-import org.frc5687.robot.commands.Shooter.AutoShoot;
-import org.frc5687.robot.commands.Shooter.IdleShooter;
-import org.frc5687.robot.commands.Shooter.Shoot;
-import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.robot.subsystems.Dunker;
-import org.frc5687.robot.subsystems.Intake;
-import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
-import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
@@ -47,11 +33,6 @@ public class RobotContainer extends OutliersContainer {
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
-    private Shooter _shooter;
-    private Intake _intake;
-    private Dunker _dunker;
-    private Climber _climber;
-    private Lights _lights;
 
     private Field2d _field;
 
@@ -89,19 +70,7 @@ public class RobotContainer extends OutliersContainer {
         // Grab instance such that we can initalize with drivetrain and processor
         _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
 
-        _shooter = new Shooter(this);
-        _intake = new Intake(this);
-        _dunker = new Dunker(this);
-
-        _climber = new Climber(this);
-        _lights = new Lights(this);
-
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
-        setDefaultCommand(_shooter, new IdleShooter(_shooter, _dunker));
-        setDefaultCommand(_dunker, new IdleDunker(_dunker));
-        setDefaultCommand(_intake, new IdleIntake(_intake));
-        setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState));
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -109,7 +78,7 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
+        _oi.initializeButtons(_driveTrain, _visionProcessor, _robotState);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
@@ -187,8 +156,6 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState));
-        NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
 
     }
 }

@@ -263,12 +263,6 @@ public class RobotState {
         return initialVelocity; 
     }
 
-
-    // edit this as needed to reflect the optimal range to shoot from
-    public boolean isWithinOptimalRange() {
-        return getDistanceAndAngleToSpeaker().getFirst() < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_THRESHOLD;
-    }
-
     /**
      * This changes the standard deviations to trust vision measurements less the
      * farther the machine is.

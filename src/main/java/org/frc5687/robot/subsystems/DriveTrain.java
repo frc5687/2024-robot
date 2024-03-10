@@ -314,18 +314,6 @@ public class DriveTrain extends OutliersSubsystem {
         _headingController.setMaintainHeading(getHeading());
     }
 
-    public void incrementHeadingControllerAngle() {
-        Rotation2d heading = getHeading();
-        _headingController.setMaintainHeading(
-                Rotation2d.fromDegrees(heading.getDegrees() + Constants.DriveTrain.BUMP_DEGREES));
-    }
-
-    public void decrementHeadingControllerAngle() {
-        Rotation2d heading = getHeading();
-        _headingController.setMaintainHeading(
-                Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
-    }
-
     public void setSnapHeading(Rotation2d heading) {
         _headingController.setSnapHeading(heading);
     }
