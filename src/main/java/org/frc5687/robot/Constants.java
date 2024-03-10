@@ -268,7 +268,7 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 5.0;
+        public static final double HEADING_kP = 4.8;
         public static final double HEADING_kI = 0.0;
         public static final double HEADING_kD = 0.3;
 
@@ -344,11 +344,11 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 30;
 
         public static final double IDLE_RPM = 0;
-        public static final double DUNKER_IN_RPM = 500;
+        public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 1000;
 
-        public static final double EJECT_PERCENT_OUTPUT = 0.75;
+        public static final double EJECT_PERCENT_OUTPUT = 1.0; // 0.75
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
@@ -411,7 +411,7 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             // not sure which limit it is
-            CONFIG.MAX_SUPPLY_CURRENT = 60;
+            CONFIG.MAX_SUPPLY_CURRENT = 120;
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
@@ -525,7 +525,7 @@ public class Constants {
             DRIVE_CLOSED_LOOP_CONFIG.kP = 0.25;
             DRIVE_CLOSED_LOOP_CONFIG.kI = 0;
             DRIVE_CLOSED_LOOP_CONFIG.kD = 0.0001;
-            DRIVE_CLOSED_LOOP_CONFIG.kV = 0.1;
+            DRIVE_CLOSED_LOOP_CONFIG.kV = 0.12;
 
             DRIVE_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 6000;
             DRIVE_CLOSED_LOOP_CONFIG.ACCELERATION = 1000;

@@ -1,16 +1,8 @@
 package org.frc5687.robot.commands.Shooter;
 
-import java.util.Optional;
-
-import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.subsystems.Dunker;
-import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class RevShooter extends OutliersCommand{
     private Shooter _shooter;
@@ -25,6 +17,7 @@ public class RevShooter extends OutliersCommand{
         super.initialize();
     }
     public void execute() {
+        // FIXME this might be broken on red or blue alliance in autos. it might not realize it's on the correct alliance and therefore will not rev, leading to a difficult to debug problem where autos run slower on one side than the other. - xavier bradford 03/09/24
         double distance = _robotState.getDistanceAndAngleToSpeaker().getFirst();
         _shooter.setRPMFromDistance(distance);
     }
