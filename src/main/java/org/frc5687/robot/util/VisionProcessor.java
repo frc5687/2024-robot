@@ -1,56 +1,30 @@
 package org.frc5687.robot.util;
 
-import org.zeromq.SocketType;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQException;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.zeromq.*;
 import org.frc5687.Messages.*;
-import java.nio.ByteOrder;
+
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
-
-public class VisionProcessor {
-    private final ZMQ.Context context;
-    private final Map<String, ZMQ.Socket> subscribers = new HashMap<>();
-    private final Map<String, ZMQ.Socket> publishers = new HashMap<>();
-    private volatile boolean running = false;
-    private boolean firstRun = true;
-    private ReentrantLock _mtx;
-
-    private VisionPoseArray _detectedObjects = new VisionPoseArray();
-
-    private final Notifier _receiveNotifier =
-            new Notifier(
-                    () -> {
-                        synchronized (VisionProcessor.this) {
-                            if (firstRun) {
-                                firstRunSetup();
-                                firstRun = false;
-                            }
-                            receive();
-                        }
-                    });
+public class VisionProcessor extends SubsystemBase {
+    private final ZContext context;
+    private final ConcurrentHashMap<String, ZMQ.Socket> subscribers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ZMQ.Socket> publishers = new ConcurrentHashMap<>();
+    private volatile VisionPoseArray _detectedObjects = new VisionPoseArray();
+    
+    private final ConcurrentLinkedQueue<ByteBuffer> byteBufferPool = new ConcurrentLinkedQueue<>();
 
     public VisionProcessor() {
-        context = ZMQ.context(1);
-        _mtx = new ReentrantLock();
-    }
-
-    private void firstRunSetup() {
-        Thread.currentThread().setPriority(2);
-        Thread.currentThread().setName("Vision Thread");
+        context = new ZContext();
     }
 
     public void createSubscriber(String subscriberName, String... topics) {
-        ZMQ.Socket subscriber = context.socket(SocketType.SUB);
+        ZMQ.Socket subscriber = context.createSocket(SocketType.SUB);
         for (String topic : topics) {
-            subscriber.subscribe(topic.getBytes());
+            subscriber.subscribe(topic);
         }
         subscriber.setReceiveTimeOut(1000);
         subscribers.put(subscriberName, subscriber);
@@ -63,64 +37,50 @@ public class VisionProcessor {
         }
     }
 
-    public synchronized void createPublisher(String topic, String addr) {
-        ZMQ.Socket publisher = context.socket(SocketType.PUB);
+    public void createPublisher(String topic, String addr) {
+        ZMQ.Socket publisher = context.createSocket(SocketType.PUB);
         publisher.bind(addr);
         publishers.put(topic, publisher);
     }
 
-    public void start() {
-        running = true;
-        _receiveNotifier.startPeriodic(0.02);
-    }
-
-    public void stop() {
-        running = false;
-        _receiveNotifier.stop();
-    }
-
-    private void receive() {
-        subscribers.values().forEach(this::processSubscriber);
+    @Override
+    public void periodic() {
+        for (ZMQ.Socket subscriber : subscribers.values()) {
+            String topic = subscriber.recvStr();
+            if (topic != null) {
+                byte[] data = subscriber.recv();
+                if (data != null && "Objects".equals(topic)) {
+                    ByteBuffer bb = getByteBuffer(data.length);
+                    bb.put(data);
+                    bb.flip();
+                    _detectedObjects = VisionPoseArray.getRootAsVisionPoseArray(bb);
+                    releaseByteBuffer(bb);
+                }
+            }
+        }
     }
 
     public VisionPoseArray getDetectedObjects() {
-        try {
-            _mtx.lock();
-            return _detectedObjects;
-        } finally {
-            _mtx.unlock();
-        }
+        return _detectedObjects;
     }
 
-    public void processSubscriber(ZMQ.Socket subscriber) {
-        try {
-            String topic = subscriber.recvStr();
-            // DriverStation.reportError("Topic found: "+ topic, false);
-            if (topic != null) {
-                byte[] data = subscriber.recv();
-                if (data != null) {
-                    switch (topic) {
-                        case "Objects":
-                            try {
-                                _mtx.lock();
-                                ByteBuffer bb = ByteBuffer.wrap(data);
-                                bb.order(ByteOrder.LITTLE_ENDIAN);
-                                _detectedObjects = VisionPoseArray.getRootAsVisionPoseArray(bb);
-                            } finally {
-                                _mtx.unlock();
-                            }
-                            break;
-                    }
-                }
-            }
-        } catch (ZMQException e) {
-            if (e.getErrorCode() == ZMQ.Error.EAGAIN.getCode()) {
-                // No message received within the timeout period
-                // DriverStation.reportError("No AprilTags message received within the timeout period", false);
-            } else {
-                // Handle other ZMQ exceptions
-                e.printStackTrace();
-            }
+    public void close() {
+        subscribers.values().forEach(ZMQ.Socket::close);
+        publishers.values().forEach(ZMQ.Socket::close);
+        context.close();
+    }
+    
+    private ByteBuffer getByteBuffer(int capacity) {
+        ByteBuffer bb = byteBufferPool.poll();
+        if (bb == null || bb.capacity() < capacity) {
+            bb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.LITTLE_ENDIAN);
+        } else {
+            bb.clear();
         }
+        return bb;
+    }
+    
+    private void releaseByteBuffer(ByteBuffer bb) {
+        byteBufferPool.offer(bb);
     }
 }

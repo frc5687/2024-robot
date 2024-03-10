@@ -69,15 +69,14 @@ public class RobotContainer extends OutliersContainer {
         _oi = new OI();
         // create the vision processor
         _visionProcessor = new VisionProcessor();
-        // subscribe to a vision topic for the correct data
-        _visionProcessor.createSubscriber("BackZed", "Objects");
-        _visionProcessor.connectSubscriber("BackZed", "tcp://10.56.87.20:5557");
-        _visionProcessor.start();
+
+        _visionProcessor.createSubscriber("Objects", "Objects");
+        _visionProcessor.connectSubscriber("Objects", "tcp://10.56.87.20:5557");
+        //_visionProcessor.start();
 
         _field = new Field2d();
 
         _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
@@ -85,7 +84,6 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-
         // Grab instance such that we can initalize with drivetrain and processor
         _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
 
@@ -117,15 +115,7 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
-        var notes = _robotState.getAllNotesRelativeField();
-        int i = 0;
-        if (notes.isPresent()) {
-            for (var note : notes.get()) {
-                _field.getObject("note_"+i).setPose(note);
-                i++;
-            }
-        }
-
+        // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
         //     Pose2d notePose = optionalClosestNote.get();

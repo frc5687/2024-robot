@@ -144,8 +144,8 @@ public class DriveTrain extends OutliersSubsystem {
             OutliersContainer container,
             Pigeon2 imu) {
         super(container);
-        SignalLogger.setPath("/home/lvuser/logs");
-        SignalLogger.start();
+        // SignalLogger.setPath("/home/lvuser/logs");
+        // SignalLogger.start();
 
         _shift = new DoubleSolenoid(
                 PneumaticsModuleType.REVPH,
