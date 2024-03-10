@@ -70,10 +70,6 @@ public abstract class OutliersContainer implements ILoggingSource {
         _manager.removeSubsystem(subsystem);
     }
 
-    public void startPeriodic() {
-        _manager.startPeriodic();
-    }
-
     public void updateDashboard() {
         _manager.updateDashboard();
     }

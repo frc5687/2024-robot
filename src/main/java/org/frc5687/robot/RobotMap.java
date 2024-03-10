@@ -18,12 +18,6 @@ public class RobotMap {
 
             // Ordered in order of CAN connection in loop.
 
-            public static final int INTAKE = 8;
-            public static final int DEFLECTOR = 9;
-
-            public static final int BOTTOM_SHOOTER = 10;
-            public static final int TOP_SHOOTER = 11;
-
             public static final int SOUTH_EAST_ROTATION = 0;
             public static final int SOUTH_EAST_TRANSLATION = 1;
             public static final int NORTH_EAST_ROTATION = 2;
@@ -67,6 +61,9 @@ public class RobotMap {
     public static class PCM {
         public static final int SHIFTER_HIGH = 3; // these values may be flip-flopped
         public static final int SHIFTER_LOW = 2;
+
+        public static final int RATCHET_RAISE = 4;
+        public static final int RATCHET_LOWER = 5;
     }
 
     /**
@@ -93,10 +90,14 @@ public class RobotMap {
      * unique.
      */
     public static class DIO {
-        public static int LOWER_HALL = 0; // CHANGE THIS!!!
-        public static int UPPER_HALL = 9; // CHANGE THIS!!!
-
-        public static int DONUT_SENSOR = 8;
+        // IS THIS A 5687 REFERENCE?!?!?!?!?!?!?
+        public static final int DUNKER_ABS_ENCODER = 5;
+        public static final int DUNKER_PROXIMITY_SENSOR = 6;
+        
+        public static final int BOTTOM_DONUT_SENSOR = 8;
+        public static final int TOP_DONUT_SENSOR = 7;
+        
+        public static final int LOWER_HALL = 9;
 
     }
 }
