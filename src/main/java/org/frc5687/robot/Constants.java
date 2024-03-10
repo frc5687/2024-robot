@@ -421,7 +421,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.4;
+        public static final double INDEX_SPEED = 0.3;
         public static final double REVERSE_INDEX_SPEED = -0.2;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -537,7 +537,7 @@ public class Constants {
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
         public static final double PREP_ANGLE = 2.3;
-        public static final double DUNK_ANGLE = 3.4;
+        public static final double DUNK_ANGLE = 3.025;
         public static final double STOWED_ANGLE = 5.18;
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
