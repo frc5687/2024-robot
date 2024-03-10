@@ -13,7 +13,9 @@ import org.frc5687.robot.util.VisionProcessor;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
@@ -44,8 +46,8 @@ public class OI extends OutliersProxy {
         _povButtonDown = new Trigger(() -> _driverGamepad.getPOV() == 180);
         _opPovButtonDown = new Trigger(() -> _operatorGamepad.getPOV() == 180);
         _opPovButtonRight = new Trigger(() -> _operatorGamepad.getPOV() == 90);
-        _opPovButtonUp = new Trigger(() -> _operatorGamepad.getPOV() == 270);
-        _opPovButtonLeft = new Trigger(() -> _operatorGamepad.getPOV() == 0);
+        _opPovButtonUp = new Trigger(() -> _operatorGamepad.getPOV() == 0);
+        _opPovButtonLeft = new Trigger(() -> _operatorGamepad.getPOV() == 270);
 
         _driverLeftTrigger = new Trigger(
                 new AxisButton(_driverGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), 0.05)::get);
@@ -63,17 +65,22 @@ public class OI extends OutliersProxy {
             RobotState robotState) {
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
-        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
+        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
     }
 
     public boolean shiftDown() {
-        return _driverGamepad.getLeftBumper().getAsBoolean();
+        // return _driverGamepad.getLeftBumper().getAsBoolean();
+        return false;
     }
 
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();
+    }
+
+    public boolean isShooting() {
+        return _driverRightTrigger.getAsBoolean();
     }
 
     public boolean shiftUp() {

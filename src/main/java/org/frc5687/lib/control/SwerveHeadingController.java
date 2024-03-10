@@ -3,98 +3,76 @@ package org.frc5687.lib.control;
 
 import org.frc5687.robot.Constants;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-// use 1323's Swerve heading controller
+// rewritten (probably poorly) by xavier bradford 03/09/24
 public class SwerveHeadingController {
 
+    // state machine
     private HeadingState _headingState;
     private Rotation2d _targetHeading;
-    private final ProfiledPIDController _PIDController;
+    private final PIDController _PIDController;
 
+    // the timestamp at which the heading controller will enable again (after being temporarily disabled)
     private long _disableTime;
 
     public SwerveHeadingController(double kDt) {
-        _PIDController =
-                new ProfiledPIDController(
-                        Constants.DriveTrain.MAINTAIN_kP,
-                        Constants.DriveTrain.MAINTAIN_kI,
-                        Constants.DriveTrain.MAINTAIN_kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
-                        kDt);
+        _PIDController = new PIDController(
+            Constants.DriveTrain.HEADING_kP,
+            Constants.DriveTrain.HEADING_kI,
+            Constants.DriveTrain.HEADING_kD);
+                
         _PIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;
         _targetHeading = new Rotation2d();
         _disableTime = System.currentTimeMillis();
     }
 
-    public HeadingState getHeadingState() {
-        return _headingState;
-    }
-
-    public void setState(HeadingState state) {
-        _headingState = state;
-    }
-
     public void disable() {
-        setState(HeadingState.OFF);
+        _headingState = HeadingState.OFF;
     }
 
+    /**
+     * Temporarily disable the heading controller. It will be reenabled after a small amount of time.
+     * 
+     * @see Constants.DriveTrain.DISABLE_TIME
+     */
     public void temporaryDisable() {
         _disableTime = System.currentTimeMillis() + Constants.DriveTrain.DISABLE_TIME;
-        setState(HeadingState.TEMPORARY_DISABLE);
+        _headingState = HeadingState.TEMPORARY_DISABLE;
     }
 
-    public void setMaintainHeading(Rotation2d heading) {
+    /**
+     * Sets the target heading of the heading controller and enables it.
+     * @param targetHeading the heading to hold.
+     */
+    public void goToHeading(Rotation2d heading) {
         _targetHeading = heading;
-        setState(HeadingState.MAINTAIN);
-    }
-
-    public void setVisionHeading(Rotation2d heading) {
-        _targetHeading = heading;
-        setState(HeadingState.VISION);
-    }
-
-    public void setSnapHeading(Rotation2d heading) {
-        _targetHeading = heading;
-        setState(HeadingState.SNAP);
+        _headingState = HeadingState.ON;
     }
 
     public Rotation2d getTargetHeading() {
         return _targetHeading;
     }
 
-    public void setTargetHeading(Rotation2d targetHeading) {
-        _targetHeading = targetHeading;
-    }
-
+    /**
+     * Get the output of the PID controller given a certain input.
+     * 
+     * @param heading The current heading of the drivetrain. This could be a gyro value or a vision value or some combination of both.
+     * @return The "power" that the heading controller outputs.
+     */
     public double getRotationCorrection(Rotation2d heading) {
         double power = 0;
         switch (_headingState) {
-            case OFF:
-                break;
             case TEMPORARY_DISABLE:
                 _targetHeading = heading;
                 if (System.currentTimeMillis() > _disableTime) {
-                    setState(HeadingState.MAINTAIN);
+                    _headingState = HeadingState.ON;
                 }
-            case MAINTAIN:
-                _PIDController.setPID(
-                        Constants.DriveTrain.MAINTAIN_kP,
-                        Constants.DriveTrain.MAINTAIN_kI,
-                        Constants.DriveTrain.MAINTAIN_kD);
-                power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
-                break;
-            case SNAP:
-                _PIDController.setPID(
-                        Constants.DriveTrain.SNAP_kP,
-                        Constants.DriveTrain.SNAP_kI,
-                        Constants.DriveTrain.SNAP_kD);
+            break;
+            case ON:
                 power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
                 break;
             default:
@@ -110,9 +88,7 @@ public class SwerveHeadingController {
     public enum HeadingState {
         OFF(0),
         TEMPORARY_DISABLE(1),
-        MAINTAIN(2),
-        SNAP(3),
-        VISION(4);
+        ON(2);
 
         private final int _value;
 

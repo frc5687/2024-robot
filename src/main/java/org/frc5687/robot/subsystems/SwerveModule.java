@@ -11,6 +11,10 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -23,13 +27,23 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Swerve Module Code Created in the shadow of
 // the death of diffy swerve by Linus Krenkel
 // using VelocityFOC and PositionVoltage 
 public class SwerveModule {
+
+    public static class ModuleConfiguration {
+        public String moduleName = "";
+
+        public Translation2d position = new Translation2d();
+
+        public double encoderOffset = 0.0;
+        public boolean encoderInverted = false;
+
+        public String canBus = "CANivore";
+    }
 
     private final OutliersTalon _driveMotor;
     private final OutliersTalon _steeringMotor;
@@ -46,6 +60,8 @@ public class SwerveModule {
     private StatusSignal<Double> _steeringPositionRotations;
 
     private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
+    private MotionMagicExpoTorqueCurrentFOC _angleTorqueExpo;
+    private MotionMagicTorqueCurrentFOC _angleTorque;
 
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
@@ -57,12 +73,19 @@ public class SwerveModule {
     private boolean _isLowGear;
     private String _moduleName;
 
+
     public SwerveModule(
             SwerveModule.ModuleConfiguration config,
             int steeringMotorID,
             int driveMotorID,
             int encoderPort) {
-
+        /* Control Requests */
+        // Driving Torque Velocity
+        _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
+        // Steering Torque Position with exponential curve
+        _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
+        _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
+        /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
         _driveMotor.configureClosedLoop(Constants.SwerveModule.DRIVE_CONTROLLER_CONFIG);
@@ -70,10 +93,18 @@ public class SwerveModule {
         _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
         _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
         _steeringMotor.configureClosedLoop(Constants.SwerveModule.STEER_CONTROLLER_CONFIG);
-        _isLowGear = false;
 
-        _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, 0, true, false, false);
-        // _positionVoltage = new PositionVoltage(0.0);
+        // MotionMagicConfigs motionMagicConfigs= new MotionMagicConfigs();
+        // motionMagicConfigs.MotionMagicCruiseVelocity = 0; 
+        // motionMagicConfigs.MotionMagicAcceleration = 0;
+        // motionMagicConfigs.MotionMagicCruiseVelocity  = 100.0;
+        // motionMagicConfigs.MotionMagicAcceleration = motionMagicConfigs.MotionMagicCruiseVelocity / 0.100;
+        // motionMagicConfigs.MotionMagicExpo_kV = 0.012;
+        //  motionMagicConfigs.MotionMagicExpo_kA = 0.001;
+
+        // _steeringMotor.getConfigurator().apply(motionMagicConfigs);
+
+        _isLowGear = false;
 
         _encoder = new CANcoder(encoderPort, config.canBus);
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
@@ -91,6 +122,7 @@ public class SwerveModule {
         feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         // feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
+
 
         _steeringMotor.configureFeedback(feedback);
 
@@ -124,6 +156,12 @@ public class SwerveModule {
         _signals[3] = _steeringPositionRotations;
     }
 
+    public void setControlRequestUpdateFrequency(double updateFreqHz) {
+        _velocityTorqueCurrentFOC.UpdateFreqHz = updateFreqHz;
+        _angleTorque.UpdateFreqHz = updateFreqHz;
+        _angleTorqueExpo.UpdateFreqHz = updateFreqHz;
+    }
+
     public void refreshSignals() {
         _drivePositionRotations.refresh();
         _driveVelocityRotationsPerSec.refresh();
@@ -147,10 +185,10 @@ public class SwerveModule {
 
     private SwerveModulePosition calculatePosition() {
         double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-
-        double distanceMeters = currentEncoderRotations * 2.0 * 3.14159265 / getGearRatio() * Constants.SwerveModule.WHEEL_RADIUS ;
+        double distanceMeters = currentEncoderRotations * 2.0 * Math.PI / getGearRatio() * Constants.SwerveModule.WHEEL_RADIUS ;
         double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
                 _steeringVelocityRotationsPerSec);
+
         _internalState.distanceMeters = distanceMeters;
         _internalState.angle = Rotation2d.fromRotations(angle_rot);
 
@@ -166,9 +204,13 @@ public class SwerveModule {
     }
 
     public void setIdealState(SwerveModuleState state) {
-        state = SwerveModuleState.optimize(state, getCanCoderAngle());
+        state = SwerveModuleState.optimize(state, _internalState.angle);
         _goal = state;
+        // if (Math.abs(state.speedMetersPerSecond) < Constants.SwerveModule.IDLE_MPS_LIMIT) {
+            // setModuleState(new SwerveModuleState(0.0, _goal.angle));
+        // } else {
         setModuleState(_goal);
+        // }
     }
 
     private double calculateWantedSpeed(SwerveModuleState state) {
@@ -176,20 +218,29 @@ public class SwerveModule {
     }
 
     public void setModuleState(SwerveModuleState state) {
-        if (Math.abs(state.speedMetersPerSecond) < Constants.SwerveModule.IDLE_MPS_LIMIT) {
-            stopAll();
-        } else {
-            _stateMPS = state.speedMetersPerSecond;
-            _wantedSpeed = calculateWantedSpeed(state);
-            double position = state.angle.getRotations();
+        _stateMPS = state.speedMetersPerSecond;
+        _wantedSpeed = calculateWantedSpeed(state);
 
-            _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
-            _steeringMotor.setPositionVoltage(position);
-            SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
-            SmartDashboard.putNumber("/wantedPosition", position);
-        }
+        // skew correction logic, team 900 paper, used in CTRE Swerve
+        double steerMotorError = state.angle.minus(getCanCoderAngle()).getRadians();
+        double cosineScalar = Math.cos(steerMotorError);
+        cosineScalar = Math.max(cosineScalar, 0.0); // Ensure it does not invert drive
+        _wantedSpeed *= cosineScalar;
+
+        double position = state.angle.getRotations();
+
+        _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
+        _steeringMotor.setPositionVoltage(position);
+        // This is too slow for me :(
+        // Use new torque exponential curve
+        // _steeringMotor.setControl(_angleTorqueExpo.withPosition(position));
+        // _steeringMotor.setControl(_angleTorque.withPosition(position));
+
+        // For debugging
+        SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
+        SmartDashboard.putNumber("/wantedPosition", position);
+        SmartDashboard.putNumber("/cosineScalar", cosineScalar);
     }
-
     private void transformEncoderFromHighGearToLowGear() {
         refreshSignals();
         double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
@@ -250,13 +301,11 @@ public class SwerveModule {
     private void setLowGear() {
         _isLowGear = true;
         _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(0);
-        DriverStation.reportError("Setting Low Gear", false);
     }
 
     private void setHighGear() {
         _isLowGear = false;
         _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);
-        DriverStation.reportError("Setting High Gear", false);
     }
 
     public double getDriveRPM() {
@@ -280,7 +329,7 @@ public class SwerveModule {
     }
 
     public double getWheelAngularVelocity() {
-        return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM()   / getGearRatio());
+        return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM() / getGearRatio());
     }
 
     public Translation2d getModuleLocation() {
@@ -304,6 +353,20 @@ public class SwerveModule {
         _steeringMotor.setPosition(0);
     }
 
+    public void applyCharacterization(Rotation2d steerTarget, double voltage){
+        double angle = steerTarget.getRotations();
+        _steeringMotor.setControl(_angleTorqueExpo.withPosition(angle));
+        setDriveMotorVoltage(voltage);
+    }
+
+    public void setDriveMotorVoltage(double voltage) {
+        _driveMotor.setVoltage(voltage);
+    }
+
+    public void setSteerMotorVoltage(double voltage) {
+        _steeringMotor.setVoltage(voltage);
+    }
+
     public void updateDashboard() {
         SmartDashboard.putNumber(_moduleName + "/moduleAngle", getEncoderAngleDouble());
         SmartDashboard.putNumber(_moduleName + "/driveRPM", getDriveRPM());
@@ -311,6 +374,7 @@ public class SwerveModule {
         SmartDashboard.putBoolean(_moduleName + "/isLowGear", _isLowGear);
         SmartDashboard.putNumber(_moduleName + "/wantedSpeed", _wantedSpeed);
 
+        SmartDashboard.putNumber(_moduleName + "/wantedWheelVelocity", _stateMPS);
         SmartDashboard.putNumber(_moduleName + "/wheelVelocity", getWheelVelocity());
         SmartDashboard.putNumber(_moduleName + "/wheelAngularVelocity", getWheelAngularVelocity());
         SmartDashboard.putNumber(_moduleName + "/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
@@ -321,16 +385,5 @@ public class SwerveModule {
 
         SmartDashboard.putNumber(_moduleName + "/drivePosition", _drivePositionRotations.getValue());
         SmartDashboard.putNumber(_moduleName + "/distance", getDistance());
-    }
-
-    public static class ModuleConfiguration {
-        public String moduleName = "";
-
-        public Translation2d position = new Translation2d();
-
-        public double encoderOffset = 0.0;
-        public boolean encoderInverted = false;
-
-        public String canBus = "CANivore";
     }
 }

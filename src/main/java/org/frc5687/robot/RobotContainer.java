@@ -18,7 +18,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -86,6 +85,7 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+        // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
         //     Pose2d notePose = optionalClosestNote.get();
@@ -105,10 +105,12 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
+        _robotState.useTeleopStandardDeviations();
     }
 
     @Override
     public void autonomousInit() {
+        _robotState.useAutoStandardDeviations();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -156,6 +158,5 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
-
     }
 }

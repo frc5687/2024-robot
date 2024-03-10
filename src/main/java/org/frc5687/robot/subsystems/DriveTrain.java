@@ -1,17 +1,16 @@
 package org.frc5687.robot.subsystems;
 
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_kD;
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_kI;
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_kP;
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
-import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kD;
-import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kI;
-import static org.frc5687.robot.Constants.DriveTrain.MAINTAIN_kP;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
 import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
 
 import java.util.Optional;
 
 import org.frc5687.lib.control.SwerveHeadingController;
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -21,6 +20,7 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -110,7 +110,8 @@ public class DriveTrain extends OutliersSubsystem {
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
 
-    private final BaseStatusSignal[] _moduleSignals;
+
+    private final BaseStatusSignal[] _signals;
 
     private final SwerveDriveKinematics _kinematics;
 
@@ -129,7 +130,6 @@ public class DriveTrain extends OutliersSubsystem {
     private long _shiftTime = 0;
 
     private boolean _hasShiftInit = false;
-    private boolean _lockHeading = false;
     private boolean _isLowGear;
 
     private final SystemIO _systemIO;
@@ -139,10 +139,13 @@ public class DriveTrain extends OutliersSubsystem {
 
     private boolean _fieldCentric = true;
 
+
     public DriveTrain(
             OutliersContainer container,
             Pigeon2 imu) {
         super(container);
+        SignalLogger.setPath("/home/lvuser/logs");
+        SignalLogger.start();
 
         _shift = new DoubleSolenoid(
                 PneumaticsModuleType.REVPH,
@@ -184,17 +187,22 @@ public class DriveTrain extends OutliersSubsystem {
 
         // module CAN bus sensor outputs (position, velocity of each motor) all of them
         // are called once per loop at the start.
-        _moduleSignals = new BaseStatusSignal[NUM_MODULES * 4];
+        _signals = new BaseStatusSignal[NUM_MODULES * 4 + 3];
         for (int i = 0; i < NUM_MODULES; ++i) {
             var signals = _modules[i].getSignals();
-            _moduleSignals[(i * 4)] = signals[0];
-            _moduleSignals[(i * 4) + 1] = signals[1];
-            _moduleSignals[(i * 4) + 2] = signals[2];
-            _moduleSignals[(i * 4) + 3] = signals[3];
+            _signals[(i * 4)] = signals[0];
+            _signals[(i * 4) + 1] = signals[1];
+            _signals[(i * 4) + 2] = signals[2];
+            _signals[(i * 4) + 3] = signals[3];
         }
+        _signals[NUM_MODULES * 4] = _imu.getYaw();
+        _signals[NUM_MODULES * 4 + 1] = _imu.getPitch();
+        _signals[NUM_MODULES * 4 + 2] = _imu.getRoll();
+  
 
         // frequency in Hz
         configureSignalFrequency(250);
+        // configureModuleControlFrequency(1000); 
 
         // configure startup offset
         _yawOffset = _imu.getYaw().getValue(); 
@@ -223,16 +231,15 @@ public class DriveTrain extends OutliersSubsystem {
             new PIDController(
                     Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
             new ProfiledPIDController(
-                    MAINTAIN_kP,
-                    MAINTAIN_kI,
-                    MAINTAIN_kD,
+                    HEADING_kP,
+                    HEADING_kI,
+                    HEADING_kD,
                     new TrapezoidProfile.Constraints(
-                            Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                            Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
+                            Constants.DriveTrain.MAX_ANG_VEL,
+                            Constants.DriveTrain.MAX_ANG_ACC)));
 
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
-        _lockHeading = false;
         _isLowGear = true;
 
         zeroGyroscope();
@@ -246,13 +253,11 @@ public class DriveTrain extends OutliersSubsystem {
         AutoBuilder.configureHolonomic(
                 _robotState::getEstimatedPose, // Robot pose supplier
                 _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
-                // FIXME: this might be field relative
                 this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                // FIXME: this might be field relative
                 this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(10.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.5, 0.0, 0.0), // Rotation PID constants
+                        new PIDConstants(3.3, 0.0, 0.05), // Translation PID constants
+                        new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI, Constants.DriveTrain.HEADING_kD), // Rotation PID constants
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -274,35 +279,29 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     protected void configureSignalFrequency(double frequency) {
-        for (var signal : _moduleSignals) {
+        for (var signal : _signals) {
             signal.setUpdateFrequency(frequency);
         }
-        _imu.getYaw().setUpdateFrequency(frequency);
-        _imu.getPitch().setUpdateFrequency(frequency);
-        _imu.getRoll().setUpdateFrequency(frequency);
-        _imu.getAngularVelocityZDevice().setUpdateFrequency(frequency);
+    }
+
+    protected void configureModuleControlFrequency(double updateFreqHz) {
+        for (var module : _modules) {
+            module.setControlRequestUpdateFrequency(updateFreqHz);
+        }
     }
 
     public void readSignals() {
-        BaseStatusSignal.waitForAll(0.1, _moduleSignals);
+        BaseStatusSignal.waitForAll(0.1, _signals);
         readIMU();
         readModules();
     }
 
-    /* Heading Controller Start */
-    public HeadingState getHeadingControllerState() {
-        return _headingController.getHeadingState();
-    }
-
-    public void setHeadingControllerState(HeadingState state) {
-        _headingController.setState(state);
-    }
-
     public double getRotationCorrection() {
+        readIMU();
         return _headingController.getRotationCorrection(getHeading());
     }
 
-    public void temporaryDisabledHeadingController() {
+    public void temporaryDisableHeadingController() {
         _headingController.temporaryDisable();
     }
 
@@ -311,45 +310,51 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void initializeHeadingController() {
-        _headingController.setMaintainHeading(getHeading());
+        _headingController.goToHeading(getHeading());
     }
 
-    public void setSnapHeading(Rotation2d heading) {
-        _headingController.setSnapHeading(heading);
+    public void incrementHeadingControllerAngle() {
+        Rotation2d heading = getHeading();
+        _headingController.goToHeading(
+                Rotation2d.fromDegrees(heading.getDegrees() + Constants.DriveTrain.BUMP_DEGREES));
     }
 
-    public void setMaintainHeading(Rotation2d heading) {
-        _headingController.setMaintainHeading(heading);
+    public void decrementHeadingControllerAngle() {
+        Rotation2d heading = getHeading();
+        _headingController.goToHeading(
+                Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
     }
 
-    public void setLockHeading(boolean lock) {
-        _lockHeading = lock;
+    public void goToHeading(Rotation2d heading) {
+        _headingController.goToHeading(heading);
     }
 
-    public boolean isHeadingLocked() {
-        return _lockHeading;
-    }
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {
+        readIMU();
         ChassisSpeeds speeds = _poseController.calculate(
                 _robotState.getEstimatedPose(), pose, 0.0, _systemIO.heading);
-        _headingController.setMaintainHeading(pose.getRotation());
+        _headingController.goToHeading(pose.getRotation());
         speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
         _systemIO.desiredChassisSpeeds = speeds;
     }
 
     @Override
     public void periodic() {
-        super.periodic();
-
         if (!_hasShiftInit) {
             shiftDownModules();
             _hasShiftInit = true;
         }
-        readSignals();
-        updateDesiredStates();
-        setModuleStates(_systemIO.setpoint.moduleStates);
+        // State estimation thread is doing this now. Might cause issues
+        // readSignals();
+        _robotState.getWriteLock().lock();
+        try {
+            updateDesiredStates();
+            setModuleStates(_systemIO.setpoint.moduleStates);
+        } finally {
+            _robotState.getWriteLock().unlock();
+        }
     }
 
     public void setControlState(ControlState state) {
@@ -427,8 +432,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void setSetpointFromMeasuredModules() {
-        System.arraycopy(
-                _systemIO.measuredStates, 0, _systemIO.setpoint.moduleStates, 0, _modules.length);
+        System.arraycopy(_systemIO.measuredStates, 0, _systemIO.setpoint.moduleStates, 0, _modules.length);
         _systemIO.setpoint.chassisSpeeds = _kinematics.toChassisSpeeds(_systemIO.setpoint.moduleStates);
     }
 
@@ -456,17 +460,13 @@ public class DriveTrain extends OutliersSubsystem {
     }
     /* Kinematics End */
 
-    public boolean isTopSpeed() {
-        return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
-    }
-
     @Override
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
         metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
-        // moduleMetrics();
+        moduleMetrics();
     }
 
     public void moduleMetrics() {
@@ -562,7 +562,6 @@ public class DriveTrain extends OutliersSubsystem {
                 _shiftLockout = false;
             }
         }
-
     }
     /* Shift stuff end */
     
@@ -587,7 +586,6 @@ public class DriveTrain extends OutliersSubsystem {
         _yawOffset = _imu.getYaw().getValue() + rotation.getDegrees();
         readIMU();
     }
-
     public void readIMU() {
         double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
                 _imu.getAngularVelocityZDevice());

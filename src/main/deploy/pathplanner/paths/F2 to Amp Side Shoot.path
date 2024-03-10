@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4519767344255718,
-        "y": 3.498942845525176
+        "x": 8.28970984956188,
+        "y": 5.787359442017461
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7769188757261638,
-        "y": 3.3573225730142444
+        "x": 7.165158945702509,
+        "y": 6.354311170160802
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "F2"
     },
     {
       "anchor": {
-        "x": 3.12,
-        "y": 3.058135509809155
+        "x": 3.971649816519006,
+        "y": 6.482398705538152
       },
       "prevControl": {
-        "x": 2.8470638268029043,
-        "y": 3.145567553771955
+        "x": 5.63578281002716,
+        "y": 6.433246712647272
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LW_SHOOT"
+      "linkedName": "G_SHOOT_CLOSE"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.05,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,11 +57,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.14946119920681,
+    "rotation": 27.70392189480331,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": true
 }

@@ -4,7 +4,6 @@ package org.frc5687.robot.commands.DriveTrain;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
@@ -16,6 +15,7 @@ public class Drive extends OutliersCommand {
 
     private final DriveTrain _driveTrain;
     private final OI _oi;
+
     private int segmentationArray[] = new int[360 / 5];
 
     public Drive(DriveTrain driveTrain, OI oi) {
@@ -31,26 +31,14 @@ public class Drive extends OutliersCommand {
 
     @Override
     public void initialize() {
+        _driveTrain.goToHeading(_driveTrain.getHeading());
         _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
     }
 
     @Override
     public void execute() {
 
-        if (_oi.zeroIMU()) {
-            _driveTrain.zeroGyroscope();
-            _driveTrain.setHeadingControllerState(HeadingState.OFF);
-            _driveTrain.setLockHeading(false);
-        }
-
-        if (_oi.shiftUp()) {
-            _driveTrain.shiftDownModules();
-        } else if (_oi.shiftDown()) {
-            _driveTrain.shiftDownModules();
-        } else {
-            _driveTrain.autoShifter();
-        }
-
+        _driveTrain.autoShifter();
 
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
@@ -64,14 +52,8 @@ public class Drive extends OutliersCommand {
 
         rot = Math.signum(rot) * rot * rot;
 
-        if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-            if (!_driveTrain.isHeadingLocked()) {
-                _driveTrain.temporaryDisabledHeadingController();
-            }
-            _driveTrain.setLockHeading(true);
-        } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-            _driveTrain.disableHeadingController();
-            _driveTrain.setLockHeading(false);
+        if (rot != 0) {
+            _driveTrain.temporaryDisableHeadingController();
         }
 
         double controllerPower = _driveTrain.getRotationCorrection();
@@ -81,6 +63,18 @@ public class Drive extends OutliersCommand {
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
 
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
+        // set kinematics limits if shooting.
+        // if (_oi.isShooting()) {
+        // } else {
+        //     _driveTrain.setKinematicLimits(
+        //         _driveTrain.isLowGear() ? 
+        //         LOW_KINEMATIC_LIMITS :
+        //         HIGH_KINEMATIC_LIMITS
+        //     );
+        // }
+
+        // if has note and is within shooting range and is in speaker mode
+        
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(

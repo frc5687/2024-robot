@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
-    public static final double METRIC_FLUSH_PERIOD = 0.02;
+    public static final double METRIC_FLUSH_PERIOD = 5;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double CONTROL_PERIOD = 0.02; // 10 ms
     public static final double DATA_PERIOD = 0.01; // 20 ms
@@ -35,12 +35,14 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with calipers on 02/25/24
+        public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with
+                                                                               // calipers on 02/25/24
         public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.857142857142858
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0) * (16.0 / 36.0); // 4.512820512820512
+        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
+                * (16.0 / 36.0); // 4.512820512820512
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
-        public static final double IDLE_MPS_LIMIT = 0.05; // mps
+        public static final double IDLE_MPS_LIMIT = 0.005; // mps
         public static final double SHIFT_TIME_SECONDS = 0.1; // 100ms time to shift
 
         // this is the motor config for the swerve motors
@@ -55,10 +57,10 @@ public class Constants {
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
             CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
             CONFIG.MAX_STATOR_CURRENT = 120;
- 
+
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
-            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.CURRENT_DEADBAND = 0.5;
         }
 
         static {
@@ -84,20 +86,17 @@ public class Constants {
             // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
-            DRIVE_CONTROLLER_CONFIG.kP = 15.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 8.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.00;
-            DRIVE_CONTROLLER_CONFIG.kF = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.3;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.75;
+            DRIVE_CONTROLLER_CONFIG.kA = 0.0;
+            // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
-            DRIVE_CONTROLLER_CONFIG.kP1 = 45.0;
+            DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
-
-            DRIVE_CONTROLLER_CONFIG.kF1 = 0.0;
-
-            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1500;
-            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 750;
-            DRIVE_CONTROLLER_CONFIG.JERK = 1000;
+            DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -106,11 +105,7 @@ public class Constants {
             STEER_CONTROLLER_CONFIG.kP = 70;
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.7;
-            STEER_CONTROLLER_CONFIG.kF = 0.0;
-
-            STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
-            STEER_CONTROLLER_CONFIG.ACCELERATION = 4000;
-            STEER_CONTROLLER_CONFIG.JERK = 10000;
+            STEER_CONTROLLER_CONFIG.kV = 0.0;
 
             STEER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
         }
@@ -151,17 +146,16 @@ public class Constants {
         public static final double MAX_FALCON_FOC_RPM = 6080.0;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
-        public static final double MAX_LOW_GEAR_MPS = (
-            Units.rotationsPerMinuteToRadiansPerSecond(MAX_FALCON_FOC_RPM) 
-            / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
-        public static final double MAX_HIGH_GEAR_MPS = (
-            Units.rotationsPerMinuteToRadiansPerSecond(MAX_FALCON_FOC_RPM) 
-            / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+                / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
+        public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+                / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
 
         public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
 
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
+        public static final double MAX_ANG_ACC = 2.0 * Math.PI; // Max angular acceleration of robot (rads/s^2)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
         public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
@@ -210,14 +204,6 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
-        public static final KinematicLimits VISION_KINEMATIC_LIMITS = new KinematicLimits();
-
-        static {
-            VISION_KINEMATIC_LIMITS.maxDriveVelocity = 1; // m/s
-            VISION_KINEMATIC_LIMITS.maxDriveAcceleration = 5; // m/s^2
-            VISION_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
-        }
-
         /*
          * How to find offsets:
          * 
@@ -247,7 +233,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.2512;
+            NORTH_EAST_CONFIG.encoderOffset = 0.267578125;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -282,18 +268,12 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MAINTAIN_kP = 6.5;
-        public static final double MAINTAIN_kI = 0.0;
-        public static final double MAINTAIN_kD = 0.3;
+        public static final double HEADING_kP = 4.8;
+        public static final double HEADING_kI = 0.0;
+        public static final double HEADING_kD = 0.3;
 
-        public static final double SNAP_kP = 8.0;
-        public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 0.5;
-
-        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.0);
-
-        public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 4.0;
-        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 8.0;
+        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
+        public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
         // AutoAlignDriveController PID
         public static final double kP = 3.3;
@@ -320,11 +300,22 @@ public class Constants {
         public static double STATE_STD_DEV_X = 0.01;
         public static double STATE_STD_DEV_Y = 0.01;
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust
-                                                                                // more;
+                                                                                // more
 
-        public static double VISION_STD_DEV_X = 0.55;
-        public static double VISION_STD_DEV_Y = 0.55;
-        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
-                                                                                // more;
+        // we can't change the odometry stddev easily,,,, just change the vision stddev
+        // --xavier bradford 02/25/24
+        public static class Auto {
+            public static double VISION_STD_DEV_X = 0.35;
+            public static double VISION_STD_DEV_Y = 0.35;
+            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to
+                                                                                     // trust
+        }
+
+        public static class Teleop {
+            public static double VISION_STD_DEV_X = 0.15;
+            public static double VISION_STD_DEV_Y = 0.15;
+            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to
+                                                                                     // trust
+        }
     }
 }
