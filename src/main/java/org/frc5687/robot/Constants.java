@@ -37,9 +37,10 @@ public class Constants {
 
         public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with
                                                                                // calipers on 02/25/24
-        public static final double GEAR_RATIO_DRIVE_LOW = (52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.857142857142858
-        public static final double GEAR_RATIO_DRIVE_HIGH = (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
-                * (16.0 / 36.0); // 4.512820512820512
+        public static final double GEAR_RATIO_DRIVE_LOW = 9.6; //(52.0 / 13.0) * (54.0 / 42.0) * (45.0 / 15.0) * (16.0 / 36.0); // 6.857142857142858
+        public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
+        // (52.0 / 13.0) * (44.0 / 52.0) * (45.0 / 15.0)
+                // * (16.0 / 36.0); // 4.512820512820512
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         public static final double IDLE_MPS_LIMIT = 0.005; // mps
@@ -146,9 +147,9 @@ public class Constants {
         public static final double MAX_FALCON_FOC_RPM = 6080.0;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
-        public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+        public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_FALCON_FOC_RPM)
                 / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
-        public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM)
+        public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_FALCON_FOC_RPM)
                 / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
 
         public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
@@ -222,7 +223,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.0;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.094727;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -233,7 +234,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.0;
+            NORTH_EAST_CONFIG.encoderOffset = -0.087158;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -244,7 +245,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = 0.0;
+            NORTH_WEST_CONFIG.encoderOffset = 0.036621;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -255,7 +256,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.0;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.346680;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement

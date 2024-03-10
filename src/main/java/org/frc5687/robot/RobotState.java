@@ -12,7 +12,6 @@ import org.frc5687.Messages.VisionPose;
 import org.frc5687.Messages.VisionPoseArray;
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.photonvision.EstimatedRobotPose;
 
@@ -46,7 +45,6 @@ public class RobotState {
     private final Lock writeLock = stateLock.writeLock();
 
     private DriveTrain _driveTrain;
-    private PhotonProcessor _photonProcessor;
 //     private VisionProcessor _visionProcessor;
     private SwerveDrivePoseEstimator _poseEstimator;
 
@@ -67,9 +65,9 @@ public class RobotState {
         return _instance;
     }
 
-    public void initializeRobotState(DriveTrain driveTrain, PhotonProcessor photonProcessor, VisionProcessor visionProcessor) {
+    public void initializeRobotState(DriveTrain driveTrain,  VisionProcessor visionProcessor) {
         _driveTrain = driveTrain;
-        _photonProcessor = photonProcessor;
+        // _photonProcessor = photonProcessor;
         _lastTimestamp = Timer.getFPGATimestamp();
         // _robotToCamera = new Transform3d(
         //     0.381, 0.0285, 0.3556, 

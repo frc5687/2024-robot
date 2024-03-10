@@ -67,7 +67,7 @@ public class RobotContainer extends OutliersContainer {
         _driveTrain = new DriveTrain(this, _imu);
 
         // Grab instance such that we can initalize with drivetrain and processor
-        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.initializeRobotState(_driveTrain, _visionProcessor);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
 
