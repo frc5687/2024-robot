@@ -18,14 +18,6 @@ public class RobotMap {
 
             // Ordered in order of CAN connection in loop.
 
-            public static final int INTAKE = 0;
-            public static final int DUNKER_ARM = 1;
-
-            public static final int BOTTOM_SHOOTER = 2;
-            public static final int TOP_SHOOTER = 3;
-            
-            public static final int CLIMBER = 4;
-
             public static final int SOUTH_EAST_ROTATION = 0;
             public static final int SOUTH_EAST_TRANSLATION = 1;
             public static final int NORTH_EAST_ROTATION = 2;
