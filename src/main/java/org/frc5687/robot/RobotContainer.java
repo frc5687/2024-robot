@@ -70,7 +70,8 @@ public class RobotContainer extends OutliersContainer {
         // create the vision processor
         _visionProcessor = new VisionProcessor();
         // subscribe to a vision topic for the correct data
-        _visionProcessor.createSubscriber("Objects", "tcp://10.56.87.20:5556");
+        _visionProcessor.createSubscriber("BackZed", "Objects");
+        _visionProcessor.connectSubscriber("BackZed", "tcp://10.56.87.20:5557");
         _visionProcessor.start();
 
         _field = new Field2d();
@@ -116,7 +117,15 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
-        // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
+        var notes = _robotState.getAllNotesRelativeField();
+        int i = 0;
+        if (notes.isPresent()) {
+            for (var note : notes.get()) {
+                _field.getObject("note_"+i).setPose(note);
+                i++;
+            }
+        }
+
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
         //     Pose2d notePose = optionalClosestNote.get();

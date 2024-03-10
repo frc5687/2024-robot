@@ -1,5 +1,6 @@
 package org.frc5687.robot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -169,8 +170,8 @@ public class RobotState {
             List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
+                // _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
             .map(pair -> new Pair<>(pair.getFirst().stream(), pair.getSecond())) 
             .flatMap(pair -> pair.getFirst().map(estimate -> new Pair<>(estimate, pair.getSecond()))) // Handle Stream<Optional<EstimatedRobotPose>>
             .filter(pair -> isValidMeasurementTest(pair))
@@ -249,10 +250,10 @@ public class RobotState {
             return false;
         } else if (measurement.getZ() < -0.15) {
             // DriverStation.reportError("According to " + cameraName +", Robot is inside the floor :(((", false);
-            return false;
+            // return false;
         } else if (measurement.getZ() > 0.15) {
             // DriverStation.reportError("According to " + cameraName +", Robot is floating above the floor :(((", false);
-            return false;
+            // return false;
         }
         return true;
     }
@@ -465,6 +466,31 @@ public class RobotState {
         
         return Optional.of(notePoseRelativeField);
     }
+
+    public Optional<List<Pose2d>> getAllNotesRelativeField() {
+        Pose2d robotPose = getEstimatedPose();
+    
+        VisionPoseArray poses = _visionProcessor.getDetectedObjects();
+        List<Pose2d> notePosesRelativeField = new ArrayList<>();
+    
+        for (int i = 0; i < poses.posesLength(); i++) {
+            VisionPose pose = poses.poses(i);
+    
+            if (!Double.isNaN(pose.x()) && !Double.isNaN(pose.y())) {
+                Pose2d notePoseRelativeRobot = new Pose2d(pose.x(), pose.y(), new Rotation2d());
+                Transform2d noteTransform = new Transform2d(notePoseRelativeRobot.getTranslation(), notePoseRelativeRobot.getRotation());
+                Pose2d notePoseRelativeField = robotPose.transformBy(noteTransform);
+                notePosesRelativeField.add(notePoseRelativeField);
+            }
+        }
+    
+        if (notePosesRelativeField.isEmpty()) {
+            return Optional.empty();
+        }
+    
+        return Optional.of(notePosesRelativeField);
+    }
+
     public Lock getWriteLock() {
         return writeLock;
     }
