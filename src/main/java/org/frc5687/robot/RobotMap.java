@@ -59,8 +59,8 @@ public class RobotMap {
      * unique.
      */
     public static class PCM {
-        public static final int SHIFTER_HIGH = 3; // these values may be flip-flopped
-        public static final int SHIFTER_LOW = 2;
+        public static final int SHIFTER_HIGH = 15; // these values may be flip-flopped
+        public static final int SHIFTER_LOW = 0;
 
         public static final int RATCHET_RAISE = 4;
         public static final int RATCHET_LOWER = 5;
