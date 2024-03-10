@@ -22,18 +22,18 @@ public class PhotonProcessor {
     private final PhotonCamera _northEastCamera;
     private final PhotonCamera _southEastCamera;
     private final PhotonCamera _northWestCamera;
-    // private final PhotonCamera _southWestCamera;
+    private final PhotonCamera _southWestCamera;
     private final PhotonPoseEstimator _southEastCameraEstimator;
     private final PhotonPoseEstimator _northEastCameraEstimator;
     private final PhotonPoseEstimator _northWestCameraEstimator;
-    // private final PhotonPoseEstimator _southWestCameraEstimator;
+    private final PhotonPoseEstimator _southWestCameraEstimator;
 
     //private final ExecutorService _executorService;
     public PhotonProcessor(AprilTagFieldLayout layout) {
         _southEastCamera = new PhotonCamera("South_East_Camera");
         _northEastCamera = new PhotonCamera("North_East_Camera"); 
         _northWestCamera = new PhotonCamera("North_West_Camera");
-        // _southWestCamera = new PhotonCamera("South_West_Camera");
+        _southWestCamera = new PhotonCamera("South_West_Camera");
         // _executorService = Executors.newFixedThreadPool(NUM_CAMERAS);
 
         // setPipeline(Pipeline.FAR);
@@ -42,9 +42,10 @@ public class PhotonProcessor {
         // FIXME: look at the order the rotation transformations are applied -xavier bradford
         Transform3d robotToSouthEastCam =
             new Transform3d(
-                //new Translation3d(-0.107009, -0.104835, 0.57991),
-                new Translation3d(0.0, -0.155635, 0.5937),
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(180))
+                // new Translation3d(0.0, -0.155635, 0.5937), // for centered camera
+                new Translation3d(-0.107009, -0.104835, 0.57991),
+                // new Rotation3d(0.0, 0.0, Units.degreesToRadians(180)) // for centered camera
+                new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5))
             );
 
         Transform3d robotToNorthEastCam =
@@ -86,12 +87,12 @@ public class PhotonProcessor {
                 _northWestCamera,
                 robotToNorthWestCam);
 
-        // _southWestCameraEstimator =
-        //     new PhotonPoseEstimator(
-        //         layout,
-        //         PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-        //         _southWestCamera,
-        //         robotToSouthWestCam);
+        _southWestCameraEstimator =
+            new PhotonPoseEstimator(
+                layout,
+                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                _southWestCamera,
+                robotToSouthWestCam);
 
         _southEastCameraEstimator.setMultiTagFallbackStrategy(
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
@@ -99,15 +100,15 @@ public class PhotonProcessor {
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _northWestCameraEstimator.setMultiTagFallbackStrategy(
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        // _southWestCameraEstimator.setMultiTagFallbackStrategy(
-        //         PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+        _southWestCameraEstimator.setMultiTagFallbackStrategy(
+                PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     public void setPipeline(Pipeline pipeline) {
         _southEastCamera.setPipelineIndex(pipeline.getValue());
         _northEastCamera.setPipelineIndex(pipeline.getValue());
         _northWestCamera.setPipelineIndex(pipeline.getValue());
-        // _southWestCamera.setPipelineIndex(pipeline.getValue());
+        _southWestCamera.setPipelineIndex(pipeline.getValue());
     }
     
     public double getSouthEastCameraLatency() {
@@ -122,9 +123,9 @@ public class PhotonProcessor {
         return _northWestCamera.getLatestResult().getLatencyMillis();
     }
 
-    // public double getSouthWestCameraLatency() {
-    //     return _southWestCamera.getLatestResult().getLatencyMillis();
-    // }
+    public double getSouthWestCameraLatency() {
+        return _southWestCamera.getLatestResult().getLatencyMillis();
+    }
 
     public boolean hasSouthEastCameraTargets() {
         return _southEastCamera.getLatestResult().hasTargets();
@@ -138,9 +139,9 @@ public class PhotonProcessor {
         return _northWestCamera.getLatestResult().hasTargets();
     }
 
-    // public boolean hasSouthWestCameraTargets() {
-    //     return _southWestCamera.getLatestResult().hasTargets();
-    // }
+    public boolean hasSouthWestCameraTargets() {
+        return _southWestCamera.getLatestResult().hasTargets();
+    }
 
     public boolean isSouthEastTargetsWithinAmbiguity(double ambiguityTolerance) {
         var tags = _southEastCamera.getLatestResult().targets;
@@ -170,21 +171,21 @@ public class PhotonProcessor {
         return true;
     }
 
-    // public boolean isSouthWestTargetsWithinAmbiguity(double ambiguityTolerance) {
-    //     var tags = _southWestCamera.getLatestResult().targets;
-    //     for (var tag : tags) {
-    //         if (tag.getPoseAmbiguity() < ambiguityTolerance) {
-    //             return false;
-    //         }
-    //     } 
-    //     return true;
-    // }
+    public boolean isSouthWestTargetsWithinAmbiguity(double ambiguityTolerance) {
+        var tags = _southWestCamera.getLatestResult().targets;
+        for (var tag : tags) {
+            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
+                return false;
+            }
+        } 
+        return true;
+    }
 
     public void setLowestAmbiguity() {
         _southEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _northEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _northWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        // _southWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+        _southWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     public Optional<EstimatedRobotPose> getSouthEastCameraEstimatedGlobalPose(
@@ -217,15 +218,15 @@ public class PhotonProcessor {
         return _northWestCameraEstimator.update(results);
     }
 
-    // public Optional<EstimatedRobotPose> getSouthWestCameraEstimatedGlobalPose(
-    //         Pose2d prevEstimatedPose) {
-    //     _southWestCameraEstimator.setReferencePose(prevEstimatedPose);
-    //     PhotonPipelineResult results = _southWestCamera.getLatestResult();
-    //     if (results.hasTargets()) {
-    //         results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-    //     }
-    //     return _southWestCameraEstimator.update(results);
-    // }
+    public Optional<EstimatedRobotPose> getSouthWestCameraEstimatedGlobalPose(
+            Pose2d prevEstimatedPose) {
+        _southWestCameraEstimator.setReferencePose(prevEstimatedPose);
+        PhotonPipelineResult results = _southWestCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        return _southWestCameraEstimator.update(results);
+    }
 
     public Pair<Optional<EstimatedRobotPose>, String> getNorthEastCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
         return new Pair<Optional<EstimatedRobotPose>, String>(getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose), "NorthEast");
@@ -239,9 +240,9 @@ public class PhotonProcessor {
         return new Pair<Optional<EstimatedRobotPose>, String>(getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose), "SouthEast");
     } 
 
-    // public Pair<Optional<EstimatedRobotPose>, String> getSouthWestCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
-    //     return new Pair<Optional<EstimatedRobotPose>, String>(getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose), "SouthWest");
-    // } 
+    public Pair<Optional<EstimatedRobotPose>, String> getSouthWestCameraEstimatedGlobalPoseWithName(Pose2d prevEstimatedPose) {
+        return new Pair<Optional<EstimatedRobotPose>, String>(getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose), "SouthWest");
+    } 
 
     public CompletableFuture<Optional<EstimatedRobotPose>> getSouthEastCameraEstimatedGlobalPoseAsync(
             Pose2d prevEstimatedPose) {
@@ -261,11 +262,11 @@ public class PhotonProcessor {
                 () -> getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose));
     }
 
-    // public CompletableFuture<Optional<EstimatedRobotPose>> getSouthWestCameraEstimatedGlobalPoseAsync(
-    //         Pose2d prevEstimatedPose) {
-    //     return CompletableFuture.supplyAsync(
-    //             () -> getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose));
-    // }
+    public CompletableFuture<Optional<EstimatedRobotPose>> getSouthWestCameraEstimatedGlobalPoseAsync(
+            Pose2d prevEstimatedPose) {
+        return CompletableFuture.supplyAsync(
+                () -> getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose));
+    }
 
 
     public enum Pipeline {

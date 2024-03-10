@@ -171,8 +171,8 @@ public class RobotState {
             List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
-                // _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
+                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
+                _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
             .map(pair -> new Pair<>(pair.getFirst().stream(), pair.getSecond())) 
             .flatMap(pair -> pair.getFirst().map(estimate -> new Pair<>(estimate, pair.getSecond()))) // Handle Stream<Optional<EstimatedRobotPose>>
             .filter(pair -> isValidMeasurementTest(pair))
