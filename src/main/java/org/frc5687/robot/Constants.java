@@ -538,7 +538,7 @@ public class Constants {
 
         public static final double PREP_ANGLE = 2.3;
         public static final double DUNK_ANGLE = 3.4;
-        public static final double STOWED_ANGLE = 5.25;
+        public static final double STOWED_ANGLE = 5.18;
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
