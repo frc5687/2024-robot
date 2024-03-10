@@ -129,6 +129,11 @@ public class Dunker extends OutliersSubsystem {
         }
     }
 
+    public boolean isAtTargetRPM() {
+        return _targetRPM > 0
+                && Math.abs(_targetRPM - (_dunkerDriveTalon.getVelocity().getValue() * 60.0)) < Constants.Shooter.VELOCITY_TOLERANCE;
+    }
+
     @Override
     public void updateDashboard() {
         metric("Dunker Angle", getDunkerAngle());
