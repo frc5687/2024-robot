@@ -58,7 +58,7 @@ public class DriveLights extends OutliersCommand {
         }
 
         try {
-            hasObjects = _visionProcessor.getDetectedObjects().posesLength() > 0;
+            hasObjects = _visionProcessor.getDetectedObjects().getNotes().length > 0;
         } catch (Exception e) {
             // error("No objects");
         }

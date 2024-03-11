@@ -7,8 +7,6 @@ import org.frc5687.robot.util.OutliersContainer;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
-import edu.wpi.first.units.Units;
-
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 
@@ -18,7 +16,7 @@ public class Shooter extends OutliersSubsystem {
     private double _manualShootRPM = 3200;
     private double _targetRPM = 0;
     private boolean _spinUpAutomatically = true;
-    private VelocityTorqueCurrentFOC _foc;
+    private VelocityTorqueCurrentFOC _focVelocity;
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -31,7 +29,8 @@ public class Shooter extends OutliersSubsystem {
         _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
         _bottomTalon.setConfigSlot(0);
         _topTalon.setConfigSlot(0);
-        _foc = new VelocityTorqueCurrentFOC(0);
+
+        _focVelocity = new VelocityTorqueCurrentFOC(0);
     }
 
     public void setConfigSlot(int slot) {
@@ -97,7 +96,7 @@ public class Shooter extends OutliersSubsystem {
 
     public void setShooterMotorRPM(double rpm) {
         _targetRPM = rpm;
-        _bottomTalon.setControl(_foc.withVelocity(rpm / 60.0));
+        _bottomTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
     }
 
     /**
@@ -117,7 +116,6 @@ public class Shooter extends OutliersSubsystem {
 
     public double calculateRPMFromDistance(double distance) {
         return Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(distance)).value;
-        // return Double.min(2800, Double.max(1700, Constants.Shooter.kRPMRegression.predict(distance)));
     }
 
     public void updateDashboard() {

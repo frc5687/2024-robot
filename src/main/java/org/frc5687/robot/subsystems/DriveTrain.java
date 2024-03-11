@@ -20,7 +20,6 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -297,8 +296,8 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public double getRotationCorrection() {
-        readIMU();
-        return _headingController.getRotationCorrection(getHeading());
+        double maxSpeed = _isLowGear ? Constants.DriveTrain.MAX_LOW_GEAR_MPS : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+        return _headingController.getRotationCorrection(getHeading(), getMeasuredChassisSpeeds(), maxSpeed);
     }
 
     public void temporaryDisableHeadingController() {
@@ -332,11 +331,10 @@ public class DriveTrain extends OutliersSubsystem {
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {
-        readIMU();
         ChassisSpeeds speeds = _poseController.calculate(
                 _robotState.getEstimatedPose(), pose, 0.0, _systemIO.heading);
         _headingController.goToHeading(pose.getRotation());
-        speeds.omegaRadiansPerSecond = _headingController.getRotationCorrection(getHeading());
+        speeds.omegaRadiansPerSecond = getRotationCorrection();
         _systemIO.desiredChassisSpeeds = speeds;
     }
 
@@ -348,13 +346,8 @@ public class DriveTrain extends OutliersSubsystem {
         }
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
-        _robotState.getWriteLock().lock();
-        try {
-            updateDesiredStates();
-            setModuleStates(_systemIO.setpoint.moduleStates);
-        } finally {
-            _robotState.getWriteLock().unlock();
-        }
+        updateDesiredStates();
+        setModuleStates(_systemIO.setpoint.moduleStates);
     }
 
     public void setControlState(ControlState state) {
@@ -466,7 +459,9 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
         metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
-        moduleMetrics();
+        metric("Heading Controller Angle", _headingController.getTargetHeading().getRadians());
+        metric("Heading Controller Output", getRotationCorrection());
+        // moduleMetrics();
     }
 
     public void moduleMetrics() {
@@ -586,6 +581,7 @@ public class DriveTrain extends OutliersSubsystem {
         _yawOffset = _imu.getYaw().getValue() + rotation.getDegrees();
         readIMU();
     }
+
     public void readIMU() {
         double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
                 _imu.getAngularVelocityZDevice());

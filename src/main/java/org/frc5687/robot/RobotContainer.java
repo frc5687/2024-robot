@@ -1,6 +1,8 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 import org.frc5687.robot.commands.DriveLights;
@@ -32,8 +34,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -70,10 +74,6 @@ public class RobotContainer extends OutliersContainer {
         // create the vision processor
         _visionProcessor = new VisionProcessor();
 
-        _visionProcessor.createSubscriber("Objects", "Objects");
-        _visionProcessor.connectSubscriber("Objects", "tcp://10.56.87.20:5557");
-        //_visionProcessor.start();
-
         _field = new Field2d();
 
         _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
@@ -84,8 +84,8 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-        // Grab instance such that we can initalize with drivetrain and processor
         _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.start();
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
@@ -113,8 +113,23 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void periodic() {
-        _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+
+        var notes = _robotState.getAllNotesRelativeField();
+
+        if (notes.isPresent()) {
+            var fieldNotes = _field.getObject("notes");
+            var notePoses = new ArrayList<Pose2d>();
+
+            for (var note : notes.get()) {
+                notePoses.add(note);
+            }
+
+            fieldNotes.setPoses(notePoses);
+        } else {
+            var fieldNotes = _field.getObject("notes");
+            fieldNotes.setPoses(new ArrayList<Pose2d>()); // Clear all notes by setting an empty list of poses
+        }
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
