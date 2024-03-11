@@ -339,7 +339,8 @@ public class Constants {
 
         public static final double VELOCITY_TOLERANCE = 30;
 
-        public static final double IDLE_RPM = 0;
+        public static final double IDLE_RPM = 0; // FIXME 3200 is better
+        public static final double PASS_RPM = 1400;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 1000;

@@ -42,6 +42,10 @@ public class Shooter extends OutliersSubsystem {
         setShooterMotorRPM(Constants.Shooter.IDLE_RPM);
     }
 
+    public void setToPassRPM() {
+        setShooterMotorRPM(Constants.Shooter.PASS_RPM);
+    }
+
     public void setToPassthrough() {
         setShooterMotorRPM(Constants.Shooter.PASSTHROUGH_RPM);
     }

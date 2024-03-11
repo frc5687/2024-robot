@@ -16,7 +16,8 @@ import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
-import org.frc5687.robot.commands.Shooter.SetAutoSpinUp;
+import org.frc5687.robot.commands.Shooter.Pass;
+import org.frc5687.robot.commands.Shooter.ToggleAutoSpinUp;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.commands.Shooter.ShooterEject;
 import org.frc5687.robot.subsystems.Climber;
@@ -115,8 +116,8 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
         _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
-        _operatorGamepad.getRightBumper().onTrue(new SetAutoSpinUp(shooter, false));
-        _operatorGamepad.getLeftBumper().onTrue(new SetAutoSpinUp(shooter, true));
+        _operatorGamepad.getLeftBumper().onTrue(new ToggleAutoSpinUp(shooter));
+        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }

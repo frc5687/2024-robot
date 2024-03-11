@@ -3,18 +3,16 @@ package org.frc5687.robot.commands.Shooter;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
-public class SetAutoSpinUp extends OutliersCommand{
+public class ToggleAutoSpinUp extends OutliersCommand{
     public Shooter _shooter;
-    public boolean _value;
 
-    public SetAutoSpinUp(Shooter shooter, boolean value) {
+    public ToggleAutoSpinUp(Shooter shooter) {
         _shooter = shooter;
-        _value = value;
     }
 
     @Override
     public void initialize() {
-        _shooter.setSpinUpAutomatically(_value);
+        _shooter.setSpinUpAutomatically(!_shooter.getSpinUpAutomatically());
     }
 
     @Override
