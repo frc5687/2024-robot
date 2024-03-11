@@ -328,6 +328,10 @@ public class DriveTrain extends OutliersSubsystem {
         _headingController.goToHeading(heading);
     }
 
+    public boolean isHeadingInTolerance(Rotation2d target, double tolerance) {
+        return Math.abs(target.minus(getHeading()).getRadians()) < tolerance;
+    }
+
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {

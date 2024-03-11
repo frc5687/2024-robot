@@ -6,7 +6,6 @@ import org.frc5687.robot.Constants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 
 // rewritten (probably poorly) by xavier bradford 03/09/24
 public class SwerveHeadingController {
@@ -62,6 +61,10 @@ public class SwerveHeadingController {
         return _targetHeading;
     }
 
+    public boolean isAtTargetAngle(Rotation2d heading) {
+        return (Math.abs(heading.minus(_targetHeading).getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE);
+    }
+
     /**
      * Get the output of the PID controller given a certain input.
      * 
@@ -86,11 +89,6 @@ public class SwerveHeadingController {
                 break;
             default:
                 break;
-        }
-    
-        if (Math.abs(heading.minus(_targetHeading).getRadians())
-                < Units.degreesToRadians(1.0)) {
-            power = 0.0;
         }
     
         double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);

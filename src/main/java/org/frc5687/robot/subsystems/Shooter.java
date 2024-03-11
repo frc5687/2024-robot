@@ -22,11 +22,13 @@ public class Shooter extends OutliersSubsystem {
         super(container);
         _bottomTalon = new OutliersTalon(RobotMap.CAN.TALONFX.BOTTOM_SHOOTER, "CANivore", "Bottom Shooter");
         _topTalon = new OutliersTalon(RobotMap.CAN.TALONFX.TOP_SHOOTER, "CANivore", "Top Shooter");
-        _bottomTalon.configure(Constants.Shooter.CONFIG);
-        _topTalon.configure(Constants.Shooter.CONFIG);
+
+        _bottomTalon.configure(Constants.Shooter.BOTTOM_CONFIG);
+        _topTalon.configure(Constants.Shooter.TOP_CONFIG);
 
         _bottomTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
-        _topTalon.setControl(new Follower(_bottomTalon.getDeviceID(), true));
+        _topTalon.configureClosedLoop(Constants.Shooter.SHOOTER_CONTROLLER_CONFIG);
+
         _bottomTalon.setConfigSlot(0);
         _topTalon.setConfigSlot(0);
 
@@ -71,11 +73,11 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public void setToEject(){
-        _bottomTalon.setPercentOutput(Constants.Shooter.EJECT_PERCENT_OUTPUT);
+        // _bottomTalon.setPercentOutput(Constants.Shooter.EJECT_PERCENT_OUTPUT);
     }
 
     public void setToIntakeEject(){
-        _bottomTalon.setPercentOutput(-Constants.Shooter.EJECT_PERCENT_OUTPUT);
+        // _bottomTalon.setPercentOutput(-Constants.Shooter.EJECT_PERCENT_OUTPUT);
     }
 
     /**
@@ -93,13 +95,17 @@ public class Shooter extends OutliersSubsystem {
         return OutliersTalon.rotationsPerSecToRPM(_bottomTalon.getVelocity().getValueAsDouble(), 1);
     }
 
+    public double getCombinedRPM() {
+        return (getBottomMotorRPM() + getTopMotorRPM()) / 2.0;
+    }
+
     public boolean isAtTargetRPM() {
-        return _targetRPM > 0
-                && Math.abs(_targetRPM - getBottomMotorRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
+        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
     public void setShooterMotorRPM(double rpm) {
         _targetRPM = rpm;
+        _topTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
         _bottomTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
     }
 
@@ -126,6 +132,8 @@ public class Shooter extends OutliersSubsystem {
         metric("Bottom Motor RPM", getBottomMotorRPM());
         metric("Top Motor RPM", getTopMotorRPM());
         metric("Manual Shoot RPM", getManualShootRPM());
+        metric("Botton Talon Output", _bottomTalon.getClosedLoopOutput().getValueAsDouble());
+        metric("Average Output", getCombinedRPM());
         metric("Target RPM", _targetRPM);
         metric("At Target RPM", isAtTargetRPM());
         metric("Spin Up Automatically?", getSpinUpAutomatically());

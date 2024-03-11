@@ -212,6 +212,7 @@ public class OutliersTalon extends TalonFX {
         _motionMagicConfigs.MotionMagicJerk = config.JERK;
 
         _closedLoopGenConfig.ContinuousWrap = config.IS_CONTINUOUS;
+
         _configurator.apply(_closedLoopGenConfig);
         _configurator.apply(_slot0Configs, config.TIME_OUT);
         _configurator.apply(_slot1Configs, config.TIME_OUT);
