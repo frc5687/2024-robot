@@ -29,10 +29,10 @@ public class RobotMap {
         }
 
         public static class CANCODER {
-                public static final int ENCODER_NW = 0;
-                public static final int ENCODER_SE = 1;
-                public static final int ENCODER_SW = 2;
-                public static final int ENCODER_NE = 3;
+                public static final int ENCODER_SE = 0;
+                public static final int ENCODER_NE = 1;
+                public static final int ENCODER_NW = 2;
+                public static final int ENCODER_SW = 3;
         }
 
         public static class PIGEON {
