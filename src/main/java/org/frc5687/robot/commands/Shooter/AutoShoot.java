@@ -50,11 +50,10 @@ public class AutoShoot extends OutliersCommand{
         // add max distance conditional?
         _shooter.setRPMFromDistance(distance);
         
-        Rotation2d currentHeading = _driveTrain.getHeading();
         _driveTrain.goToHeading(angle);
         _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
 
-        boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
+        boolean isInAngle = _driveTrain.isHeadingInTolerance(angle, Constants.DriveTrain.SNAP_TOLERANCE);
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);

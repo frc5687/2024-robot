@@ -63,10 +63,13 @@ public class RobotState {
     private volatile Twist2d _velocity = new Twist2d();
     private volatile Pose2d _lastPose = new Pose2d();
 
+    private volatile Optional<Rotation2d> _visionAngle = Optional.of(new Rotation2d());
+
     private static RobotState _instance;
     private double _lastTimestamp;
     private Transform3d _robotToCamera;
     private final double _period = 1.0 / 150.0; // Run at 200Hz
+
 
     public RobotState() {
     }
@@ -188,6 +191,10 @@ public class RobotState {
         updateOdometry();
         updateWithVision();
 
+        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        if (_visionAngle.isPresent()) {
+            SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getDegrees());
+        }
         SmartDashboard.putNumber("Estimated X", _estimatedPose.getX());
         SmartDashboard.putNumber("Estimated Y", _estimatedPose.getY());
 
@@ -211,7 +218,7 @@ public class RobotState {
         Pose3d measurement = estimatedRobotPose.getFirst().estimatedPose;
         // PhotonTrackedTarget[] tagsUsed = estimatedRobotPose.targetsUsed.;
 
-        String cameraName = estimatedRobotPose.getSecond();
+        // String cameraName = estimatedRobotPose.getSecond();
         if (measurement.getX() > Constants.FieldConstants.FIELD_LENGTH) {
             // DriverStation.reportError("According to " + cameraName +", Robot is off the
             // field in +x direction", false);
@@ -245,8 +252,7 @@ public class RobotState {
     }
 
     public Pose3d getSpeakerTagPose() {
-        return _layout.getTagPose(
-                _driveTrain.isRedAlliance() ? 4 : 7).get();
+        return _layout.getTagPose(getSpeakerTargetTagId()).get();
     }
 
     public Pair<Double, Double> getDistanceAndAngleToSpeaker() {
@@ -379,7 +385,7 @@ public class RobotState {
         return createStandardDeviations(x, y, angle);
     }
 
-    public Optional<Rotation2d> getAngleToTagFromVision(int tagId) {
+    private Optional<Rotation2d> getAngleToTagFromVision(int tagId) {
         Optional<Rotation2d> angle = Optional.empty();
 
         Optional<Double> angleRads = _photonProcessor.calculateAngleToTag(tagId);
@@ -387,6 +393,10 @@ public class RobotState {
             angle = Optional.of(new Rotation2d(angleRads.get()));
         }
         return angle;
+    }
+
+    public Optional<Rotation2d> getAngleToSpeakerFromVision() {
+        return _visionAngle;
     }
 
     public Optional<Pose3d> getClosestNoteRelativeRobotCenter() {

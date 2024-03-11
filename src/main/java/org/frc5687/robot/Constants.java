@@ -11,6 +11,7 @@ import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
 
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -294,7 +295,9 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
-        public static final double HEADING_TOLERANCE = 0.02; // rad
+
+        public static final double HEADING_TOLERANCE = Units.degreesToRadians(1.5); // rad
+
         public static final double BUMP_DEGREES = 7;
 
         public static final double PITCH_LOOKING_ANGLE = Units.degreesToRadians(15.0); // this is degrees because sad.
@@ -384,31 +387,40 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 8.5;
+            SHOOTER_CONTROLLER_CONFIG.kP = 10.0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.0;
-
-            SHOOTER_CONTROLLER_CONFIG.kP1= 8.5;
-            SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
-
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
 
-        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-
+        public static final OutliersTalon.Configuration TOP_CONFIG = new OutliersTalon.Configuration();
         static {
-            CONFIG.TIME_OUT = 0.1;
+            TOP_CONFIG.TIME_OUT = 0.1;
             
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
-            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+            TOP_CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            TOP_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
-            CONFIG.MAX_VOLTAGE = 12.0;
+            TOP_CONFIG.MAX_VOLTAGE = 12.0;
 
             // not sure which limit it is
-            CONFIG.MAX_SUPPLY_CURRENT = 120;
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
-            CONFIG.CURRENT_DEADBAND = 0.1;
-            CONFIG.USE_FOC = true;
+            TOP_CONFIG.MAX_CURRENT = 120;
+            TOP_CONFIG.CURRENT_DEADBAND = 0.1;
+            TOP_CONFIG.USE_FOC = true;
+        }
+
+        public static final OutliersTalon.Configuration BOTTOM_CONFIG = new OutliersTalon.Configuration();
+
+        static {
+            BOTTOM_CONFIG.TIME_OUT = 0.1;
+            
+            BOTTOM_CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            BOTTOM_CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            BOTTOM_CONFIG.MAX_VOLTAGE = 12.0;
+
+            BOTTOM_CONFIG.MAX_CURRENT = 120;
+            BOTTOM_CONFIG.CURRENT_DEADBAND = 0.1;
+            BOTTOM_CONFIG.USE_FOC = true;
         }
     }
 

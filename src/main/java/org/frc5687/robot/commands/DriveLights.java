@@ -1,5 +1,7 @@
 package org.frc5687.robot.commands;
 
+import static org.frc5687.robot.Constants.DriveTrain.HEADING_TOLERANCE;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.Robot;
 import org.frc5687.robot.RobotState;
@@ -76,7 +78,7 @@ public class DriveLights extends OutliersCommand {
             Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
             Rotation2d currentHeading = _driveTrain.getHeading();
             // error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
-            boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
+            boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < HEADING_TOLERANCE;
             boolean isAtRPM = _shooter.isAtTargetRPM();
             // show distinct colors for each state
             if (isAtRPM && isInAngle) {
