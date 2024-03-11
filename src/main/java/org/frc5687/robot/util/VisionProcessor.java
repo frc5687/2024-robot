@@ -1,6 +1,7 @@
 package org.frc5687.robot.util;
 
 import edu.wpi.first.networktables.RawSubscriber;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
@@ -27,32 +28,36 @@ public class VisionProcessor {
     }
 
     public DetectedNoteArray getDetectedObjects() {
-        byte[] rawData = _visionPosesRawEntry.get(new byte[0]);
+        try {
+            byte[] rawData = _visionPosesRawEntry.get(new byte[0]);
+            ByteBuffer bb = ByteBuffer.wrap(rawData);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
 
-        ByteBuffer bb = ByteBuffer.wrap(rawData);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
+            VisionPoseArray visionPoseArray = VisionPoseArray.getRootAsVisionPoseArray(bb);
+            int numObjects = visionPoseArray.posesLength();
 
-        VisionPoseArray visionPoseArray = VisionPoseArray.getRootAsVisionPoseArray(bb);
-        int numObjects = visionPoseArray.posesLength();
+            DetectedNote[] notes = new DetectedNote[numObjects];
+            for (int i = 0; i < numObjects; i++) {
+                VisionPose visionPose = visionPoseArray.poses(i);
+                int id = visionPose.id();
+                double x = visionPose.x();
+                double y = visionPose.y();
+                double z = visionPose.z();
+                long detectionTimeMs = visionPose.timestamp();
 
-        DetectedNote[] notes = new DetectedNote[numObjects];
-        for (int i = 0; i < numObjects; i++) {
-            VisionPose visionPose = visionPoseArray.poses(i);
-            int id = visionPose.id();
-            double x = visionPose.x();
-            double y = visionPose.y();
-            double z = visionPose.z();
-            long detectionTimeMs = visionPose.timestamp();
+                Translation3d translation = new Translation3d(x, y, z);
+                Rotation3d rotation = new Rotation3d();
+                Pose3d pose = new Pose3d(translation, rotation);
 
-            Translation3d translation = new Translation3d(x, y, z);
-            Rotation3d rotation = new Rotation3d();
-            Pose3d pose = new Pose3d(translation, rotation);
+                notes[i] = new DetectedNote(id, pose, detectionTimeMs);
+            }
 
-            notes[i] = new DetectedNote(id, pose, detectionTimeMs);
+            _detectedObjects = new DetectedNoteArray(notes);
+            return _detectedObjects;
+        } catch (Exception e) {
+            DriverStation.reportError("RobotState.getDetectedObjects failed due to exception "+e.getMessage(), false);
+            return new DetectedNoteArray(new DetectedNote[0]);
         }
-
-        _detectedObjects = new DetectedNoteArray(notes);
-        return _detectedObjects;
     }
 
     public static class DetectedNote {
