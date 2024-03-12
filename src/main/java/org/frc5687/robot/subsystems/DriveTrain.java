@@ -256,7 +256,7 @@ public class DriveTrain extends OutliersSubsystem {
                 this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(7.0, 0.0, 0.00), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.00), // Translation PID constants
                         new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI, Constants.DriveTrain.HEADING_kD), // Rotation PID constants
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
