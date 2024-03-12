@@ -48,7 +48,7 @@ public class Shoot extends OutliersCommand{
         }
 
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
-        boolean isInAngle = _robotState.isVisionAimedAtTarget();
+        boolean isInAngle = _robotState.isAimedAtSpeaker();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);
         

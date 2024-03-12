@@ -461,9 +461,10 @@ public class DriveTrain extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
+        metric("Current Heading (-pi, pi]", new Rotation2d(getHeading().getRadians()).getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
         metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
-        metric("Heading Controller Angle", _headingController.getTargetHeading().getRadians());
+        metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
         metric("Heading Controller Output", getRotationCorrection());
         // moduleMetrics();
     }
