@@ -1,6 +1,7 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
+import org.ejml.dense.row.decomposition.eig.WatchedDoubleStepQRDecomposition_DDRM;
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
 import org.frc5687.lib.cheesystuff.PolynomialRegression;
@@ -134,6 +135,7 @@ public class Constants {
     public static class DriveTrain {
         public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;
+        public static final double ROBOT_WEIGHT = Units.lbsToKilograms(120.0);
 
         // Size of the wheelbase in meters
         public static final double WIDTH = 0.5461; // meters
@@ -142,15 +144,31 @@ public class Constants {
         public static final double SWERVE_NS_POS = LENGTH / 2.0;
         public static final double SWERVE_WE_POS = WIDTH / 2.0;
 
-        public static final double MAX_FALCON_FOC_RPM = 6080.0;
-        public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
-        public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
+        public static final double MOTOR_LOAD_OUTPUT_PERCENTAGE = 0.9; // Assume that there is and efficiency drop under load
+        public static final double MAX_FALCON_FOC_RPM = 6080.0 * MOTOR_LOAD_OUTPUT_PERCENTAGE;
+        public static final double MAX_KRAKEN_FOC_RPM = 5800.0 * MOTOR_LOAD_OUTPUT_PERCENTAGE;
+        public static final double MAX_KRAKEN_FOC_TORQUE = 1.552; // This is from a 80 amp current limit
+
         public static final double MAX_LOW_GEAR_MPS = (
             Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
             / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
+
+        public static final double MAX_LOW_GEAR_MPSS = 
+            (MAX_KRAKEN_FOC_TORQUE * 4 * SwerveModule.GEAR_RATIO_DRIVE_LOW) / (ROBOT_WEIGHT * SwerveModule.WHEEL_RADIUS);
+
+        public static final double MAX_LOW_GEAR_RADS = 
+            MAX_LOW_GEAR_MPS / (Math.sqrt(LENGTH * LENGTH + WIDTH * WIDTH) / 2.0);
+        
         public static final double MAX_HIGH_GEAR_MPS = (
             Units.rotationsPerMinuteToRadiansPerSecond(MAX_KRAKEN_FOC_RPM) 
             / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
+
+        public static final double MAX_HIGH_GEAR_MPSS = 
+            (MAX_KRAKEN_FOC_TORQUE * 4 * SwerveModule.GEAR_RATIO_DRIVE_HIGH) / (ROBOT_WEIGHT * SwerveModule.WHEEL_RADIUS);
+
+        public static final double MAX_HIGH_GEAR_RADS = 
+            MAX_LOW_GEAR_MPS / (Math.sqrt(LENGTH * LENGTH + WIDTH * WIDTH) / 2.0);
+        
 
         public static final double OPTIMAL_SHIFT_MPS = 0.3 * MAX_HIGH_GEAR_MPS;
 
@@ -171,32 +189,19 @@ public class Constants {
 
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 60; // m/s^2
-            HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = MAX_HIGH_GEAR_MPSS; // m/s^2 old 20, new based on math :) 
+            HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
-            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2
-            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
+            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = MAX_LOW_GEAR_MPSS; // m/s^2 // old 35, new based on math
+            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_LOW_GEAR_RADS; // rad/s
         }
 
         public static final KinematicLimits KINEMATIC_LIMITS = LOW_KINEMATIC_LIMITS;
 
-        public static final KinematicLimits DRIVE_POSE_KINEMATIC_LIMITS = new KinematicLimits();
-        static {
-            DRIVE_POSE_KINEMATIC_LIMITS.maxDriveVelocity = 2.5; // m/s
-            DRIVE_POSE_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2
-            DRIVE_POSE_KINEMATIC_LIMITS.maxSteeringVelocity = 20; // rad/s
-        }
-
-        public static final KinematicLimits TRAJECTORY_FOLLOWING = new KinematicLimits();
-        static {
-            TRAJECTORY_FOLLOWING.maxDriveVelocity = 5.0; // m/s
-            TRAJECTORY_FOLLOWING.maxDriveAcceleration = 20; // m/s^2
-            TRAJECTORY_FOLLOWING.maxSteeringVelocity = 20; // rad/s
-        }
         public static final KinematicLimits SLOW_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {

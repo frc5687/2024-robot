@@ -17,6 +17,7 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
+import org.frc5687.robot.Constants.VisionConfig.Auto;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -274,7 +275,6 @@ public class DriveTrain extends OutliersSubsystem {
                 },
                 this // Reference to this subsystem to set requirements
         );
-
     }
 
     protected void configureSignalFrequency(double frequency) {

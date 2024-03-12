@@ -115,7 +115,8 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _field.setRobotPose(_robotState.getEstimatedPose());
 
-        var notes = _robotState.getAllNotesRelativeField();
+        // var notes = _robotState.getAllNotesRelativeField();
+        var notes = _robotState.getAllTrackedNotesRelativeField();
 
         if (notes.isPresent()) {
             var fieldNotes = _field.getObject("notes");
