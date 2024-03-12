@@ -159,6 +159,7 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void autonomousInit() {
         _robotState.useAutoStandardDeviations();
+        _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {

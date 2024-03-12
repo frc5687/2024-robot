@@ -186,11 +186,18 @@ public class Constants {
         public static final double YAW_RATE_THRESHOLD = 0.05; // rad / s
 
         public static final KinematicLimits HIGH_KINEMATIC_LIMITS = new KinematicLimits();
+        public static final KinematicLimits AUTO_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
             HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2 old 20, new based on math :) 
             HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
+        }
+         static {
+            AUTO_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
+            AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 200; // m/s^2 old 20, new based on math :) 
+
+            AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 200; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
 
@@ -315,7 +322,7 @@ public class Constants {
         public static final double MAX_PSI = 120.0;
 
         public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.271, 3.181), new Rotation2d(-0.644));
-        public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.371, 3.181), new Rotation2d(0.644));
+        public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.571, 3.181), new Rotation2d(0.644));
     }
 
     public static class Vision {
