@@ -30,18 +30,19 @@ public class AutoAim extends OutliersCommand {
 
     @Override
     public void execute() {
-        Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-        // Optional<Rotation2d> visionAngle = _robotState.getAngleToSpeakerFromVision();
-        // if (visionAngle.isPresent()) {
-            // _targetHeading = visionAngle.get();
-            // metric("Vison angel", visionAngle.get().getRadians());
-        // } else {
-            // Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-            // _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
-        // }
-        _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
+        Optional<Rotation2d> visionAngle = _robotState.getAngleToSpeakerFromVision();
+
+        if (visionAngle.isPresent()) {
+            double angleRadians = visionAngle.get().getRadians();
+            _targetHeading = _driveTrain.getHeading().minus(Rotation2d.fromRadians(angleRadians));
+        } else {
+            Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
+            _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
+        }
+
         _driveTrain.goToHeading(_targetHeading);
     }
+
 
     @Override
     public boolean isFinished() {

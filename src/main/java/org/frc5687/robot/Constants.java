@@ -632,4 +632,8 @@ public class Constants {
         public static int[] LEAF00 = {30, 175, 0}; //epic color frfr
         public static int[] MILO_BLUE = {1, 52, 133};
     }
+
+    public static class RobotState {
+        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(1.0);
+    }
 }

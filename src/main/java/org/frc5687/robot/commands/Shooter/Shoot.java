@@ -1,30 +1,26 @@
 package org.frc5687.robot.commands.Shooter;
 
+import java.util.Optional;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoot extends OutliersCommand{
     private final Shooter _shooter;
     private final Intake _intake;
-    private final DriveTrain _driveTrain;
     private final RobotState _robotState = RobotState.getInstance();
 
     public Shoot(
         Shooter shooter,
-        Intake intake,
-        DriveTrain driveTrain
+        Intake intake
     ) {
         _shooter = shooter;
         _intake = intake;
-        _driveTrain = driveTrain;
         addRequirements(_shooter, _intake);
     }
 
@@ -44,21 +40,21 @@ public class Shoot extends OutliersCommand{
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
-        // add max distance conditional?
-        _shooter.setRPMFromDistance(distance);
-        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
+        Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
+        if (visionDistance.isPresent()) {
+            _shooter.setRPMFromDistance(visionDistance.get());
+        } else {
+            _shooter.setRPMFromDistance(distance);
+        }
 
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
-        boolean isInAngle = _driveTrain.isHeadingInTolerance(angle, Constants.DriveTrain.TARGET_TOLERANCE);
+        boolean isInAngle = _robotState.isVisionAimedAtTarget();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);
         
         if (isAtTargetRPM && isInAngle) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
-
-        SmartDashboard.putNumber("Angle to shoot", angle.getRadians());
-        SmartDashboard.putNumber("Angle Error", Math.abs(_driveTrain.getHeading().minus(angle).getRadians()));
     }
 
     @Override
@@ -68,6 +64,5 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
-        _driveTrain.goToHeading(_driveTrain.getHeading());
     }
 }

@@ -63,7 +63,8 @@ public class RobotState {
     private volatile Twist2d _velocity = new Twist2d();
     private volatile Pose2d _lastPose = new Pose2d();
 
-    private volatile Optional<Rotation2d> _visionAngle = Optional.of(new Rotation2d());
+    private volatile Optional<Rotation2d> _visionAngle = Optional.empty();
+    private volatile Optional<Double> _visionDistance = Optional.empty();
 
     private static RobotState _instance;
     private double _lastTimestamp;
@@ -192,8 +193,12 @@ public class RobotState {
         updateWithVision();
 
         _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
         if (_visionAngle.isPresent()) {
-            SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getDegrees());
+            SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
+        }
+        if (_visionDistance.isPresent()) {
+            SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         }
         SmartDashboard.putNumber("Estimated X", _estimatedPose.getX());
         SmartDashboard.putNumber("Estimated Y", _estimatedPose.getY());
@@ -339,6 +344,15 @@ public class RobotState {
                 && distance < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT;
     }
 
+    public boolean isVisionAimedAtTarget() {
+        Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
+        if (visionAngle.isPresent()) {
+            double angle = visionAngle.get().getRadians();
+            return Math.abs(angle) < Constants.RobotState.VISION_AIMING_TOLERANCE;
+        }
+        return false;
+    }
+
     /**
      * This changes the standard deviations to trust vision measurements less the
      * farther the machine is.
@@ -383,6 +397,15 @@ public class RobotState {
 
     protected Vector<N3> createVisionStandardDeviations(double x, double y, double angle) {
         return createStandardDeviations(x, y, angle);
+    }
+
+    private Optional<Double> getDistanceToTagFromVision(int tagId) {
+        Optional<Double> distance = _photonProcessor.calculateDistanceToTag(tagId);
+        return distance;
+    }
+
+    public Optional<Double> getDistanceToSpeakerFromVision()  {
+        return _visionDistance;
     }
 
     private Optional<Rotation2d> getAngleToTagFromVision(int tagId) {

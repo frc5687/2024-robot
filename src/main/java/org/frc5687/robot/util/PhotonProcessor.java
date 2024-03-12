@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 
@@ -245,8 +246,8 @@ public class PhotonProcessor {
         PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
         PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
         
-        Optional<Double> southEastAngle = Optional.empty();
-        Optional<Double> southWestAngle = Optional.empty();
+        Optional<Double> southEastYaw = Optional.empty();
+        Optional<Double> southWestYaw = Optional.empty();
         
         // Always check if targets are available
         if (southEastResults.hasTargets()) {
@@ -255,9 +256,12 @@ public class PhotonProcessor {
                     .findFirst();
             
             if (southEastTag.isPresent()) {
-                var camToTarget = southEastTag.get().getBestCameraToTarget();
-                var robotToTarget = _robotToSouthEastCam.plus(camToTarget);
-                southEastAngle = Optional.of(Math.atan2(robotToTarget.getY(), robotToTarget.getX()));
+                Rotation2d yaw = Rotation2d.fromDegrees(southEastTag.get().getYaw());
+                // SmartDashboard.putNumber("SouthEastTagYaw", yaw.getRadians());
+                Rotation2d cameraYawOffset = Rotation2d.fromDegrees(-17.5);
+                double robotYaw = yaw.getRadians() - cameraYawOffset.getRadians();
+                // SmartDashboard.putNumber("SouthEastYaw", robotYaw);
+                southEastYaw = Optional.of(robotYaw);
             }
         }
         
@@ -268,32 +272,80 @@ public class PhotonProcessor {
                     .findFirst();
             
             if (southWestTag.isPresent()) {
-                var camToTarget = southWestTag.get().getBestCameraToTarget();
-                var robotToTarget = _robotToSouthWestCam.plus(camToTarget);
-                southWestAngle = Optional.of(Math.atan2(robotToTarget.getY(), robotToTarget.getX()));
+                Rotation2d yaw = Rotation2d.fromDegrees(southWestTag.get().getYaw());
+                // SmartDashboard.putNumber("SouthWestTagYaw", yaw.getRadians());
+                Rotation2d cameraYawOffset = Rotation2d.fromDegrees(17.5);
+                double robotYaw = yaw.getRadians() - cameraYawOffset.getRadians();
+                // SmartDashboard.putNumber("SouthWestYaw", robotYaw);
+                southWestYaw = Optional.of(robotYaw);
             }
         }
         
-        if (southEastAngle.isPresent() && southWestAngle.isPresent()) {
-            double averageAngle = (southEastAngle.get() + southWestAngle.get()) / 2.0;
-            double adjustedAngle = Math.atan2(Math.sin(averageAngle), Math.cos(averageAngle));
-
-            return Optional.of(adjustedAngle);
-        } else if (southEastAngle.isPresent()) {
-            double adjustedAngle = Math.atan2(Math.sin(southEastAngle.get()), Math.cos(southEastAngle.get()));
-
-            return Optional.of(adjustedAngle);
-        } else if (southWestAngle.isPresent()) {
-            double adjustedAngle = Math.atan2(Math.sin(southWestAngle.get()), Math.cos(southWestAngle.get()));
-
-            return Optional.of(adjustedAngle);
+        if (southEastYaw.isPresent() && southWestYaw.isPresent()) {
+            // If both cameras see the target, average the yaw angles
+            double averageYaw = (southEastYaw.get() + southWestYaw.get()) / 2.0;
+            return Optional.of(averageYaw);
+        } else if (southEastYaw.isPresent()) {
+            return southEastYaw;
+        } else if (southWestYaw.isPresent()) {
+            return southWestYaw;
         } else {
             return Optional.empty();
         }
     }
 
-   
-   
+    public Optional<Double> calculateDistanceToTag(int tagId) {
+        PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
+        PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
+        
+        Optional<Double> southEastDistance = Optional.empty();
+        Optional<Double> southWestDistance = Optional.empty();
+        
+        // Always check if targets are available
+        if (southEastResults.hasTargets()) {
+            Optional<PhotonTrackedTarget> southEastTag = southEastResults.getTargets().stream()
+                    .filter(target -> target.getFiducialId() == tagId)
+                    .findFirst();
+            
+            if (southEastTag.isPresent()) {
+                var camToTarget = southEastTag.get().getBestCameraToTarget();
+                var robotToCamera = _robotToSouthEastCam;
+                var robotToTarget = robotToCamera.plus(camToTarget);
+                
+                double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
+                southEastDistance = Optional.of(distance);
+            }
+        }
+        
+        if (southWestResults.hasTargets()) {
+            Optional<PhotonTrackedTarget> southWestTag = southWestResults.getTargets().stream()
+                    .filter(target -> target.getFiducialId() == tagId)
+                    .findFirst();
+            
+            if (southWestTag.isPresent()) {
+                var camToTarget = southWestTag.get().getBestCameraToTarget();
+                var robotToCamera = _robotToSouthWestCam;
+                var robotToTarget = robotToCamera.plus(camToTarget);
+                
+                double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
+                southWestDistance = Optional.of(distance);
+            }
+        }
+        
+        if (southEastDistance.isPresent() && southWestDistance.isPresent()) {
+            double averageDistance = (southEastDistance.get() + southWestDistance.get()) / 2.0;
+            return Optional.of(averageDistance);
+        } else if (southEastDistance.isPresent()) {
+            return southEastDistance;
+        } else if (southWestDistance.isPresent()) {
+            return southWestDistance;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+
+
 
     public enum Pipeline {
         FAR(0),
