@@ -1,6 +1,5 @@
 package org.frc5687.robot.commands.Shooter;
 
-import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
 import org.frc5687.robot.commands.Intake.TimedIntake;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;

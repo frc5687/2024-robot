@@ -1,6 +1,8 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 import org.frc5687.robot.commands.DriveLights;
@@ -8,8 +10,8 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
-import org.frc5687.robot.commands.Intake.AutoIntake;
 import org.frc5687.robot.commands.Intake.IdleIntake;
+import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
@@ -32,8 +34,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,14 +73,10 @@ public class RobotContainer extends OutliersContainer {
         _oi = new OI();
         // create the vision processor
         _visionProcessor = new VisionProcessor();
-        // subscribe to a vision topic for the correct data
-        _visionProcessor.createSubscriber("Objects", "tcp://10.56.87.20:5556");
-        _visionProcessor.start();
 
         _field = new Field2d();
 
         _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
@@ -84,9 +84,8 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-
-        // Grab instance such that we can initalize with drivetrain and processor
         _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.start();
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
@@ -95,12 +94,12 @@ public class RobotContainer extends OutliersContainer {
         _climber = new Climber(this);
         _lights = new Lights(this);
 
-        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter, _robotState));
+        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _robotState, _shooter));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter));
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -108,14 +107,29 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
     public void periodic() {
-        _robotState.periodic();
         _field.setRobotPose(_robotState.getEstimatedPose());
+
+        var notes = _robotState.getAllNotesRelativeField();
+
+        if (notes.isPresent()) {
+            var fieldNotes = _field.getObject("notes");
+            var notePoses = new ArrayList<Pose2d>();
+
+            for (var note : notes.get()) {
+                notePoses.add(note);
+            }
+
+            fieldNotes.setPoses(notePoses);
+        } else {
+            var fieldNotes = _field.getObject("notes");
+            fieldNotes.setPoses(new ArrayList<Pose2d>()); // Clear all notes by setting an empty list of poses
+        }
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
         // if (optionalClosestNote.isPresent()) {
@@ -189,8 +203,8 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _robotState, _lights));
-        NamedCommands.registerCommand("Intake", new AutoIntake(_intake));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
+        NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
     }

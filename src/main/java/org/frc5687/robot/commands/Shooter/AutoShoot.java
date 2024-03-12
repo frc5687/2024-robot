@@ -13,27 +13,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class AutoShoot extends OutliersCommand{
-    private Shooter _shooter;
-    private Intake _intake;
-    private DriveTrain _driveTrain;
-    private RobotState _robotState;
-    private Lights _lights;
+    private final Shooter _shooter;
+    private final Intake _intake;
+    private final DriveTrain _driveTrain;
+    private final RobotState _robotState = RobotState.getInstance();
+    private final Lights _lights;
     private long _endingTimestamp;
-
-    private boolean _isInAngle = false;
-    private boolean _isAtTargetRPM = false;
 
     public AutoShoot(
         Shooter shooter,
         Intake intake,
         DriveTrain driveTrain,
-        RobotState robotState,
         Lights lights
     ) {
         _shooter = shooter;
         _intake = intake;
         _driveTrain = driveTrain;
-        _robotState = robotState;
         _lights = lights;
         addRequirements(_shooter, _intake, _driveTrain);
     }
@@ -55,11 +50,10 @@ public class AutoShoot extends OutliersCommand{
         // add max distance conditional?
         _shooter.setRPMFromDistance(distance);
         
-        Rotation2d currentHeading = _driveTrain.getHeading();
-        _driveTrain.setSnapHeading(angle);
+        _driveTrain.goToHeading(angle);
         _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
 
-        boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
+        boolean isInAngle = _driveTrain.isHeadingInTolerance(angle, Constants.DriveTrain.SNAP_TOLERANCE);
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);

@@ -4,6 +4,7 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.sensors.ProximitySensor;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.util.Helpers;
 import org.frc5687.robot.util.OutliersContainer;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -74,7 +75,7 @@ public class Dunker extends OutliersSubsystem {
     }
 
     public double getDunkerAbsAngleRadians() {
-        return _dunkerAbsEncoder.getDistance();
+        return Helpers.angleWrap(_dunkerAbsEncoder.getDistance(), true);
     }
 
     public void resetMotorEncoderFromAbs() {
@@ -126,6 +127,11 @@ public class Dunker extends OutliersSubsystem {
             resetMotorEncoderFromAbs();
             _tickCounter = 0;
         }
+    }
+
+    public boolean isAtTargetRPM() {
+        return _targetRPM > 0
+                && Math.abs(_targetRPM - (_dunkerDriveTalon.getVelocity().getValue() * 60.0)) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
     @Override

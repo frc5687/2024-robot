@@ -1,33 +1,26 @@
 package org.frc5687.robot.commands.Shooter;
 
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
+import java.util.Optional;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoot extends OutliersCommand{
-    private Shooter _shooter;
-    private Intake _intake;
-    private DriveTrain _driveTrain;
-    private RobotState _robotState;
+    private final Shooter _shooter;
+    private final Intake _intake;
+    private final RobotState _robotState = RobotState.getInstance();
 
     public Shoot(
         Shooter shooter,
-        Intake intake,
-        DriveTrain driveTrain,
-        RobotState robotState
+        Intake intake
     ) {
         _shooter = shooter;
         _intake = intake;
-        _driveTrain = driveTrain;
-        _robotState = robotState;
         addRequirements(_shooter, _intake);
     }
 
@@ -41,25 +34,27 @@ public class Shoot extends OutliersCommand{
     @Override
     public void execute() {
         // Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
-        // _shooter.setTargetRPM(shooterRPMAndAngle.getFirst());
+        // _shooter.setShooterMotorRPM(shooterRPMAndAngle.getFirst().doubleValue());
         // Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
-        // _driveTrain.setTrackingHeading(angle);
+        // _driveTrain.setSnapHeading(angle);
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
-        // add max distance conditional?
-        _shooter.setRPMFromDistance(distance);
-        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
-        _driveTrain.setSnapHeading(angle);
-
-        boolean isInAngle = Math.abs(_driveTrain.getHeading().minus(angle).getRadians()) < Constants.DriveTrain.TARGET_TOLERANCE;
-        metric("IsInAngle", isInAngle);
-        if (_shooter.isAtTargetRPM() && isInAngle) { 
-            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+        Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
+        if (visionDistance.isPresent()) {
+            _shooter.setRPMFromDistance(visionDistance.get());
+        } else {
+            _shooter.setRPMFromDistance(distance);
         }
 
-        SmartDashboard.putNumber("Angle to shoot", angle.getRadians());
-        SmartDashboard.putNumber("Angle Error", Math.abs(_driveTrain.getHeading().minus(angle).getRadians()));
+        boolean isAtTargetRPM = _shooter.isAtTargetRPM();
+        boolean isInAngle = _robotState.isVisionAimedAtTarget();
+        metric("IsInAngle", isInAngle);
+        metric("isAtTargetRPM", isAtTargetRPM);
+        
+        if (isAtTargetRPM && isInAngle) { 
+            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+        }
     }
 
     @Override
@@ -69,7 +64,5 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
-        _driveTrain.setHeadingControllerState(HeadingState.MAINTAIN);
-        _driveTrain.setMaintainHeading(_driveTrain.getHeading());
     }
 }

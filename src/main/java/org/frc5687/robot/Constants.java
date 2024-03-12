@@ -11,6 +11,7 @@ import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
 
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -58,7 +59,7 @@ public class Constants {
  
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
-            CONFIG.CURRENT_DEADBAND = 0.1;
+            CONFIG.CURRENT_DEADBAND = 0.5;
         }
 
         static {
@@ -84,11 +85,11 @@ public class Constants {
             // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
-            DRIVE_CONTROLLER_CONFIG.kP = 15.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 8.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kV = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kA = 0.1;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.3;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.75;
+            DRIVE_CONTROLLER_CONFIG.kA = 0.0;
             // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
@@ -155,6 +156,7 @@ public class Constants {
 
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
+        public static final double MAX_ANG_ACC = 2.0 * Math.PI; // Max angular acceleration of robot (rads/s^2)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
         public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
@@ -221,7 +223,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.4846;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.48828125;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -232,7 +234,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.267578125;
+            NORTH_EAST_CONFIG.encoderOffset = 0.28564453125;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -243,7 +245,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.3396;
+            NORTH_WEST_CONFIG.encoderOffset = -0.407470703125;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -254,7 +256,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.4974;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.497314453125;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -267,23 +269,12 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MAINTAIN_kP = 7.0;
-        public static final double MAINTAIN_kI = 0.0;
-        public static final double MAINTAIN_kD = 0.3;
+        public static final double HEADING_kP = 4.8;
+        public static final double HEADING_kI = 0.0;
+        public static final double HEADING_kD = 0.3;
 
-        public static final double SNAP_kP = 6.5;
-        public static final double SNAP_kI = 0.0;
-        public static final double SNAP_kD = 0.4;
-
-        public static final double TRACKING_kP = 10.0;
-        public static final double TRACKING_kI = 0.0;
-        public static final double TRACKING_kD = 3.0;
- 
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
-
-        public static final double PROFILE_CONSTRAINT_VEL = Math.PI * 6.0;
-        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 12.0;
 
         // AutoAlignDriveController PID
         public static final double kP = 3.3;
@@ -304,7 +295,9 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
-        public static final double HEADING_TOLERANCE = 0.02; // rad
+
+        public static final double HEADING_TOLERANCE = Units.degreesToRadians(1.5); // rad
+
         public static final double BUMP_DEGREES = 7;
 
         public static final double PITCH_LOOKING_ANGLE = Units.degreesToRadians(15.0); // this is degrees because sad.
@@ -344,12 +337,18 @@ public class Constants {
     }
 
     public static class Shooter {
+        public static final double GEAR_RATIO = 0.625;
+        public static final double WHEEL_DIAMETER_METERS = 0.1016;
+
         public static final double VELOCITY_TOLERANCE = 30;
 
-        public static final double IDLE_RPM = 500;
-        public static final double DUNKER_IN_RPM = 500;
+        public static final double IDLE_RPM = 0; // FIXME 3200 is better
+        public static final double PASS_RPM = 1400;
+        public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 1000;
+
+        public static final double EJECT_PERCENT_OUTPUT = 1.0; // 0.75
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
@@ -388,46 +387,48 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kS = 0.2288;
-            SHOOTER_CONTROLLER_CONFIG.kA = 0.047935;
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.46;
-            SHOOTER_CONTROLLER_CONFIG.kI = 0;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.001;
-            SHOOTER_CONTROLLER_CONFIG.kV = 0.117;
-
-            SHOOTER_CONTROLLER_CONFIG.kS1 = 0.2288;
-            SHOOTER_CONTROLLER_CONFIG.kA1= 0.047935;
-            SHOOTER_CONTROLLER_CONFIG.kP1= 0.1;
-            SHOOTER_CONTROLLER_CONFIG.kI1= 0;
-            SHOOTER_CONTROLLER_CONFIG.kD1= 0.0;
-            SHOOTER_CONTROLLER_CONFIG.kV1 = 0.117;
-
+            SHOOTER_CONTROLLER_CONFIG.kP = 10.0;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.0;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
 
-        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-
+        public static final OutliersTalon.Configuration TOP_CONFIG = new OutliersTalon.Configuration();
         static {
-            CONFIG.TIME_OUT = 0.1;
+            TOP_CONFIG.TIME_OUT = 0.1;
             
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
-            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+            TOP_CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            TOP_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
-            CONFIG.MAX_VOLTAGE = 12.0;
+            TOP_CONFIG.MAX_VOLTAGE = 12.0;
 
             // not sure which limit it is
-            CONFIG.MAX_SUPPLY_CURRENT = 60;
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
-            CONFIG.CURRENT_DEADBAND = 0.1;
-            CONFIG.USE_FOC = true;
+            TOP_CONFIG.MAX_CURRENT = 120;
+            TOP_CONFIG.CURRENT_DEADBAND = 0.1;
+            TOP_CONFIG.USE_FOC = true;
+        }
+
+        public static final OutliersTalon.Configuration BOTTOM_CONFIG = new OutliersTalon.Configuration();
+
+        static {
+            BOTTOM_CONFIG.TIME_OUT = 0.1;
+            
+            BOTTOM_CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            BOTTOM_CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            BOTTOM_CONFIG.MAX_VOLTAGE = 12.0;
+
+            BOTTOM_CONFIG.MAX_CURRENT = 120;
+            BOTTOM_CONFIG.CURRENT_DEADBAND = 0.1;
+            BOTTOM_CONFIG.USE_FOC = true;
         }
     }
 
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.25;
+        public static final double INDEX_SPEED = 0.4;
+        public static final double REVERSE_INDEX_SPEED = -0.2;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -445,6 +446,22 @@ public class Constants {
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1;
             CONFIG.USE_FOC = true;
+        }
+
+        public static final ClosedLoopConfiguration CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
+
+        static {
+            CLOSED_LOOP_CONFIG.SLOT = 0;
+            CLOSED_LOOP_CONFIG.kP = 20;
+            CLOSED_LOOP_CONFIG.kI = 0;
+            CLOSED_LOOP_CONFIG.kD = 0;
+            CLOSED_LOOP_CONFIG.kV = 0;
+
+            CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
+            CLOSED_LOOP_CONFIG.ACCELERATION = 100;
+            CLOSED_LOOP_CONFIG.JERK = 500;
+
+            CLOSED_LOOP_CONFIG.IS_CONTINUOUS = false;
         }
     }
 
@@ -514,7 +531,7 @@ public class Constants {
             DRIVE_CLOSED_LOOP_CONFIG.kP = 0.25;
             DRIVE_CLOSED_LOOP_CONFIG.kI = 0;
             DRIVE_CLOSED_LOOP_CONFIG.kD = 0.0001;
-            DRIVE_CLOSED_LOOP_CONFIG.kV = 0.1;
+            DRIVE_CLOSED_LOOP_CONFIG.kV = 0.12;
 
             DRIVE_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 6000;
             DRIVE_CLOSED_LOOP_CONFIG.ACCELERATION = 1000;
@@ -525,10 +542,10 @@ public class Constants {
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
-        public static final double PREP_ANGLE = 1.25;
-        public static final double DUNK_ANGLE = 2.18;
-        public static final double STOWED_ANGLE = 4.16;
-        public static final double CLIMB_ANGLE = 1.05;
+        public static final double PREP_ANGLE = 2.3;
+        public static final double DUNK_ANGLE = 3.4;
+        public static final double STOWED_ANGLE = 5.25;
+        public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
     }
@@ -614,5 +631,9 @@ public class Constants {
         public static int[] MINTISH = {100, 255, 100};
         public static int[] LEAF00 = {30, 175, 0}; //epic color frfr
         public static int[] MILO_BLUE = {1, 52, 133};
+    }
+
+    public static class RobotState {
+        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(1.0);
     }
 }

@@ -85,7 +85,6 @@ public class SwerveModule {
         // Steering Torque Position with exponential curve
         _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
         _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
-
         /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
@@ -108,6 +107,12 @@ public class SwerveModule {
         _isLowGear = false;
 
         _encoder = new CANcoder(encoderPort, config.canBus);
+
+        try {
+            Thread.sleep(250); // Delay for 250 milliseconds people has some issues just making sure
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
         CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
@@ -120,8 +125,9 @@ public class SwerveModule {
 
         FeedbackConfigs feedback = new FeedbackConfigs();
         feedback.FeedbackRemoteSensorID = encoderPort;
-        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        // feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        // feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        //feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
 
 
@@ -204,44 +210,30 @@ public class SwerveModule {
         return _signals;
     }
 
+    private double calculateWantedSpeed(SwerveModuleState state) {
+        return state.speedMetersPerSecond * getGearRatio() * _rotPerMet;
+    }
+
     public void setIdealState(SwerveModuleState state) {
         state = SwerveModuleState.optimize(state, _internalState.angle);
         _goal = state;
-        if (Math.abs(state.speedMetersPerSecond) < Constants.SwerveModule.IDLE_MPS_LIMIT) {
-            stopAll();
-        } else {
-            setModuleState(_goal);
-        }
-    }
-
-    private double calculateWantedSpeed(SwerveModuleState state) {
-        return state.speedMetersPerSecond * getGearRatio() * _rotPerMet;
+        setModuleState(_goal);
     }
 
     public void setModuleState(SwerveModuleState state) {
         _stateMPS = state.speedMetersPerSecond;
         _wantedSpeed = calculateWantedSpeed(state);
+        double angleToSetDeg = state.angle.getRotations();
+        _steeringMotor.setPositionVoltage(angleToSetDeg);
 
         // skew correction logic, team 900 paper, used in CTRE Swerve
-        double steerMotorError = state.angle.minus(getCanCoderAngle()).getRadians();
-        double cosineScalar = Math.cos(steerMotorError);
+        double steerMotorError = angleToSetDeg - _steeringPositionRotations.getValue();
+        double cosineScalar = Math.cos(Units.rotationsToRadians(steerMotorError));
         cosineScalar = Math.max(cosineScalar, 0.0); // Ensure it does not invert drive
         _wantedSpeed *= cosineScalar;
-
-        double position = state.angle.getRotations();
-
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
-        _steeringMotor.setPositionVoltage(position);
-        // This is too slow for me :(
-        // Use new torque exponential curve
-        // _steeringMotor.setControl(_angleTorqueExpo.withPosition(position));
-        // _steeringMotor.setControl(_angleTorque.withPosition(position));
-
-        // For debugging
-        SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
-        SmartDashboard.putNumber("/wantedPosition", position);
-        SmartDashboard.putNumber("/cosineScalar", cosineScalar);
     }
+
     private void transformEncoderFromHighGearToLowGear() {
         refreshSignals();
         double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);

@@ -1,128 +1,102 @@
 package org.frc5687.robot.util;
 
-import org.zeromq.SocketType;
-import org.zeromq.ZMQ;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
+import edu.wpi.first.networktables.RawSubscriber;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
-import org.frc5687.Messages.VisionPose;
-import org.frc5687.Messages.VisionPoseArray;
-import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-import edu.wpi.first.wpilibj.Notifier;
+import org.frc5687.Messages.VisionPoseArray;
+import org.frc5687.Messages.VisionPose;
 
 public class VisionProcessor {
-    private final ZMQ.Context context;
-    private final Map<String, ZMQ.Socket> subscribers = new HashMap<>();
-    private final Map<String, ZMQ.Socket> publishers = new HashMap<>();
-    private volatile boolean running = false;
-    private boolean firstRun = true;
-    private ReentrantLock _mtx;
+    private NetworkTable _visionTable;
+    private RawSubscriber _visionPosesRawEntry;
 
-    private VisionPoseArray _detectedObjects = new VisionPoseArray();
-    private final Notifier _receiveNotifier =
-            new Notifier(
-                    () -> {
-                        synchronized (VisionProcessor.this) {
-                            if (firstRun) {
-                                firstRunSetup();
-                                firstRun = false;
-                            }
-                            receive();
-                        }
-                    });
+    private DetectedNoteArray _detectedObjects = new DetectedNoteArray();
 
     public VisionProcessor() {
-        context = ZMQ.context(1);
-        _mtx = new ReentrantLock();
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        _visionTable = inst.getTable("VisionProcessor");
+        _visionPosesRawEntry = _visionTable.getRawTopic("vision_poses_raw").subscribe("raw", new byte[0], PubSubOption.periodic(0.01),PubSubOption.sendAll(true));
     }
 
-    private void firstRunSetup() {
-        Thread.currentThread().setPriority(2);
-        Thread.currentThread().setName("Vision Thread");
-    }
-
-    public void createSubscriber(String topic, String addr) {
-        ZMQ.Socket subscriber = context.socket(SocketType.SUB);
-        subscriber.connect(addr);
-        subscriber.subscribe(topic.getBytes());
-        subscribers.put(topic, subscriber);
-    }
-
-    public synchronized void createPublisher(String topic, String addr) {
-        ZMQ.Socket publisher = context.socket(SocketType.PUB);
-        publisher.bind(addr); 
-        publishers.put(topic, publisher);
-    }
-
-    public void start() {
-        running = true;
-        _receiveNotifier.startPeriodic(0.01);
-    }
-
-    public void stop() {
-        running = false;
-        _receiveNotifier.stop();
-    }
-
-    public ZMQ.Socket getSubscriber(String topic) {
-        return subscribers.get(topic);
-    }
-
-    private void receive() {
-        subscribers.values().forEach(this::processSubscriber);
-    }
-
-    public VisionPoseArray getDetectedObjects() {
+    public DetectedNoteArray getDetectedObjects() {
         try {
-            _mtx.lock();
-        return _detectedObjects;
-        } finally {
-            _mtx.unlock();
+            byte[] rawData = _visionPosesRawEntry.get(new byte[0]);
+            ByteBuffer bb = ByteBuffer.wrap(rawData);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+
+            VisionPoseArray visionPoseArray = VisionPoseArray.getRootAsVisionPoseArray(bb);
+            int numObjects = visionPoseArray.posesLength();
+
+            DetectedNote[] notes = new DetectedNote[numObjects];
+            for (int i = 0; i < numObjects; i++) {
+                VisionPose visionPose = visionPoseArray.poses(i);
+                int id = visionPose.id();
+                double x = visionPose.x();
+                double y = visionPose.y();
+                double z = visionPose.z();
+                long detectionTimeMs = visionPose.timestamp();
+
+                Translation3d translation = new Translation3d(x, y, z);
+                Rotation3d rotation = new Rotation3d();
+                Pose3d pose = new Pose3d(translation, rotation);
+
+                notes[i] = new DetectedNote(id, pose, detectionTimeMs);
+            }
+
+            _detectedObjects = new DetectedNoteArray(notes);
+            return _detectedObjects;
+        } catch (Exception e) {
+            DriverStation.reportError("RobotState.getDetectedObjects failed due to exception "+e.getMessage(), false);
+            return new DetectedNoteArray(new DetectedNote[0]);
         }
     }
 
-    public void processSubscriber(ZMQ.Socket subscriber) {
-        String topic = subscriber.recvStr();
-        if (topic != null) {
-            byte[] data = subscriber.recv();
-            if (data != null) {
-                switch (topic) {
-                    case "HeartBeat":
-                        System.out.println("Not implemented HeartBeat");
-                        // Assuming HeartBeat decoding is implemented elsewhere
-                        break;
-                    case "IMUInfo":
-                        // Assuming IMUInfo decoding is implemented elsewhere
-                        break;
-                    case "VisionPose":
-                        ByteBuffer bb1 = ByteBuffer.wrap(data);
-                        VisionPose visionPose1 = VisionPose.getRootAsVisionPose(bb1);
-                        System.out.println("VisionPose{ x: " + visionPose1.x() + " y: " + visionPose1.y() + " z: " + visionPose1.z() + " }");
-                        break;
-                    case "Objects":
-                        try {
-                            _mtx.lock();
-                            ByteBuffer bb = ByteBuffer.wrap(data);
-                            bb.order(ByteOrder.LITTLE_ENDIAN);
-                            _detectedObjects = VisionPoseArray.getRootAsVisionPoseArray(bb);
-                            long receiveTimestampMs = System.currentTimeMillis();
-                            if (_detectedObjects.posesLength() > 0) {
-                                long sendTimestampMs = _detectedObjects.poses(0).timestamp();
-                                long latencyMs = receiveTimestampMs - sendTimestampMs;
-                                // System.out.println("Relative latency is: " + latencyMs);
-                            }
-                        } catch (IndexOutOfBoundsException e) {
-                            System.err.println("Failed to process VisionPoseArray due to IndexOutOfBoundsException.");
-                            // Log additional details here
-                        } finally {
-                            _mtx.unlock();
+    public static class DetectedNote {
+        private final int _id;
+        private final Pose3d _pose;
+        private final long _detectionTimeMs;
 
-                        }              
-                }
-            }
+        public DetectedNote(int id, Pose3d pose, long detectionTimeMs) {
+            _id = id;
+            _pose = pose;
+            _detectionTimeMs = detectionTimeMs;
+        }
+
+        public int getId() {
+            return _id;
+        }
+
+        public Pose3d getPose() {
+            return _pose;
+        }
+
+        public long getDetectionTimeMs() {
+            return _detectionTimeMs;
+        }
+    }
+
+    public static class DetectedNoteArray {
+        private final DetectedNote[] _notes;
+
+        public DetectedNoteArray(DetectedNote[] notes) {
+            _notes = notes;
+        }
+
+        public DetectedNoteArray() {
+            _notes = new DetectedNote[0];
+        }
+
+        public DetectedNote[] getNotes() {
+            return _notes;
         }
     }
 }
