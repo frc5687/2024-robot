@@ -23,9 +23,25 @@
         "x": 4.347271576743513,
         "y": 1.9350484415254552
       },
-      "nextControl": null,
+      "nextControl": {
+        "x": 1.8927284232564876,
+        "y": 4.1812225780928545
+      },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
+    },
+    {
+      "anchor": {
+        "x": 13.335844716144203,
+        "y": 3.286077278474259
+      },
+      "prevControl": {
+        "x": 7.580179447582755,
+        "y": 3.684150566196233
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -50,14 +66,14 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.8,
-    "maxAcceleration": 22.0,
+    "maxVelocity": 3.6,
+    "maxAcceleration": 15.0,
     "maxAngularVelocity": 534.0,
-    "maxAngularAcceleration": 6761.0
+    "maxAngularAcceleration": 2000.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.6428999631213,
+    "rotation": 35.59554060760214,
     "rotateFast": false
   },
   "reversed": false,

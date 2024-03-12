@@ -353,6 +353,9 @@ public class RobotState {
         }
         return false;
     }
+    public boolean isRedAlliance(){
+        return _driveTrain.isRedAlliance();
+    }
 
     /**
      * This changes the standard deviations to trust vision measurements less the

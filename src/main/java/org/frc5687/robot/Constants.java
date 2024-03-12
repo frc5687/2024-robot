@@ -144,7 +144,7 @@ public class Constants {
         public static final double SWERVE_NS_POS = LENGTH / 2.0;
         public static final double SWERVE_WE_POS = WIDTH / 2.0;
 
-        public static final double MOTOR_LOAD_OUTPUT_PERCENTAGE = 0.9; // Assume that there is and efficiency drop under load
+        public static final double MOTOR_LOAD_OUTPUT_PERCENTAGE = 1.0; // Assume that there is and efficiency drop under load
         public static final double MAX_FALCON_FOC_RPM = 6080.0 * MOTOR_LOAD_OUTPUT_PERCENTAGE;
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0 * MOTOR_LOAD_OUTPUT_PERCENTAGE;
         public static final double MAX_KRAKEN_FOC_TORQUE = 1.552; // This is from a 80 amp current limit
@@ -313,6 +313,9 @@ public class Constants {
 
         public static final double MIN_PSI = 80.0;
         public static final double MAX_PSI = 120.0;
+
+        public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.271, 3.181), new Rotation2d(-0.644));
+        public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.371, 3.181), new Rotation2d(0.644));
     }
 
     public static class Vision {
