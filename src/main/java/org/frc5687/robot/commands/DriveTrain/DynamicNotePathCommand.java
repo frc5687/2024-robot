@@ -23,6 +23,7 @@ public class DynamicNotePathCommand extends Command {
 
     @Override
     public void initialize() {
+        scheduledCommand = null;
     }
 
     @Override

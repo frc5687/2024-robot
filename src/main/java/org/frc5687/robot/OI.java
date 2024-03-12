@@ -8,6 +8,7 @@ import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.AutoAim;
 import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
@@ -89,7 +90,9 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake).alongWith(new AutoAim(drivetrain)));
 
-        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        _driverGamepad.getAButton().onTrue(new DynamicNotePathCommand().alongWith(new IntakeCommand(intake, this)));
+
+        // _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
         _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
@@ -119,6 +122,7 @@ public class OI extends OutliersProxy {
 
         _operatorGamepad.getLeftBumper().onTrue(new ToggleAutoSpinUp(shooter));
         _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake));
+
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }
