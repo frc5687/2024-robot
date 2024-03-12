@@ -189,14 +189,14 @@ public class Constants {
 
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = MAX_HIGH_GEAR_MPSS; // m/s^2 old 20, new based on math :) 
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2 old 20, new based on math :) 
             HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
-            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = MAX_LOW_GEAR_MPSS; // m/s^2 // old 35, new based on math
+            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2 // old 35, new based on math
             LOW_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_LOW_GEAR_RADS; // rad/s
         }
 

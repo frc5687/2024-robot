@@ -90,6 +90,9 @@ public class SwerveHeadingController {
             default:
                 break;
         }
+        if (isAtTargetAngle(heading)) {
+            power = 0;
+        }
     
         double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
     

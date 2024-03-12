@@ -9,6 +9,7 @@ import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
+import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IndexNote;
@@ -115,8 +116,8 @@ public class RobotContainer extends OutliersContainer {
     public void periodic() {
         _field.setRobotPose(_robotState.getEstimatedPose());
 
-        // var notes = _robotState.getAllNotesRelativeField();
-        var notes = _robotState.getAllTrackedNotesRelativeField();
+        // var notes = _robotState.getAllNotesRlativeField();
+        var notes = _robotState.getAllNotesRelativeField();
 
         if (notes.isPresent()) {
             var fieldNotes = _field.getObject("notes");
@@ -204,6 +205,7 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
+        NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));

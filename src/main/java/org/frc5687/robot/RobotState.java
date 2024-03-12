@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.robot.util.NoteTracker;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
@@ -58,7 +57,6 @@ public class RobotState {
     private PhotonProcessor _photonProcessor;
     private VisionProcessor _visionProcessor;
     private SwerveDrivePoseEstimator _poseEstimator;
-    private NoteTracker _noteTracker = new NoteTracker();
 
     private volatile SwerveDriveState _cachedState = new SwerveDriveState();
     private volatile Pose2d _estimatedPose = new Pose2d();
@@ -193,10 +191,7 @@ public class RobotState {
     public void periodic() {
         updateOdometry();
         updateWithVision();
-        var notes = getAllNotesRelativeField();
-        if (notes.isPresent()) {
-            _noteTracker.updateTrackedNotes(getAllNotesRelativeField().get());
-        }
+  
 
         _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
         _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
@@ -493,10 +488,6 @@ public class RobotState {
         }
 
         return Optional.of(notePosesRelativeField);
-    }
-
-    public Optional<List<Pose2d>> getAllTrackedNotesRelativeField() {
-        return Optional.of(_noteTracker.getTrackedNotes());
     }
 
     public SwerveDriveState getState() {
