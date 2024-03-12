@@ -29,6 +29,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -46,6 +47,7 @@ public class RobotState {
         public Pose2d pose;
         public ChassisSpeeds speeds;
     }
+
     private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     private Thread _periodicThread;
@@ -72,7 +74,6 @@ public class RobotState {
     private double _lastTimestamp;
     private Transform3d _robotToCamera;
     private final double _period = 1.0 / 150.0; // Run at 200Hz
-
 
     public RobotState() {
     }
@@ -193,7 +194,6 @@ public class RobotState {
     public void periodic() {
         updateOdometry();
         updateWithVision();
-  
 
         _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
         _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
@@ -211,7 +211,7 @@ public class RobotState {
         newState.speeds = _driveTrain.getMeasuredChassisSpeeds();
         _cachedState = newState;
     }
- 
+
     public Pose2d getEstimatedPose() {
         return _estimatedPose;
     }
@@ -285,7 +285,8 @@ public class RobotState {
         Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
         double initialDistance = initialDistanceAndAngle.getFirst();
 
-        double initialShooterRPM = Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(initialDistance)).value;
+        double initialShooterRPM = Constants.Shooter.kRPMMap
+                .getInterpolated(new InterpolatingDouble(initialDistance)).value;
 
         double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM);
         double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
@@ -293,11 +294,14 @@ public class RobotState {
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
         Pose3d targetPose = getSpeakerTagPose();
-        double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(), targetPose.getY() - futurePose.getY());
+        double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
+                targetPose.getY() - futurePose.getY());
 
-        double adjustedShooterRPM = Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(futureDistance)).value;
+        double adjustedShooterRPM = Constants.Shooter.kRPMMap
+                .getInterpolated(new InterpolatingDouble(futureDistance)).value;
 
-        Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
+        Rotation2d adjustedAngle = new Rotation2d(
+                Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
 
         return new Pair<>(initialShooterRPM, adjustedAngle.getRadians());
     }
@@ -306,7 +310,8 @@ public class RobotState {
         Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
         double initialDistance = initialDistanceAndAngle.getFirst();
 
-        double initialShooterRPM = Constants.Shooter.kRPMMap.getInterpolated(new InterpolatingDouble(initialDistance)).value;
+        double initialShooterRPM = Constants.Shooter.kRPMMap
+                .getInterpolated(new InterpolatingDouble(initialDistance)).value;
 
         double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM);
         double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
@@ -315,7 +320,8 @@ public class RobotState {
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
         Pose3d targetPose = getSpeakerTagPose();
 
-        Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
+        Rotation2d adjustedAngle = new Rotation2d(
+                Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
         return new Pose2d(futureX, futureY, adjustedAngle);
     }
 
@@ -323,13 +329,13 @@ public class RobotState {
         double futureX = _lastPose.getX() + _velocity.dx * shootTime;
         double futureY = _lastPose.getY() + _velocity.dy * shootTime;
 
-        Pose2d futurePose = new Pose2d(futureX, futureY,_driveTrain.getHeading());
+        Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
         Pose3d targetPose = getSpeakerTagPose();
-        Rotation2d adjustedAngle = new Rotation2d(Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
+        Rotation2d adjustedAngle = new Rotation2d(
+                Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
         futurePose = new Pose2d(futureX, futureY, adjustedAngle);
         return futurePose;
     }
-    
 
     private double calculateShotTravelTime(double distance, double shooterRPM) {
         double wheelCircumference = Math.PI * Constants.Shooter.WHEEL_DIAMETER_METERS;
@@ -356,7 +362,7 @@ public class RobotState {
 
         return isPoseAimedAtSpeaker();
     }
- 
+
     private Optional<Boolean> isVisionAimedAtSpeaker() {
         Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
         if (visionAngle.isPresent()) {
@@ -369,13 +375,14 @@ public class RobotState {
     private boolean isPoseAimedAtSpeaker() {
         Rotation2d heading = _driveTrain.getHeading();
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToSpeaker().getSecond());
-        
+
         Rotation2d difference = heading.minus(targetAngle);
         return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
     }
 
     /**
      * breaks if the driver station has no alliance
+     * 
      * @param pose the pose to check if it is on the alliance side :o
      * @return boolean idk
      */
@@ -391,7 +398,7 @@ public class RobotState {
         return DriverStation.getAlliance();
     }
 
-    public boolean isRedAlliance(){
+    public boolean isRedAlliance() {
         return _driveTrain.isRedAlliance();
     }
 
@@ -446,7 +453,7 @@ public class RobotState {
         return distance;
     }
 
-    public Optional<Double> getDistanceToSpeakerFromVision()  {
+    public Optional<Double> getDistanceToSpeakerFromVision() {
         return _visionDistance;
     }
 
@@ -482,17 +489,6 @@ public class RobotState {
         return closestNotePose;
     }
 
-    public Optional<Rotation2d> getAngleToClosestNoteRobotCenter() {
-        Optional<Pose3d> optionalPose3d = getClosestNoteRelativeRobotCenter();
-        if (optionalPose3d.isEmpty()) {
-            return Optional.empty();
-        }
-        Pose2d pose2d = optionalPose3d.get().toPose2d();
-        double angleToNote = Math.atan2(pose2d.getY(), pose2d.getX());
-        Rotation2d noteDirection = new Rotation2d(angleToNote);
-        return Optional.of(noteDirection);
-    }
-
     public Optional<Pose2d> getClosestNoteRelativeField() {
         Pose2d robotPose = getEstimatedPose();
         Optional<Pose3d> optionalPose3d = getClosestNoteRelativeRobotCenter();
@@ -505,7 +501,14 @@ public class RobotState {
                 notePose2dRelativeRobotCenter.getRotation());
         Pose2d notePoseRelativeField = robotPose.transformBy(noteTransform);
 
-        return Optional.of(notePoseRelativeField);
+        double angleToNote = Math.atan2(notePoseRelativeField.getY() - robotPose.getY(),
+                notePoseRelativeField.getX() - robotPose.getX());
+
+        Translation2d desiredTranslation = notePoseRelativeField.getTranslation()
+                .minus(new Translation2d(Math.cos(angleToNote), Math.sin(angleToNote)).times(0.5)); // Adjust the offset for better angle if base
+        Rotation2d desiredRotation = new Rotation2d(angleToNote);
+
+        return Optional.of(new Pose2d(desiredTranslation, desiredRotation));
     }
 
     public Optional<List<Pose2d>> getAllNotesRelativeField() {
@@ -521,7 +524,14 @@ public class RobotState {
                     notePose2dRelativeRobotCenter.getRotation());
             Pose2d notePoseRelativeField = robotPose.transformBy(noteTransform);
 
-            notePosesRelativeField.add(notePoseRelativeField);
+            double angleToNote = Math.atan2(notePoseRelativeField.getY() - robotPose.getY(),
+                    notePoseRelativeField.getX() - robotPose.getX());
+
+            Translation2d desiredTranslation = notePoseRelativeField.getTranslation()
+                    .minus(new Translation2d(Math.cos(angleToNote), Math.sin(angleToNote)).times(0.5)); // Adjust the offset for better angle.
+            Rotation2d desiredRotation = new Rotation2d(angleToNote);
+
+            notePosesRelativeField.add(new Pose2d(desiredTranslation, desiredRotation));
         }
 
         if (notePosesRelativeField.isEmpty()) {
