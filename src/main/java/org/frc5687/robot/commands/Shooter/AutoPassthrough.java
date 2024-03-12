@@ -13,6 +13,7 @@ public class AutoPassthrough extends OutliersCommand {
     public AutoPassthrough(Shooter shooter, Intake intake) {
         _shooter = shooter;
         _intake = intake;
+        addRequirements(_shooter, _intake);
     }
 
     @Override

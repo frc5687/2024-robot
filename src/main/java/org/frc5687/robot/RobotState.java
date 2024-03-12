@@ -390,6 +390,7 @@ public class RobotState {
     public Optional<Alliance> getAlliance() {
         return DriverStation.getAlliance();
     }
+
     public boolean isRedAlliance(){
         return _driveTrain.isRedAlliance();
     }

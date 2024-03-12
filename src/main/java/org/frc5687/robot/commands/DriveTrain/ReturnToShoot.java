@@ -19,7 +19,7 @@ import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 public class ReturnToShoot extends Command {
    
     private Command scheduledCommand = null;
-    private final RobotState _RobotState = RobotState.getInstance();
+    private final RobotState _robotState = RobotState.getInstance();
     
     
     public ReturnToShoot(){
@@ -31,7 +31,7 @@ public class ReturnToShoot extends Command {
     }
     @Override
     public void execute() {
-        Pose2d pose = _RobotState.isRedAlliance() ? Constants.DriveTrain.RED_SHOOT_POSE : Constants.DriveTrain.BLUE_SHOOT_POSE;
+        Pose2d pose = _robotState.isRedAlliance() ? Constants.DriveTrain.RED_SHOOT_POSE : Constants.DriveTrain.BLUE_SHOOT_POSE;
         if (scheduledCommand == null) { // we haven't scheduled a command yet
 
                 
