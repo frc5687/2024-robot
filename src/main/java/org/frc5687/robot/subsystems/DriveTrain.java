@@ -514,7 +514,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     /* Shift stuff start */
     public void shiftUpModules() {
-        // _shift.set(Value.kForward);
+        _shift.set(Value.kForward);
         _isLowGear = false;
         setKinematicLimits(HIGH_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
@@ -523,7 +523,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void shiftDownModules() {
-        // _shift.set(Value.kReverse);
+        _shift.set(Value.kReverse);
         setKinematicLimits(LOW_KINEMATIC_LIMITS);
         for (int i = 0; i < _modules.length; i++) {
             _modules[i].shiftDown();
