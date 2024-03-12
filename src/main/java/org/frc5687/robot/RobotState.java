@@ -35,7 +35,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotState {
@@ -345,13 +347,48 @@ public class RobotState {
                 && distance < Constants.Shooter.OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT;
     }
 
-    public boolean isVisionAimedAtTarget() {
+    public boolean isAimedAtSpeaker() {
+        Optional<Boolean> visionAimed = isVisionAimedAtSpeaker();
+
+        if (visionAimed.isPresent()) {
+            return visionAimed.get();
+        }
+
+        return isPoseAimedAtSpeaker();
+    }
+ 
+    private Optional<Boolean> isVisionAimedAtSpeaker() {
         Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
         if (visionAngle.isPresent()) {
             double angle = visionAngle.get().getRadians();
-            return Math.abs(angle) < Constants.RobotState.VISION_AIMING_TOLERANCE;
+            return Optional.of(Math.abs(angle) < Constants.RobotState.VISION_AIMING_TOLERANCE);
         }
-        return false;
+        return Optional.empty();
+    }
+
+    private boolean isPoseAimedAtSpeaker() {
+        Rotation2d heading = _driveTrain.getHeading();
+        Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToSpeaker().getSecond());
+        
+        Rotation2d difference = heading.minus(targetAngle);
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+    }
+
+    /**
+     * breaks if the driver station has no alliance
+     * @param pose the pose to check if it is on the alliance side :o
+     * @return boolean idk
+     */
+    public boolean isOnAllianceHalf(Pose2d pose) {
+        if (getAlliance().get() == Alliance.Red) {
+            return pose.getX() > Constants.FieldConstants.FIELD_LENGTH / 2.0;
+        } else {
+            return pose.getX() < Constants.FieldConstants.FIELD_LENGTH / 2.0;
+        }
+    }
+
+    public Optional<Alliance> getAlliance() {
+        return DriverStation.getAlliance();
     }
 
     /**
