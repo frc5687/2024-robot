@@ -100,14 +100,14 @@ public class DriveLights extends OutliersCommand {
             }
         // Is in optimal shooting range
         } else if (_robotState.isWithinOptimalRange()) {
-            if (_intake.isTopDetected() || _intake.isBottomDetected()) {
+            if (_intake.isTopDetected() || _intake.isBottomDetected() || _intake.isMiddleDetected()) {
                 _lights.setColor(Constants.CANdle.GREEN);
             } else {
                 _lights.setColor(allianceColor);
             }
             _lights.switchAnimation(AnimationType.STROBE);
         // Is in amp mode
-        } else if (_intake.isTopDetected() || _intake.isBottomDetected()) {
+        } else if (_intake.isTopDetected() || _intake.isBottomDetected() || _intake.isMiddleDetected()) {
             _lights.setColor(Constants.CANdle.GREEN);
             _lights.switchAnimation(AnimationType.STATIC);
         //Targeting Note 

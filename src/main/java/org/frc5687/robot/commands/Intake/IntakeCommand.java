@@ -4,31 +4,39 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.RumbleGamepad;
+import org.frc5687.robot.commands.Intake.IndexNote.IndexState;
 import org.frc5687.robot.subsystems.Intake;
 
 public class IntakeCommand extends OutliersCommand{
     private Intake _intake;
     private OI _oi;
+    private boolean _noteInIndex;
 
     public IntakeCommand(Intake intake, OI oi) {
         _intake = intake;
         _oi = oi;
+        _noteInIndex = false;
         addRequirements(_intake);
     }
 
     @Override
     public void initialize() {
         super.initialize();
+        if (_intake.isNoteIndexed()) {
+            _noteInIndex = true;
+        }
     }
 
     @Override
     public void execute() {
-        _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+        if (!_noteInIndex) {
+            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return _intake.isBottomDetected();
+        return _intake.isBottomDetected() || _noteInIndex;
     }
 
     @Override

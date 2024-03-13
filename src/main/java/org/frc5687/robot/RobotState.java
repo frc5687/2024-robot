@@ -505,7 +505,9 @@ public class RobotState {
                 notePoseRelativeField.getX() - robotPose.getX());
 
         Translation2d desiredTranslation = notePoseRelativeField.getTranslation()
-                .minus(new Translation2d(Math.cos(angleToNote), Math.sin(angleToNote)).times(0.5)); // Adjust the offset for better angle if base
+                .minus(new Translation2d(Math.cos(angleToNote), Math.sin(angleToNote)).times(0.5)); // Adjust the
+                                                                                                    // distance as
+                                                                                                    // needed
         Rotation2d desiredRotation = new Rotation2d(angleToNote);
 
         return Optional.of(new Pose2d(desiredTranslation, desiredRotation));
@@ -528,7 +530,7 @@ public class RobotState {
                     notePoseRelativeField.getX() - robotPose.getX());
 
             Translation2d desiredTranslation = notePoseRelativeField.getTranslation()
-                    .minus(new Translation2d(Math.cos(angleToNote), Math.sin(angleToNote)).times(0.5)); // Adjust the offset for better angle.
+                    .minus(new Translation2d(Math.cos(angleToNote), Math.sin(angleToNote)).times(.5)); // Adjust the offset for better astuff
             Rotation2d desiredRotation = new Rotation2d(angleToNote);
 
             notePosesRelativeField.add(new Pose2d(desiredTranslation, desiredRotation));

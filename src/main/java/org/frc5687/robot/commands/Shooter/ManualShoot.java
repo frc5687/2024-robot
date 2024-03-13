@@ -4,10 +4,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ManualShoot extends OutliersCommand{
     private Shooter _shooter;
@@ -28,11 +25,9 @@ public class ManualShoot extends OutliersCommand{
         // _shooter.setManualShootRPM(3200);
         _shooter.setToManualShoot();
 
-       
         if (_shooter.isAtTargetRPM()) {
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
-
       
     }
 

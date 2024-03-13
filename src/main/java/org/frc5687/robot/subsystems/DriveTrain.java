@@ -254,12 +254,12 @@ public class DriveTrain extends OutliersSubsystem {
                 _robotState::getEstimatedPose, // Robot pose supplier
                 _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                this::setRawChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.00), // Translation PID constants
+                        new PIDConstants(6.0, 0.0, 0.00), // Translation PID constants
                         new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI, Constants.DriveTrain.HEADING_kD), // Rotation PID constants
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        Constants.DriveTrain.ROBOT_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {
@@ -350,7 +350,11 @@ public class DriveTrain extends OutliersSubsystem {
         }
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
-        updateDesiredStates();
+        // Dont use setpoint generator for trajectory
+        if (_controlState != ControlState.TRAJECTORY) {
+            updateDesiredStates();
+        }
+
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
 
@@ -365,6 +369,12 @@ public class DriveTrain extends OutliersSubsystem {
     public void setVelocity(ChassisSpeeds chassisSpeeds) {
         _systemIO.desiredChassisSpeeds = chassisSpeeds;
     }
+
+    public void setRawChassisSpeeds(ChassisSpeeds speeds) {
+        SwerveModuleState[] desiredModuleState = _kinematics.toSwerveModuleStates(speeds);
+        _systemIO.setpoint.moduleStates = desiredModuleState;
+    }
+
 
     public SwerveSetpoint getSetpoint() {
         return _systemIO.setpoint;

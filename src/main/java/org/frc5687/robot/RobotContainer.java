@@ -16,6 +16,7 @@ import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
+import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.RevShooter;
 import org.frc5687.robot.subsystems.Climber;
@@ -25,6 +26,7 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.DriveTrain.ControlState;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
@@ -154,11 +156,13 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void teleopInit() {
         _robotState.useTeleopStandardDeviations();
+        _driveTrain.setControlState(ControlState.MANUAL);
     }
 
     @Override
     public void autonomousInit() {
         _robotState.useAutoStandardDeviations();
+        _driveTrain.setControlState(ControlState.TRAJECTORY);
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
     }
 
@@ -194,6 +198,11 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride() {
+        var visionAngle = _robotState.getAngleToSpeakerFromVision();
+        if (visionAngle.isPresent()) {
+            return Optional.of(_driveTrain.getHeading().minus(visionAngle.get()));
+        }
+        return Optional.empty();
         // // Some condition that should decide if we want to override rotation
         // if (_shooter.getAutoShootFlag()) {
         //     // Return an optional containing the rotation override (this should be a field
@@ -201,7 +210,7 @@ public class RobotContainer extends OutliersContainer {
         //     return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         // } else {
         //     // return an empty optional when we don't want to override the path's rotation
-            return Optional.empty();
+            // return Optional.empty();
         // }
 
     }
@@ -213,5 +222,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
+        NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2500.0));
+        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2500.0));
     }
 }
