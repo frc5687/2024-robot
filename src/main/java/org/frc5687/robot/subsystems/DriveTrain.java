@@ -17,7 +17,6 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
-import org.frc5687.robot.Constants.VisionConfig.Auto;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -48,31 +47,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class DriveTrain extends OutliersSubsystem {
-    public enum ControlState {
-        /* Neutral state */
-        NEUTRAL(0),
-        /* Driving With Joystick */
-        MANUAL(1),
-
-        /* Use pose controller to drive */
-        POSITION(2),
-
-        /* Rotation only control */
-        ROTATION(3),
-        /* Trajectory driving control */
-        TRAJECTORY(4);
-
-        private final int _value;
-
-        ControlState(int value) {
-            _value = value;
-        }
-
-        public int getValue() {
-            return _value;
-        }
-    }
-
     /**
      * SystemIO is input, output of our drivetrain that we want to cache.
      */
@@ -92,7 +66,6 @@ public class DriveTrain extends OutliersSubsystem {
         };
         Rotation2d heading = new Rotation2d(0.0);
         double pitch = 0.0;
-        Pose2d odometryPose = new Pose2d();
 
         SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), new SwerveModuleState[4]);
     }
@@ -110,15 +83,11 @@ public class DriveTrain extends OutliersSubsystem {
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
 
-
     private final BaseStatusSignal[] _signals;
 
     private final SwerveDriveKinematics _kinematics;
 
     private final SwerveHeadingController _headingController;
-
-    // controllers [Heading, Pose, Trajectory]
-    private ControlState _controlState;
 
     // IMU (Pigeon)
     private final Pigeon2 _imu;
@@ -139,7 +108,6 @@ public class DriveTrain extends OutliersSubsystem {
 
     private boolean _fieldCentric = true;
 
-
     public DriveTrain(
             OutliersContainer container,
             Pigeon2 imu) {
@@ -158,8 +126,6 @@ public class DriveTrain extends OutliersSubsystem {
         // configure our system IO and pigeon;
         _imu = imu;
         _systemIO = new SystemIO();
-
-        _controlState = ControlState.NEUTRAL;
 
         // set up the modules
         _modules = new SwerveModule[4];
@@ -198,14 +164,13 @@ public class DriveTrain extends OutliersSubsystem {
         _signals[NUM_MODULES * 4] = _imu.getYaw();
         _signals[NUM_MODULES * 4 + 1] = _imu.getPitch();
         _signals[NUM_MODULES * 4 + 2] = _imu.getRoll();
-  
 
         // frequency in Hz
         configureSignalFrequency(250);
-        // configureModuleControlFrequency(1000); 
+        // configureModuleControlFrequency(1000);
 
         // configure startup offset
-        _yawOffset = _imu.getYaw().getValue(); 
+        _yawOffset = _imu.getYaw().getValue();
         readIMU();
 
         _kinematics = new SwerveDriveKinematics(
@@ -226,20 +191,19 @@ public class DriveTrain extends OutliersSubsystem {
         _headingController = new SwerveHeadingController(Constants.UPDATE_PERIOD);
 
         _poseController = new HolonomicDriveController(
-            new PIDController(
-                    Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
-            new PIDController(
-                    Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
-            new ProfiledPIDController(
-                    HEADING_kP,
-                    HEADING_kI,
-                    HEADING_kD,
-                    new TrapezoidProfile.Constraints(
-                            Constants.DriveTrain.MAX_ANG_VEL,
-                            Constants.DriveTrain.MAX_ANG_ACC)));
+                new PIDController(
+                        Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI, Constants.DriveTrain.POSE_kD),
+                new PIDController(
+                        Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI, Constants.DriveTrain.POSE_kD),
+                new ProfiledPIDController(
+                        HEADING_kP,
+                        HEADING_kI,
+                        HEADING_kD,
+                        new TrapezoidProfile.Constraints(
+                                Constants.DriveTrain.MAX_ANG_VEL,
+                                Constants.DriveTrain.MAX_ANG_ACC)));
 
         _hoverGoal = new Pose2d();
-        _controlState = ControlState.MANUAL;
         _isLowGear = true;
 
         zeroGyroscope();
@@ -252,26 +216,34 @@ public class DriveTrain extends OutliersSubsystem {
         // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
                 _robotState::getEstimatedPose, // Robot pose supplier
-                _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                _robotState::setEstimatedPose, // Method to reset odometry (will be called if your auto has a starting
+                                               // pose)
                 this::getMeasuredChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setRawChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(6.0, 0.0, 0.00), // Translation PID constants
-                        new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI, Constants.DriveTrain.HEADING_kD), // Rotation PID constants
+                this::setVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+                                                 // Constants class
+                        new PIDConstants(Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI,
+                                Constants.DriveTrain.POSE_kD), // Translation PID constants
+                        new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI,
+                                Constants.DriveTrain.HEADING_kD), // Rotation PID constants
+                        // Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
+                        // auto need to set to high gear mps
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
-                        Constants.DriveTrain.ROBOT_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
+                        Constants.DriveTrain.ROBOT_RADIUS, // Drive base radius in meters. Distance from robot center to
+                                                           // furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+                    // Boolean supplier that controls when the path will be mirrored for the red
+                    // alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
                 },
                 this // Reference to this subsystem to set requirements
         );
@@ -348,22 +320,14 @@ public class DriveTrain extends OutliersSubsystem {
             shiftDownModules();
             _hasShiftInit = true;
         }
+
+        autoShifter();
+
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
-        // Dont use setpoint generator for trajectory
-        if (_controlState != ControlState.TRAJECTORY) {
-            updateDesiredStates();
-        }
 
+        updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
-    }
-
-    public void setControlState(ControlState state) {
-        _controlState = state;
-    }
-
-    public ControlState getControlState() {
-        return _controlState;
     }
 
     public void setVelocity(ChassisSpeeds chassisSpeeds) {
@@ -372,9 +336,11 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setRawChassisSpeeds(ChassisSpeeds speeds) {
         SwerveModuleState[] desiredModuleState = _kinematics.toSwerveModuleStates(speeds);
+        double maxModuleMps = isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
+                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleState, maxModuleMps);
         _systemIO.setpoint.moduleStates = desiredModuleState;
     }
-
 
     public SwerveSetpoint getSetpoint() {
         return _systemIO.setpoint;
@@ -469,9 +435,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Swerve State", _controlState.name());
         metric("Current Heading", getHeading().getRadians());
-        metric("Current Heading (-pi, pi]", new Rotation2d(getHeading().getRadians()).getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
         metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
         metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
@@ -574,7 +538,7 @@ public class DriveTrain extends OutliersSubsystem {
         }
     }
     /* Shift stuff end */
-    
+
     public double getYaw() {
         return _systemIO.heading.getRadians();
     }

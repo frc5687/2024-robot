@@ -1,8 +1,10 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
+import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Optional;
 
 import org.frc5687.robot.commands.DriveLights;
@@ -26,7 +28,6 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain.ControlState;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
@@ -41,7 +42,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -156,13 +156,13 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void teleopInit() {
         _robotState.useTeleopStandardDeviations();
-        _driveTrain.setControlState(ControlState.MANUAL);
+        // enforce to make sure kinematic limits are set back to normal.
+        _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? LOW_KINEMATIC_LIMITS : HIGH_KINEMATIC_LIMITS);
     }
 
     @Override
     public void autonomousInit() {
         _robotState.useAutoStandardDeviations();
-        _driveTrain.setControlState(ControlState.TRAJECTORY);
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
     }
 

@@ -289,22 +289,10 @@ public class Constants {
         public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
         public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
 
-        // AutoAlignDriveController PID
-        public static final double kP = 3.3;
-        public static final double kI = 0.0;
-        public static final double kD = 0.05;
-
-        public static final double X_TRAJECTORY_kP = 3.8;
-        public static final double X_TRAJECTORY_kI = 0.0;
-        public static final double X_TRAJECTORY_kD = 0.02;
-
-        public static final double Y_TRAJECTORY_kP = 3.8;
-        public static final double Y_TRAJECTORY_kI = 0.0;
-        public static final double Y_TRAJECTORY_kD = 0.02;
-
-        public static final double ANGLE_TRAJECTORY_kP = 3.2;
-        public static final double ANGLE_TRAJECTORY_kI = 0.0;
-        public static final double ANGLE_TRAJECTORY_kD = 0.05;
+        // Pose PID for trajectory and drive to pose
+        public static final double POSE_kP = 3.3;
+        public static final double POSE_kI = 0.0;
+        public static final double POSE_kD = 0.0;
 
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;

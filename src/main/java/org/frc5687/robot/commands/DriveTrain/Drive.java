@@ -40,7 +40,6 @@ public class Drive extends OutliersCommand {
     @Override
     public void initialize() {
         _driveTrain.goToHeading(_driveTrain.getHeading());
-        _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
     }
 
     @Override
