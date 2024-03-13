@@ -489,7 +489,7 @@ public class Constants {
 
         static {
             ARM_CLOSED_LOOP_CONFIG.SLOT = 0;
-            ARM_CLOSED_LOOP_CONFIG.kP = 8;
+            ARM_CLOSED_LOOP_CONFIG.kP = 10;
             ARM_CLOSED_LOOP_CONFIG.kI = 0;
             ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
             ARM_CLOSED_LOOP_CONFIG.kV = 0;
@@ -539,7 +539,7 @@ public class Constants {
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
         public static final double PREP_ANGLE = 2.3;
-        public static final double DUNK_ANGLE = 3.35;
+        public static final double DUNK_ANGLE = 3.24;
         public static final double STOWED_ANGLE = 5.25;
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
