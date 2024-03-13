@@ -2,7 +2,6 @@
 package org.frc5687.robot.subsystems;
 
 import static org.frc5687.robot.Constants.SwerveModule.WHEEL_RADIUS;
-import static org.frc5687.robot.Constants.SwerveModule.kDt;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
@@ -148,17 +147,20 @@ public class SwerveModule {
         _steeringVelocityRotationsPerSec = _encoder.getVelocity();
 
         _driveMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
-        _driveVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
-        _drivePositionRotations.setUpdateFrequency(1 / kDt);
+        _driveVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
+        _drivePositionRotations.setUpdateFrequency(1 / 250);
 
         _steeringMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
-        _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
-        _steeringPositionRotations.setUpdateFrequency(1 / kDt);
+        _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
+        _steeringPositionRotations.setUpdateFrequency(1 / 250);
 
         _signals[0] = _driveVelocityRotationsPerSec;
         _signals[1] = _drivePositionRotations;
         _signals[2] = _steeringVelocityRotationsPerSec;
         _signals[3] = _steeringPositionRotations;
+
+        _driveMotor.optimizeBusUtilization();
+        _steeringMotor.optimizeBusUtilization();
     }
 
     public void setControlRequestUpdateFrequency(double updateFreqHz) {

@@ -20,18 +20,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
-    public static final int TICKS_PER_UPDATE = 1;
+    public static final int TICKS_PER_UPDATE = 3; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
     public static final double METRIC_FLUSH_PERIOD = 5;
-    public static final double UPDATE_PERIOD = 0.02; // 20 ms
-    public static final double CONTROL_PERIOD = 0.02; // 10 ms
-    public static final double DATA_PERIOD = 0.01; // 20 ms
+    public static final double UPDATE_PERIOD = 0.01; // 10 ms
     public static final double EPSILON = 1e-9;
 
     public static class SwerveModule {
         public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;
 
-        public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
@@ -53,9 +50,6 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
-            CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify max_current
-            CONFIG.MAX_STATOR_CURRENT = 120;
- 
             CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.5;
@@ -71,8 +65,8 @@ public class Constants {
 
             STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
             STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify
-                                                  // max_current
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
+
             STEER_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
             STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             STEER_CONFIG.CURRENT_DEADBAND = 0.1;
@@ -322,7 +316,7 @@ public class Constants {
     public static class VisionConfig {
         public static double STATE_STD_DEV_X = 0.01;
         public static double STATE_STD_DEV_Y = 0.01;
-        public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.5); // imu deviations lower number to trust more
+        public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.1); // imu deviations lower number to trust more
 
         // we can't change the odometry stddev easily,,,, just change the vision stddev --xavier bradford 02/25/24
         public static class Auto {
@@ -545,7 +539,7 @@ public class Constants {
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
         public static final double PREP_ANGLE = 2.3;
-        public static final double DUNK_ANGLE = 3.4;
+        public static final double DUNK_ANGLE = 3.35;
         public static final double STOWED_ANGLE = 5.25;
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;

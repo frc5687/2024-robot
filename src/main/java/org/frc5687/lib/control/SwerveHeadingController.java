@@ -24,7 +24,9 @@ public class SwerveHeadingController {
         _PIDController = new PIDController(
             Constants.DriveTrain.HEADING_kP,
             Constants.DriveTrain.HEADING_kI,
-            Constants.DriveTrain.HEADING_kD);
+            Constants.DriveTrain.HEADING_kD,
+            kDt
+        );
                 
         _PIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;

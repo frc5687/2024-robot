@@ -262,7 +262,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void readSignals() {
-        BaseStatusSignal.waitForAll(0.1, _signals);
+        BaseStatusSignal.waitForAll((2.0 / 250), _signals);
         readIMU();
         readModules();
     }
@@ -519,7 +519,9 @@ public class DriveTrain extends OutliersSubsystem {
             if (!_shiftLockout) {
                 _shiftLockout = true;
                 _shiftTime = System.currentTimeMillis();
-                shiftUpModules();
+                if (isLowGear()) {
+                    shiftUpModules();
+                }
             }
             if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
                 _shiftLockout = false;
@@ -530,7 +532,9 @@ public class DriveTrain extends OutliersSubsystem {
             if (!_shiftLockout) {
                 _shiftTime = System.currentTimeMillis();
                 _shiftLockout = true;
-                shiftDownModules();
+                if (!isLowGear()) {
+                    shiftDownModules();
+                }
             }
             if (_shiftTime + Constants.DriveTrain.SHIFT_LOCKOUT < System.currentTimeMillis()) {
                 _shiftLockout = false;

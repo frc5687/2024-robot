@@ -17,6 +17,9 @@ import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
 import org.photonvision.EstimatedRobotPose;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.OdometryThread;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
@@ -39,6 +42,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotState {
@@ -97,9 +101,8 @@ public class RobotState {
                 new Rotation3d());
         initPoseEstimator();
         _periodicThread = new Thread(this::run);
-        _periodicThread.setPriority(1);
         _periodicThread.setName("RobotState Thread");
-        _periodicThread.setDaemon(true);
+
         _lastTimestamp = Timer.getFPGATimestamp();
     }
 
@@ -120,6 +123,7 @@ public class RobotState {
     }
 
     private void run() {
+        Threads.setCurrentThreadPriority(true, 1); // People say lowest priority works well. 
         _running = true;
         while (_running) {
             double startTime = Timer.getFPGATimestamp();
@@ -153,6 +157,7 @@ public class RobotState {
 
     private void updateOdometry() {
         _driveTrain.readSignals();
+
         SwerveModulePosition[] positions = _driveTrain.getSwerveModuleMeasuredPositions();
         Rotation2d heading = _driveTrain.getHeading();
         Pose2d currentPose = _poseEstimator.getEstimatedPosition();
