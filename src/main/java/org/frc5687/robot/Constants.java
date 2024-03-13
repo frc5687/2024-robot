@@ -1,7 +1,6 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
-import org.ejml.dense.row.decomposition.eig.WatchedDoubleStepQRDecomposition_DDRM;
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
 import org.frc5687.lib.cheesystuff.PolynomialRegression;
@@ -12,7 +11,6 @@ import org.frc5687.robot.subsystems.SwerveModule.ModuleConfiguration;
 
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 

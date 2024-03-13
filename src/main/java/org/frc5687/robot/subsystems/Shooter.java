@@ -4,7 +4,6 @@ import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
 
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 import org.frc5687.robot.Constants;

@@ -3,7 +3,6 @@ package org.frc5687.robot.commands;
 import static org.frc5687.robot.Constants.DriveTrain.HEADING_TOLERANCE;
 
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.Robot;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.subsystems.DriveTrain;

@@ -294,11 +294,12 @@ public class RobotState {
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
         Pose3d targetPose = getSpeakerTagPose();
-        double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
-                targetPose.getY() - futurePose.getY());
+        // This tries to predict the RPM you want while moving, Didn't seem to help much so we just used the initial guess RPM.
+        // double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
+        //         targetPose.getY() - futurePose.getY());
 
-        double adjustedShooterRPM = Constants.Shooter.kRPMMap
-                .getInterpolated(new InterpolatingDouble(futureDistance)).value;
+        // double adjustedShooterRPM = Constants.Shooter.kRPMMap
+        //         .getInterpolated(new InterpolatingDouble(futureDistance)).value;
 
         Rotation2d adjustedAngle = new Rotation2d(
                 Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));

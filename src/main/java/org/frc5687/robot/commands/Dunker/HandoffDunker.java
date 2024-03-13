@@ -11,8 +11,6 @@ public class HandoffDunker extends OutliersCommand {
     private Dunker _dunker;
     private Shooter _shooter;
     private Intake _intake;
-    private boolean _timeLockout;
-    private long _lockTime;
 
     public HandoffDunker(Dunker dunker, Shooter shooter, Intake intake) {
         _dunker = dunker;
@@ -24,8 +22,6 @@ public class HandoffDunker extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
-        _timeLockout = false;
-        _lockTime = System.currentTimeMillis();
     }
 
     @Override

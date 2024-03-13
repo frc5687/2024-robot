@@ -4,7 +4,6 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.RumbleGamepad;
-import org.frc5687.robot.commands.Intake.IndexNote.IndexState;
 import org.frc5687.robot.subsystems.Intake;
 
 public class IntakeCommand extends OutliersCommand{

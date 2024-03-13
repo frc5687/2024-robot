@@ -8,7 +8,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import java.util.Optional;

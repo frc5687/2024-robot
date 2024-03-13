@@ -1,24 +1,13 @@
 package org.frc5687.robot.subsystems;
 
 import org.frc5687.lib.drivers.OutliersTalon;
-// import org.frc5687.lib.sensors.HallEffect;
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
 
-// import edu.wpi.first.math.util.Units;
-// import edu.wpi.first.wpilibj.DoubleSolenoid;
-// import edu.wpi.first.wpilibj.PneumaticsModuleType;
-// import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-// import edu.wpi.first.wpilibj.motorcontrol.Talon;
-
-public class Climber extends OutliersSubsystem{
+public class Climber extends OutliersSubsystem {
 
     private OutliersTalon _talon;
-    private OI _oi;
-    // private DoubleSolenoid _ratchet;
-    // private boolean _isRatchetUp;
     private ClimberStep _step = ClimberStep.STOWED;
     
     public Climber(OutliersContainer container) {

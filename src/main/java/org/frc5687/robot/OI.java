@@ -8,7 +8,6 @@ import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.AutoAim;
 import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
-import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;

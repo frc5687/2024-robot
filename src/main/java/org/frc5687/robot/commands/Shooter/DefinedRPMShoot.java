@@ -1,16 +1,10 @@
 package org.frc5687.robot.commands.Shooter;
 
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
-import org.frc5687.robot.subsystems.Lights;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class DefinedRPMShoot extends OutliersCommand{
     private final Shooter _shooter;

@@ -3,8 +3,6 @@ package org.frc5687.robot.commands.DriveTrain;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
 public class ZeroIMU extends OutliersCommand {
 
     private DriveTrain _driveTrain;
