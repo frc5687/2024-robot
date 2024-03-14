@@ -58,11 +58,8 @@ public class DriveLights extends OutliersCommand {
             allianceColor = DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE;
         }
 
-        try {
-            hasObjects = _visionProcessor.getDetectedObjects().getNotes().length > 0;
-        } catch (Exception e) {
-            // error("No objects");
-        }
+
+        hasObjects = _visionProcessor.getDetectedObjects().getNotes().length > 0 ? true : false;
         //Not connected to driver station
         if (!DriverStation.isDSAttached()) {
             _lights.switchAnimation(AnimationType.RAINBOW);

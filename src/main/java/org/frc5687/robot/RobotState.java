@@ -17,9 +17,6 @@ import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
 import org.photonvision.EstimatedRobotPose;
 
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.OdometryThread;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
@@ -43,7 +40,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Threads;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotState {
 
@@ -202,14 +198,12 @@ public class RobotState {
 
         _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
         _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
-        if (_visionAngle.isPresent()) {
-            SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
-        }
-        if (_visionDistance.isPresent()) {
-            SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
-        }
-        SmartDashboard.putNumber("Estimated X", _estimatedPose.getX());
-        SmartDashboard.putNumber("Estimated Y", _estimatedPose.getY());
+        // if (_visionAngle.isPresent()) {
+        //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
+        // }
+        // if (_visionDistance.isPresent()) {
+        //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
+        // }
 
         SwerveDriveState newState = new SwerveDriveState();
         newState.pose = _estimatedPose;

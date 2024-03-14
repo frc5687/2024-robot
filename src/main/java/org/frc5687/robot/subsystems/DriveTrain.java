@@ -20,6 +20,7 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.util.OutliersContainer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -38,7 +39,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -65,7 +65,6 @@ public class DriveTrain extends OutliersSubsystem {
                 new SwerveModulePosition()
         };
         Rotation2d heading = new Rotation2d(0.0);
-        double pitch = 0.0;
 
         SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), new SwerveModuleState[4]);
     }
@@ -91,6 +90,8 @@ public class DriveTrain extends OutliersSubsystem {
 
     // IMU (Pigeon)
     private final Pigeon2 _imu;
+    private StatusSignal<Double> _yawAngle;
+    private StatusSignal<Double> _angularVelocityZWorld;
     private double _yawOffset;
 
     private Pose2d _hoverGoal;
@@ -127,6 +128,8 @@ public class DriveTrain extends OutliersSubsystem {
 
         // configure our system IO and pigeon;
         _imu = imu;
+        _yawAngle = _imu.getYaw().clone();
+        _angularVelocityZWorld= _imu.getAngularVelocityZWorld().clone();
         _systemIO = new SystemIO();
 
         // set up the modules
@@ -155,7 +158,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         // module CAN bus sensor outputs (position, velocity of each motor) all of them
         // are called once per loop at the start.
-        _signals = new BaseStatusSignal[NUM_MODULES * 4 + 3];
+        _signals = new BaseStatusSignal[NUM_MODULES * 4 + 2];
         for (int i = 0; i < NUM_MODULES; ++i) {
             var signals = _modules[i].getSignals();
             _signals[(i * 4)] = signals[0];
@@ -163,13 +166,13 @@ public class DriveTrain extends OutliersSubsystem {
             _signals[(i * 4) + 2] = signals[2];
             _signals[(i * 4) + 3] = signals[3];
         }
-        _signals[NUM_MODULES * 4] = _imu.getYaw();
-        _signals[NUM_MODULES * 4 + 1] = _imu.getPitch();
-        _signals[NUM_MODULES * 4 + 2] = _imu.getRoll();
+
+        _signals[NUM_MODULES * 4] = _yawAngle;
+        _signals[NUM_MODULES * 4 + 1] = _angularVelocityZWorld;
 
         // frequency in Hz
         configureSignalFrequency(250);
-        // configureModuleControlFrequency(1000);
+        configureModuleControlFrequency(0); // Modules are controlled as a one-shot frame 
 
         // configure startup offset
         _yawOffset = _imu.getYaw().getValue();
@@ -330,7 +333,6 @@ public class DriveTrain extends OutliersSubsystem {
 
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
-
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
@@ -400,8 +402,8 @@ public class DriveTrain extends OutliersSubsystem {
     /* Module Control Start */
     public void readModules() {
         for (int module = 0; module < _modules.length; module++) {
-            _systemIO.measuredStates[module] = _modules[module].getState();
             _systemIO.measuredPositions[module] = _modules[module].getPosition();
+            _systemIO.measuredStates[module] = _modules[module].getState();
         }
     }
 
@@ -454,18 +456,9 @@ public class DriveTrain extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Current Heading", getHeading().getRadians());
         metric("Tank Pressure PSI", _compressor.getPressure());
-        metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
         metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
         metric("Heading Controller Output", getRotationCorrection());
-        ChassisSpeeds measuredSpeeds = getMeasuredChassisSpeeds();
-        ChassisSpeeds desiredSpeeds = getDesiredChassisSpeeds();
-        metric("Measured vx", measuredSpeeds.vxMetersPerSecond);
-        metric("Measured vy", measuredSpeeds.vyMetersPerSecond);
-        metric("Measured omega", measuredSpeeds.omegaRadiansPerSecond);
-
-        metric("Desired vx", desiredSpeeds.vxMetersPerSecond);
-        metric("Desired vy", desiredSpeeds.vyMetersPerSecond);
-        metric("Desired omega", desiredSpeeds.omegaRadiansPerSecond);
+        metric("Is Red Alliance", isRedAlliance());
         // moduleMetrics();
     }
 
@@ -478,10 +471,8 @@ public class DriveTrain extends OutliersSubsystem {
     public boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
-            metric("Alliance", alliance.get() == Alliance.Red);
             return alliance.get() == Alliance.Red;
         }
-        metric("Alliance", false);
         return false;
     }
 
@@ -491,9 +482,6 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setHoverGoal(Pose2d pose) {
         _hoverGoal = pose;
-        metric("hoverGoal x", _hoverGoal.getX());
-        metric("hoverGoal y", _hoverGoal.getY());
-        metric("hoverGoal rotation degrees", _hoverGoal.getRotation().getDegrees());
     }
 
     public ChassisSpeeds getMeasuredChassisSpeeds() {
@@ -573,10 +561,6 @@ public class DriveTrain extends OutliersSubsystem {
         return _systemIO.heading.getRadians();
     }
 
-    public double getPitch() {
-        return _systemIO.pitch;
-    }
-
     public Rotation2d getHeading() {
         return _systemIO.heading;
     }
@@ -592,10 +576,9 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public void readIMU() {
-        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_imu.getYaw(),
-                _imu.getAngularVelocityZDevice());
+        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(_yawAngle,
+                _angularVelocityZWorld);
         double yawAllianceOffsetDegrees = isRedAlliance() ? 180.0 : 0;
         _systemIO.heading = Rotation2d.fromDegrees(yawDegrees - _yawOffset + yawAllianceOffsetDegrees);
-        _systemIO.pitch = Units.degreesToRadians(_imu.getPitch().getValue());
     }
 }

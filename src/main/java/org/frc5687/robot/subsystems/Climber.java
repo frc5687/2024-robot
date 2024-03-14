@@ -19,7 +19,6 @@ public class Climber extends OutliersSubsystem {
     }
  
     public void setPositionMeters(double meters) {
-
         //flipped < & > because the climber is inverted.
         if (meters > Constants.Climber.LOWER_LIMIT) {
             warn("Attempted to set climber past lower limit.");

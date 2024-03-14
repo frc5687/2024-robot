@@ -119,6 +119,17 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void periodic() {
+    }
+
+    public void disabledPeriodic() {
+    }
+
+    @Override
+    public void disabledInit() {
+    }
+    @Override
+    public void updateDashboard() {
+        super.updateDashboard();
         _field.setRobotPose(_robotState.getEstimatedPose());
 
         // var notes = _robotState.getAllNotesRlativeField();
@@ -138,21 +149,7 @@ public class RobotContainer extends OutliersContainer {
             fieldNotes.setPoses(new ArrayList<Pose2d>()); // Clear all notes by setting an empty list of poses
         }
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
-        // Optional<Pose2d> optionalClosestNote = _robotState.getClosestNote();
-        // if (optionalClosestNote.isPresent()) {
-        //     Pose2d notePose = optionalClosestNote.get();
-        //     _field.getObject("note").setPose(notePose);
-        // } else {
-        //     // TODO remove note from glass
-        // }
         SmartDashboard.putData(_field);
-    }
-
-    public void disabledPeriodic() {
-    }
-
-    @Override
-    public void disabledInit() {
     }
 
     @Override

@@ -141,10 +141,10 @@ public class SwerveModule {
     }
 
     private void initializeSignals() {
-        _drivePositionRotations = _driveMotor.getPosition();
-        _driveVelocityRotationsPerSec = _driveMotor.getVelocity();
-        _steeringPositionRotations = _encoder.getPosition();
-        _steeringVelocityRotationsPerSec = _encoder.getVelocity();
+        _drivePositionRotations = _driveMotor.getPosition().clone();
+        _driveVelocityRotationsPerSec = _driveMotor.getVelocity().clone();
+        _steeringPositionRotations = _encoder.getPosition().clone();
+        _steeringVelocityRotationsPerSec = _encoder.getVelocity().clone();
 
         _driveMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
         _driveVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
@@ -247,7 +247,7 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getWheelVelocity(), getCanCoderAngle());
+        return new SwerveModuleState(getWheelVelocity(), _internalState.angle);
     }
 
     public double getDriveMotorVoltage() {

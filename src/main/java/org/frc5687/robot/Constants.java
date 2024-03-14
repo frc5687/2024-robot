@@ -3,7 +3,6 @@ package org.frc5687.robot;
 
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
-import org.frc5687.lib.cheesystuff.PolynomialRegression;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.drivers.OutliersTalon.ClosedLoopConfiguration;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -20,9 +19,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
-    public static final int TICKS_PER_UPDATE = 3; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
+    public static final int TICKS_PER_UPDATE = 10; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
     public static final double METRIC_FLUSH_PERIOD = 5;
-    public static final double UPDATE_PERIOD = 0.02; // 20 ms
+    public static final double UPDATE_PERIOD = 0.01; // 10 ms
     public static final double EPSILON = 1e-9;
 
     public static class SwerveModule {

@@ -67,9 +67,9 @@ public class OutliersTalon extends TalonFX {
     }
 
     @Override
-    public StatusCode setControl(ControlRequest request) {
+    public StatusCode setControlPrivate(ControlRequest request) {
         if (isNewRequest(request)) {
-            StatusCode statusCode= super.setControl(request);
+            StatusCode statusCode= super.setControlPrivate(request);
             if (statusCode == StatusCode.OK) {
                 updateLastValues(request);
             }
@@ -99,38 +99,38 @@ public class OutliersTalon extends TalonFX {
 
     public void setPercentOutput(double output) {
         if (_percentOutput.Output != output) {
-            this.setControl(_percentOutput.withOutput(output));
+            this.setControlPrivate(_percentOutput.withOutput(output));
         }
     }
 
     public void setVoltage(double voltage) {
         if (_voltageOut.Output != voltage) {
-            this.setControl(_voltageOut.withOutput(voltage));
+            this.setControlPrivate(_voltageOut.withOutput(voltage));
         }
     }
 
     public void setMotionMagic(double position) {
         if (_motionMagicVoltage.Position != position) {
-            this.setControl(_motionMagicVoltage.withPosition(position).withSlot(0));
+            this.setControlPrivate(_motionMagicVoltage.withPosition(position).withSlot(0));
         }
     }
 
     public void setPositionVoltage(double position) {
         if (_positionVoltage.Position != position) {
-            this.setControl(_positionVoltage.withPosition(position).withSlot(0));
+            this.setControlPrivate(_positionVoltage.withPosition(position).withSlot(0));
         }
     }
 
     public void setPositionDutyCycle(double position) {
         if (_positionDutyCycle.Position != position) {
-            this.setControl(_positionDutyCycle.withPosition(position).withSlot(0));
+            this.setControlPrivate(_positionDutyCycle.withPosition(position).withSlot(0));
         }
     }
 
     public void setVelocity(double rpm) {
         double rps = rpm / 60;
         if (_velocityVoltage.Velocity != rps) {
-            this.setControl(_velocityVoltage.withVelocity(rps).withOverrideBrakeDurNeutral(true));
+            this.setControlPrivate(_velocityVoltage.withVelocity(rps).withOverrideBrakeDurNeutral(true));
         }
     }
 
@@ -140,7 +140,7 @@ public class OutliersTalon extends TalonFX {
 
     public void setTorqueCurrentFOC(double current) {
         if (_torqueCurrentFOC.Output != current) {
-            this.setControl(_torqueCurrentFOC.withOutput(current));
+            this.setControlPrivate(_torqueCurrentFOC.withOutput(current));
         }
     }
 
