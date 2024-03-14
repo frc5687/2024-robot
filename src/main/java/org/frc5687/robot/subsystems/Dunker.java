@@ -122,8 +122,8 @@ public class Dunker extends OutliersSubsystem {
         // Check if the abs encoder and the relative encoder are not in sync, if so
         // reset relative to abs
         _tickCounter++;
-        if (Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE
-                && _tickCounter % 10 == 0) {
+        if (_tickCounter % 10 == 0 && Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE
+                ) {
             resetMotorEncoderFromAbs();
             _tickCounter = 0;
         }

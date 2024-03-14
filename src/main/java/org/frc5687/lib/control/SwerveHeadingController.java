@@ -6,6 +6,7 @@ import org.frc5687.robot.Constants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 
 // rewritten (probably poorly) by xavier bradford 03/09/24
 public class SwerveHeadingController {
@@ -92,9 +93,6 @@ public class SwerveHeadingController {
             default:
                 break;
         }
-        if (isAtTargetAngle(heading)) {
-            power = 0;
-        }
     
         double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
     
@@ -105,7 +103,16 @@ public class SwerveHeadingController {
         velocityMultiplier = Math.min(velocityMultiplier, _maxVelocityMultiplier);
     
         power *= velocityMultiplier;
-    
+
+        double error = _targetHeading.minus(heading).getRadians();
+        if (isAtTargetAngle(heading)) {
+            power = 0;
+        } else if(error > Constants.DriveTrain.HEADING_TOLERANCE) {
+            power += 0.05;
+        } else if(error < -Constants.DriveTrain.HEADING_TOLERANCE) {
+            power -= 0.05;
+        }
+
         return power;
     }
     

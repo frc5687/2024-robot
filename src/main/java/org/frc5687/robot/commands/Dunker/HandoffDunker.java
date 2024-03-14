@@ -31,6 +31,8 @@ public class HandoffDunker extends OutliersCommand {
                 _dunker.setDunkerState(DunkerState.STOWED);
                 break;
             case STOWED:
+                _dunker.setToHandoffRPM();
+                _shooter.setToHandoffRPM();
                 _dunker.setDunkerAngle(Constants.Dunker.PREP_ANGLE);
                 if (_dunker.isAtAngle(Constants.Dunker.PREP_ANGLE)) {
                     _dunker.setDunkerState(DunkerState.PREPARED_FOR_NOTE);

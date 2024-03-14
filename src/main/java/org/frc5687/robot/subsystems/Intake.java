@@ -43,7 +43,7 @@ public class Intake extends OutliersSubsystem {
 
     /* Checks if the two configurations for a note that is indexed is present */
     public boolean isNoteIndexed() {
-        return (isMiddleDetected() && isTopDetected()) || (isBottomDetected() && isTopDetected());
+        return (isMiddleDetected() && isTopDetected()) || (isBottomDetected() && isTopDetected()) || isMiddleDetected();
     }
 
     public void setAutoIntakeFlag(boolean flag) {

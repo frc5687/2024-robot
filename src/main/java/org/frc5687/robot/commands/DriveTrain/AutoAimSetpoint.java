@@ -10,7 +10,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
-public class AutoAim extends OutliersCommand {
+public class AutoAimSetpoint extends OutliersCommand {
 
     private DriveTrain _driveTrain;
     private RobotState _robotState = RobotState.getInstance();
@@ -18,7 +18,7 @@ public class AutoAim extends OutliersCommand {
     private Rotation2d _targetHeading;
 
 
-    public AutoAim(DriveTrain driveTrain) {
+    public AutoAimSetpoint(DriveTrain driveTrain) {
         _driveTrain = driveTrain;
     }
 

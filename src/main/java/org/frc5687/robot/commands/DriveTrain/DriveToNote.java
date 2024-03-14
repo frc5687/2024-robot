@@ -42,6 +42,7 @@ public class DriveToNote extends OutliersCommand {
         _xController.setGoal(0.0);
         _yController.setGoal(0.0);
         _yawController.setGoal(0.0);
+        _driveTrain.disableAutoShifter();
     }
 
     @Override
@@ -84,5 +85,6 @@ public class DriveToNote extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        _driveTrain.enableAutoShifter();
     }
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
+import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
 import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
@@ -18,6 +19,7 @@ import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
+import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.RevShooter;
@@ -164,6 +166,8 @@ public class RobotContainer extends OutliersContainer {
     public void autonomousInit() {
         _robotState.useAutoStandardDeviations();
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
+        // yolo
+        _driveTrain.enableAutoShifter();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -218,7 +222,7 @@ public class RobotContainer extends OutliersContainer {
     public void registerNamedCommands() {
         NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain));
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));

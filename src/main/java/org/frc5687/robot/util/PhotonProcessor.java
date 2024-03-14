@@ -257,10 +257,10 @@ public class PhotonProcessor {
             
             if (southEastTag.isPresent()) {
                 Rotation2d yaw = Rotation2d.fromDegrees(southEastTag.get().getYaw());
-                // SmartDashboard.putNumber("SouthEastTagYaw", yaw.getRadians());
+                SmartDashboard.putNumber("SouthEastTagYaw", yaw.getRadians());
                 Rotation2d cameraYawOffset = Rotation2d.fromDegrees(-17.5);
                 double robotYaw = yaw.getRadians() - cameraYawOffset.getRadians();
-                // SmartDashboard.putNumber("SouthEastYaw", robotYaw);
+                SmartDashboard.putNumber("SouthEastYaw", robotYaw);
                 southEastYaw = Optional.of(robotYaw);
             }
         }
@@ -273,10 +273,10 @@ public class PhotonProcessor {
             
             if (southWestTag.isPresent()) {
                 Rotation2d yaw = Rotation2d.fromDegrees(southWestTag.get().getYaw());
-                // SmartDashboard.putNumber("SouthWestTagYaw", yaw.getRadians());
+                SmartDashboard.putNumber("SouthWestTagYaw", yaw.getRadians());
                 Rotation2d cameraYawOffset = Rotation2d.fromDegrees(17.5);
                 double robotYaw = yaw.getRadians() - cameraYawOffset.getRadians();
-                // SmartDashboard.putNumber("SouthWestYaw", robotYaw);
+                SmartDashboard.putNumber("SouthWestYaw", robotYaw);
                 southWestYaw = Optional.of(robotYaw);
             }
         }

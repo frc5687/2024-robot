@@ -40,6 +40,7 @@ public class Drive extends OutliersCommand {
     @Override
     public void initialize() {
         _driveTrain.goToHeading(_driveTrain.getHeading());
+        _driveTrain.enableAutoShifter();
     }
 
     @Override
@@ -106,6 +107,7 @@ public class Drive extends OutliersCommand {
     public boolean isFinished() {
         return super.isFinished();
     }
+
 
     @Override
     public void end(boolean interrupted) {

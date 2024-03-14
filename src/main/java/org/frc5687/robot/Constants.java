@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
     public static final int TICKS_PER_UPDATE = 3; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
     public static final double METRIC_FLUSH_PERIOD = 5;
-    public static final double UPDATE_PERIOD = 0.01; // 10 ms
+    public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double EPSILON = 1e-9;
 
     public static class SwerveModule {
@@ -173,7 +173,7 @@ public class Constants {
         public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
         public static final double SHIFT_DOWN_SPEED_MPS = 1.5; // Speed to start shift y
 
-        public static final double SHIFT_LOCKOUT = 250; // Time in milliseconds to wait before shifting again.
+        public static final double SHIFT_LOCKOUT = 80; // Time in milliseconds to wait before shifting again.
 
         public static final double MIN_TRANSLATION_COMMAND = 0.1; // mps
         public static final double YAW_RATE_THRESHOLD = 0.05; // rad / s
@@ -275,12 +275,9 @@ public class Constants {
 
         // PID controller settings
         public static final double HEADING_kP = 4.8;
-        public static final double HEADING_kI = 0.0;
+        public static final double HEADING_kI = 0;
         public static final double HEADING_kD = 0.3;
-
-        public static final double SNAP_TOLERANCE = Units.degreesToRadians(1.5);
-        public static final double TARGET_TOLERANCE = Units.degreesToRadians(1);
-
+        
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 3.3;
         public static final double POSE_kI = 0.0;
@@ -338,31 +335,26 @@ public class Constants {
 
         public static final double VELOCITY_TOLERANCE = 30;
 
-        public static final double IDLE_RPM = 0; // FIXME 3200 is better
-        public static final double PASS_RPM = 1400;
+        public static double[][] kRPMValues = {
+            { 3.0, 3800},
+            { 3.2, 3500},
+            { 3.6, 2600},
+            { 4.0, 2100},
+            { 4.4, 1880},
+            { 4.8, 1880 },
+        };
+
+        public static final double IDLE_RPM = 2600;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
+        public static final double PASS_RPM = IDLE_RPM;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 1000;
-
-        public static final double EJECT_PERCENT_OUTPUT = 1.0; // 0.75
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
 
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
         public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
-
-        public static PolynomialRegression kRPMRegression;
-
-        public static double[][] kRPMValues = {
-            { 3.0, 3800},
-            { 3.2, 3500},
-            { 3.6, 2600},
-            { 4.0, 2100},
-            // { 4.0, 2050},
-            { 4.4, 1880},
-            { 4.8, 1880 },
-        };
 
         public static final Pose2d RED_AMP_SHOT_POSE = new Pose2d(FieldConstants.FIELD_LENGTH - 1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from red alliance wall, ~0.75 meters from amp, facing amp
         
@@ -377,7 +369,7 @@ public class Constants {
                 kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
             }
 
-            kRPMRegression = new PolynomialRegression(kRPMValues, 1);
+            // kRPMRegression = new PolynomialRegression(kRPMValues, 1);
         }
 
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
@@ -483,7 +475,7 @@ public class Constants {
             ARM_CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = true;
             ARM_CONFIG.CURRENT_DEADBAND = 0.1;
             ARM_CONFIG.USE_FOC = true;
-        }
+        } 
         
         public static final ClosedLoopConfiguration ARM_CLOSED_LOOP_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -494,7 +486,7 @@ public class Constants {
             ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
             ARM_CLOSED_LOOP_CONFIG.kV = 0;
 
-            ARM_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 50;
+            ARM_CLOSED_LOOP_CONFIG.CRUISE_VELOCITY = 70;
             ARM_CLOSED_LOOP_CONFIG.ACCELERATION = 100;
             ARM_CLOSED_LOOP_CONFIG.JERK = 500;
 
@@ -540,7 +532,7 @@ public class Constants {
 
         public static final double PREP_ANGLE = 2.3;
         public static final double DUNK_ANGLE = 3.24;
-        public static final double STOWED_ANGLE = 5.25;
+        public static final double STOWED_ANGLE = 4.9; // stop changing this - xavier (dm me) 03/13/24
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
@@ -630,6 +622,6 @@ public class Constants {
     }
 
     public static class RobotState {
-        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(1.0);
+        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(1.5);
     }
 }

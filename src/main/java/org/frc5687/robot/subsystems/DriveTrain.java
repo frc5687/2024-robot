@@ -108,6 +108,8 @@ public class DriveTrain extends OutliersSubsystem {
 
     private boolean _fieldCentric = true;
 
+    private boolean _autoShifterEnabled;
+
     public DriveTrain(
             OutliersContainer container,
             Pigeon2 imu) {
@@ -205,6 +207,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         _hoverGoal = new Pose2d();
         _isLowGear = true;
+        _autoShifterEnabled = true;
 
         zeroGyroscope();
 
@@ -226,9 +229,9 @@ public class DriveTrain extends OutliersSubsystem {
                                 Constants.DriveTrain.POSE_kD), // Translation PID constants
                         new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI,
                                 Constants.DriveTrain.HEADING_kD), // Rotation PID constants
-                        // Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
+                        Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
                         // auto need to set to high gear mps
-                        Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
+                        // Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
                         Constants.DriveTrain.ROBOT_RADIUS, // Drive base radius in meters. Distance from robot center to
                                                            // furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -321,13 +324,27 @@ public class DriveTrain extends OutliersSubsystem {
             _hasShiftInit = true;
         }
 
-        autoShifter();
+        if (_autoShifterEnabled) {
+            autoShifter();
+        }
 
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
 
         updateDesiredStates();
         setModuleStates(_systemIO.setpoint.moduleStates);
+    }
+
+    public void enableAutoShifter() {
+        _autoShifterEnabled = true;
+    }
+
+    public void disableAutoShifter() {
+        _autoShifterEnabled = false;
+    }
+
+    public boolean isAutoShifterEnabled() {
+        return _autoShifterEnabled;
     }
 
     public void setVelocity(ChassisSpeeds chassisSpeeds) {
@@ -440,6 +457,15 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Current Command", getCurrentCommand() != null ? getCurrentCommand().getName() : "no command");
         metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
         metric("Heading Controller Output", getRotationCorrection());
+        ChassisSpeeds measuredSpeeds = getMeasuredChassisSpeeds();
+        ChassisSpeeds desiredSpeeds = getDesiredChassisSpeeds();
+        metric("Measured vx", measuredSpeeds.vxMetersPerSecond);
+        metric("Measured vy", measuredSpeeds.vyMetersPerSecond);
+        metric("Measured omega", measuredSpeeds.omegaRadiansPerSecond);
+
+        metric("Desired vx", desiredSpeeds.vxMetersPerSecond);
+        metric("Desired vy", desiredSpeeds.vyMetersPerSecond);
+        metric("Desired omega", desiredSpeeds.omegaRadiansPerSecond);
         // moduleMetrics();
     }
 

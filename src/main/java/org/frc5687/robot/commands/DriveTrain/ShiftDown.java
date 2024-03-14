@@ -12,11 +12,14 @@ public class ShiftDown extends OutliersCommand {
 
     @Override
     public void initialize() {
-        _driveTrain.shiftDownModules();
+        _driveTrain.disableAutoShifter();
     }
 
     @Override
     public void execute() {
+        if (!_driveTrain.isLowGear()) {
+            _driveTrain.shiftDownModules();
+        }
     }
 
     @Override
@@ -27,5 +30,6 @@ public class ShiftDown extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        _driveTrain.enableAutoShifter();
     }
 }
