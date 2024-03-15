@@ -175,7 +175,6 @@ public class RobotState {
 
     private void updateWithVision() {
         Pose2d prevEstimatedPose = _estimatedPose;
-    
         List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
@@ -184,13 +183,8 @@ public class RobotState {
                 .filter(pair -> pair.getFirst() != null)
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
-    
-        dynamicallyChangeDeviations(cameraPoses, prevEstimatedPose);
-    
-        cameraPoses.forEach(cameraPose -> {
-            _poseEstimator.addVisionMeasurement(cameraPose.getFirst().estimatedPose.toPose2d(),
-                    cameraPose.getFirst().timestampSeconds);
-        });
+
+        cameraPoses.forEach(this::processVisionMeasurement);
     }
 
     public void periodic() {
@@ -199,6 +193,7 @@ public class RobotState {
 
         _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
         _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
         // }
@@ -403,37 +398,38 @@ public class RobotState {
         return _driveTrain.isRedAlliance();
     }
 
-    public void dynamicallyChangeDeviations(List<Pair<EstimatedRobotPose, String>> cameraPoses, Pose2d currentEstimatedPose) {
-        for (Pair<EstimatedRobotPose, String> cameraPose : cameraPoses) {
-            EstimatedRobotPose estimatedPose = cameraPose.getFirst();
-
-            double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(currentEstimatedPose.getTranslation());
-    
-            double positionDev, angleDev;
-    
-            if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-                // multi-tag estimate, trust it more
-                positionDev = 0.05;
-                angleDev = Units.degreesToRadians(5);
+    private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
+        EstimatedRobotPose estimatedPose = cameraPose.getFirst();
+        double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
+        
+        double positionDev, angleDev;
+        
+        if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+            // multi-tag estimate, trust it more
+            positionDev = 0.05;
+            angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
+        } else {
+            // single-tag estimates, adjust deviations based on distance
+            if (dist < 1.5) {
+                positionDev = 0.15;
+                angleDev = Units.degreesToRadians(20);
+            } else if (dist < 4.0) {
+                positionDev = 0.25;
+                angleDev = Units.degreesToRadians(50);
             } else {
-                // single-tag estimates, adjust deviations based on distance
-                if (dist < 1.5) {
-                    positionDev = 0.15;
-                    angleDev = Units.degreesToRadians(20);
-                } else if (dist < 4.0) {
-                    positionDev = 0.25;
-                    angleDev = Units.degreesToRadians(50);
-                } else {
-                    positionDev = 0.5;
-                    angleDev = Units.degreesToRadians(100);
-                }
+                positionDev = 0.5;
+                angleDev = Units.degreesToRadians(100);
             }
-    
-            _poseEstimator.setVisionMeasurementStdDevs(
-                createVisionStandardDeviations(positionDev, positionDev, angleDev)
-            );
         }
+        
+        _poseEstimator.setVisionMeasurementStdDevs(
+            createVisionStandardDeviations(positionDev, positionDev, angleDev)
+        );
+        
+        _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
+                estimatedPose.timestampSeconds);
     }
+   
 
     public void useAutoStandardDeviations() {
         _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(

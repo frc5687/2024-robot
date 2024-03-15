@@ -26,10 +26,10 @@ public class DriveToNoteStop extends OutliersCommand {
 
     public DriveToNoteStop(DriveTrain driveTrain,  Intake intake) {
         _driveTrain = driveTrain;
-        _xController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _xController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _yController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
         _yawController = new ProfiledPIDController(4.0, 0.0, 0.0,
@@ -84,7 +84,7 @@ public class DriveToNoteStop extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return isFinished  || _intake.isNoteIndexed();  // Determine your stop condition here
+        return isFinished  || _intake.isBottomDetected();  // Maybe use note indexed but I think isBottomDetected should work without much delay.
     }
 
     @Override
