@@ -15,6 +15,7 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
+import org.opencv.features2d.KAZE;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -406,15 +407,15 @@ public class RobotState {
         
         if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // multi-tag estimate, trust it more
-            positionDev = 0.05;
+            positionDev = 0.15;
             angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
         } else {
             // single-tag estimates, adjust deviations based on distance
             if (dist < 1.5) {
-                positionDev = 0.15;
+                positionDev = 0.30;
                 angleDev = Units.degreesToRadians(20);
             } else if (dist < 4.0) {
-                positionDev = 0.25;
+                positionDev = 0.35;
                 angleDev = Units.degreesToRadians(50);
             } else {
                 positionDev = 0.5;
@@ -556,6 +557,10 @@ public class RobotState {
         }
 
         return Optional.of(notePosesRelativeField);
+    }
+
+    public ChassisSpeeds getMeasuredSpeeds() {
+       return _driveTrain.getMeasuredChassisSpeeds();
     }
 
     public SwerveDriveState getState() {

@@ -35,7 +35,7 @@ public class IntakeCommand extends OutliersCommand{
 
     @Override
     public boolean isFinished() {
-        return _intake.isBottomDetected() || _noteInIndex;
+        return _intake.isBottomDetected() || _noteInIndex || _intake.isNoteIndexed(); // check periodicy as well incase bottom sensor misses the index
     }
 
     @Override

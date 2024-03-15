@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
     public static final int TICKS_PER_UPDATE = 10; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
     public static final double METRIC_FLUSH_PERIOD = 5;
-    public static final double UPDATE_PERIOD = 0.01; // 10 ms
+    public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double EPSILON = 1e-9;
 
     public static class SwerveModule {
@@ -298,8 +298,8 @@ public class Constants {
         public static final double MIN_PSI = 80.0;
         public static final double MAX_PSI = 120.0;
 
-        public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.271, 3.181), new Rotation2d(-0.644));
-        public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.571, 3.181), new Rotation2d(0.644));
+        public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
+        public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
     }
 
     public static class Vision {
@@ -353,11 +353,11 @@ public class Constants {
             { 4.8, 1880 },
         };
 
-        public static final double IDLE_RPM = 2600;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
+        public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
         public static final double PASS_RPM = IDLE_RPM;
         public static final double DUNKER_IN_RPM = 750;
 
-        public static final double PASSTHROUGH_RPM = 800;
+        public static final double PASSTHROUGH_RPM = 460;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
@@ -370,7 +370,6 @@ public class Constants {
         public static final Pose2d BLUE_AMP_SHOT_POSE = new Pose2d(1.82, FieldConstants.FIELD_WIDTH - 0.762002, new Rotation2d(-Math.PI/2)); // 1.82 meters from blue alliance wall, ~0.75 meters from amp, facing amp
         
         public static final double AMP_SHOT_SPEED = 700;
-
         public static final double OVERRIDE_EJECT_RPM = 500;// FIXME: needs testing :3
 
         static {

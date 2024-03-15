@@ -55,7 +55,7 @@ public class VisionProcessor {
             _detectedObjects = new DetectedNoteArray(notes);
             return _detectedObjects;
         } catch (Exception e) {
-            DriverStation.reportError("RobotState.getDetectedObjects failed due to exception "+e.getMessage(), false);
+            // DriverStation.reportError("RobotState.getDetectedObjects failed due to exception "+e.getMessage(), false);
             return new DetectedNoteArray(new DetectedNote[0]);
         }
     }
