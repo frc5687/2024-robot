@@ -273,12 +273,12 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 4.8;
+        public static final double HEADING_kP = 8.0;
         public static final double HEADING_kI = 0;
         public static final double HEADING_kD = 0.3;
         
         // Pose PID for trajectory and drive to pose
-        public static final double POSE_kP = 3.3;
+        public static final double POSE_kP = 6.3;
         public static final double POSE_kI = 0.0;
         public static final double POSE_kD = 0.0;
 
@@ -334,12 +334,22 @@ public class Constants {
 
         public static final double VELOCITY_TOLERANCE = 30;
 
+        // public static double[][] kRPMValues = {
+        //     { 3.0, 3800},
+        //     { 3.2, 3500},
+        //     { 3.6, 2600},
+        //     { 4.0, 2100},
+        //     { 4.4, 1880},
+        //     { 4.8, 1880 },
+        // };
+
         public static double[][] kRPMValues = {
             { 3.0, 3800},
-            { 3.2, 3500},
+            { 3.4, 3200},
             { 3.6, 2600},
-            { 4.0, 2100},
-            { 4.4, 1880},
+            { 3.8, 2500},
+            { 4.2, 2100},
+            { 4.4, 1960},
             { 4.8, 1880 },
         };
 
@@ -347,7 +357,7 @@ public class Constants {
         public static final double PASS_RPM = IDLE_RPM;
         public static final double DUNKER_IN_RPM = 750;
 
-        public static final double PASSTHROUGH_RPM = 1000;
+        public static final double PASSTHROUGH_RPM = 800;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;

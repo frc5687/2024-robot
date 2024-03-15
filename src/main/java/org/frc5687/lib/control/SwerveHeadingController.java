@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // rewritten (probably poorly) by xavier bradford 03/09/24
 public class SwerveHeadingController {
@@ -34,7 +35,11 @@ public class SwerveHeadingController {
         _targetHeading = new Rotation2d();
         _disableTime = System.currentTimeMillis();
         _minVelocityMultiplier = 1.0; // these are tuned
-        _maxVelocityMultiplier = 1.5; // these are tuned
+        _maxVelocityMultiplier = 1.1; // these are tuned
+
+        // SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
+        // SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
+        // SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
     }
 
     public void disable() {
@@ -88,6 +93,10 @@ public class SwerveHeadingController {
                 }
                 break;
             case ON:
+                // _PIDController.setPID(
+                //         SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
+                //         SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
+                //         SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
                 power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
                 break;
             default:

@@ -232,9 +232,9 @@ public class DriveTrain extends OutliersSubsystem {
                                 Constants.DriveTrain.POSE_kD), // Translation PID constants
                         new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI,
                                 Constants.DriveTrain.HEADING_kD), // Rotation PID constants
-                        Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
+                        // Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
                         // auto need to set to high gear mps
-                        // Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
+                        Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
                         Constants.DriveTrain.ROBOT_RADIUS, // Drive base radius in meters. Distance from robot center to
                                                            // furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here

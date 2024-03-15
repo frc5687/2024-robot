@@ -12,6 +12,8 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
 import org.frc5687.robot.commands.DriveTrain.Drive;
+import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
 import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
@@ -154,6 +156,7 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
+        _driveTrain.enableAutoShifter();
         _robotState.useTeleopStandardDeviations();
         // enforce to make sure kinematic limits are set back to normal.
         _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? LOW_KINEMATIC_LIMITS : HIGH_KINEMATIC_LIMITS);
@@ -164,7 +167,7 @@ public class RobotContainer extends OutliersContainer {
         _robotState.useAutoStandardDeviations();
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
         // yolo
-        _driveTrain.enableAutoShifter();
+        _driveTrain.disableAutoShifter();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {
@@ -217,13 +220,14 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void registerNamedCommands() {
-        NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
+        // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
+        NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain));
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
-        NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2500.0));
-        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2500.0));
+        NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
+        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2200.0));
     }
 }

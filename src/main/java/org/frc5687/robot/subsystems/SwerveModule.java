@@ -84,10 +84,16 @@ public class SwerveModule {
         _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
         /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
+        _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
+
+        try {
+            Thread.sleep(250); // Delay for 1000 milliseconds people has some issues just making sure
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
         _driveMotor.configureClosedLoop(Constants.SwerveModule.DRIVE_CONTROLLER_CONFIG);
-
-        _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
         _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
         _steeringMotor.configureClosedLoop(Constants.SwerveModule.STEER_CONTROLLER_CONFIG);
 

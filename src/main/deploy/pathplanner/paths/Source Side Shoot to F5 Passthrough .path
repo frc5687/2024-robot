@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.12,
-        "y": 3.058135509809155
+        "x": 3.2322210592697043,
+        "y": 3.10386376376201
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.845280983577504,
-        "y": 2.462807356758782
+        "x": 3.9575020428472083,
+        "y": 2.508535610711637
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
     },
     {
       "anchor": {
-        "x": 8.295717911178311,
-        "y": 0.7824669154345462
+        "x": 7.992706244033178,
+        "y": 0.7896361223756933
       },
       "prevControl": {
-        "x": 6.766581829420722,
-        "y": 0.8641776455516197
+        "x": 6.463570162275588,
+        "y": 0.8713468524927668
       },
       "nextControl": null,
       "isLocked": false,
@@ -51,9 +51,9 @@
   ],
   "globalConstraints": {
     "maxVelocity": 3.6,
-    "maxAcceleration": 15.0,
+    "maxAcceleration": 10.0,
     "maxAngularVelocity": 534.0,
-    "maxAngularAcceleration": 2000.0
+    "maxAngularAcceleration": 1000.0
   },
   "goalEndState": {
     "velocity": 0,
