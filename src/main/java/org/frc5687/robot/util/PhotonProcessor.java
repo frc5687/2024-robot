@@ -218,43 +218,63 @@ public class PhotonProcessor {
         return _southWestCameraEstimator.update(results);
     }
 
-    public Pair<Optional<EstimatedRobotPose>, String> getNorthEastCameraEstimatedGlobalPoseWithName(
+    public Pair<EstimatedRobotPose, String> getSouthEastCameraEstimatedGlobalPoseWithName(
             Pose2d prevEstimatedPose) {
-        return new Pair<Optional<EstimatedRobotPose>, String>(getNorthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                "NorthEast");
+        _southEastCameraEstimator.setReferencePose(prevEstimatedPose);
+        PhotonPipelineResult results = _southEastCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        Optional<EstimatedRobotPose> pose = _southEastCameraEstimator.update(results);
+        return new Pair<>(pose.orElse(null), "SouthEast");
     }
 
-    public Pair<Optional<EstimatedRobotPose>, String> getNorthWestCameraEstimatedGlobalPoseWithName(
+    public Pair<EstimatedRobotPose, String> getNorthEastCameraEstimatedGlobalPoseWithName(
             Pose2d prevEstimatedPose) {
-        return new Pair<Optional<EstimatedRobotPose>, String>(getNorthWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                "NorthWest");
+        _northEastCameraEstimator.setReferencePose(prevEstimatedPose);
+        PhotonPipelineResult results = _northEastCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        Optional<EstimatedRobotPose> pose = _northEastCameraEstimator.update(results);
+        return new Pair<>(pose.orElse(null), "NorthEast");
     }
 
-    public Pair<Optional<EstimatedRobotPose>, String> getSouthEastCameraEstimatedGlobalPoseWithName(
+    public Pair<EstimatedRobotPose, String> getNorthWestCameraEstimatedGlobalPoseWithName(
             Pose2d prevEstimatedPose) {
-        return new Pair<Optional<EstimatedRobotPose>, String>(getSouthEastCameraEstimatedGlobalPose(prevEstimatedPose),
-                "SouthEast");
+        _northWestCameraEstimator.setReferencePose(prevEstimatedPose);
+        PhotonPipelineResult results = _northWestCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        Optional<EstimatedRobotPose> pose = _northWestCameraEstimator.update(results);
+        return new Pair<>(pose.orElse(null), "NorthWest");
     }
 
-    public Pair<Optional<EstimatedRobotPose>, String> getSouthWestCameraEstimatedGlobalPoseWithName(
+    public Pair<EstimatedRobotPose, String> getSouthWestCameraEstimatedGlobalPoseWithName(
             Pose2d prevEstimatedPose) {
-        return new Pair<Optional<EstimatedRobotPose>, String>(getSouthWestCameraEstimatedGlobalPose(prevEstimatedPose),
-                "SouthWest");
+        _southWestCameraEstimator.setReferencePose(prevEstimatedPose);
+        PhotonPipelineResult results = _southWestCamera.getLatestResult();
+        if (results.hasTargets()) {
+            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
+        }
+        Optional<EstimatedRobotPose> pose = _southWestCameraEstimator.update(results);
+        return new Pair<>(pose.orElse(null), "SouthWest");
     }
 
     public Optional<Double> calculateAngleToTag(int tagId) {
         PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
         PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
-        
+
         Optional<Double> southEastYaw = Optional.empty();
         Optional<Double> southWestYaw = Optional.empty();
-        
+
         // Always check if targets are available
         if (southEastResults.hasTargets()) {
             Optional<PhotonTrackedTarget> southEastTag = southEastResults.getTargets().stream()
                     .filter(target -> target.getFiducialId() == tagId)
                     .findFirst();
-            
+
             if (southEastTag.isPresent()) {
                 Rotation2d yaw = Rotation2d.fromDegrees(southEastTag.get().getYaw());
                 // SmartDashboard.putNumber("SouthEastTagYaw", yaw.getRadians());
@@ -264,13 +284,13 @@ public class PhotonProcessor {
                 southEastYaw = Optional.of(robotYaw);
             }
         }
-        
+
         // Always check if targets are available
         if (southWestResults.hasTargets()) {
             Optional<PhotonTrackedTarget> southWestTag = southWestResults.getTargets().stream()
                     .filter(target -> target.getFiducialId() == tagId)
                     .findFirst();
-            
+
             if (southWestTag.isPresent()) {
                 Rotation2d yaw = Rotation2d.fromDegrees(southWestTag.get().getYaw());
                 // SmartDashboard.putNumber("SouthWestTagYaw", yaw.getRadians());
@@ -280,7 +300,7 @@ public class PhotonProcessor {
                 southWestYaw = Optional.of(robotYaw);
             }
         }
-        
+
         if (southEastYaw.isPresent() && southWestYaw.isPresent()) {
             // If both cameras see the target, average the yaw angles
             double averageYaw = (southEastYaw.get() + southWestYaw.get()) / 2.0;
@@ -297,41 +317,41 @@ public class PhotonProcessor {
     public Optional<Double> calculateDistanceToTag(int tagId) {
         PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
         PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
-        
+
         Optional<Double> southEastDistance = Optional.empty();
         Optional<Double> southWestDistance = Optional.empty();
-        
+
         // Always check if targets are available
         if (southEastResults.hasTargets()) {
             Optional<PhotonTrackedTarget> southEastTag = southEastResults.getTargets().stream()
                     .filter(target -> target.getFiducialId() == tagId)
                     .findFirst();
-            
+
             if (southEastTag.isPresent()) {
                 var camToTarget = southEastTag.get().getBestCameraToTarget();
                 var robotToCamera = _robotToSouthEastCam;
                 var robotToTarget = robotToCamera.plus(camToTarget);
-                
+
                 double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
                 southEastDistance = Optional.of(distance);
             }
         }
-        
+
         if (southWestResults.hasTargets()) {
             Optional<PhotonTrackedTarget> southWestTag = southWestResults.getTargets().stream()
                     .filter(target -> target.getFiducialId() == tagId)
                     .findFirst();
-            
+
             if (southWestTag.isPresent()) {
                 var camToTarget = southWestTag.get().getBestCameraToTarget();
                 var robotToCamera = _robotToSouthWestCam;
                 var robotToTarget = robotToCamera.plus(camToTarget);
-                
+
                 double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
                 southWestDistance = Optional.of(distance);
             }
         }
-        
+
         if (southEastDistance.isPresent() && southWestDistance.isPresent()) {
             double averageDistance = (southEastDistance.get() + southWestDistance.get()) / 2.0;
             return Optional.of(averageDistance);
@@ -343,9 +363,6 @@ public class PhotonProcessor {
             return Optional.empty();
         }
     }
-
-
-
 
     public enum Pipeline {
         FAR(0),

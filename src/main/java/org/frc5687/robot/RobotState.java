@@ -16,6 +16,7 @@ import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -174,18 +175,18 @@ public class RobotState {
 
     private void updateWithVision() {
         Pose2d prevEstimatedPose = _estimatedPose;
-
+    
         List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
-                .map(pair -> new Pair<>(pair.getFirst().stream(), pair.getSecond()))
-                .flatMap(pair -> pair.getFirst().map(estimate -> new Pair<>(estimate, pair.getSecond()))) // Handle
-                                                                                                          // Stream<Optional<EstimatedRobotPose>>
+                .filter(pair -> pair.getFirst() != null)
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
-
+    
+        dynamicallyChangeDeviations(cameraPoses, prevEstimatedPose);
+    
         cameraPoses.forEach(cameraPose -> {
             _poseEstimator.addVisionMeasurement(cameraPose.getFirst().estimatedPose.toPose2d(),
                     cameraPose.getFirst().timestampSeconds);
@@ -402,18 +403,36 @@ public class RobotState {
         return _driveTrain.isRedAlliance();
     }
 
-    /**
-     * This changes the standard deviations to trust vision measurements less the
-     * farther the machine is.
-     * the linear line y = 0.13x + 0.3
-     * 
-     * @param measurement the measurement from an AprilTag
-     */
-    public void dynamicallyChangeDeviations(Pose3d measurement, Pose2d currentEstimatedPose) {
-        double dist = measurement.toPose2d().getTranslation().getDistance(currentEstimatedPose.getTranslation());
-        double positionDev = Math.abs(0.2 * dist + 0.2);
-        _poseEstimator.setVisionMeasurementStdDevs(
-                createVisionStandardDeviations(positionDev, positionDev, Units.degreesToRadians(400)));
+    public void dynamicallyChangeDeviations(List<Pair<EstimatedRobotPose, String>> cameraPoses, Pose2d currentEstimatedPose) {
+        for (Pair<EstimatedRobotPose, String> cameraPose : cameraPoses) {
+            EstimatedRobotPose estimatedPose = cameraPose.getFirst();
+
+            double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(currentEstimatedPose.getTranslation());
+    
+            double positionDev, angleDev;
+    
+            if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+                // multi-tag estimate, trust it more
+                positionDev = 0.05;
+                angleDev = Units.degreesToRadians(5);
+            } else {
+                // single-tag estimates, adjust deviations based on distance
+                if (dist < 1.5) {
+                    positionDev = 0.15;
+                    angleDev = Units.degreesToRadians(20);
+                } else if (dist < 4.0) {
+                    positionDev = 0.25;
+                    angleDev = Units.degreesToRadians(50);
+                } else {
+                    positionDev = 0.5;
+                    angleDev = Units.degreesToRadians(100);
+                }
+            }
+    
+            _poseEstimator.setVisionMeasurementStdDevs(
+                createVisionStandardDeviations(positionDev, positionDev, angleDev)
+            );
+        }
     }
 
     public void useAutoStandardDeviations() {

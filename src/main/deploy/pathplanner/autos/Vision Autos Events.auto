@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4295927286148071,
-      "y": 3.3841135501861572
+      "x": 1.3802905082702637,
+      "y": 2.9974164962768555
     },
-    "rotation": -4.2496813947207105e-21
+    "rotation": 1.1364192511492275e-23
   },
   "command": {
     "type": "sequential",
@@ -78,7 +78,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Get D2"
+                        "pathName": "Get D1"
                       }
                     },
                     {
