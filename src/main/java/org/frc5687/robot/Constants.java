@@ -273,9 +273,9 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 8.0;
+        public static final double HEADING_kP = 7.5;
         public static final double HEADING_kI = 0;
-        public static final double HEADING_kD = 0.3;
+        public static final double HEADING_kD = 0.55;
         
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 6.3;
@@ -384,8 +384,8 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 10.0;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.0;
+            SHOOTER_CONTROLLER_CONFIG.kP = 9.5;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }

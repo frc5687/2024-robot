@@ -51,13 +51,16 @@ public class AutoShoot extends OutliersCommand{
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
-        Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
+        // Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
         Optional<Rotation2d> angle = _robotState.getAngleToSpeakerFromVision();
-        if (visionDistance.isPresent()) {
-            _shooter.setRPMFromDistance(visionDistance.get());
-        } else {
+        // if (visionDistance.isPresent()) {
+            // _shooter.setRPMFromDistance(visionDistance.get());
+        // } else {
             _shooter.setRPMFromDistance(distance);
-        }
+        // }
+
+        ChassisSpeeds speeds = _driveTrain.getMeasuredChassisSpeeds();
+        boolean isStopped = (speeds.vxMetersPerSecond < 0.1 && speeds.vyMetersPerSecond < 0.1);
 
         if (angle.isPresent()) {
             _driveTrain.goToHeading(_driveTrain.getHeading().minus(angle.get()));
@@ -71,7 +74,7 @@ public class AutoShoot extends OutliersCommand{
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         boolean isInAngle = _robotState.isAimedAtSpeaker();
         
-        if (isAtTargetRPM && isInAngle) { 
+        if (isAtTargetRPM && isInAngle && isStopped) { 
             if (_intakeTimestamp.isEmpty()) {
                 _intakeTimestamp = Optional.of(System.currentTimeMillis());
             }
@@ -82,7 +85,7 @@ public class AutoShoot extends OutliersCommand{
     @Override
     public boolean isFinished() {
         if (_intakeTimestamp.isPresent()) {
-            return System.currentTimeMillis() > _intakeTimestamp.get() + 200; // 200ms intake
+            return System.currentTimeMillis() > _intakeTimestamp.get() + 150; // 200ms intake
         }
         return false;
     }
