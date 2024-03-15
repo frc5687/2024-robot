@@ -90,11 +90,11 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake).alongWith(new AutoAimSetpoint(drivetrain)));
 
-        _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake, drivetrain));
+        // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake, drivetrain));
 
         _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
         _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
-        // _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
         // _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
