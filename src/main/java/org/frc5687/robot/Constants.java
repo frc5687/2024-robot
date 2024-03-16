@@ -334,24 +334,24 @@ public class Constants {
 
         public static final double VELOCITY_TOLERANCE = 30;
 
-        // public static double[][] kRPMValues = {
-        //     { 3.0, 3800},
-        //     { 3.2, 3500},
-        //     { 3.6, 2600},
-        //     { 4.0, 2100},
-        //     { 4.4, 1880},
-        //     { 4.8, 1880 },
-        // };
-
         public static double[][] kRPMValues = {
             { 3.0, 3800},
-            { 3.4, 3200},
-            { 3.6, 2600},
-            { 3.8, 2500},
-            { 4.2, 2100},
-            { 4.4, 1960},
+            { 3.22, 3450},
+            { 3.66, 2550},
+            { 4.0, 2050},
+            { 4.4, 1880},
             { 4.8, 1880 },
         };
+
+        // public static double[][] kRPMValues = {
+        //     { 3.0, 3800},
+        //     { 3.4, 3200},
+        //     { 3.6, 2600},
+        //     { 3.8, 2500},
+        //     { 4.2, 2100},
+        //     { 4.4, 1960},
+        //     { 4.8, 1880 },
+        // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
         public static final double PASS_RPM = IDLE_RPM;
