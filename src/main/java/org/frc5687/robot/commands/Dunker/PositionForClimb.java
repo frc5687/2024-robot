@@ -14,9 +14,9 @@ public class PositionForClimb extends OutliersCommand {
     @Override
     public void execute() {
         _dunker.setDunkerAngle(Constants.Dunker.CLIMB_ANGLE);
-        if (_dunker.isAtAngle(Constants.Dunker.CLIMB_ANGLE)) {
-            _dunker.disable();
-        }
+        // if (_dunker.isAtAngle(Constants.Dunker.CLIMB_ANGLE)) {
+        //     _dunker.disable();
+        // }
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.sensors.ProximitySensor;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.util.Helpers;
 import org.frc5687.robot.util.OutliersContainer;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -45,10 +46,10 @@ public class Dunker extends OutliersSubsystem {
         _dunkerArmTalon.configure(Constants.Dunker.ARM_CONFIG);
         _dunkerArmTalon.configureClosedLoop(Constants.Dunker.ARM_CLOSED_LOOP_CONFIG);
 
-        _dunkerDriveTalon = new OutliersTalon(RobotMap.CAN.TALONFX.DUNKER_DRIVE, Constants.Dunker.CAN_BUS, "Dunker Drive");
+        _dunkerDriveTalon = new OutliersTalon(RobotMap.CAN.TALONFX.DUNKER_DRIVE, Constants.Dunker.CAN_BUS,
+                "Dunker Drive");
         _dunkerDriveTalon.configure(Constants.Dunker.DRIVE_CONFIG);
         _dunkerDriveTalon.configureClosedLoop(Constants.Dunker.DRIVE_CLOSED_LOOP_CONFIG);
-
 
         _dunkerProx = new ProximitySensor(RobotMap.DIO.DUNKER_PROXIMITY_SENSOR);
 
@@ -74,7 +75,7 @@ public class Dunker extends OutliersSubsystem {
     }
 
     public double getDunkerAbsAngleRadians() {
-        return _dunkerAbsEncoder.getDistance();
+        return Helpers.angleWrap(_dunkerAbsEncoder.getDistance(), true);
     }
 
     public void resetMotorEncoderFromAbs() {
@@ -121,11 +122,17 @@ public class Dunker extends OutliersSubsystem {
         // Check if the abs encoder and the relative encoder are not in sync, if so
         // reset relative to abs
         _tickCounter++;
-        if (Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE
-                && _tickCounter % 10 == 0) {
+        if (_tickCounter % 10 == 0
+                && Math.abs(getDunkerAbsAngleRadians() - getDunkerAngle()) > Constants.Dunker.ANGLE_SYNC_TOLERANCE) {
             resetMotorEncoderFromAbs();
             _tickCounter = 0;
         }
+    }
+
+    public boolean isAtTargetRPM() {
+        return _targetRPM > 0
+                && Math.abs(_targetRPM
+                        - (_dunkerDriveTalon.getVelocity().getValue() * 60.0)) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
     @Override

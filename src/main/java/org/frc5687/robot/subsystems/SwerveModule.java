@@ -2,7 +2,6 @@
 package org.frc5687.robot.subsystems;
 
 import static org.frc5687.robot.Constants.SwerveModule.WHEEL_RADIUS;
-import static org.frc5687.robot.Constants.SwerveModule.kDt;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.Constants;
@@ -11,10 +10,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -85,13 +82,18 @@ public class SwerveModule {
         // Steering Torque Position with exponential curve
         _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
         _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
-
         /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
+        _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
+
+        try {
+            Thread.sleep(250); // Delay for 1000 milliseconds people has some issues just making sure
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
         _driveMotor.configureClosedLoop(Constants.SwerveModule.DRIVE_CONTROLLER_CONFIG);
-
-        _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
         _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
         _steeringMotor.configureClosedLoop(Constants.SwerveModule.STEER_CONTROLLER_CONFIG);
 
@@ -108,6 +110,12 @@ public class SwerveModule {
         _isLowGear = false;
 
         _encoder = new CANcoder(encoderPort, config.canBus);
+
+        try {
+            Thread.sleep(250); // Delay for 250 milliseconds people has some issues just making sure
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
         CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
@@ -120,8 +128,9 @@ public class SwerveModule {
 
         FeedbackConfigs feedback = new FeedbackConfigs();
         feedback.FeedbackRemoteSensorID = encoderPort;
-        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        // feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        // feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        //feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
 
 
@@ -138,23 +147,26 @@ public class SwerveModule {
     }
 
     private void initializeSignals() {
-        _drivePositionRotations = _driveMotor.getPosition();
-        _driveVelocityRotationsPerSec = _driveMotor.getVelocity();
-        _steeringPositionRotations = _encoder.getPosition();
-        _steeringVelocityRotationsPerSec = _encoder.getVelocity();
+        _drivePositionRotations = _driveMotor.getPosition().clone();
+        _driveVelocityRotationsPerSec = _driveMotor.getVelocity().clone();
+        _steeringPositionRotations = _encoder.getPosition().clone();
+        _steeringVelocityRotationsPerSec = _encoder.getVelocity().clone();
 
         _driveMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
-        _driveVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
-        _drivePositionRotations.setUpdateFrequency(1 / kDt);
+        _driveVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
+        _drivePositionRotations.setUpdateFrequency(1 / 250);
 
         _steeringMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
-        _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
-        _steeringPositionRotations.setUpdateFrequency(1 / kDt);
+        _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
+        _steeringPositionRotations.setUpdateFrequency(1 / 250);
 
         _signals[0] = _driveVelocityRotationsPerSec;
         _signals[1] = _drivePositionRotations;
         _signals[2] = _steeringVelocityRotationsPerSec;
         _signals[3] = _steeringPositionRotations;
+
+        _driveMotor.optimizeBusUtilization();
+        _steeringMotor.optimizeBusUtilization();
     }
 
     public void setControlRequestUpdateFrequency(double updateFreqHz) {
@@ -204,44 +216,30 @@ public class SwerveModule {
         return _signals;
     }
 
+    private double calculateWantedSpeed(SwerveModuleState state) {
+        return state.speedMetersPerSecond * getGearRatio() * _rotPerMet;
+    }
+
     public void setIdealState(SwerveModuleState state) {
         state = SwerveModuleState.optimize(state, _internalState.angle);
         _goal = state;
-        if (Math.abs(state.speedMetersPerSecond) < Constants.SwerveModule.IDLE_MPS_LIMIT) {
-            stopAll();
-        } else {
-            setModuleState(_goal);
-        }
-    }
-
-    private double calculateWantedSpeed(SwerveModuleState state) {
-        return state.speedMetersPerSecond * getGearRatio() * _rotPerMet;
+        setModuleState(_goal);
     }
 
     public void setModuleState(SwerveModuleState state) {
         _stateMPS = state.speedMetersPerSecond;
         _wantedSpeed = calculateWantedSpeed(state);
+        double angleToSetDeg = state.angle.getRotations();
+        _steeringMotor.setPositionVoltage(angleToSetDeg);
 
         // skew correction logic, team 900 paper, used in CTRE Swerve
-        double steerMotorError = state.angle.minus(getCanCoderAngle()).getRadians();
-        double cosineScalar = Math.cos(steerMotorError);
+        double steerMotorError = angleToSetDeg - _steeringPositionRotations.getValue();
+        double cosineScalar = Math.cos(Units.rotationsToRadians(steerMotorError));
         cosineScalar = Math.max(cosineScalar, 0.0); // Ensure it does not invert drive
         _wantedSpeed *= cosineScalar;
-
-        double position = state.angle.getRotations();
-
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
-        _steeringMotor.setPositionVoltage(position);
-        // This is too slow for me :(
-        // Use new torque exponential curve
-        // _steeringMotor.setControl(_angleTorqueExpo.withPosition(position));
-        // _steeringMotor.setControl(_angleTorque.withPosition(position));
-
-        // For debugging
-        SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
-        SmartDashboard.putNumber("/wantedPosition", position);
-        SmartDashboard.putNumber("/cosineScalar", cosineScalar);
     }
+
     private void transformEncoderFromHighGearToLowGear() {
         refreshSignals();
         double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
@@ -255,7 +253,7 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getWheelVelocity(), getCanCoderAngle());
+        return new SwerveModuleState(getWheelVelocity(), _internalState.angle);
     }
 
     public double getDriveMotorVoltage() {

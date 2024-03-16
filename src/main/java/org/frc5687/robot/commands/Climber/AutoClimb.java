@@ -3,7 +3,6 @@ package org.frc5687.robot.commands.Climber;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
-import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Climber.ClimberStep;
 
 import static org.frc5687.robot.Constants.DriveTrain.SLOW_KINEMATIC_LIMITS;
@@ -40,7 +39,7 @@ public class AutoClimb extends OutliersCommand{
                 if (!(_dunker.getCurrentCommand() instanceof PositionForClimb)) {
                     new PositionForClimb(_dunker).schedule(); // doing it this way because requiring dunker in this command would not work
                 }
-                if (_dunker.getDunkerAngle() < Constants.Dunker.PREP_ANGLE) {
+                if (Math.abs(Constants.Dunker.CLIMB_ANGLE - _dunker.getDunkerAngle()) < Constants.Dunker.ANGLE_TOLERANCE) {
                     _climber.setStep(ClimberStep.RAISING);
                 }
                 break;

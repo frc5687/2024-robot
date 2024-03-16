@@ -5,7 +5,6 @@ import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.robot.subsystems.DriveTrain.ControlState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,20 +27,19 @@ public class DriveToAmp extends OutliersCommand {
 
     @Override
     public void initialize() {
-        _driveTrain.setControlState(ControlState.POSITION);
         _maxSpeed = _driveTrain.isLowGear() 
             ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
             : Constants.DriveTrain.MAX_HIGH_GEAR_MPS
         ;
         _goalPose = _driveTrain.isRedAlliance() ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE;
         _controller = new PIDController(
-            Constants.DriveTrain.kP, 
+            Constants.DriveTrain.POSE_kP, 
             0, 
             0
         );
 
         Rotation2d headingRot = _driveTrain.isRedAlliance() ? new Rotation2d(-Math.PI / 2) : new Rotation2d(Math.PI / 2);
-        _driveTrain.setSnapHeading(headingRot);
+        _driveTrain.goToHeading(headingRot);
     }
 
     @Override

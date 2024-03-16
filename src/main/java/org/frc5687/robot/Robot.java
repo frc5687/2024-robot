@@ -64,7 +64,7 @@ public class Robot extends OutliersRobot {
         // Periodically flushes metrics (might be good to configure enable/disable via
         // USB config
         // file)
-        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
+        // new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
     }
 
     /**

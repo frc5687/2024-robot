@@ -4,7 +4,6 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
-import org.frc5687.robot.subsystems.DriveTrain.ControlState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
@@ -20,7 +19,6 @@ public class DriveToPose extends OutliersCommand {
 
     @Override
     public void initialize() {
-        _driveTrain.setControlState(ControlState.POSITION);
         _driveTrain.setHoverGoal(_goalPose2d);
         super.initialize();
     }
@@ -39,7 +37,6 @@ public class DriveToPose extends OutliersCommand {
 
     @Override
     public void end(boolean interrupted) {
-        _driveTrain.setControlState(ControlState.MANUAL);
         super.end(interrupted);
     }
 

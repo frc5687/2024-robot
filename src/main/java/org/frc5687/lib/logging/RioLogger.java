@@ -26,7 +26,7 @@ public class RioLogger {
     }
 
     public static void error(String source, String message) {
-        // log(LogLevel.error, source, message);
+        log(LogLevel.error, source, message);
     }
 
     public static void debug(String source, String message) {

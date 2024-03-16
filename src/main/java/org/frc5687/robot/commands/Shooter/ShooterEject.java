@@ -18,7 +18,7 @@ public class ShooterEject extends OutliersCommand {
     @Override
     public void execute(){
     
-        _shooter.setPercentRPM();
+        _shooter.setToEject();
         _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         
     }

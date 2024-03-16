@@ -1,89 +1,97 @@
 package org.frc5687.robot.commands.Shooter;
 
+import java.util.Optional;
+
+import javax.swing.plaf.OptionPaneUI;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
+import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
-import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
-import org.frc5687.robot.subsystems.Lights;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class AutoShoot extends OutliersCommand{
-    private Shooter _shooter;
-    private Intake _intake;
-    private DriveTrain _driveTrain;
-    private RobotState _robotState;
-    private Lights _lights;
-    private long _endingTimestamp;
+    private final Shooter _shooter;
+    private final Intake _intake;
+    private final DriveTrain _driveTrain;
+    private final RobotState _robotState = RobotState.getInstance();
 
-    private boolean _isInAngle = false;
-    private boolean _isAtTargetRPM = false;
+    private Optional<Long> _intakeTimestamp;
 
     public AutoShoot(
         Shooter shooter,
         Intake intake,
-        DriveTrain driveTrain,
-        RobotState robotState,
-        Lights lights
+        DriveTrain driveTrain
     ) {
         _shooter = shooter;
         _intake = intake;
         _driveTrain = driveTrain;
-        _robotState = robotState;
-        _lights = lights;
         addRequirements(_shooter, _intake, _driveTrain);
     }
+
 
     @Override
     public void initialize() {
         super.initialize();
-        _endingTimestamp = Long.MAX_VALUE; // it will never be this big
-        _lights.setDebugLightsEnabled(true);
+        _shooter.setConfigSlot(0);
+        _intakeTimestamp = Optional.empty();
     }
 
     @Override
     public void execute() {
+        // Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
+        // _shooter.setShooterMotorRPM(shooterRPMAndAngle.getFirst().doubleValue());
+        // Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
+        // _driveTrain.setSnapHeading(angle);
+
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-
         double distance = distanceAndAngle.getFirst();
-        Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
+        // Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
+        Optional<Rotation2d> angle = _robotState.getAngleToSpeakerFromVision();
+        // if (visionDistance.isPresent()) {
+            // _shooter.setRPMFromDistance(visionDistance.get());
+        // } else {
+            _shooter.setRPMFromDistance(distance);
+        // }
 
-        // add max distance conditional?
-        _shooter.setRPMFromDistance(distance);
+        ChassisSpeeds speeds = _driveTrain.getMeasuredChassisSpeeds();
+        boolean isStopped = (speeds.vxMetersPerSecond < 0.1 && speeds.vyMetersPerSecond < 0.1);
+
+        if (angle.isPresent()) {
+            _driveTrain.goToHeading(_driveTrain.getHeading().minus(angle.get()));
+        } else {
+            _driveTrain.goToHeading(new Rotation2d(distanceAndAngle.getSecond()));
+        }
+
         
-        Rotation2d currentHeading = _driveTrain.getHeading();
-        _driveTrain.setSnapHeading(angle);
         _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
 
-        boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < Constants.DriveTrain.SNAP_TOLERANCE;
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
-        metric("IsInAngle", isInAngle);
-        metric("isAtTargetRPM", isAtTargetRPM);
-        _lights.setDebugValues(isInAngle, isAtTargetRPM);
-
-        if (isAtTargetRPM && isInAngle) {
-            // trigger intake only once.... it has been triggered already if it is not MAX_VALUE O-O
-            if (_endingTimestamp == Long.MAX_VALUE) {
-                _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
-                _endingTimestamp = System.currentTimeMillis() + 250; // 250ms intake
+        boolean isInAngle = _robotState.isAimedAtSpeaker();
+        
+        if (isAtTargetRPM && isInAngle && isStopped) { 
+            if (_intakeTimestamp.isEmpty()) {
+                _intakeTimestamp = Optional.of(System.currentTimeMillis());
             }
+            _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return System.currentTimeMillis() > _endingTimestamp;
+        if (_intakeTimestamp.isPresent()) {
+            return System.currentTimeMillis() > _intakeTimestamp.get() + 150; // 200ms intake
+        }
+        return false;
     }
 
     @Override
     public void end(boolean interrupted) {
-        super.end(interrupted);
-        _driveTrain.disableHeadingController();
-        _lights.setDebugLightsEnabled(false);
-        _shooter.setToStop();
+        _intake.setSpeed(0.0);
     }
 }
