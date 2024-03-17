@@ -278,7 +278,7 @@ public class Constants {
         public static final double HEADING_kD = 0.7;
         
         // Pose PID for trajectory and drive to pose
-        public static final double POSE_kP = 4.3;
+        public static final double POSE_kP = 4.8;
         public static final double POSE_kI = 0.0;
         public static final double POSE_kD = 0.0;
 
@@ -383,8 +383,8 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 9.5;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
+            SHOOTER_CONTROLLER_CONFIG.kP = 9;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.03;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
