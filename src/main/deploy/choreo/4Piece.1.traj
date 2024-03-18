@@ -703,42 +703,5 @@
       "timestamp": 5.348873413594738
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RevRPM"
-        }
-      }
-    },
-    {
-      "timestamp": 0.8988723858954932,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ShootRPM"
-        }
-      }
-    },
-    {
-      "timestamp": 1.8488723858954932,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Intake"
-        }
-      }
-    },
-    {
-      "timestamp": 3.715499412481607,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Rev"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

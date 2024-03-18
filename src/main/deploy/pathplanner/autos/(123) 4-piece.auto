@@ -5,7 +5,7 @@
       "x": 1.4007201194763184,
       "y": 3.31704044342041
     },
-    "rotation": -4.032544442572543e-23
+    "rotation": 5.274808400023924e-23
   },
   "command": {
     "type": "sequential",
@@ -15,18 +15,6 @@
           "type": "path",
           "data": {
             "pathName": "4Piece (1).1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4Piece (1).2"
           }
         },
         {
@@ -50,13 +38,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4Piece (1).4"
+            "pathName": "4Piece (1).2"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4Piece (1).4"
           }
         }
       ]
