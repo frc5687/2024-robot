@@ -37,9 +37,9 @@ public class SwerveHeadingController {
         _minVelocityMultiplier = 1.0; // these are tuned
         _maxVelocityMultiplier = 1.1; // these are tuned
 
-        // SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
-        // SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
-        // SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
+        SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
+        SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
+        SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
     }
 
     public void disable() {
@@ -93,25 +93,25 @@ public class SwerveHeadingController {
                 }
                 break;
             case ON:
-                // _PIDController.setPID(
-                //         SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
-                //         SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
-                //         SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
+                _PIDController.setPID(
+                        SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
+                        SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
+                        SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
                 power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
                 break;
             default:
                 break;
         }
     
-        double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
+        // double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
     
         // Calculate the exponential velocity multiplier
-        double velocityRatio = velocityMagnitude / maxSpeed;
-        double exponent = 2.0; 
-        double velocityMultiplier = _minVelocityMultiplier + (_maxVelocityMultiplier - _minVelocityMultiplier) * Math.pow(velocityRatio, exponent);
-        velocityMultiplier = Math.min(velocityMultiplier, _maxVelocityMultiplier);
+        // double velocityRatio = velocityMagnitude / maxSpeed;
+        // double exponent = 2.0; 
+        // double velocityMultiplier = _minVelocityMultiplier + (_maxVelocityMultiplier - _minVelocityMultiplier) * Math.pow(velocityRatio, exponent);
+        // velocityMultiplier = Math.min(velocityMultiplier, _maxVelocityMultiplier);
     
-        power *= velocityMultiplier;
+        // power *= velocityMultiplier;
 
         double error = _targetHeading.minus(heading).getRadians();
         if (isAtTargetAngle(heading)) {

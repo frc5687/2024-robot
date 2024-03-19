@@ -273,12 +273,12 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 7.5;
+        public static final double HEADING_kP = 6.5;
         public static final double HEADING_kI = 0;
-        public static final double HEADING_kD = 0.55;
+        public static final double HEADING_kD = 0.7;
         
         // Pose PID for trajectory and drive to pose
-        public static final double POSE_kP = 6.3;
+        public static final double POSE_kP = 4.8;
         public static final double POSE_kI = 0.0;
         public static final double POSE_kD = 0.0;
 
@@ -334,24 +334,24 @@ public class Constants {
 
         public static final double VELOCITY_TOLERANCE = 30;
 
-        // public static double[][] kRPMValues = {
-        //     { 3.0, 3800},
-        //     { 3.2, 3500},
-        //     { 3.6, 2600},
-        //     { 4.0, 2100},
-        //     { 4.4, 1880},
-        //     { 4.8, 1880 },
-        // };
-
         public static double[][] kRPMValues = {
             { 3.0, 3800},
-            { 3.4, 3200},
-            { 3.6, 2600},
-            { 3.8, 2500},
-            { 4.2, 2100},
-            { 4.4, 1960},
+            { 3.22, 3450},
+            { 3.66, 2550},
+            { 4.0, 2050},
+            { 4.4, 1880},
             { 4.8, 1880 },
         };
+
+        // public static double[][] kRPMValues = {
+        //     { 3.0, 3800},
+        //     { 3.4, 3200},
+        //     { 3.6, 2600},
+        //     { 3.8, 2500},
+        //     { 4.2, 2100},
+        //     { 4.4, 1960},
+        //     { 4.8, 1880 },
+        // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
         public static final double PASS_RPM = IDLE_RPM;
@@ -383,8 +383,8 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 9.5;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
+            SHOOTER_CONTROLLER_CONFIG.kP = 9;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.03;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -538,9 +538,10 @@ public class Constants {
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
+
         public static final double PREP_ANGLE = 2.3;
         public static final double DUNK_ANGLE = 3.24;
-        public static final double STOWED_ANGLE = 4.9; // stop changing this - xavier (dm me) 03/13/24
+        public static final double STOWED_ANGLE = 5.18;
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
