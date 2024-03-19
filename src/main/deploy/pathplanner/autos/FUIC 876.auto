@@ -5,7 +5,7 @@
       "x": 1.3973729610443115,
       "y": 3.3713855743408203
     },
-    "rotation": 1.3698887838073027e-26
+    "rotation": 3.240411927931649e-26
   },
   "command": {
     "type": "sequential",
@@ -18,9 +18,27 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "FUIC 876.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC 876.3"
           }
         }
       ]
