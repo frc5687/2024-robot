@@ -1,6 +1,9 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
+import static org.frc5687.robot.Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+import static org.frc5687.robot.Constants.DriveTrain.MAX_LOW_GEAR_MPS;
+
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
 import org.frc5687.lib.drivers.OutliersTalon;
@@ -49,8 +52,6 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
             CONFIG.CURRENT_DEADBAND = 0.5;
         }
 
@@ -62,7 +63,6 @@ public class Constants {
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
-            STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
             STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
 
@@ -80,14 +80,14 @@ public class Constants {
             DRIVE_CONTROLLER_CONFIG.kP = 8.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.3;
-            DRIVE_CONTROLLER_CONFIG.kV = 0.75;
-            DRIVE_CONTROLLER_CONFIG.kA = 0.0;
+            //DRIVE_CONTROLLER_CONFIG.kV = 0.75;
+            DRIVE_CONTROLLER_CONFIG.kV = 1 / MAX_LOW_GEAR_MPS;
             // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kV1 = 1.0 / MAX_HIGH_GEAR_MPS;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -182,13 +182,15 @@ public class Constants {
 
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2 old 20, new based on math :) 
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2 old 20, 
+            HIGH_KINEMATIC_LIMITS.maxDriveDeceleration= 40; 
             HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
         }
-         static {
+        // Just unlimite everything, assume the path will handle everything.
+        static {
             AUTO_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
             AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 200; // m/s^2 old 20, new based on math :) 
-
+            AUTO_KINEMATIC_LIMITS.maxDriveDeceleration= 400; 
             AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 200; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
@@ -196,6 +198,7 @@ public class Constants {
         static {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
             LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2 // old 35, new based on math
+            LOW_KINEMATIC_LIMITS.maxDriveDeceleration = 45; 
             LOW_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_LOW_GEAR_RADS; // rad/s
         }
 
@@ -206,6 +209,7 @@ public class Constants {
         static {
             SLOW_KINEMATIC_LIMITS.maxDriveVelocity = 2.5; // m/s
             SLOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
+            SLOW_KINEMATIC_LIMITS.maxDriveDeceleration= 20; // m/s^2
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
