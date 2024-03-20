@@ -62,6 +62,12 @@ public class Drive extends OutliersCommand {
             _driveTrain.temporaryDisableHeadingController();
         }
 
+        boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();
+
+        if (shouldAutoAim) {
+            _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        }
+
         double controllerPower = _driveTrain.getRotationCorrection();
 
         vx = vec.x() * max_mps;
@@ -80,11 +86,7 @@ public class Drive extends OutliersCommand {
         // }
 
         // if has note and is within shooting range and is in speaker mode
-        boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();
-        
-        if (shouldAutoAim) {
-            _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
-        }
+
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(

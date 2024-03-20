@@ -11,6 +11,7 @@ import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
 import java.util.Optional;
 
 import org.frc5687.lib.control.SwerveHeadingController;
+import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -288,6 +289,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void initializeHeadingController() {
         _headingController.goToHeading(getHeading());
+    }
+
+    public void setHeadingControllerState(HeadingState state) {
+        _headingController.setState(state);
     }
 
     public void incrementHeadingControllerAngle() {

@@ -73,6 +73,10 @@ public class SwerveHeadingController {
         return (Math.abs(heading.minus(_targetHeading).getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE);
     }
 
+    public void setState(HeadingState state) {
+        _headingState = state;
+    }
+
     /**
      * Get the output of the PID controller given a certain input.
      * 
