@@ -354,7 +354,7 @@ public class Constants {
         };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = IDLE_RPM;
+        public static final double PASS_RPM = 2100;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 460;
