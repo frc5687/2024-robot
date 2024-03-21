@@ -209,6 +209,14 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
+        public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveVelocity = .5; // m/s
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2
+            SLOW_MODE_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE; // rad/s
+        }
+
         /*
          * How to find offsets:
          * 
