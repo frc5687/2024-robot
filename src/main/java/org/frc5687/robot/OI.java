@@ -145,6 +145,9 @@ public class OI extends OutliersProxy {
     public boolean getClimbButton() {
         return _operatorGamepad.isStartPressed();
     }
+    public boolean getSoloClimbButton(){
+        return _operatorGamepad.isBackPressed();
+    }
 
     public double getDriveY() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
