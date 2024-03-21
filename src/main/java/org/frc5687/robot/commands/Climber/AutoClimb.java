@@ -18,7 +18,6 @@ public class AutoClimb extends OutliersCommand{
     private Dunker _dunker;
     private DriveTrain _driveTrain;
     private OI _oi;
-    private double _climbHeight;
     
     public AutoClimb(Climber climber, Dunker dunker, DriveTrain driveTrain, OI oi) {
         _climber = climber;
@@ -33,10 +32,6 @@ public class AutoClimb extends OutliersCommand{
         switch (_climber.getStep()) {
             case STOWED:
                 if (_oi.getClimbButton()) {
-                    _climbHeight= Constants.Climber.PREP_METERS;
-                    _climber.setStep(ClimberStep.CLEARING_DUNKER);
-                }else if (_oi.getSoloClimbButton()){
-                    _climbHeight = Constants.Climber.SOLO_METERS;
                     _climber.setStep(ClimberStep.CLEARING_DUNKER);
                 }
                 break;
@@ -49,9 +44,9 @@ public class AutoClimb extends OutliersCommand{
                 }
                 break;
             case RAISING:
-                _climber.setPositionMeters(_climbHeight);
+                _climber.setPositionMeters(Constants.Climber.PREP_METERS);
                 _driveTrain.setKinematicLimits(SLOW_KINEMATIC_LIMITS);
-                if (Math.abs(_climber.getPositionMeters() - _climbHeight) < Constants.Climber.CLIMBER_TOLERANCE) {
+                if (Math.abs(_climber.getPositionMeters() - Constants.Climber.PREP_METERS) < Constants.Climber.CLIMBER_TOLERANCE) {
                     _climber.setStep(ClimberStep.RAISED);
                 }
                 break;

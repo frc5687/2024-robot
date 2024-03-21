@@ -22,11 +22,11 @@ public class IdleShooter extends OutliersCommand {
             hasNote = true;
         }
 
-        // if (_robotState.isWithinOptimalRange() && hasNote && _shooter.getSpinUpAutomatically()) {
-        //     _shooter.setRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst());
-        // } else {
+        if (_robotState.isWithinOptimalRange() && hasNote && _shooter.getSpinUpAutomatically()) {
+            _shooter.setRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst());
+        } else {
             _shooter.setToIdle();
-        // }
+        }
     }
 
     public boolean isFinished() {

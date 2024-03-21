@@ -19,7 +19,6 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.util.OutliersContainer;
-import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -276,7 +275,8 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public double getRotationCorrection() {
-        return _headingController.getRotationCorrection(getHeading());
+        double maxSpeed = _isLowGear ? Constants.DriveTrain.MAX_LOW_GEAR_MPS : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+        return _headingController.getRotationCorrection(getHeading(), getMeasuredChassisSpeeds(), maxSpeed);
     }
 
     public void temporaryDisableHeadingController() {
@@ -315,10 +315,6 @@ public class DriveTrain extends OutliersSubsystem {
         return Math.abs(target.minus(getHeading()).getRadians()) < tolerance;
     }
 
-    public void setHeadingControllerState(HeadingState state) {
-        _headingController.setState(state);
-    }
-
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {
@@ -343,10 +339,6 @@ public class DriveTrain extends OutliersSubsystem {
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
         updateDesiredStates();
-        Logger.recordOutput("DriveTrain/RobotHeading", _systemIO.heading.getRadians());
-        Logger.recordOutput("DriveTrain/MeasuredModuleStates", _systemIO.measuredStates);
-        Logger.recordOutput("DriveTrain/DesiredSetpoint", _systemIO.setpoint.moduleStates);
-        Logger.recordOutput("RobotState/EsimatedPose", _robotState.getEstimatedPose());
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
 

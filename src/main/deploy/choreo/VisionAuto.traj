@@ -964,5 +964,51 @@
       "timestamp": 6.218828472218846
     }
   ],
-  "eventMarkers": []
+  "eventMarkers": [
+    {
+      "timestamp": 1.940155437173403,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Passthrough"
+        }
+      }
+    },
+    {
+      "timestamp": 4.153786022190515,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake"
+        }
+      }
+    },
+    {
+      "timestamp": 0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Rev"
+        }
+      }
+    },
+    {
+      "timestamp": 5.174736609613694,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Rev"
+        }
+      }
+    },
+    {
+      "timestamp": 3.0735220014086524,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Passthrough"
+        }
+      }
+    }
+  ]
 }

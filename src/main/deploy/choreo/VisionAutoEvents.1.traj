@@ -1063,5 +1063,42 @@
       "timestamp": 8.41426514452317
     }
   ],
-  "eventMarkers": []
+  "eventMarkers": [
+    {
+      "timestamp": 0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RevRPM"
+        }
+      }
+    },
+    {
+      "timestamp": 0.8291410725992783,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ShootRPM"
+        }
+      }
+    },
+    {
+      "timestamp": 2.895175688213662,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Passthrough"
+        }
+      }
+    },
+    {
+      "timestamp": 5.784534734752258,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake"
+        }
+      }
+    }
+  ]
 }

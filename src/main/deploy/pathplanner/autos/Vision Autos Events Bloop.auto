@@ -1,0 +1,62 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3802905082702637,
+      "y": 2.9974164962768555
+    },
+    "rotation": -1.5950502662799768e-22
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "VisionAutoEvents"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Get D1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DynamicNote"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ReturnToShoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}
