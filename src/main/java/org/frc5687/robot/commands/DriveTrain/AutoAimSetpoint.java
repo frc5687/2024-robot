@@ -30,7 +30,7 @@ public class AutoAimSetpoint extends OutliersCommand {
 
     @Override
     public void execute() {
-        Optional<Rotation2d> visionAngle = _robotState.getAngleToSpeakerFromVision();
+        Optional<Rotation2d> visionAngle = _robotState.calculateAngleToTagFromVision(_robotState.getSpeakerTargetTagId());
 
         if (visionAngle.isPresent()) {
             double angleRadians = visionAngle.get().getRadians();

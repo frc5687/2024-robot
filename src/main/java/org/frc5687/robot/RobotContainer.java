@@ -157,14 +157,12 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void teleopInit() {
         _driveTrain.enableAutoShifter();
-        _robotState.useTeleopStandardDeviations();
         // enforce to make sure kinematic limits are set back to normal.
         _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? LOW_KINEMATIC_LIMITS : HIGH_KINEMATIC_LIMITS);
     }
 
     @Override
     public void autonomousInit() {
-        _robotState.useAutoStandardDeviations();
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
         // yolo
         _driveTrain.disableAutoShifter();
@@ -202,7 +200,7 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride() {
-        var visionAngle = _robotState.getAngleToSpeakerFromVision();
+        var visionAngle = _robotState.calculateAngleToTagFromVision(_robotState.getSpeakerTargetTagId());
         if (visionAngle.isPresent()) {
             return Optional.of(_driveTrain.getHeading().minus(visionAngle.get()));
         }

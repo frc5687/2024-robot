@@ -316,15 +316,15 @@ public class Constants {
 
         // we can't change the odometry stddev easily,,,, just change the vision stddev --xavier bradford 02/25/24
         public static class Auto {
-            public static double VISION_STD_DEV_X = 0.35 ;
+            public static double VISION_STD_DEV_X = 0.35;
             public static double VISION_STD_DEV_Y = 0.35;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
+            public static double VISION_STD_DEV_ANGLE = Double.POSITIVE_INFINITY; // don't trust angle
         }
 
         public static class Teleop {
             public static double VISION_STD_DEV_X = 0.15;
             public static double VISION_STD_DEV_Y = 0.15;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
+            public static double VISION_STD_DEV_ANGLE = Double.POSITIVE_INFINITY; // don't trust angle
         }
     }
 

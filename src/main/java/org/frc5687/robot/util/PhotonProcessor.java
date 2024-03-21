@@ -4,9 +4,13 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.ArrayList;
 import java.util.Optional;
+
+import javax.swing.text.html.HTML.Tag;
 
 import org.frc5687.robot.Constants;
 import org.photonvision.EstimatedRobotPose;
@@ -17,365 +21,133 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonProcessor {
 
-    // private static final int NUM_CAMERAS = 4;
-    private final PhotonCamera _northEastCamera;
-    private final PhotonCamera _southEastCamera;
-    private final PhotonCamera _northWestCamera;
-    private final PhotonCamera _southWestCamera;
-    private final PhotonPoseEstimator _southEastCameraEstimator;
-    private final PhotonPoseEstimator _northEastCameraEstimator;
-    private final PhotonPoseEstimator _northWestCameraEstimator;
-    private final PhotonPoseEstimator _southWestCameraEstimator;
+    private static final int NUM_CAMERAS = 4;
 
-    private final Transform3d _robotToSouthEastCam;
-    private final Transform3d _robotToNorthEastCam;
-    private final Transform3d _robotToNorthWestCam;
-    private final Transform3d _robotToSouthWestCam;
+    private static final int NE_IDX = 0;
+    private static final int NW_IDX = 1;
+    private static final int SE_IDX = 2;
+    private static final int SW_IDX = 3;
+
+    private final PhotonCamera[] _cameras = new PhotonCamera[NUM_CAMERAS];
+    private final PhotonPoseEstimator[] _estimators = new PhotonPoseEstimator[NUM_CAMERAS];
+
+    private final Transform3d[] _robotToCamera = new Transform3d[NUM_CAMERAS];
+
+    private ArrayList<TagTransform> _tags = new ArrayList<>();
 
     public PhotonProcessor(AprilTagFieldLayout layout) {
-        _southEastCamera = new PhotonCamera("South_East_Camera");
-        _northEastCamera = new PhotonCamera("North_East_Camera");
-        _northWestCamera = new PhotonCamera("North_West_Camera");
-        _southWestCamera = new PhotonCamera("South_West_Camera");
+        _cameras[NE_IDX] = new PhotonCamera("North_East_Camera");
+        _cameras[NW_IDX] = new PhotonCamera("North_West_Camera");
+        _cameras[SE_IDX] = new PhotonCamera("South_East_Camera");
+        _cameras[SW_IDX] = new PhotonCamera("South_West_Camera");
 
-        // FIXME: look at the order the rotation transformations are applied -xavier
-        // bradford
-        _robotToSouthEastCam = new Transform3d(
-                // new Translation3d(0.0, -0.155635, 0.5937), // for centered camera
-                new Translation3d(-0.107009, -0.104835, 0.57991),
-                // new Rotation3d(0.0, 0.0, Units.degreesToRadians(180)) // for centered camera
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5)));
+        // TODO these should be in config and also they should be inverted
 
-        _robotToNorthEastCam = new Transform3d(
-                new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(-7.05), Units.inchesToMeters(11.00)),
-                new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(-25.5)));
+        _robotToCamera[NE_IDX] = new Transform3d(
+            new Pose3d(new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(-7.05), Units.inchesToMeters(11.00)), new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(-25.5))),
+            new Pose3d()
+        );
+        _robotToCamera[NW_IDX] = new Transform3d(
+            new Pose3d(new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(7.05), Units.inchesToMeters(11.00)), new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(25.5))),
+            new Pose3d()
+        );
+        _robotToCamera[SE_IDX] = new Transform3d(
+            new Pose3d(new Translation3d(-0.107009, -0.104835, 0.57991), new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5))),
+            new Pose3d()
+        );
+        _robotToCamera[SW_IDX] = new Transform3d(
+            new Pose3d(new Translation3d(-0.107009, 0.104835, 0.57991), new Rotation3d(0.0, 0.0, Units.degreesToRadians(-162.5))),
+            new Pose3d()
+        );
 
-        _robotToNorthWestCam = new Transform3d(
-                new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(7.05), Units.inchesToMeters(11.00)),
-                new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(25.5)));
-
-        _robotToSouthWestCam = new Transform3d(
-                new Translation3d(-0.107009, 0.104835, 0.57991),
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(-162.5)));
-
-        _southEastCameraEstimator = new PhotonPoseEstimator(
+        for (int i = 0; i < NUM_CAMERAS; i++) {
+            _estimators[i] = new PhotonPoseEstimator(
                 layout,
                 PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                _southEastCamera,
-                _robotToSouthEastCam);
-
-        _northEastCameraEstimator = new PhotonPoseEstimator(
-                layout,
-                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                _northEastCamera,
-                _robotToNorthEastCam);
-
-        _northWestCameraEstimator = new PhotonPoseEstimator(
-                layout,
-                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                _northWestCamera,
-                _robotToNorthWestCam);
-
-        _southWestCameraEstimator = new PhotonPoseEstimator(
-                layout,
-                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                _southWestCamera,
-                _robotToSouthWestCam);
-
-        _southEastCameraEstimator.setMultiTagFallbackStrategy(
-                PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        _northEastCameraEstimator.setMultiTagFallbackStrategy(
-                PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        _northWestCameraEstimator.setMultiTagFallbackStrategy(
-                PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        _southWestCameraEstimator.setMultiTagFallbackStrategy(
-                PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-    }
-
-    public void setPipeline(Pipeline pipeline) {
-        _southEastCamera.setPipelineIndex(pipeline.getValue());
-        _northEastCamera.setPipelineIndex(pipeline.getValue());
-        _northWestCamera.setPipelineIndex(pipeline.getValue());
-        _southWestCamera.setPipelineIndex(pipeline.getValue());
-    }
-
-    public double getSouthEastCameraLatency() {
-        return _southEastCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public double getNorthEastCameraLatency() {
-        return _northEastCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public double getNorthWestCameraLatency() {
-        return _northWestCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public double getSouthWestCameraLatency() {
-        return _southWestCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public boolean hasSouthEastCameraTargets() {
-        return _southEastCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean hasNorthEastCameraTargets() {
-        return _northEastCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean hasNorthWestCameraTargets() {
-        return _northWestCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean hasSouthWestCameraTargets() {
-        return _southWestCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean isSouthEastTargetsWithinAmbiguity(double ambiguityTolerance) {
-        var tags = _southEastCamera.getLatestResult().targets;
-        for (var tag : tags) {
-            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
-                return false;
-            }
+                _cameras[i],
+                _robotToCamera[i]
+            );
+            // use the tag with a lower pose ambiguity if multiple tags are visible (this may not be used with xavier's vision system)
+            _estimators[i].setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         }
-        return true;
     }
 
-    public boolean isNorthEastTargetsWithinAmbiguity(double ambiguityTolerance) {
-        var tags = _northEastCamera.getLatestResult().targets;
-        for (var tag : tags) {
-            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
-                return false;
-            }
-        }
-        return true;
-    }
+    /**
+     * Updates the locally cached <code>_tags</code> to those given by the cameras.
+     * @param robotHeading the heading in the field frame (_heading on blue side and _heading + Math.PI on red side)
+     */
+    public void updateFieldOrientedRobotFrameTagPositions(Rotation2d robotHeading) {
+        ArrayList<TagTransform> tags = new ArrayList<TagTransform>();
 
-    public boolean isNorthWestTargetsWithinAmbiguity(double ambiguityTolerance) {
-        var tags = _northWestCamera.getLatestResult().targets;
-        for (var tag : tags) {
-            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
-                return false;
-            }
-        }
-        return true;
-    }
+        for (int i = 0; i < NUM_CAMERAS; i++) {
+            PhotonPipelineResult results = _cameras[i].getLatestResult();
 
-    public boolean isSouthWestTargetsWithinAmbiguity(double ambiguityTolerance) {
-        var tags = _southWestCamera.getLatestResult().targets;
-        for (var tag : tags) {
-            if (tag.getPoseAmbiguity() < ambiguityTolerance) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void setLowestAmbiguity() {
-        _southEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        _northEastCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        _northWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-        _southWestCameraEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-    }
-
-    public Optional<EstimatedRobotPose> getSouthEastCameraEstimatedGlobalPose(
-            Pose2d prevEstimatedPose) {
-        _southEastCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _southEastCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        return _southEastCameraEstimator.update(results);
-    }
-
-    public Optional<EstimatedRobotPose> getNorthEastCameraEstimatedGlobalPose(
-            Pose2d prevEstimatedPose) {
-        _northEastCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _northEastCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        return _northEastCameraEstimator.update(results);
-    }
-
-    public Optional<EstimatedRobotPose> getNorthWestCameraEstimatedGlobalPose(
-            Pose2d prevEstimatedPose) {
-        _northWestCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _northWestCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        return _northWestCameraEstimator.update(results);
-    }
-
-    public Optional<EstimatedRobotPose> getSouthWestCameraEstimatedGlobalPose(
-            Pose2d prevEstimatedPose) {
-        _southWestCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _southWestCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        return _southWestCameraEstimator.update(results);
-    }
-
-    public Pair<EstimatedRobotPose, String> getSouthEastCameraEstimatedGlobalPoseWithName(
-            Pose2d prevEstimatedPose) {
-        _southEastCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _southEastCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        Optional<EstimatedRobotPose> pose = _southEastCameraEstimator.update(results);
-        return new Pair<>(pose.orElse(null), "SouthEast");
-    }
-
-    public Pair<EstimatedRobotPose, String> getNorthEastCameraEstimatedGlobalPoseWithName(
-            Pose2d prevEstimatedPose) {
-        _northEastCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _northEastCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        Optional<EstimatedRobotPose> pose = _northEastCameraEstimator.update(results);
-        return new Pair<>(pose.orElse(null), "NorthEast");
-    }
-
-    public Pair<EstimatedRobotPose, String> getNorthWestCameraEstimatedGlobalPoseWithName(
-            Pose2d prevEstimatedPose) {
-        _northWestCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _northWestCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        Optional<EstimatedRobotPose> pose = _northWestCameraEstimator.update(results);
-        return new Pair<>(pose.orElse(null), "NorthWest");
-    }
-
-    public Pair<EstimatedRobotPose, String> getSouthWestCameraEstimatedGlobalPoseWithName(
-            Pose2d prevEstimatedPose) {
-        _southWestCameraEstimator.setReferencePose(prevEstimatedPose);
-        PhotonPipelineResult results = _southWestCamera.getLatestResult();
-        if (results.hasTargets()) {
-            results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
-        }
-        Optional<EstimatedRobotPose> pose = _southWestCameraEstimator.update(results);
-        return new Pair<>(pose.orElse(null), "SouthWest");
-    }
-
-    public Optional<Double> calculateAngleToTag(int tagId) {
-        PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
-        PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
-
-        Optional<Double> southEastYaw = Optional.empty();
-        Optional<Double> southWestYaw = Optional.empty();
-
-        // Always check if targets are available
-        if (southEastResults.hasTargets()) {
-            Optional<PhotonTrackedTarget> southEastTag = southEastResults.getTargets().stream()
-                    .filter(target -> target.getFiducialId() == tagId)
-                    .findFirst();
-
-            if (southEastTag.isPresent()) {
-                Rotation2d yaw = Rotation2d.fromDegrees(southEastTag.get().getYaw());
-                // SmartDashboard.putNumber("SouthEastTagYaw", yaw.getRadians());
-                Rotation2d cameraYawOffset = Rotation2d.fromDegrees(-17.5);
-                double robotYaw = yaw.getRadians() - cameraYawOffset.getRadians();
-                // SmartDashboard.putNumber("SouthEastYaw", robotYaw);
-                southEastYaw = Optional.of(robotYaw);
+            if (results.hasTargets()) {
+                for (PhotonTrackedTarget target : results.getTargets()) {
+                    if (target.getPoseAmbiguity() <= 0.2) {
+                        Transform3d cameraToTarget = target.getBestCameraToTarget();
+                        // System.out.println("Southwest cam sees tag "+target.getFiducialId()+" with transform " + cameraToTarget);
+                        Transform3d robotToCamera = _robotToCamera[i].inverse();
+                        Transform3d robotToTarget = robotToCamera.plus(cameraToTarget);
+                        // rotate around the origin of the robot frame by the robot's heading, aligning its axes with the field frame
+                        Transform3d fieldOrientedRobotRelativeTagPosition = robotToTarget.plus(new Transform3d(new Translation3d(), new Rotation3d(0.0, 0.0, -robotHeading.getRadians())));
+                        
+                        tags.add(new TagTransform(fieldOrientedRobotRelativeTagPosition.getTranslation(), target.getFiducialId(), results.getTimestampSeconds()));
+                    }
+                }
             }
         }
 
-        // Always check if targets are available
-        if (southWestResults.hasTargets()) {
-            Optional<PhotonTrackedTarget> southWestTag = southWestResults.getTargets().stream()
-                    .filter(target -> target.getFiducialId() == tagId)
-                    .findFirst();
+        _tags = tags;
+    }
 
-            if (southWestTag.isPresent()) {
-                Rotation2d yaw = Rotation2d.fromDegrees(southWestTag.get().getYaw());
-                // SmartDashboard.putNumber("SouthWestTagYaw", yaw.getRadians());
-                Rotation2d cameraYawOffset = Rotation2d.fromDegrees(17.5);
-                double robotYaw = yaw.getRadians() - cameraYawOffset.getRadians();
-                // SmartDashboard.putNumber("SouthWestYaw", robotYaw);
-                southWestYaw = Optional.of(robotYaw);
+    /**
+     * Get the locally cached list of tag poses in a reference frame which has the origin at the center of the robot and the axes aligned with those of the field.
+     * @return a list of all tag poses
+     */
+    public ArrayList<TagTransform> getTagPoses() {
+        return _tags;
+    }
+
+    /**
+     * Gets a given locally cached tag pose in a reference frame which has the origin at the center of the robot and the axes aligned with those of the field. The rotation of the pose is empty.
+     * @param tagId The ID of the tag to look up in the local <code>_tags</code> variable
+     * @return Optional.of(Pose2d) if a camera can see the tag, Optional.empty if no camera can see the tag.
+     */
+    public Optional<Pose2d> getPoseToTag(int tagId) {
+        double xToTagAccumulator = 0.0;
+        double yToTagAccumulator = 0.0;
+        int tagCount = 0;
+
+        for (TagTransform tag : _tags) {
+            if (tag.tagId == tagId) {
+                xToTagAccumulator += tag.translation.getX();
+                yToTagAccumulator += tag.translation.getY();
+                tagCount ++;
             }
         }
 
-        if (southEastYaw.isPresent() && southWestYaw.isPresent()) {
-            // If both cameras see the target, average the yaw angles
-            double averageYaw = (southEastYaw.get() + southWestYaw.get()) / 2.0;
-            return Optional.of(averageYaw);
-        } else if (southEastYaw.isPresent()) {
-            return southEastYaw;
-        } else if (southWestYaw.isPresent()) {
-            return southWestYaw;
-        } else {
+        if (tagCount == 0) {
             return Optional.empty();
-        }
-    }
-
-    public Optional<Double> calculateDistanceToTag(int tagId) {
-        PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
-        PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
-
-        Optional<Double> southEastDistance = Optional.empty();
-        Optional<Double> southWestDistance = Optional.empty();
-
-        // Always check if targets are available
-        if (southEastResults.hasTargets()) {
-            Optional<PhotonTrackedTarget> southEastTag = southEastResults.getTargets().stream()
-                    .filter(target -> target.getFiducialId() == tagId)
-                    .findFirst();
-
-            if (southEastTag.isPresent()) {
-                var camToTarget = southEastTag.get().getBestCameraToTarget();
-                var robotToCamera = _robotToSouthEastCam;
-                var robotToTarget = robotToCamera.plus(camToTarget);
-
-                double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
-                southEastDistance = Optional.of(distance);
-            }
-        }
-
-        if (southWestResults.hasTargets()) {
-            Optional<PhotonTrackedTarget> southWestTag = southWestResults.getTargets().stream()
-                    .filter(target -> target.getFiducialId() == tagId)
-                    .findFirst();
-
-            if (southWestTag.isPresent()) {
-                var camToTarget = southWestTag.get().getBestCameraToTarget();
-                var robotToCamera = _robotToSouthWestCam;
-                var robotToTarget = robotToCamera.plus(camToTarget);
-
-                double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
-                southWestDistance = Optional.of(distance);
-            }
-        }
-
-        if (southEastDistance.isPresent() && southWestDistance.isPresent()) {
-            double averageDistance = (southEastDistance.get() + southWestDistance.get()) / 2.0;
-            return Optional.of(averageDistance);
-        } else if (southEastDistance.isPresent()) {
-            return southEastDistance;
-        } else if (southWestDistance.isPresent()) {
-            return southWestDistance;
         } else {
-            return Optional.empty();
+            return Optional.of(new Pose2d(xToTagAccumulator / tagCount, yToTagAccumulator / tagCount, new Rotation2d()));
         }
+
     }
 
-    public enum Pipeline {
-        FAR(0),
-        CLOSE(1);
+    /**
+     * a dumb class (there is probably a better thing to use for this)
+     * - xavier bradford 03/21/24
+     */
+    public class TagTransform {
+        public final Translation3d translation;
+        public final int tagId;
+        public final double timestamp;
 
-        private final int _value;
-
-        Pipeline(int value) {
-            _value = value;
-        }
-
-        public int getValue() {
-            return _value;
+        public TagTransform(Translation3d translation, int tagId, double timestamp) {
+            this.translation = translation;
+            this.tagId = tagId;
+            this.timestamp = timestamp;
         }
     }
 }

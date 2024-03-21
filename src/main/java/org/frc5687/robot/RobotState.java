@@ -1,5 +1,6 @@
 package org.frc5687.robot;
 
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +14,13 @@ import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
+import org.frc5687.robot.util.PhotonProcessor.TagTransform;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
 import org.opencv.features2d.KAZE;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -41,6 +44,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Threads;
 
 public class RobotState {
@@ -65,6 +69,10 @@ public class RobotState {
     private SwerveDrivePoseEstimator _poseEstimator;
 
     private volatile SwerveDriveState _cachedState = new SwerveDriveState();
+
+    /**
+     * the estimated pose of the robot - rotation isn't used
+     */
     private volatile Pose2d _estimatedPose = new Pose2d();
     private volatile Twist2d _velocity = new Twist2d();
     private volatile Pose2d _lastPose = new Pose2d();
@@ -175,25 +183,48 @@ public class RobotState {
     }
 
     private void updateWithVision() {
-        Pose2d prevEstimatedPose = _estimatedPose;
-        List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
-                _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
-                .filter(pair -> pair.getFirst() != null)
-                .filter(pair -> isValidMeasurementTest(pair))
-                .collect(Collectors.toList());
+        Rotation2d heading = _driveTrain.getHeading();
 
-        cameraPoses.forEach(this::processVisionMeasurement);
+        Optional<Alliance> allianceOptional = getAlliance();
+        
+        // TODO: test
+
+        if (allianceOptional.isPresent() && allianceOptional.get() == Alliance.Red) {
+            heading = heading.plus(new Rotation2d(Math.PI));
+        }
+
+        // update vision tag poses (IMPORTANT) - xavier 03/21/24
+        _photonProcessor.updateFieldOrientedRobotFrameTagPositions(_driveTrain.getHeading());
+
+        // sorry for all the doubles,,, it makes more sense in my head to deal with dimensions separately.. feel free to test and fix. - xavier 03/21/24
+        for (TagTransform tag : _photonProcessor.getTagPoses()) {
+            // there is probably a more elegant method to do this, I'm just trying my hardest to wrap my feeble head around the transforms - xavier 03/21/24
+            Pose3d tagPoseFieldFrame = _layout.getTagPose(tag.tagId).get();
+            double tagX = tagPoseFieldFrame.getX();
+            double tagY = tagPoseFieldFrame.getY();
+            double tagZ = tagPoseFieldFrame.getZ();
+            Pose3d tagPoseRobotFrame = new Pose3d(tag.translation, new Rotation3d()); // -x, -y, +z
+            double robotX = tagX - tagPoseRobotFrame.getX();
+            double robotY = tagY - tagPoseRobotFrame.getY();
+            double robotZ = tagZ - tagPoseRobotFrame.getZ();
+
+            // System.out.println("id "+tag.tagId+": "+tag.translation);
+            // System.out.println("field pos: "+tag.tagId+": "+new Translation3d(robotX, robotY, robotZ));
+
+            // System.out.println("X: "+robotX+", Y: "+robotY + ",tag "+tag.tagId);
+            
+            _poseEstimator.addVisionMeasurement(new Pose2d(robotX, robotY, new Rotation2d()),
+                tag.timestamp);
+
+        }
     }
 
     public void periodic() {
         updateOdometry();
         updateWithVision();
 
-        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        _visionAngle = calculateAngleToTagFromVision(getSpeakerTargetTagId());
+        _visionDistance = calculateDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -361,7 +392,7 @@ public class RobotState {
     }
 
     private Optional<Boolean> isVisionAimedAtSpeaker() {
-        Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
+        Optional<Rotation2d> visionAngle = calculateAngleToTagFromVision(getSpeakerTargetTagId());
         if (visionAngle.isPresent()) {
             double angle = visionAngle.get().getRadians();
             return Optional.of(Math.abs(angle) < Constants.RobotState.VISION_AIMING_TOLERANCE);
@@ -378,10 +409,10 @@ public class RobotState {
     }
 
     /**
-     * breaks if the driver station has no alliance
+     * @throws NoSuchElementException - if no value is present for DriverStation.getAlliance()
      * 
-     * @param pose the pose to check if it is on the alliance side :o
-     * @return boolean idk
+     * @param pose the pose to check if it is on the alliance side (same side as the driver station wall)
+     * @return true if the pose is on the alliance side, false otherwise
      */
     public boolean isOnAllianceHalf(Pose2d pose) {
         if (getAlliance().get() == Alliance.Red) {
@@ -397,53 +428,6 @@ public class RobotState {
 
     public boolean isRedAlliance() {
         return _driveTrain.isRedAlliance();
-    }
-
-    private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
-        EstimatedRobotPose estimatedPose = cameraPose.getFirst();
-        double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
-        
-        double positionDev, angleDev;
-        
-        if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-            // multi-tag estimate, trust it more
-            positionDev = 0.15;
-            angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
-        } else {
-            // single-tag estimates, adjust deviations based on distance
-            if (dist < 1.5) {
-                positionDev = 0.30;
-                angleDev = Units.degreesToRadians(20);
-            } else if (dist < 4.0) {
-                positionDev = 0.35;
-                angleDev = Units.degreesToRadians(50);
-            } else {
-                positionDev = 0.5;
-                angleDev = Units.degreesToRadians(100);
-            }
-        }
-        
-        _poseEstimator.setVisionMeasurementStdDevs(
-            createVisionStandardDeviations(positionDev, positionDev, angleDev)
-        );
-        
-        _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
-                estimatedPose.timestampSeconds);
-    }
-   
-
-    public void useAutoStandardDeviations() {
-        _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
-                Constants.VisionConfig.Auto.VISION_STD_DEV_X,
-                Constants.VisionConfig.Auto.VISION_STD_DEV_Y,
-                Constants.VisionConfig.Auto.VISION_STD_DEV_ANGLE));
-    }
-
-    public void useTeleopStandardDeviations() {
-        _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
-                Constants.VisionConfig.Teleop.VISION_STD_DEV_X,
-                Constants.VisionConfig.Teleop.VISION_STD_DEV_Y,
-                Constants.VisionConfig.Teleop.VISION_STD_DEV_ANGLE));
     }
 
     protected Vector<N3> createStandardDeviations(double x, double y, double z) {
@@ -464,27 +448,37 @@ public class RobotState {
         return createStandardDeviations(x, y, angle);
     }
 
-    private Optional<Double> getDistanceToTagFromVision(int tagId) {
-        Optional<Double> distance = _photonProcessor.calculateDistanceToTag(tagId);
-        return distance;
-    }
-
-    public Optional<Double> getDistanceToSpeakerFromVision() {
-        return _visionDistance;
-    }
-
-    private Optional<Rotation2d> getAngleToTagFromVision(int tagId) {
-        Optional<Rotation2d> angle = Optional.empty();
-
-        Optional<Double> angleRads = _photonProcessor.calculateAngleToTag(tagId);
-        if (angleRads.isPresent()) {
-            angle = Optional.of(new Rotation2d(angleRads.get()));
+    /**
+     * Calculates a distance from the robot to a given tag using a cached vision tag pose.
+     * @apiNote PhotonProcessor.updateFieldOrientedRobotFrameTagPositions needs to be called to update this value
+     * @param tagId
+     * @return distance (meters)
+     */
+    private Optional<Double> calculateDistanceToTagFromVision(int tagId) {
+        Optional<Pose2d> poseOptional = _photonProcessor.getPoseToTag(tagId);
+        if (poseOptional.isEmpty()) {
+            return Optional.empty();
+        } else {
+            Pose2d pose = poseOptional.get();
+            return Optional.of(Math.sqrt(Math.pow(pose.getX(), 2) + Math.pow(pose.getY(), 2)));
         }
-        return angle;
     }
 
-    public Optional<Rotation2d> getAngleToSpeakerFromVision() {
-        return _visionAngle;
+    /**
+     * Calculates a rotation given a cached tag pose in a reference frame which has the origin at the center of the robot and the axes aligned with those of the field.
+     * @apiNote PhotonProcessor.updateFieldOrientedRobotFrameTagPositions needs to be called to update this value
+     * @param tagId
+     * @return the heading that the robot would need to face to 
+     */
+    public Optional<Rotation2d> calculateAngleToTagFromVision(int tagId) {
+        // FIXME this might not work on red.
+        Optional<Pose2d> poseOptional = _photonProcessor.getPoseToTag(tagId);
+        if (poseOptional.isEmpty()) {
+            return Optional.empty();
+        } else {
+            Pose2d pose = poseOptional.get();
+            return Optional.of(new Rotation2d(Math.atan2(pose.getX(), pose.getY())));
+        }
     }
 
     public Optional<Pose3d> getClosestNoteRelativeRobotCenter() {

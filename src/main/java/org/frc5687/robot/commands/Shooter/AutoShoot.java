@@ -52,7 +52,7 @@ public class AutoShoot extends OutliersCommand{
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
         // Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
-        Optional<Rotation2d> angle = _robotState.getAngleToSpeakerFromVision();
+        Optional<Rotation2d> angle = _robotState.calculateAngleToTagFromVision(_robotState.getSpeakerTargetTagId());
         // if (visionDistance.isPresent()) {
             // _shooter.setRPMFromDistance(visionDistance.get());
         // } else {
