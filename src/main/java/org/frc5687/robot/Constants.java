@@ -235,7 +235,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.48828125;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.00341796875;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -257,7 +257,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.407470703125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.406494140625;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -268,7 +268,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.497314453125;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.0302734375;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -352,12 +352,11 @@ public class Constants {
         // };
 
         public static double[][] kRPMValues = {
-            { 3.0, 3800},
-            { 3.4, 3200},
-            { 3.6, 2600},
-            { 3.8, 2500},
-            { 4.2, 2100},
-            { 4.4, 1960},
+            { 3.0, 4000 },
+            { 3.4, 3200 },
+            { 3.8, 2400 },
+            { 4.2, 2150 },
+            { 4.4, 1960 },
             { 4.8, 1880 },
         };
 
@@ -391,7 +390,7 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 9.5;
+            SHOOTER_CONTROLLER_CONFIG.kP = 5.0;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
@@ -580,6 +579,7 @@ public class Constants {
         public static double ZERO_VALUE = 0.0; 
 
         public static double PREP_METERS = -2.15;
+        public static double SOLO_METERS = -1.15;
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;
