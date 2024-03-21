@@ -212,7 +212,7 @@ public class Constants {
         public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
-            SLOW_MODE_KINEMATIC_LIMITS.maxDriveVelocity = .5; // m/s
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveVelocity = 2.0; // m/s
             SLOW_MODE_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2
             SLOW_MODE_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE; // rad/s
         }
