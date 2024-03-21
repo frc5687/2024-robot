@@ -342,6 +342,7 @@ public class DriveTrain extends OutliersSubsystem {
         Logger.recordOutput("DriveTrain/RobotHeading", _systemIO.heading.getRadians());
         Logger.recordOutput("DriveTrain/MeasuredModuleStates", _systemIO.measuredStates);
         Logger.recordOutput("DriveTrain/DesiredSetpoint", _systemIO.setpoint.moduleStates);
+        Logger.recordOutput("RobotState/EsimatedPose", _robotState.getEstimatedPose());
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
 
