@@ -6,7 +6,6 @@ import org.frc5687.robot.Constants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // rewritten (probably poorly) by xavier bradford 03/09/24
@@ -19,8 +18,6 @@ public class SwerveHeadingController {
 
     // the timestamp at which the heading controller will enable again (after being temporarily disabled)
     private long _disableTime;
-    private double _minVelocityMultiplier;
-    private double _maxVelocityMultiplier;
 
     public SwerveHeadingController(double kDt) {
         _PIDController = new PIDController(
@@ -34,12 +31,15 @@ public class SwerveHeadingController {
         _headingState = HeadingState.OFF;
         _targetHeading = new Rotation2d();
         _disableTime = System.currentTimeMillis();
-        _minVelocityMultiplier = 1.0; // these are tuned
-        _maxVelocityMultiplier = 1.1; // these are tuned
 
-        // SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
-        // SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
-        // SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
+        SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
+        SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
+        SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
+    }
+
+
+    public void setState(HeadingState state) {
+        _headingState = state;
     }
 
     public void disable() {
@@ -81,9 +81,7 @@ public class SwerveHeadingController {
      * @param maxSpeed The max speed of the robot 
      * @return The "power" that the heading controller outputs.
      */
-    public double getRotationCorrection(Rotation2d heading, ChassisSpeeds measuredSpeeds, double maxSpeed) {
-        double vx = measuredSpeeds.vxMetersPerSecond;
-        double vy = measuredSpeeds.vyMetersPerSecond;
+    public double getRotationCorrection(Rotation2d heading) {
         double power = 0;
         switch (_headingState) {
             case TEMPORARY_DISABLE:
@@ -93,26 +91,16 @@ public class SwerveHeadingController {
                 }
                 break;
             case ON:
-                // _PIDController.setPID(
-                //         SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
-                //         SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
-                //         SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
+                _PIDController.setPID(
+                        SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
+                        SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
+                        SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
                 power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
                 break;
             default:
                 break;
         }
     
-        double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
-    
-        // Calculate the exponential velocity multiplier
-        double velocityRatio = velocityMagnitude / maxSpeed;
-        double exponent = 2.0; 
-        double velocityMultiplier = _minVelocityMultiplier + (_maxVelocityMultiplier - _minVelocityMultiplier) * Math.pow(velocityRatio, exponent);
-        velocityMultiplier = Math.min(velocityMultiplier, _maxVelocityMultiplier);
-    
-        power *= velocityMultiplier;
-
         double error = _targetHeading.minus(heading).getRadians();
         if (isAtTargetAngle(heading)) {
             power = 0;
