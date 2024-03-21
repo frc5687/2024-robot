@@ -10,6 +10,7 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +20,7 @@ public class AutoShoot extends OutliersCommand{
     private final Shooter _shooter;
     private final Intake _intake;
     private final DriveTrain _driveTrain;
+    private final Lights _lights;
     private final RobotState _robotState = RobotState.getInstance();
 
     private Optional<Long> _intakeTimestamp;
@@ -26,11 +28,13 @@ public class AutoShoot extends OutliersCommand{
     public AutoShoot(
         Shooter shooter,
         Intake intake,
-        DriveTrain driveTrain
+        DriveTrain driveTrain,
+        Lights lights
     ) {
         _shooter = shooter;
         _intake = intake;
         _driveTrain = driveTrain;
+        _lights = lights;
         addRequirements(_shooter, _intake, _driveTrain);
     }
 
@@ -40,6 +44,7 @@ public class AutoShoot extends OutliersCommand{
         super.initialize();
         _shooter.setConfigSlot(0);
         _intakeTimestamp = Optional.empty();
+        _lights.setDebugLightsEnabled(true);
     }
 
     @Override
@@ -93,5 +98,6 @@ public class AutoShoot extends OutliersCommand{
     @Override
     public void end(boolean interrupted) {
         _intake.setSpeed(0.0);
+        _lights.setDebugLightsEnabled(false);
     }
 }

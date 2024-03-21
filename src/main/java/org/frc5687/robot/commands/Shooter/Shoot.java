@@ -7,6 +7,7 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,14 +15,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class Shoot extends OutliersCommand{
     private final Shooter _shooter;
     private final Intake _intake;
+    private final Lights _lights;
     private final RobotState _robotState = RobotState.getInstance();
 
     public Shoot(
         Shooter shooter,
-        Intake intake
+        Intake intake,
+        Lights lights
     ) {
         _shooter = shooter;
         _intake = intake;
+        _lights = lights;
         addRequirements(_shooter, _intake);
     }
 
@@ -30,6 +34,7 @@ public class Shoot extends OutliersCommand{
     public void initialize() {
         super.initialize();
         _shooter.setConfigSlot(0);
+        _lights.setDebugLightsEnabled(true);
     }
 
     @Override
@@ -67,5 +72,6 @@ public class Shoot extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
+        _lights.setDebugLightsEnabled(false);
     }
 }
