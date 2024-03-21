@@ -35,6 +35,9 @@ import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.rlog.RLOGServer;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -78,6 +81,10 @@ public class RobotContainer extends OutliersContainer {
     public void init() {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
+
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.start();
+
         _oi = new OI();
         // create the vision processor
         _visionProcessor = new VisionProcessor();
@@ -114,6 +121,8 @@ public class RobotContainer extends OutliersContainer {
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
+
+
 
         _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor);
 

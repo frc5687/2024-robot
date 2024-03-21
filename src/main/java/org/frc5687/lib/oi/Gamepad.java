@@ -1,7 +1,9 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.lib.oi;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /** Copied by Caleb on 1/13/2017. */
@@ -13,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * buttons depends on the code in the driver station.
  */
 public class Gamepad extends Joystick {
+
+
+    private final int _port;
 
     private final JoystickButton _a;
     private final JoystickButton _b;
@@ -78,6 +83,7 @@ public class Gamepad extends Joystick {
      */
     public Gamepad(int port) {
         super(port);
+        _port = port;
         _a = new JoystickButton(this, Buttons.A.getNumber());
         _b = new JoystickButton(this, Buttons.B.getNumber());
         _x = new JoystickButton(this, Buttons.X.getNumber());
@@ -156,5 +162,66 @@ public class Gamepad extends Joystick {
     public JoystickButton getRightStickButton() {
         return _rightStick;
     }
+
+    public boolean isAPressed() {
+        return getRawButton(Buttons.A.getNumber());
+    }
+
+    public boolean isBPressed() {
+        return getRawButton(Buttons.B.getNumber());
+    }
+
+    public boolean isXPressed() {
+        return getRawButton(Buttons.X.getNumber());
+    }
+
+    public boolean isYPressed() {
+        return getRawButton(Buttons.Y.getNumber());
+    }
+
+    public boolean isStartPressed() {
+        return getRawButton(Buttons.START.getNumber());
+    }
+
+    public boolean isBackPressed() {
+        return getRawButton(Buttons.BACK.getNumber());
+    }
+
+    public boolean isRightBumperPressed() {
+        return getRawButton(Buttons.RIGHT_BUMPER.getNumber());
+    }
+
+    public boolean isLeftBumperPressed() {
+        return getRawButton(Buttons.LEFT_BUMPER.getNumber());
+    }
+
+    public boolean isLeftStickPresssed() {
+        return getRawButton(Buttons.LEFT_STICK.getNumber());
+    }
+
+    public boolean isRightStickPresssed() {
+        return getRawButton(Buttons.RIGHT_STICK.getNumber());
+    }
+
+
+    /**
+     * Get the button value (starting at button 1).
+     *
+     * <p>
+     * The buttons are returned in a single 16 bit value with one bit representing
+     * the state of
+     * each button. The appropriate button is returned as a boolean value.
+     *
+     * <p>
+     * This method returns true if the button is being held down at the time that
+     * this method is
+     * being called.
+     *
+     * @param button The button number to be read (starting at 1)
+     * @return The state of the button.
+     */
+    public boolean getRawButton(int button) {
+        return DriverStation.getStickButton(_port, (byte) button);
+  }
 }
 
