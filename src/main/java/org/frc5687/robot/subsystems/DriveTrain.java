@@ -19,6 +19,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.util.OutliersContainer;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -338,6 +339,9 @@ public class DriveTrain extends OutliersSubsystem {
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
         updateDesiredStates();
+        Logger.recordOutput("DriveTrain/RobotHeading", _systemIO.heading.getRadians());
+        Logger.recordOutput("DriveTrain/MeasuredModuleStates", _systemIO.measuredStates);
+        Logger.recordOutput("DriveTrain/DesiredSetpoint", _systemIO.setpoint.moduleStates);
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
 
