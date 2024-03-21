@@ -19,10 +19,8 @@ public class SwerveSetpointGenerator {
     public static class KinematicLimits {
         public double maxDriveVelocity;
         public double maxDriveAcceleration;
-        public double maxDriveDeceleration;
         public double maxSteeringVelocity;
     }
-    
 
     private final SwerveDriveKinematics _kinematics;
     private final Translation2d[] _modulePositions;
@@ -190,11 +188,9 @@ public class SwerveSetpointGenerator {
                     prevSetpoint.moduleStates[i].angle.getSin()
                             * prevSetpoint.moduleStates[i].speedMetersPerSecond;
             prev_heading[i] = prevSetpoint.moduleStates[i].angle;
-
             if (prevSetpoint.moduleStates[i].speedMetersPerSecond < 0.0) {
                 prev_heading[i] = GeometryUtil.flip(prev_heading[i]);
             }
-
             desired_vx[i] =
                     desiredModuleState[i].angle.getCos() * desiredModuleState[i].speedMetersPerSecond;
             desired_vy[i] =
@@ -306,8 +302,8 @@ public class SwerveSetpointGenerator {
             min_s = Math.min(min_s, s);
         }
 
+        // Enforce drive wheel acceleration limits.
         final double max_vel_step = dt * limits.maxDriveAcceleration;
-        final double max_decel_step = dt * limits.maxDriveDeceleration; // deceleration step
         for (int i = 0; i < modules.length; ++i) {
             if (min_s == 0.0) {
                 // No need to carry on.
@@ -317,44 +313,23 @@ public class SwerveSetpointGenerator {
                     min_s == 1.0 ? desired_vx[i] : (desired_vx[i] - prev_vx[i]) * min_s + prev_vx[i];
             double vy_min_s =
                     min_s == 1.0 ? desired_vy[i] : (desired_vy[i] - prev_vy[i]) * min_s + prev_vy[i];
-
-            double prev_speed = Math.hypot(prev_vx[i], prev_vy[i]);
-            double desired_speed = Math.hypot(vx_min_s, vy_min_s);
-
-            // robot is decelerating
-            if (Math.abs(desired_speed) < Math.abs(prev_speed) && 
-                Math.signum(desired_speed) == Math.signum(prev_speed)) {
-                // deceleration limit for decelerating
-                final int kMaxIterations = 10;
-                double s =
-                        min_s
-                                * findDriveMaxS(
-                                        prev_vx[i],
-                                        prev_vy[i],
-                                        prev_speed,
-                                        vx_min_s,
-                                        vy_min_s,
-                                        desired_speed,
-                                        max_decel_step,
-                                        kMaxIterations);
-                min_s = Math.min(min_s, s);
-            } else {
-                // acceleration limit for accelerating
-                final int kMaxIterations = 10;
-                double s =
-                        min_s
-                                * findDriveMaxS(
-                                        prev_vx[i],
-                                        prev_vy[i],
-                                        prev_speed,
-                                        vx_min_s,
-                                        vy_min_s,
-                                        desired_speed,
-                                        max_vel_step,
-                                        kMaxIterations);
-                min_s = Math.min(min_s, s);
-            }
-        } 
+            // Find the max s for this drive wheel. Search on the interval between 0 and min_s, because we
+            // already know we can't go faster
+            // than that.
+            final int kMaxIterations = 10;
+            double s =
+                    min_s
+                            * findDriveMaxS(
+                                    prev_vx[i],
+                                    prev_vy[i],
+                                    Math.hypot(prev_vx[i], prev_vy[i]),
+                                    vx_min_s,
+                                    vy_min_s,
+                                    Math.hypot(vx_min_s, vy_min_s),
+                                    max_vel_step,
+                                    kMaxIterations);
+            min_s = Math.min(min_s, s);
+        }
 
         ChassisSpeeds retSpeeds =
                 new ChassisSpeeds(

@@ -2,6 +2,7 @@ package org.frc5687.robot.commands.DriveTrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
+import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
@@ -18,6 +19,7 @@ public class SnapTo extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
+        _driveTrain.setHeadingControllerState(HeadingState.ON);
         _driveTrain.goToHeading(
             _driveTrain.isRedAlliance() ? _rotation.minus(new Rotation2d(Math.PI)) : _rotation);
     }

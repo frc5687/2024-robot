@@ -11,6 +11,7 @@ import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
 import java.util.Optional;
 
 import org.frc5687.lib.control.SwerveHeadingController;
+import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.swerve.SwerveSetpoint;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
@@ -274,8 +275,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public double getRotationCorrection() {
-        double maxSpeed = _isLowGear ? Constants.DriveTrain.MAX_LOW_GEAR_MPS : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
-        return _headingController.getRotationCorrection(getHeading(), getMeasuredChassisSpeeds(), maxSpeed);
+        return _headingController.getRotationCorrection(getHeading());
     }
 
     public void temporaryDisableHeadingController() {
@@ -308,6 +308,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     public boolean isHeadingInTolerance(Rotation2d target, double tolerance) {
         return Math.abs(target.minus(getHeading()).getRadians()) < tolerance;
+    }
+
+    public void setHeadingControllerState(HeadingState state) {
+        _headingController.setState(state);
     }
 
     /* Heading Controller End */

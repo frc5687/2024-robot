@@ -183,14 +183,12 @@ public class Constants {
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
             HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2 old 20, 
-            HIGH_KINEMATIC_LIMITS.maxDriveDeceleration= 40; 
             HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
         }
         // Just unlimite everything, assume the path will handle everything.
         static {
             AUTO_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
             AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 200; // m/s^2 old 20, new based on math :) 
-            AUTO_KINEMATIC_LIMITS.maxDriveDeceleration= 400; 
             AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 200; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
@@ -198,7 +196,6 @@ public class Constants {
         static {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
             LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2 // old 35, new based on math
-            LOW_KINEMATIC_LIMITS.maxDriveDeceleration = 45; 
             LOW_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_LOW_GEAR_RADS; // rad/s
         }
 
@@ -209,7 +206,6 @@ public class Constants {
         static {
             SLOW_KINEMATIC_LIMITS.maxDriveVelocity = 2.5; // m/s
             SLOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
-            SLOW_KINEMATIC_LIMITS.maxDriveDeceleration= 20; // m/s^2
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
