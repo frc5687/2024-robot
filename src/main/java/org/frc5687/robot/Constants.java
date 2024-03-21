@@ -585,6 +585,7 @@ public class Constants {
         public static double ZERO_VALUE = 0.0; 
 
         public static double PREP_METERS = -2.15;
+        public static double SOLO_METERS = -1.15;
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;
