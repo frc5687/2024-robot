@@ -426,8 +426,9 @@ public class RobotState {
             createVisionStandardDeviations(positionDev, positionDev, angleDev)
         );
         
-        _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
-                estimatedPose.timestampSeconds);
+        // FIXME put this back
+        // _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
+        //         estimatedPose.timestampSeconds);
     }
    
 

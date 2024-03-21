@@ -208,8 +208,8 @@ public class Constants {
         // Just unlimite everything, assume the path will handle everything.
         static {
             AUTO_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 200; // m/s^2 old 20, new based on math :) 
-            AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 200; // rad/s
+            AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 13.29; // m/s^2 old 20, new based on math :) 
+            AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 3.515; // rad/s
         }
         public static final KinematicLimits KINEMATIC_LIMITS = LOW_KINEMATIC_LIMITS;
 
@@ -285,7 +285,7 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 6.5;
+        public static final double HEADING_kP = 7.8;
         public static final double HEADING_kI = 0;
         public static final double HEADING_kD = 0.7;
         
