@@ -613,6 +613,8 @@ public class Constants {
     public static class CANdle {
         public static int NUM_LED = 38;
         public static double SPEED = 0.1;
+        public static double SPEAKER_BRIGHTNESS = 1.0;
+        public static double AMP_BRIGHTNESS = 0.25;
         public static TwinklePercent TWINKLEPERCENT = TwinklePercent.Percent42;
         public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
 

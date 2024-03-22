@@ -16,8 +16,6 @@ public class Lights extends OutliersSubsystem{
     private int[] _color;
     private double _brightness;
     private boolean _debugLightsEnabled = false;
-    private boolean _isInAngle = false;
-    private boolean _isAtTargetRPM = false;
 
     private boolean _dirty  = true;
 
@@ -169,6 +167,8 @@ public class Lights extends OutliersSubsystem{
         if (!_dirty) {
             return;
         }
+
+        _candle.configBrightnessScalar(_brightness);
         
         if (_animate == null) {
             _candle.clearAnimation(0); // very important
@@ -186,11 +186,6 @@ public class Lights extends OutliersSubsystem{
 
     public boolean getDebugLightsEnabled() {
         return _debugLightsEnabled;
-    }
-
-    public void setDebugValues(boolean isInAngle, boolean isAtTargetRPM) {
-        _isInAngle = isInAngle;
-        _isAtTargetRPM = isAtTargetRPM;
     }
 
     public void updateDashboard() {}
