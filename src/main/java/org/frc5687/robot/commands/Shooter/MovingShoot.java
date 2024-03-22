@@ -4,6 +4,7 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.Robot;
 import org.frc5687.robot.RobotState;
@@ -27,6 +28,13 @@ public class MovingShoot extends OutliersCommand {
         _intake = intake;
         _driveTrain = drivetrain;
         _robotState = robotstate;
+
+        addRequirements(_shooter, _intake);
+    }
+
+    @Override
+    public void initialize() {
+        _driveTrain.setKinematicLimits(Constants.DriveTrain.SHOOT_KINEMATIC_LIMITS);
     }
 
     @Override
@@ -44,6 +52,8 @@ public class MovingShoot extends OutliersCommand {
     
     @Override
     public void end(boolean interrupted) {
+        KinematicLimits limits = (_driveTrain.isLowGear() ?  Constants.DriveTrain.LOW_KINEMATIC_LIMITS: Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
+        _driveTrain.setKinematicLimits(limits);
         _intake.setSpeed(0);
     }
 }
