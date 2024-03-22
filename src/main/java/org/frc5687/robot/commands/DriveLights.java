@@ -50,14 +50,18 @@ public class DriveLights extends OutliersCommand {
 
     @Override
     public void execute() {
-        _lights.setBrightness(1);
         boolean hasObjects = false;
         int[] allianceColor = Constants.CANdle.PURPLER; // this should never make the lights purple, like ever, but we need it for the empty check
+
+        if (_shooter.getSpinUpAutomatically()) {
+            _lights.setBrightness(Constants.CANdle.SPEAKER_BRIGHTNESS);
+        } else {
+            _lights.setBrightness(Constants.CANdle.AMP_BRIGHTNESS);
+        }
 
         if (DriverStation.getAlliance().isPresent()) {
             allianceColor = DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE;
         }
-
 
         hasObjects = _visionProcessor.getDetectedObjects().getNotes().length > 0 ? true : false;
         //Not connected to driver station
@@ -114,10 +118,10 @@ public class DriveLights extends OutliersCommand {
         } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STATIC);
-        //No other condition is true, use breathing alliance color
+        //No other condition is true, use static alliance color (was singlefade)
         } else {
             _lights.setColor(allianceColor);
-            _lights.switchAnimation(AnimationType.SINGLE_FADE);
+            _lights.switchAnimation(AnimationType.STATIC);
         }
     }
 

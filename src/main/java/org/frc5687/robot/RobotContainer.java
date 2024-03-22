@@ -124,7 +124,7 @@ public class RobotContainer extends OutliersContainer {
 
 
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
@@ -232,7 +232,7 @@ public class RobotContainer extends OutliersContainer {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
