@@ -277,30 +277,26 @@ public class RobotState {
         return new Pair<Double, Double>(distance, angle.getRadians());
     }
 
-    public Pair<Double, Double> calculateAdjustedRPMAndAngleToTarget() {
-        Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
-        double initialDistance = initialDistanceAndAngle.getFirst();
+    public Pair<Double, Rotation2d> calculateAdjustedRPMAndAngleToTarget() {
 
-        double initialShooterRPM = Constants.Shooter.kRPMMap
-                .getInterpolated(new InterpolatingDouble(initialDistance)).value;
-
-        double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM);
-        double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
-        double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
+        double futureX = _lastPose.getX() + _velocity.dx * Constants.Shooter.MOVING_SHOOTING_TIME;
+        double futureY = _lastPose.getY() + _velocity.dy * Constants.Shooter.MOVING_SHOOTING_TIME;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
         Pose3d targetPose = getSpeakerTagPose();
-        // This tries to predict the RPM you want while moving, Didn't seem to help much so we just used the initial guess RPM.
-        // double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
-        //         targetPose.getY() - futurePose.getY());
+        double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
+                targetPose.getY() - futurePose.getY());
 
-        // double adjustedShooterRPM = Constants.Shooter.kRPMMap
-        //         .getInterpolated(new InterpolatingDouble(futureDistance)).value;
+        double velocity = Math.hypot(_velocity.dx, _velocity.dy);
+        double adjustedShooterRPM = Constants.Shooter.kRPMMap
+                .getInterpolated(new InterpolatingDouble(futureDistance)).value;
 
+        double futureAngleToSpeaker = Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX());
+
+        double adjustedAngleCalculation = Math.atan(velocity / calculateNoteVelocity(adjustedShooterRPM)) - futureAngleToSpeaker;
         Rotation2d adjustedAngle = new Rotation2d(
-                Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
-
-        return new Pair<>(initialShooterRPM, adjustedAngle.getRadians());
+            adjustedAngleCalculation);
+        return new Pair<Double, Rotation2d>(adjustedShooterRPM, adjustedAngle);
     }
 
     public Pose2d calculateAdjustedRPMAndAngleToTargetPose() {
@@ -332,6 +328,15 @@ public class RobotState {
                 Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
         futurePose = new Pose2d(futureX, futureY, adjustedAngle);
         return futurePose;
+    }
+
+    private double calculateNoteVelocity(double shooterRPM) {
+        double wheelCircumference = Math.PI * Constants.Shooter.WHEEL_DIAMETER_METERS;
+        double wheelRPS = (shooterRPM / Constants.Shooter.GEAR_RATIO) / 60.0;
+        double linearVelocity = wheelRPS * wheelCircumference;
+
+        return linearVelocity;
+        // return 0.05;
     }
 
     private double calculateShotTravelTime(double distance, double shooterRPM) {

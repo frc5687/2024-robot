@@ -208,7 +208,13 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
-
+        
+        public static final KinematicLimits SHOOT_KINEMATIC_LIMITS = new KinematicLimits();
+        static {
+            SHOOT_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
+            SHOOT_KINEMATIC_LIMITS.maxDriveAcceleration = 0; // m/s^2 old 20, new based on math :) 
+            SHOOT_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
+        }
         /*
          * How to find offsets:
          * 
@@ -356,6 +362,8 @@ public class Constants {
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
         public static final double PASS_RPM = 2100;
         public static final double DUNKER_IN_RPM = 750;
+
+        public static final double MOVING_SHOOTING_TIME = 0.5;
 
         public static final double PASSTHROUGH_RPM = 460;
 

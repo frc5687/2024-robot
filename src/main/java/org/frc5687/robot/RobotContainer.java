@@ -115,7 +115,7 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }

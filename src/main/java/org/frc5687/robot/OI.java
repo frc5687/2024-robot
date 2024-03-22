@@ -18,6 +18,7 @@ import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
+import org.frc5687.robot.commands.Shooter.MovingShoot;
 import org.frc5687.robot.commands.Shooter.Pass;
 import org.frc5687.robot.commands.Shooter.ToggleAutoSpinUp;
 import org.frc5687.robot.commands.Shooter.Shoot;
@@ -29,6 +30,7 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
+import org.frc5687.robot.commands.Shooter.MovingShoot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -85,7 +87,8 @@ public class OI extends OutliersProxy {
             Dunker dunker,
             Intake intake,
             Climber climber,
-            VisionProcessor visionProcessor) {
+            VisionProcessor visionProcessor,
+            RobotState robotstate) {
 
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake).alongWith(new AutoAimSetpoint(drivetrain)));
@@ -108,7 +111,7 @@ public class OI extends OutliersProxy {
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
         
         _driverGamepad.getLeftBumper().and(_driverGamepad.getRightBumper()).whileTrue(new DriveToAmp(drivetrain, this));
-        _driverGamepad.getLeftBumper().whileTrue(new ShiftDown(drivetrain));
+        _driverGamepad.getLeftBumper().whileTrue(new MovingShoot(shooter, intake, drivetrain, robotstate));
 
         _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
         _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
