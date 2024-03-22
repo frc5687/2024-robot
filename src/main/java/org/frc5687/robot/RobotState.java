@@ -406,26 +406,26 @@ public class RobotState {
         
         if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // multi-tag estimate, trust it more
-            positionDev = 0.15;
+            positionDev = 0.0;
             angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
         } else {
             // single-tag estimates, adjust deviations based on distance
             if (dist < 1.5) {
-                positionDev = 0.30;
-                angleDev = Units.degreesToRadians(20);
+                positionDev = 0.15;
+                angleDev = Units.degreesToRadians(400);
             } else if (dist < 4.0) {
-                positionDev = 0.35;
-                angleDev = Units.degreesToRadians(50);
+                positionDev = 0.25;
+                angleDev = Units.degreesToRadians(400);
             } else {
-                positionDev = 0.5;
-                angleDev = Units.degreesToRadians(100);
+                positionDev = 0.35;
+                angleDev = Units.degreesToRadians(400);
             }
         }
         
+
         _poseEstimator.setVisionMeasurementStdDevs(
             createVisionStandardDeviations(positionDev, positionDev, angleDev)
         );
-        
         _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
                 estimatedPose.timestampSeconds);
     }

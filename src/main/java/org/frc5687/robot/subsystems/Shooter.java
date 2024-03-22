@@ -1,10 +1,22 @@
 package org.frc5687.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.DoubleSupplier;
+
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.robot.util.OutliersContainer;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
@@ -16,9 +28,13 @@ public class Shooter extends OutliersSubsystem {
     private double _targetRPM = 0;
     private boolean _spinUpAutomatically = true;
     private VelocityTorqueCurrentFOC _focVelocity;
+    private final VoltageOut _sysidControl = new VoltageOut(0);
+    private SysIdRoutine _sysIdRoutine;
 
     public Shooter(OutliersContainer container) {
         super(container);
+        SignalLogger.setPath("/home/lvuser/logs");
+        SignalLogger.start();
         _bottomTalon = new OutliersTalon(RobotMap.CAN.TALONFX.BOTTOM_SHOOTER, "CANivore", "Bottom Shooter");
         _topTalon = new OutliersTalon(RobotMap.CAN.TALONFX.TOP_SHOOTER, "CANivore", "Top Shooter");
 
@@ -31,7 +47,27 @@ public class Shooter extends OutliersSubsystem {
         _bottomTalon.setConfigSlot(0);
         _topTalon.setConfigSlot(0);
 
+        BaseStatusSignal.setUpdateFrequencyForAll(250,
+                _bottomTalon.getPosition(),
+                _bottomTalon.getVelocity(),
+                _bottomTalon.getMotorVoltage());
+
+        _bottomTalon.optimizeBusUtilization();
+
         _focVelocity = new VelocityTorqueCurrentFOC(0);
+
+        _sysIdRoutine= new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        null, // Default ramp rate is acceptable
+                        Volts.of(4), // Reduce dynamic voltage to 4 to prevent motor brownout
+                        null, // Default timeout is acceptable
+                              // Log state with Phoenix SignalLogger class
+                        (state) -> SignalLogger.writeString("state", state.toString())),
+                new SysIdRoutine.Mechanism(
+                        (Measure<Voltage> volts) -> setVolts(volts),
+                        null,
+                        this));
+
     }
 
     public void setConfigSlot(int slot) {
@@ -59,7 +95,7 @@ public class Shooter extends OutliersSubsystem {
         _manualShootRPM = rpm;
     }
 
-    public void setToHandoffRPM(){
+    public void setToHandoffRPM() {
         setShooterMotorRPM(Constants.Shooter.DUNKER_IN_RPM);
     }
 
@@ -71,11 +107,11 @@ public class Shooter extends OutliersSubsystem {
         return _manualShootRPM;
     }
 
-    public void setToEject(){
+    public void setToEject() {
         // _bottomTalon.setPercentOutput(Constants.Shooter.EJECT_PERCENT_OUTPUT);
     }
 
-    public void setToIntakeEject(){
+    public void setToIntakeEject() {
         // _bottomTalon.setPercentOutput(-Constants.Shooter.EJECT_PERCENT_OUTPUT);
     }
 
@@ -109,7 +145,9 @@ public class Shooter extends OutliersSubsystem {
     }
 
     /**
-     * TODO either remove this or move it to robotstate... either way rename it speaker mode amp mode seems nicer.
+     * TODO either remove this or move it to robotstate... either way rename it
+     * speaker mode amp mode seems nicer.
+     * 
      * @return if we automatically spin up the shooter in idleshooter
      */
     public boolean getSpinUpAutomatically() {
@@ -117,7 +155,8 @@ public class Shooter extends OutliersSubsystem {
     }
 
     /**
-     * @param value true if we want to spin up automatically, false otherwise. this happens in idleshooter
+     * @param value true if we want to spin up automatically, false otherwise. this
+     *              happens in idleshooter
      */
     public void setSpinUpAutomatically(boolean value) {
         _spinUpAutomatically = value;
@@ -137,4 +176,18 @@ public class Shooter extends OutliersSubsystem {
         metric("At Target RPM", isAtTargetRPM());
         metric("Spin Up Automatically?", getSpinUpAutomatically());
     }
+
+    public void setVolts(Measure<Voltage> volts) {
+        _bottomTalon.setControl(_sysidControl.withOutput(volts.in(Volts)));
+        _topTalon.setControl(_sysidControl.withOutput(volts.in(Volts)));
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return _sysIdRoutine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return _sysIdRoutine.dynamic(direction);
+    }
+
 }
