@@ -1,6 +1,9 @@
 /* Team 5687 (C)2020-2022 */
 package org.frc5687.robot;
 
+import static org.frc5687.robot.Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+import static org.frc5687.robot.Constants.DriveTrain.MAX_LOW_GEAR_MPS;
+
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.lib.cheesystuff.InterpolatingTreeMap;
 import org.frc5687.lib.drivers.OutliersTalon;
@@ -41,7 +44,7 @@ public class Constants {
 
         // this is the motor config for the swerve motors
         static {
-            CONFIG.TIME_OUT = 0.1;
+            CONFIG.TIME_OUT = 0.5;
 
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
@@ -49,20 +52,17 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
-            CONFIG.ENABLE_SUPPLY_CURRENT_LIMIT = false;
-            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = false;
-            CONFIG.CURRENT_DEADBAND = 0.5;
+            CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
         static {
-            STEER_CONFIG.TIME_OUT = 0.1;
+            STEER_CONFIG.TIME_OUT = 0.5;
 
             STEER_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             STEER_CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
-            STEER_CONFIG.MAX_CURRENT = 30; // Max control request current
             STEER_CONFIG.MAX_SUPPLY_CURRENT = 30; // if using a foc control request these dont do anything, modify
             STEER_CONFIG.MAX_STATOR_CURRENT = 120;
 
@@ -80,14 +80,14 @@ public class Constants {
             DRIVE_CONTROLLER_CONFIG.kP = 8.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.3;
-            DRIVE_CONTROLLER_CONFIG.kV = 0.75;
-            DRIVE_CONTROLLER_CONFIG.kA = 0.0;
+            //DRIVE_CONTROLLER_CONFIG.kV = 0.75;
+            DRIVE_CONTROLLER_CONFIG.kV = 1 / MAX_LOW_GEAR_MPS;
             // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
             DRIVE_CONTROLLER_CONFIG.kP1 = 50.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kV1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kV1 = 1.0 / MAX_HIGH_GEAR_MPS;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
@@ -172,7 +172,7 @@ public class Constants {
         public static final double SHIFT_UP_SPEED_MPS = 2.5; // Speed to start shift y
         public static final double SHIFT_DOWN_SPEED_MPS = 1.5; // Speed to start shift y
 
-        public static final double SHIFT_LOCKOUT = 80; // Time in milliseconds to wait before shifting again.
+        public static final double SHIFT_LOCKOUT = 100; // Time in milliseconds to wait before shifting again.
 
         public static final double MIN_TRANSLATION_COMMAND = 0.1; // mps
         public static final double YAW_RATE_THRESHOLD = 0.05; // rad / s
@@ -180,25 +180,37 @@ public class Constants {
         public static final KinematicLimits HIGH_KINEMATIC_LIMITS = new KinematicLimits();
         public static final KinematicLimits AUTO_KINEMATIC_LIMITS = new KinematicLimits();
 
+        // static {
+        //     HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
+        //     HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = MAX_HIGH_GEAR_MPS / 0.2; // m/s^2 old 20, 
+        //     HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
+        // }
+
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2 old 20, new based on math :) 
-            HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_HIGH_GEAR_RADS; // rad/s
-        }
-         static {
-            AUTO_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
-            AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 200; // m/s^2 old 20, new based on math :) 
-
-            AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 200; // rad/s
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2 old 20, 
+            HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE;// rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
 
+        // static {
+        //     LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
+        //     LOW_KINEMATIC_LIMITS.maxDriveAcceleration = MAX_LOW_GEAR_MPS / 0.2; // m/s^2 
+        //     LOW_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_LOW_GEAR_RADS; // rad/s
+        // }
+
         static {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
-            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2 // old 35, new based on math
-            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = MAX_LOW_GEAR_RADS; // rad/s
+            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2 
+            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE; // rad/s
         }
 
+        // Just unlimite everything, assume the path will handle everything.
+        static {
+            AUTO_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
+            AUTO_KINEMATIC_LIMITS.maxDriveAcceleration = 200; // m/s^2 old 20, new based on math :) 
+            AUTO_KINEMATIC_LIMITS.maxSteeringVelocity = 200; // rad/s
+        }
         public static final KinematicLimits KINEMATIC_LIMITS = LOW_KINEMATIC_LIMITS;
 
         public static final KinematicLimits SLOW_KINEMATIC_LIMITS = new KinematicLimits();
@@ -208,6 +220,15 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
+
+        public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveVelocity = 2.0; // m/s
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2
+            SLOW_MODE_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE; // rad/s
+        }
+
         
         public static final KinematicLimits SHOOT_KINEMATIC_LIMITS = new KinematicLimits();
         static {
@@ -233,7 +254,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.48828125;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.00341796875;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -255,7 +276,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.407470703125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.406494140625;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -266,7 +287,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.497314453125;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.0302734375;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -279,12 +300,12 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 7.5;
+        public static final double HEADING_kP = 9.0;
         public static final double HEADING_kI = 0;
-        public static final double HEADING_kD = 0.55;
+        public static final double HEADING_kD = 0.5;
         
         // Pose PID for trajectory and drive to pose
-        public static final double POSE_kP = 6.3;
+        public static final double POSE_kP = 4.8;
         public static final double POSE_kI = 0.0;
         public static final double POSE_kD = 0.0;
 
@@ -338,26 +359,39 @@ public class Constants {
         public static final double GEAR_RATIO = 0.625;
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
 
-        public static final double VELOCITY_TOLERANCE = 30;
+        public static final double VELOCITY_TOLERANCE = 20;
 
+        public static double[][] kRPMValues = {
+            { 3.2, 3000},
+            { 3.5, 2600},
+            { 3.8, 2400},
+            { 4.0, 2200},
+            { 4.4, 1950},
+            { 4.7, 1830},
+        };
+
+        // Old
         // public static double[][] kRPMValues = {
         //     { 3.0, 3800},
-        //     { 3.2, 3500},
-        //     { 3.6, 2600},
-        //     { 4.0, 2100},
+        //     { 3.22, 3450},
+        //     { 3.66, 2550},
+        //     { 4.0, 2050},
         //     { 4.4, 1880},
         //     { 4.8, 1880 },
         // };
 
-        public static double[][] kRPMValues = {
-            { 3.0, 3800},
-            { 3.4, 3200},
-            { 3.6, 2600},
-            { 3.8, 2500},
-            { 4.2, 2100},
-            { 4.4, 1960},
-            { 4.8, 1880 },
-        };
+
+
+        // Older
+        // public static double[][] kRPMValues = {
+        //     { 3.0, 3800},
+        //     { 3.4, 3200},
+        //     { 3.6, 2600},
+        //     { 3.8, 2500},
+        //     { 4.2, 2100},
+        //     { 4.4, 1960},
+        //     { 4.8, 1880 },
+        // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
         public static final double PASS_RPM = 2100;
@@ -391,8 +425,11 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 9.5;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.25;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.023712;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.12;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.066854; 
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -408,6 +445,7 @@ public class Constants {
 
             // not sure which limit it is
             TOP_CONFIG.MAX_CURRENT = 120;
+            TOP_CONFIG.MAX_SUPPLY_CURRENT = 120;
             TOP_CONFIG.CURRENT_DEADBAND = 0.1;
             TOP_CONFIG.USE_FOC = true;
         }
@@ -423,6 +461,7 @@ public class Constants {
             BOTTOM_CONFIG.MAX_VOLTAGE = 12.0;
 
             BOTTOM_CONFIG.MAX_CURRENT = 120;
+            BOTTOM_CONFIG.MAX_SUPPLY_CURRENT = 120;
             BOTTOM_CONFIG.CURRENT_DEADBAND = 0.1;
             BOTTOM_CONFIG.USE_FOC = true;
         }
@@ -546,9 +585,10 @@ public class Constants {
 
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
+
         public static final double PREP_ANGLE = 2.3;
         public static final double DUNK_ANGLE = 3.24;
-        public static final double STOWED_ANGLE = 4.9; // stop changing this - xavier (dm me) 03/13/24
+        public static final double STOWED_ANGLE = 5.18;
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
@@ -580,6 +620,7 @@ public class Constants {
         public static double ZERO_VALUE = 0.0; 
 
         public static double PREP_METERS = -2.15;
+        public static double SOLO_METERS = -1.15;
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;
@@ -613,6 +654,8 @@ public class Constants {
     public static class CANdle {
         public static int NUM_LED = 38;
         public static double SPEED = 0.1;
+        public static double SPEAKER_BRIGHTNESS = 1.0;
+        public static double AMP_BRIGHTNESS = 0.25;
         public static TwinklePercent TWINKLEPERCENT = TwinklePercent.Percent42;
         public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
 

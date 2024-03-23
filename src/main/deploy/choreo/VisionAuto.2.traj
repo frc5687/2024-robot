@@ -838,42 +838,5 @@
       "timestamp": 5.178673035045443
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 0.9000000000000001,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Passthrough"
-        }
-      }
-    },
-    {
-      "timestamp": 3.1136305850171127,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Intake"
-        }
-      }
-    },
-    {
-      "timestamp": 4.134581172440291,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Rev"
-        }
-      }
-    },
-    {
-      "timestamp": 2.0333665642352496,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Passthrough"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

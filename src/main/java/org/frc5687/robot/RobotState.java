@@ -15,7 +15,6 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
-import org.opencv.features2d.KAZE;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -75,7 +74,7 @@ public class RobotState {
     private static RobotState _instance;
     private double _lastTimestamp;
     private Transform3d _robotToCamera;
-    private final double _period = 1.0 / 150.0; // Run at 200Hz
+    private final double _period = 1.0 / 250.0; // Run at 200Hz
 
     public RobotState() {
     }

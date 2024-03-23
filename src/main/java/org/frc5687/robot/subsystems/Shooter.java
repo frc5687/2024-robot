@@ -31,7 +31,7 @@ public class Shooter extends OutliersSubsystem {
         _bottomTalon.setConfigSlot(0);
         _topTalon.setConfigSlot(0);
 
-        _focVelocity = new VelocityTorqueCurrentFOC(0);
+        // _focVelocity = new VelocityTorqueCurrentFOC(0);
     }
 
     public void setConfigSlot(int slot) {
@@ -104,8 +104,10 @@ public class Shooter extends OutliersSubsystem {
 
     public void setShooterMotorRPM(double rpm) {
         _targetRPM = rpm;
-        _topTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
-        _bottomTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
+        // setVelocity does rpm to rps conversion
+        _topTalon.setVelocity(rpm);
+        _bottomTalon.setVelocity(rpm);
+        // _bottomTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
     }
 
     /**

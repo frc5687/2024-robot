@@ -3,10 +3,8 @@ package org.frc5687.robot.commands.DriveTrain;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.commands.Intake.IndexNote.IndexState;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
-import org.photonvision.estimation.OpenCVHelp;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;

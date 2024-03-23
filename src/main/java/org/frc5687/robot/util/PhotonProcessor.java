@@ -4,7 +4,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 
@@ -48,11 +47,11 @@ public class PhotonProcessor {
 
         _robotToNorthEastCam = new Transform3d(
                 new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(-7.05), Units.inchesToMeters(11.00)),
-                new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(-25.5)));
+                new Rotation3d(Units.degreesToRadians(180), Units.degreesToRadians(16.5), Units.degreesToRadians(-25.5)));
 
         _robotToNorthWestCam = new Transform3d(
                 new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(7.05), Units.inchesToMeters(11.00)),
-                new Rotation3d(0.0, Units.degreesToRadians(16.5), Units.degreesToRadians(25.5)));
+                new Rotation3d(Units.degreesToRadians(180), Units.degreesToRadians(16.5), Units.degreesToRadians(25.5)));
 
         _robotToSouthWestCam = new Transform3d(
                 new Translation3d(-0.107009, 0.104835, 0.57991),
@@ -90,45 +89,6 @@ public class PhotonProcessor {
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         _southWestCameraEstimator.setMultiTagFallbackStrategy(
                 PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-    }
-
-    public void setPipeline(Pipeline pipeline) {
-        _southEastCamera.setPipelineIndex(pipeline.getValue());
-        _northEastCamera.setPipelineIndex(pipeline.getValue());
-        _northWestCamera.setPipelineIndex(pipeline.getValue());
-        _southWestCamera.setPipelineIndex(pipeline.getValue());
-    }
-
-    public double getSouthEastCameraLatency() {
-        return _southEastCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public double getNorthEastCameraLatency() {
-        return _northEastCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public double getNorthWestCameraLatency() {
-        return _northWestCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public double getSouthWestCameraLatency() {
-        return _southWestCamera.getLatestResult().getLatencyMillis();
-    }
-
-    public boolean hasSouthEastCameraTargets() {
-        return _southEastCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean hasNorthEastCameraTargets() {
-        return _northEastCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean hasNorthWestCameraTargets() {
-        return _northWestCamera.getLatestResult().hasTargets();
-    }
-
-    public boolean hasSouthWestCameraTargets() {
-        return _southWestCamera.getLatestResult().hasTargets();
     }
 
     public boolean isSouthEastTargetsWithinAmbiguity(double ambiguityTolerance) {

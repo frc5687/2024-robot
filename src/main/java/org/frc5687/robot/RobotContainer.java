@@ -10,18 +10,14 @@ import java.util.Optional;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
-import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
 import org.frc5687.robot.commands.DriveTrain.Drive;
-import org.frc5687.robot.commands.DriveTrain.DriveToNote;
 import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
-import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
 import org.frc5687.robot.commands.Intake.IdleIntake;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
-import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.RevShooter;
@@ -35,6 +31,8 @@ import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -78,6 +76,11 @@ public class RobotContainer extends OutliersContainer {
     public void init() {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
+
+
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.start();
+
         _oi = new OI();
         // create the vision processor
         _visionProcessor = new VisionProcessor();
@@ -92,15 +95,15 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
-        _robotState.start();
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _dunker = new Dunker(this);
-
         _climber = new Climber(this);
         _lights = new Lights(this);
+
+        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.start();
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
@@ -115,7 +118,9 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor, _robotState);
+
+
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
@@ -223,11 +228,11 @@ public class RobotContainer extends OutliersContainer {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
-        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2200.0));
+        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2150.0));
     }
 }

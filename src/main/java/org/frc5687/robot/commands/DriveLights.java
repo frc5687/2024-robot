@@ -2,6 +2,8 @@ package org.frc5687.robot.commands;
 
 import static org.frc5687.robot.Constants.DriveTrain.HEADING_TOLERANCE;
 
+import java.util.Optional;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
@@ -50,14 +52,18 @@ public class DriveLights extends OutliersCommand {
 
     @Override
     public void execute() {
-        _lights.setBrightness(1);
         boolean hasObjects = false;
         int[] allianceColor = Constants.CANdle.PURPLER; // this should never make the lights purple, like ever, but we need it for the empty check
+
+        if (_shooter.getSpinUpAutomatically()) {
+            _lights.setBrightness(Constants.CANdle.SPEAKER_BRIGHTNESS);
+        } else {
+            _lights.setBrightness(Constants.CANdle.AMP_BRIGHTNESS);
+        }
 
         if (DriverStation.getAlliance().isPresent()) {
             allianceColor = DriverStation.getAlliance().get() == Alliance.Red ? Constants.CANdle.RED : Constants.CANdle.BLUE;
         }
-
 
         hasObjects = _visionProcessor.getDetectedObjects().getNotes().length > 0 ? true : false;
         //Not connected to driver station
@@ -69,17 +75,12 @@ public class DriveLights extends OutliersCommand {
             _lights.switchAnimation(AnimationType.STATIC);
         // Is AutoShooting (shooter debug flag)
         } else if (_lights.getDebugLightsEnabled()) {
-            Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-
-            Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
-            Rotation2d currentHeading = _driveTrain.getHeading();
-            // error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
-            boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < HEADING_TOLERANCE;
+            boolean isInAngle = _robotState.isAimedAtSpeaker();
             boolean isAtRPM = _shooter.isAtTargetRPM();
             // show distinct colors for each state
             if (isAtRPM && isInAngle) {
                 // both are true
-                _lights.setColor(Constants.CANdle.WHITE);
+                _lights.setColor(Constants.CANdle.GOLD);
                 _lights.switchAnimation(AnimationType.STROBE);
             } else if (isAtRPM) {
                 // only rpm is true
@@ -114,10 +115,10 @@ public class DriveLights extends OutliersCommand {
         } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STATIC);
-        //No other condition is true, use breathing alliance color
+        //No other condition is true, use static alliance color (was singlefade)
         } else {
             _lights.setColor(allianceColor);
-            _lights.switchAnimation(AnimationType.SINGLE_FADE);
+            _lights.switchAnimation(AnimationType.STATIC);
         }
     }
 

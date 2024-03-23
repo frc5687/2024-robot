@@ -13,6 +13,7 @@ import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.Helpers;
+import org.littletonrobotics.junction.Logger;
 
 public class Drive extends OutliersCommand {
 
@@ -57,22 +58,25 @@ public class Drive extends OutliersCommand {
                 : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
 
         rot = Math.signum(rot) * rot * rot;
+        rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
 
-        if (rot != 0) {
-            _driveTrain.temporaryDisableHeadingController();
-        }
-
+        // if has note and is within shooting range and is in speaker mode
         boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();
-
+        
         if (shouldAutoAim) {
             _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         }
 
-        double controllerPower = _driveTrain.getRotationCorrection();
+        Logger.recordOutput("Drive/Rot", rot);
+
+        if (Math.abs(rot) != 0) {
+            _driveTrain.temporaryDisableHeadingController();
+        } else {
+            rot = _driveTrain.getRotationCorrection();
+        }
 
         vx = vec.x() * max_mps;
         vy = vec.y() * max_mps;
-        rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
 
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
         // set kinematics limits if shooting.
@@ -85,20 +89,19 @@ public class Drive extends OutliersCommand {
         //     );
         // }
 
-        // if has note and is within shooting range and is in speaker mode
 
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                    vx, vy, rot + controllerPower,
+                    vx, vy, rot,
                     rotation
                 )
             );
         } else {
             _driveTrain.setVelocity(
                 ChassisSpeeds.fromRobotRelativeSpeeds(
-                    vx, vy, rot + controllerPower,
+                    vx, vy, rot,
                     rotation
                 )
             );

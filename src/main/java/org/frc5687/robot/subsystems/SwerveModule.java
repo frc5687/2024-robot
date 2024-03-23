@@ -57,8 +57,8 @@ public class SwerveModule {
     private StatusSignal<Double> _steeringPositionRotations;
 
     private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
-    private MotionMagicExpoTorqueCurrentFOC _angleTorqueExpo;
-    private MotionMagicTorqueCurrentFOC _angleTorque;
+    // private MotionMagicExpoTorqueCurrentFOC _angleTorqueExpo;
+    // private MotionMagicTorqueCurrentFOC _angleTorque;
 
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
@@ -80,18 +80,12 @@ public class SwerveModule {
         // Driving Torque Velocity
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
         // Steering Torque Position with exponential curve
-        _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
-        _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
+        // _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
+        // _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
         /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
 
-        try {
-            Thread.sleep(250); // Delay for 1000 milliseconds people has some issues just making sure
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
         _driveMotor.configureClosedLoop(Constants.SwerveModule.DRIVE_CONTROLLER_CONFIG);
         _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
@@ -133,7 +127,6 @@ public class SwerveModule {
         feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
 
-
         _steeringMotor.configureFeedback(feedback);
 
         _modulePosition = config.position;
@@ -152,11 +145,9 @@ public class SwerveModule {
         _steeringPositionRotations = _encoder.getPosition().clone();
         _steeringVelocityRotationsPerSec = _encoder.getVelocity().clone();
 
-        _driveMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
         _driveVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
         _drivePositionRotations.setUpdateFrequency(1 / 250);
 
-        _steeringMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
         _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
         _steeringPositionRotations.setUpdateFrequency(1 / 250);
 
@@ -171,8 +162,8 @@ public class SwerveModule {
 
     public void setControlRequestUpdateFrequency(double updateFreqHz) {
         _velocityTorqueCurrentFOC.UpdateFreqHz = updateFreqHz;
-        _angleTorque.UpdateFreqHz = updateFreqHz;
-        _angleTorqueExpo.UpdateFreqHz = updateFreqHz;
+        // _angleTorque.UpdateFreqHz = updateFreqHz;
+        // _angleTorqueExpo.UpdateFreqHz = updateFreqHz;
     }
 
     public void refreshSignals() {
@@ -354,7 +345,7 @@ public class SwerveModule {
 
     public void applyCharacterization(Rotation2d steerTarget, double voltage){
         double angle = steerTarget.getRotations();
-        _steeringMotor.setControl(_angleTorqueExpo.withPosition(angle));
+        // _steeringMotor.setControl(_angleTorqueExpo.withPosition(angle));
         setDriveMotorVoltage(voltage);
     }
 
