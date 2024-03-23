@@ -352,15 +352,15 @@ public class Constants {
         public static final double GEAR_RATIO = 0.625;
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
 
-        public static final double VELOCITY_TOLERANCE = 30;
+        public static final double VELOCITY_TOLERANCE = 20;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3500},
-            { 3.4, 2500},
-            { 3.8, 2300},
-            { 4.2, 1950},
-            { 4.4, 1960},
-            { 4.8, 1880},
+            { 3.2, 3000},
+            { 3.5, 2600},
+            { 3.8, 2400},
+            { 4.0, 2200},
+            { 4.4, 1950},
+            { 4.7, 1830},
         };
 
         // Old
