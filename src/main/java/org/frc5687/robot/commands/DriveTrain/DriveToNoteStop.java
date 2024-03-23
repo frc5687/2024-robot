@@ -134,6 +134,7 @@ public class DriveToNoteStop extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        _intake.setSpeed(0);
     }
 
     public enum IndexState {

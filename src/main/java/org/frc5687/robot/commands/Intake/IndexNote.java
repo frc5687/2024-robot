@@ -66,6 +66,7 @@ public class IndexNote extends OutliersCommand {
     public void end(boolean interrupted) {
         super.end(interrupted);
         if (interrupted) {
+            _intake.setSpeed(0);
             error("Index interrupted");
         }
         _intake.setSpeed(0);

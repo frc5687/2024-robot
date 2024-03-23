@@ -5,7 +5,7 @@
       "x": 1.3909554481506348,
       "y": 3.4286344051361084
     },
-    "rotation": -9.699719604426444e-25
+    "rotation": -2.7161518858720623e-25
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,12 @@
           "type": "path",
           "data": {
             "pathName": "FUIC 876.1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
@@ -42,6 +48,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Shoot"
@@ -63,6 +75,12 @@
           "type": "named",
           "data": {
             "name": "PathfindToPathSource"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {

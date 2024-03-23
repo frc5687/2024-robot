@@ -184,7 +184,7 @@ public class RobotState {
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
 
-        cameraPoses.forEach(this::processVisionMeasurement);
+       cameraPoses.forEach(this::processVisionMeasurement);
     }
 
     public void periodic() {

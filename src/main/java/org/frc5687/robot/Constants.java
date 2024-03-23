@@ -394,7 +394,7 @@ public class Constants {
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 460;
-        public static final double PASSTHROUGH_RPM_HARDER = 800;
+        public static final double PASSTHROUGH_RPM_HARDER = 1200;
         public static final double MATCH_RPM_TOLERANCE = .8;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
@@ -466,8 +466,8 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.2;
-        public static final double REVERSE_INDEX_SPEED = -0.2;
+        public static final double INDEX_SPEED = 0.1;
+        public static final double REVERSE_INDEX_SPEED = -INDEX_SPEED;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors

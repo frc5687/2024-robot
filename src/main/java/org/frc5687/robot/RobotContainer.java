@@ -274,7 +274,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
-        NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 2150.0));
+        NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 1000.0));
         NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));
         NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2150.0));
         NamedCommands.registerCommand("ShootWhenRPMMatch", new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
