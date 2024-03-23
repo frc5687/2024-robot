@@ -195,24 +195,13 @@ public class RobotState {
         // update vision tag poses (IMPORTANT) - xavier 03/21/24
         _photonProcessor.updateFieldOrientedRobotFrameTagPositions(_driveTrain.getHeading());
 
-        // sorry for all the doubles,,, it makes more sense in my head to deal with dimensions separately.. feel free to test and fix. - xavier 03/21/24
         for (TagTransform tag : _photonProcessor.getTagPoses()) {
             // there is probably a more elegant method to do this, I'm just trying my hardest to wrap my feeble head around the transforms - xavier 03/21/24
             Pose3d tagPoseFieldFrame = _layout.getTagPose(tag.tagId).get();
-            double tagX = tagPoseFieldFrame.getX();
-            double tagY = tagPoseFieldFrame.getY();
-            double tagZ = tagPoseFieldFrame.getZ();
             Pose3d tagPoseRobotFrame = new Pose3d(tag.translation, new Rotation3d()); // -x, -y, +z
-            double robotX = tagX - tagPoseRobotFrame.getX();
-            double robotY = tagY - tagPoseRobotFrame.getY();
-            double robotZ = tagZ - tagPoseRobotFrame.getZ();
-
-            // System.out.println("id "+tag.tagId+": "+tag.translation);
-            // System.out.println("field pos: "+tag.tagId+": "+new Translation3d(robotX, robotY, robotZ));
-
-            // System.out.println("X: "+robotX+", Y: "+robotY + ",tag "+tag.tagId);
+            Transform3d robotPose = tagPoseFieldFrame.minus(tagPoseRobotFrame);
             
-            _poseEstimator.addVisionMeasurement(new Pose2d(robotX, robotY, new Rotation2d()),
+            _poseEstimator.addVisionMeasurement(new Pose2d(robotPose.getX(), robotPose.getY(), new Rotation2d()),
                 tag.timestamp);
 
         }
