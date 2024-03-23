@@ -393,8 +393,8 @@ public class Constants {
         public static final double PASS_RPM = IDLE_RPM;
         public static final double DUNKER_IN_RPM = 750;
 
-        public static final double PASSTHROUGH_RPM = 460;
-        public static final double PASSTHROUGH_RPM_HARDER = 900;
+        public static final double PASSTHROUGH_RPM = 350;
+        public static final double PASSTHROUGH_RPM_HARDER = 500;
         public static final double MATCH_RPM_TOLERANCE = .8;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
