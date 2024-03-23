@@ -416,11 +416,11 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 0.1;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.15;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
-            SHOOTER_CONTROLLER_CONFIG.kA = 0.021847;
-            SHOOTER_CONTROLLER_CONFIG.kV = 0.12644;
-            SHOOTER_CONTROLLER_CONFIG.kS = 0.059047;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.023712;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.12;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.066854; 
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -436,6 +436,7 @@ public class Constants {
 
             // not sure which limit it is
             TOP_CONFIG.MAX_CURRENT = 120;
+            TOP_CONFIG.MAX_SUPPLY_CURRENT = 120;
             TOP_CONFIG.CURRENT_DEADBAND = 0.1;
             TOP_CONFIG.USE_FOC = true;
         }
@@ -451,6 +452,7 @@ public class Constants {
             BOTTOM_CONFIG.MAX_VOLTAGE = 12.0;
 
             BOTTOM_CONFIG.MAX_CURRENT = 120;
+            BOTTOM_CONFIG.MAX_SUPPLY_CURRENT = 120;
             BOTTOM_CONFIG.CURRENT_DEADBAND = 0.1;
             BOTTOM_CONFIG.USE_FOC = true;
         }
