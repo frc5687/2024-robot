@@ -82,6 +82,7 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
 
+
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.start();
 
@@ -99,15 +100,15 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
-        _robotState.start();
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _dunker = new Dunker(this);
-
         _climber = new Climber(this);
         _lights = new Lights(this);
+
+        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.start();
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));

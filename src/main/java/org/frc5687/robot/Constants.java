@@ -44,7 +44,7 @@ public class Constants {
 
         // this is the motor config for the swerve motors
         static {
-            CONFIG.TIME_OUT = 0.1;
+            CONFIG.TIME_OUT = 0.5;
 
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
@@ -52,11 +52,11 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
-            CONFIG.CURRENT_DEADBAND = 0.5;
+            CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
         static {
-            STEER_CONFIG.TIME_OUT = 0.1;
+            STEER_CONFIG.TIME_OUT = 0.5;
 
             STEER_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             STEER_CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
@@ -221,6 +221,14 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
+        public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveVelocity = 2.0; // m/s
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2
+            SLOW_MODE_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE; // rad/s
+        }
+
         /*
          * How to find offsets:
          * 
@@ -239,7 +247,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.48828125;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.00341796875;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -261,7 +269,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.407470703125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.406494140625;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -272,7 +280,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.497314453125;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.0302734375;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -347,14 +355,27 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 30;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3800},
-            { 3.22, 3450},
-            { 3.66, 2550},
-            { 4.0, 2050},
-            { 4.4, 1880},
-            { 4.8, 1880 },
+            { 3.0, 4000},
+            { 3.4, 3200},
+            { 3.8, 2400},
+            { 4.2, 2150},
+            { 4.4, 1960},
+            { 4.8, 1880},
         };
 
+        // Old
+        // public static double[][] kRPMValues = {
+        //     { 3.0, 3800},
+        //     { 3.22, 3450},
+        //     { 3.66, 2550},
+        //     { 4.0, 2050},
+        //     { 4.4, 1880},
+        //     { 4.8, 1880 },
+        // };
+
+
+
+        // Older
         // public static double[][] kRPMValues = {
         //     { 3.0, 3800},
         //     { 3.4, 3200},
@@ -395,7 +416,7 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 9;
+            SHOOTER_CONTROLLER_CONFIG.kP = 7;
             SHOOTER_CONTROLLER_CONFIG.kD = 0.03;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;

@@ -3,6 +3,7 @@ package org.frc5687.lib.drivers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
@@ -22,6 +23,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 /**
  * TalonFX wrapper class that uses 254's LazyTalonFX that reduces CAN bus / CPU
  * overhead by skipping
@@ -35,7 +38,6 @@ public class OutliersTalon extends TalonFX {
     private final TalonFXConfigurator _configurator;
     private TalonFXConfiguration _configuration = new TalonFXConfiguration();
     private ClosedLoopGeneralConfigs _closedLoopGenConfig = new ClosedLoopGeneralConfigs();
-
 
     private Slot0Configs _slot0Configs = new Slot0Configs();
     private Slot1Configs _slot1Configs = new Slot1Configs();
@@ -69,7 +71,8 @@ public class OutliersTalon extends TalonFX {
     @Override
     public StatusCode setControlPrivate(ControlRequest request) {
         if (isNewRequest(request)) {
-            StatusCode statusCode= super.setControlPrivate(request);
+            StatusCode statusCode = super.setControlPrivate(request);
+            PhoenixProUtil.checkError(statusCode, "Failed to set control");
             if (statusCode == StatusCode.OK) {
                 updateLastValues(request);
             }
@@ -181,14 +184,14 @@ public class OutliersTalon extends TalonFX {
 
         _velocityVoltage.EnableFOC = config.USE_FOC;
 
-        _configurator.apply(_motorConfigs, config.TIME_OUT);
-        _configurator.apply(_torqueCurrentConfigs, config.TIME_OUT);
-        _configurator.apply(_currentLimitsConfigs, config.TIME_OUT);
-        _configurator.apply(_feedbackConfigs, config.TIME_OUT);
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_motorConfigs, config.TIME_OUT), "Failed to configure motor configs");
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_torqueCurrentConfigs, config.TIME_OUT), "Failed to configure torque configs");
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_currentLimitsConfigs, config.TIME_OUT), "Failed to configure current limits");
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_feedbackConfigs, config.TIME_OUT), "Failed to configure feedback configs");
     }
 
     public void configureFeedback(FeedbackConfigs config) {
-        _configurator.apply(config, 100);
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(config, 100), "Failed to configure feedback");
         System.out.println("FEEDBACK CONFIGURED!!");
     }
 
@@ -213,10 +216,10 @@ public class OutliersTalon extends TalonFX {
 
         _closedLoopGenConfig.ContinuousWrap = config.IS_CONTINUOUS;
 
-        _configurator.apply(_closedLoopGenConfig);
-        _configurator.apply(_slot0Configs, config.TIME_OUT);
-        _configurator.apply(_slot1Configs, config.TIME_OUT);
-        _configurator.apply(_motionMagicConfigs);
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_closedLoopGenConfig), "Failed to apply closed loop general config");
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_slot0Configs, config.TIME_OUT), "Failed to apply slot 0 config");
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_slot1Configs, config.TIME_OUT), "Failed to apply slot 1 config");
+        PhoenixProUtil.checkErrorWithThrow(_configurator.apply(_motionMagicConfigs), "Failed to apply motion magic config");
     }
 
     public static double radiansToRotations(double radians, double gearRatio) {
@@ -259,7 +262,6 @@ public class OutliersTalon extends TalonFX {
         public double kD1 = 0.0;
         public double kV1 = 0.0;
 
-
         public boolean IS_CONTINUOUS = false;
     }
 
@@ -288,5 +290,67 @@ public class OutliersTalon extends TalonFX {
         public int SENSOR_ID = 5;
         public FeedbackSensorSourceValue FEEDBACK_SENSOR = FeedbackSensorSourceValue.RotorSensor;
         public double SENSOR_TO_MECHANISM_RATIO = 1.0;
+    }
+
+    private static class PhoenixProUtil {
+        /**
+         * Checks the specified status code for issues and reports an error if
+         * necessary.
+         *
+         * @param statusCode the status code to check
+         * @param message    the message to print if an error occurs
+         */
+        public static void checkError(StatusCode statusCode, String message) {
+            if (statusCode != StatusCode.OK) {
+                DriverStation.reportError(message + " " + statusCode.name(), false);
+            }
+        }
+
+        /**
+         * Checks the specified status code and retries the function if an error occurs.
+         *
+         * @param function the function to retry
+         * @param numTries the number of times to retry
+         * @return true if the function eventually succeeds, false otherwise
+         */
+        public static boolean checkErrorAndRetry(Supplier<StatusCode> function, int numTries) {
+            StatusCode code = function.get();
+            int tries = 0;
+            while (code != StatusCode.OK && tries < numTries) {
+                DriverStation.reportWarning("Retrying CTRE Device Config " + code.name(), false);
+                code = function.get();
+                tries++;
+            }
+            if (code != StatusCode.OK) {
+                DriverStation.reportError("Failed to execute phoenix pro api call after " + numTries + " attempts",
+                        false);
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * Checks the specified status code and throws an exception if there are any
+         * issues.
+         *
+         * @param statusCode the status code to check
+         * @param message    the message to include in the exception if an error occurs
+         */
+        public static void checkErrorWithThrow(StatusCode statusCode, String message) {
+            if (statusCode != StatusCode.OK) {
+                throw new RuntimeException(message + " " + statusCode.name());
+            }
+        }
+
+        /**
+         * Checks the specified status code and retries the function up to 5 times if an
+         * error occurs.
+         *
+         * @param function the function to retry
+         * @return true if the function eventually succeeds, false otherwise
+         */
+        public static boolean checkErrorAndRetry(Supplier<StatusCode> function) {
+            return checkErrorAndRetry(function, 5);
+        }
     }
 }

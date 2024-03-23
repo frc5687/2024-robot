@@ -14,6 +14,9 @@ import org.frc5687.lib.logging.MetricTracker;
 import org.frc5687.lib.logging.RioLogger;
 import org.frc5687.robot.util.*;
 
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusCode;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -57,8 +60,13 @@ public class Robot extends OutliersRobot {
         metric("Identity", _identityMode.toString());
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
+        RobotController.setBrownoutVoltage(6.0);
+        var status = CANBus.getStatus("CANivore");
+        error("Canivore status: " + status.toString());
+
         _robotContainer = new RobotContainer(this, _identityMode);
         _timer = new Timer();
+
         _robotContainer.init();
 
         // Periodically flushes metrics (might be good to configure enable/disable via
@@ -128,7 +136,7 @@ public class Robot extends OutliersRobot {
     }
 
     private void ourPeriodic() {
-
+        Threads.setCurrentThreadPriority(true, 99);
         // Example of starting a new row of metrics for all instrumented objects.
         // MetricTracker.newMetricRowAll();
         MetricTracker.newMetricRowAll();
@@ -136,6 +144,7 @@ public class Robot extends OutliersRobot {
         CommandScheduler.getInstance().run();
         update();
         updateDashboard();
+        Threads.setCurrentThreadPriority(true, 10);
     }
 
     /** This function is called periodically during test mode. */

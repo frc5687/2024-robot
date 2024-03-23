@@ -86,12 +86,6 @@ public class SwerveModule {
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
 
-        try {
-            Thread.sleep(250); // Delay for 1000 milliseconds people has some issues just making sure
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
         _driveMotor.configureClosedLoop(Constants.SwerveModule.DRIVE_CONTROLLER_CONFIG);
         _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
@@ -133,7 +127,6 @@ public class SwerveModule {
         feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
 
-
         _steeringMotor.configureFeedback(feedback);
 
         _modulePosition = config.position;
@@ -152,11 +145,9 @@ public class SwerveModule {
         _steeringPositionRotations = _encoder.getPosition().clone();
         _steeringVelocityRotationsPerSec = _encoder.getVelocity().clone();
 
-        _driveMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
         _driveVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
         _drivePositionRotations.setUpdateFrequency(1 / 250);
 
-        _steeringMotor.getFault_Hardware().setUpdateFrequency(4, 0.04);
         _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / 250);
         _steeringPositionRotations.setUpdateFrequency(1 / 250);
 

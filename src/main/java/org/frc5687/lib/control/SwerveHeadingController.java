@@ -32,9 +32,9 @@ public class SwerveHeadingController {
         _targetHeading = new Rotation2d();
         _disableTime = System.currentTimeMillis();
 
-        SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
-        SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
-        SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
+        // SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
+        // SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
+        // SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
     }
 
 
@@ -91,24 +91,20 @@ public class SwerveHeadingController {
                 }
                 break;
             case ON:
-                _PIDController.setPID(
-                        SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
-                        SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
-                        SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
+                // _PIDController.setPID(
+                //         SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
+                //         SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
+                //         SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
                 power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
                 break;
             default:
                 break;
         }
     
-        double error = _targetHeading.minus(heading).getRadians();
+        // double error = _targetHeading.minus(heading).getRadians();
         if (isAtTargetAngle(heading)) {
             power = 0;
-        } else if(error > Constants.DriveTrain.HEADING_TOLERANCE) {
-            power += 0.05;
-        } else if(error < -Constants.DriveTrain.HEADING_TOLERANCE) {
-            power -= 0.05;
-        }
+        } 
 
         return power;
     }

@@ -401,6 +401,9 @@ public class DriveTrain extends OutliersSubsystem {
                 twistVel.dy / Constants.UPDATE_PERIOD,
                 twistVel.dtheta / Constants.UPDATE_PERIOD);
 
+        Logger.recordOutput("InputChassisSpeeds", _systemIO.desiredChassisSpeeds);
+        Logger.recordOutput("UpdatedChassisSpeeds", updatedChassisSpeeds);
+
         _systemIO.setpoint = _swerveSetpointGenerator.generateSetpoint(
                 _kinematicLimits,
                 _systemIO.setpoint,
