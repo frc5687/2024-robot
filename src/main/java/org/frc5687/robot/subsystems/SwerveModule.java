@@ -57,8 +57,8 @@ public class SwerveModule {
     private StatusSignal<Double> _steeringPositionRotations;
 
     private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
-    private MotionMagicExpoTorqueCurrentFOC _angleTorqueExpo;
-    private MotionMagicTorqueCurrentFOC _angleTorque;
+    // private MotionMagicExpoTorqueCurrentFOC _angleTorqueExpo;
+    // private MotionMagicTorqueCurrentFOC _angleTorque;
 
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
@@ -80,8 +80,8 @@ public class SwerveModule {
         // Driving Torque Velocity
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
         // Steering Torque Position with exponential curve
-        _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
-        _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
+        // _angleTorqueExpo = new MotionMagicExpoTorqueCurrentFOC(0);
+        // _angleTorque = new MotionMagicTorqueCurrentFOC(0).withOverrideCoastDurNeutral(true);
         /* Motor Setup */
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
@@ -162,8 +162,8 @@ public class SwerveModule {
 
     public void setControlRequestUpdateFrequency(double updateFreqHz) {
         _velocityTorqueCurrentFOC.UpdateFreqHz = updateFreqHz;
-        _angleTorque.UpdateFreqHz = updateFreqHz;
-        _angleTorqueExpo.UpdateFreqHz = updateFreqHz;
+        // _angleTorque.UpdateFreqHz = updateFreqHz;
+        // _angleTorqueExpo.UpdateFreqHz = updateFreqHz;
     }
 
     public void refreshSignals() {
@@ -345,7 +345,7 @@ public class SwerveModule {
 
     public void applyCharacterization(Rotation2d steerTarget, double voltage){
         double angle = steerTarget.getRotations();
-        _steeringMotor.setControl(_angleTorqueExpo.withPosition(angle));
+        // _steeringMotor.setControl(_angleTorqueExpo.withPosition(angle));
         setDriveMotorVoltage(voltage);
     }
 
