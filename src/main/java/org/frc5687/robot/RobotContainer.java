@@ -235,14 +235,10 @@ public class RobotContainer extends OutliersContainer {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
-<<<<<<< Updated upstream
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
-=======
-        NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain));
->>>>>>> Stashed changes
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
+        NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
