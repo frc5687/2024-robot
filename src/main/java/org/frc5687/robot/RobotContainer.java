@@ -7,7 +7,9 @@ import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
+import org.frc5687.robot.commands.EnableVisionUpdates;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
@@ -280,6 +282,8 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("ShootWhenRPMMatch", new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
         NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
         NamedCommands.registerCommand("PathfindToPathSource", _pathfindSourceSideCommand);
+        NamedCommands.registerCommand("EnableVision", new EnableVisionUpdates());
+        NamedCommands.registerCommand("DisableVision", new DisableVisionUpdates());
 
     }
 }
