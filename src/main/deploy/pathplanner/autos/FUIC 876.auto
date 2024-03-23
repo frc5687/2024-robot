@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4095633029937744,
-      "y": 3.2425525188446045
+      "x": 1.3909554481506348,
+      "y": 3.4286344051361084
     },
-    "rotation": -1.7524065505853226e-25
+    "rotation": 7.161541913628325e-25
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,7 @@
         {
           "type": "named",
           "data": {
-            "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "FUIC 876.2"
+            "name": "Shoot"
           }
         },
         {
@@ -36,9 +30,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "FUIC 876.3"
+            "name": "ReturnToShoot"
           }
         }
       ]

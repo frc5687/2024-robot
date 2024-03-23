@@ -320,6 +320,9 @@ public class Constants {
 
         public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
         public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
+        public static final Pose2d BLUE_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
+        public static final Pose2d RED_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
+
     }
 
     public static class Vision {
@@ -391,6 +394,8 @@ public class Constants {
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 460;
+        public static final double PASSTHROUGH_RPM_HARDER = 800;
+        public static final double MATCH_RPM_TOLERANCE = .8;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;

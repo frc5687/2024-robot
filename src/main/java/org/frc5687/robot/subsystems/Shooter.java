@@ -51,6 +51,10 @@ public class Shooter extends OutliersSubsystem {
         setShooterMotorRPM(Constants.Shooter.PASSTHROUGH_RPM);
     }
 
+    public void setToPassthroughHarder() {
+        setShooterMotorRPM(Constants.Shooter.PASSTHROUGH_RPM_HARDER);
+    }
+
     public void setToStop() {
         setShooterMotorRPM(0);
     }
@@ -100,6 +104,13 @@ public class Shooter extends OutliersSubsystem {
 
     public boolean isAtTargetRPM() {
         return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
+    }
+
+    
+    public boolean isAtRPMMatch(double distance, double vxMetersPerSecond, Double vyMetersPerSecond) {
+        double vMetersPerSecond = Math.pow((Math.pow(vxMetersPerSecond,2)+Math.pow(vyMetersPerSecond,2)),.5);
+        //double predictedDistance = I did my math wrong hol up
+        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance)+ Constants.Shooter.VELOCITY_TOLERANCE && Math.abs(_targetRPM - getCombinedRPM()) > Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance) - Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
     public void setShooterMotorRPM(double rpm) {
