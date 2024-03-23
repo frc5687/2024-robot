@@ -6,9 +6,7 @@ import static org.frc5687.robot.util.Helpers.applyDeadband;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
-import org.frc5687.robot.commands.DriveTrain.DriveToAmp;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
-import org.frc5687.robot.commands.DriveTrain.ShiftDown;
 import org.frc5687.robot.commands.DriveTrain.SlowMode;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
@@ -26,6 +24,7 @@ import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
@@ -34,6 +33,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
@@ -82,32 +82,25 @@ public class OI extends OutliersProxy {
             Dunker dunker,
             Intake intake,
             Climber climber,
+            Lights lights,
             VisionProcessor visionProcessor) {
 
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IntakeCommand(intake, this)));
-        _driverRightTrigger.whileTrue(new Shoot(shooter, intake).alongWith(new AutoAimSetpoint(drivetrain)));
+        _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
 
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,
         // drivetrain));
 
-        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
-        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
-        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
-        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
-
-
-        // _driverGamepad.getYButton().onTrue(new ChangeRPM(shooter, 100));
-        // _driverGamepad.getAButton().onTrue(new ChangeRPM(shooter, -100));
-        // _driverGamepad.getBButton().onTrue(new ChangeRPM(shooter, 10));
-        // _driverGamepad.getXButton().onTrue(new ChangeRPM(shooter, -100));
+        // _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        // _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
+        // _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        // _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
         _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
 
-        _driverGamepad.getLeftBumper().and(_driverGamepad.getRightBumper()).whileTrue(new DriveToAmp(drivetrain, this));
-        //_driverGamepad.getLeftBumper().whileTrue(new ShiftDown(drivetrain));
         _driverGamepad.getLeftBumper().whileTrue(new SlowMode(drivetrain));
 
         _opPovButtonUp.onTrue(new ChangeRPM(shooter, 100));
@@ -147,6 +140,7 @@ public class OI extends OutliersProxy {
     public boolean getClimbButton() {
         return _operatorGamepad.isStartPressed();
     }
+
     public boolean getSoloClimbButton(){
         return _operatorGamepad.isBackPressed();
     }

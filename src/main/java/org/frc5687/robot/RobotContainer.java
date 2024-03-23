@@ -82,6 +82,7 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
 
+
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.start();
 
@@ -99,15 +100,15 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
-        _robotState.start();
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _dunker = new Dunker(this);
-
         _climber = new Climber(this);
         _lights = new Lights(this);
+
+        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.start();
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
@@ -124,7 +125,7 @@ public class RobotContainer extends OutliersContainer {
 
 
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _visionProcessor);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
@@ -232,7 +233,7 @@ public class RobotContainer extends OutliersContainer {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
-        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain));
+        NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
