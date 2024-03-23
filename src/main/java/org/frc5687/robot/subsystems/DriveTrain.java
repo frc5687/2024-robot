@@ -174,7 +174,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         // frequency in Hz
         configureSignalFrequency(250);
-        configureModuleControlFrequency(0); // Modules are controlled as a one-shot frame 
+        configureModuleControlFrequency(250); // Modules are controlled as a one-shot frame 
 
         // configure startup offset
         _yawOffset = _imu.getYaw().getValue();

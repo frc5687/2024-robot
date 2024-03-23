@@ -2,6 +2,8 @@ package org.frc5687.robot.commands;
 
 import static org.frc5687.robot.Constants.DriveTrain.HEADING_TOLERANCE;
 
+import java.util.Optional;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
@@ -73,17 +75,12 @@ public class DriveLights extends OutliersCommand {
             _lights.switchAnimation(AnimationType.STATIC);
         // Is AutoShooting (shooter debug flag)
         } else if (_lights.getDebugLightsEnabled()) {
-            Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
-
-            Rotation2d angle = new Rotation2d(distanceAndAngle.getSecond());
-            Rotation2d currentHeading = _driveTrain.getHeading();
-            // error("Desired angle: "+angle.getDegrees()+"\n Current angle: "+_driveTrain.getHeading().getDegrees());
-            boolean isInAngle = Math.abs(currentHeading.minus(angle).getRadians()) < HEADING_TOLERANCE;
+            boolean isInAngle = _robotState.isAimedAtSpeaker();
             boolean isAtRPM = _shooter.isAtTargetRPM();
             // show distinct colors for each state
             if (isAtRPM && isInAngle) {
                 // both are true
-                _lights.setColor(Constants.CANdle.WHITE);
+                _lights.setColor(Constants.CANdle.GOLD);
                 _lights.switchAnimation(AnimationType.STROBE);
             } else if (isAtRPM) {
                 // only rpm is true

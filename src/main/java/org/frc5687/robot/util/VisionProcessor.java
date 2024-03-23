@@ -1,7 +1,6 @@
 package org.frc5687.robot.util;
 
 import edu.wpi.first.networktables.RawSubscriber;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
