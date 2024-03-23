@@ -416,8 +416,11 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 7;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.03;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.1;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.021847;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.12644;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.059047;
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
