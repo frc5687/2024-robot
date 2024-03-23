@@ -24,6 +24,7 @@ import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoPassthroughHarder;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.Shoot;
+import org.frc5687.robot.commands.Shooter.ShootWhenRPMMatch;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.RevShooter;
@@ -46,10 +47,13 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -74,6 +78,8 @@ public class RobotContainer extends OutliersContainer {
     private PhotonProcessor _photonProcessor;
 
     private RobotState _robotState = RobotState.getInstance();
+    Command _pathfindSourceSideCommand;
+     Command _pathfindAmpSideCommand;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -118,6 +124,36 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_intake, new IdleIntake(_intake));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter));
+
+        // Load the path we want to pathfind to and follow
+        PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
+
+        // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
+        PathConstraints sourceConstraints = new PathConstraints(
+        3.0, 4.0,
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+        // Since AutoBuilder is configured, we can use it to build pathfinding commands
+        _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(
+        sourcePath,
+        sourceConstraints,
+        0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+);
+
+        // Load the path we want to pathfind to and follow
+        PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
+
+        // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
+        PathConstraints ampConstraints = new PathConstraints(
+        3.0, 4.0,
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+        // Since AutoBuilder is configured, we can use it to build pathfinding commands
+        _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(
+        ampPath,
+        ampConstraints,
+        0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+);
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -242,10 +278,12 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
-        NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 800.0));
+        NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 2150.0));
         NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));
         NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2150.0));
-        NamedCommands.registerCommand("ShootWhenRPMMatch", new DefinedRPMShoot(_shooter, _intake, 2150.0));
+        NamedCommands.registerCommand("ShootWhenRPMMatch", new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
+        NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
+        NamedCommands.registerCommand("PathfindToPathSource", _pathfindSourceSideCommand);
 
     }
 }

@@ -31,8 +31,6 @@ public class ShootWhenRPMMatch extends OutliersCommand{
         _shooter = shooter;
         _intake = intake;
         _driveTrain = driveTrain;
-        _shootRPM = rpm;
-        addRequirements(_shooter, _intake);
     }
 
     @Override

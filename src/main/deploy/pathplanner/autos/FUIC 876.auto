@@ -5,7 +5,7 @@
       "x": 1.3909554481506348,
       "y": 3.4286344051361084
     },
-    "rotation": 7.161541913628325e-25
+    "rotation": -9.699719604426444e-25
   },
   "command": {
     "type": "sequential",
@@ -24,6 +24,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC 876.2"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "DynamicNote"
@@ -32,7 +38,37 @@
         {
           "type": "named",
           "data": {
-            "name": "ReturnToShoot"
+            "name": "PathfindToPathAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC 876.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PathfindToPathSource"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
