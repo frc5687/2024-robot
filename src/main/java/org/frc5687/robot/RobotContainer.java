@@ -17,7 +17,7 @@ import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShootOpposite;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
-import org.frc5687.robot.commands.Intake.IdleIntake;
+import org.frc5687.robot.commands.Intake.AutoIndexNote;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.AutoPassthrough;
 import org.frc5687.robot.commands.Shooter.AutoPassthroughHarder;
@@ -119,9 +119,9 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
-        setDefaultCommand(_intake, new IdleIntake(_intake));
+        setDefaultCommand(_intake, new IndexNote(_intake, _oi));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi));
 
         // Load the path we want to pathfind to and follow
         PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
@@ -270,7 +270,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
-        NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
+        NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
         NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));

@@ -5,8 +5,8 @@ import static org.frc5687.robot.Constants.DriveTrain.HEADING_TOLERANCE;
 import java.util.Optional;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotState;
-import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
@@ -27,14 +27,16 @@ public class DriveLights extends OutliersCommand {
     private Intake _intake;
     private VisionProcessor _visionProcessor;
     private RobotState _robotState = RobotState.getInstance();
+    private OI _oi;
     private Shooter _shooter;
     
-    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, Shooter shooter) {
+    public DriveLights(Lights lights, DriveTrain driveTrain, Intake intake, VisionProcessor visionProcessor, Shooter shooter, OI oi) {
         _lights = lights;
         _driveTrain = driveTrain;
         _intake = intake;
         _visionProcessor = visionProcessor;
         _shooter = shooter;
+        _oi = oi;
         addRequirements(lights);
     }
     
@@ -112,7 +114,7 @@ public class DriveLights extends OutliersCommand {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STROBE);
         //Intaking
-        } else if (_intake.getCurrentCommand() instanceof IntakeCommand) {
+        } else if (_oi.isIntakeButtonPressed()) {
             _lights.setColor(Constants.CANdle.ORANGE);
             _lights.switchAnimation(AnimationType.STATIC);
         //No other condition is true, use static alliance color (was singlefade)

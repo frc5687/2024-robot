@@ -12,8 +12,6 @@ import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
-import org.frc5687.robot.commands.Intake.IndexNote;
-import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
@@ -86,7 +84,7 @@ public class OI extends OutliersProxy {
             Lights lights,
             VisionProcessor visionProcessor) {
 
-        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IndexNote(intake)));
+        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
 
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,
@@ -97,7 +95,8 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
-        _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
+
+        // _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));
@@ -144,6 +143,10 @@ public class OI extends OutliersProxy {
 
     public boolean getSoloClimbButton(){
         return _operatorGamepad.isBackPressed();
+    }
+
+    public boolean isIntakeButtonPressed() {
+        return _driverGamepad.isRightBumperPressed() || _driverLeftTriggerButton.get();
     }
 
     public double getDriveY() {
