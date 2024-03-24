@@ -105,7 +105,7 @@ public class DriveTrain extends OutliersSubsystem {
     private static final int NORTH_EAST_IDX = 3;
 
     private final SwerveSetpointGenerator _swerveSetpointGenerator;
-    private KinematicLimits _kinematicLimits = LOW_KINEMATIC_LIMITS;
+    private KinematicLimits _kinematicLimits = HIGH_KINEMATIC_LIMITS;
 
     private final DoubleSolenoid _shift;
     private final Compressor _compressor;
@@ -240,7 +240,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         _hoverGoal = new Pose2d();
         _controlState = ControlState.MANUAL;
-        _isLowGear = true;
+        _isLowGear = false;
 
         zeroGyroscope();
 
