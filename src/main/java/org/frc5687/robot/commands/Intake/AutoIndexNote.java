@@ -33,18 +33,16 @@ public class AutoIndexNote extends OutliersCommand {
                 break;
 
             case INDEXING:
-                if (_intake.isTopDetected() && !_intake.isBottomDetected()) {
-                    if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
-                        _intake.setSpeed(0);
-                        _intake.setIndexState(IndexState.INDEXED);
-                    } else {
-                        _intake.setSpeed(Constants.Intake.REVERSE_INDEX_SPEED);
-                    }
-                } else if (!_intake.isTopDetected() && _intake.isBottomDetected()) {
-                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
-                } else if (_intake.isTopDetected() && _intake.isBottomDetected()) {
+                if (_intake.isTopDetected() && _intake.isMiddleDetected() && _intake.isBottomDetected()) {
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.INDEXED);
+                } else if (_intake.isMiddleDetected()) {
+                    // Note is present in the robot
+                    if (_intake.isBottomDetected() || _intake.isTopDetected()) {
+                        _intake.setSpeed(0);
+                        _intake.setIndexState(IndexState.INDEXED);
+                    }
+
                 } else {
                     _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                 }
@@ -61,8 +59,6 @@ public class AutoIndexNote extends OutliersCommand {
         }
     }
 
-
-
     @Override
     public boolean isFinished() {
         return false; // Always running
@@ -77,6 +73,5 @@ public class AutoIndexNote extends OutliersCommand {
         }
         _intake.setSpeed(0);
     }
-
 
 }

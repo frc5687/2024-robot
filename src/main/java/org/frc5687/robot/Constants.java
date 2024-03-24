@@ -293,9 +293,13 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 10;
-        public static final double HEADING_kI = 0;
-        public static final double HEADING_kD = 3;
+        public static final double MOVING_HEADING_kP = 4;
+        public static final double MOVING_HEADING_kI = 0;
+        public static final double MOVING_HEADING_kD = 0;
+
+        public static final double AIMING_HEADING_kP = 7;
+        public static final double AIMING_HEADING_kI = 0;
+        public static final double AIMING_HEADING_kD = 0.5;
         
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 5.5;
@@ -466,7 +470,8 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.1;
+        public static final double INDEX_SPEED = 0.3;
+        public static final double SLOW_INDEX_SPEED = 0.1;
         public static final double REVERSE_INDEX_SPEED = -INDEX_SPEED;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();

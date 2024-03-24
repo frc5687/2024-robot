@@ -44,23 +44,26 @@ public class IndexNote extends OutliersCommand {
                 break;
 
             case INDEXING:
-                if (_intake.isTopDetected() && !_intake.isBottomDetected()) {
-                    if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
-                        _intake.setSpeed(0);
-                        _intake.setIndexState(IndexState.INDEXED);
-                    } else {
-                        _intake.setSpeed(Constants.Intake.REVERSE_INDEX_SPEED);
-                    }
-                } else if (!_intake.isTopDetected() && _intake.isBottomDetected()) {
-                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
-                } else if (_intake.isTopDetected() && _intake.isBottomDetected()) {
+                if (_intake.isTopDetected() && _intake.isMiddleDetected() && _intake.isBottomDetected()) {
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.INDEXED);
+                } else if (_intake.isMiddleDetected()) {
+                    // Note is present in the robot
+                    if (!_intake.isTopDetected() && !_intake.isBottomDetected()) {
+                        // Note is moving away from the indexed position
+                        _intake.setSpeed(Constants.Intake.INDEX_SPEED);
+                    } else if (!_intake.isTopDetected() && _intake.isBottomDetected()) {
+                        // This means we have overshot a bit.
+                        _intake.setSpeed(Constants.Intake.REVERSE_INDEX_SPEED);
+                    } else {
+                        // Note is in the middle, maintain the current position
+                        _intake.setSpeed(0);
+                    }
                 } else {
+                    // Note is not detected by the middle sensor
                     _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                 }
                 break;
-
             case INDEXED:
                 _intake.setSpeed(0);
                 if (_intake.isNoteDetected()) {
@@ -70,6 +73,8 @@ public class IndexNote extends OutliersCommand {
                 } else {
                     _intake.setIndexState(IndexState.IDLE);
                 }
+                break;
+            default:
                 break;
         }
     }

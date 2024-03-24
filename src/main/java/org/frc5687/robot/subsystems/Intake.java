@@ -13,7 +13,8 @@ public class Intake extends OutliersSubsystem {
         IDLE(0),
         INTAKING(1),
         INDEXING(2),
-        INDEXED(3);
+        INDEXED(3),
+        SHOOTING(4);
 
         private final int _value;
 
@@ -91,5 +92,6 @@ public class Intake extends OutliersSubsystem {
         metric("Bottom Detected", isBottomDetected() ? 1000.0: 0.0);
         metric("Is note indexed", isNoteIndexed());
         metric("AutoIntake Flag", getAutoIntakeFlag());
+        metric("Index State", _indexState.name());
     }
 }

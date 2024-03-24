@@ -1,8 +1,5 @@
 package org.frc5687.robot.subsystems;
 
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_kD;
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_kI;
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_kP;
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
@@ -203,9 +200,9 @@ public class DriveTrain extends OutliersSubsystem {
                 new PIDController(
                         Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI, Constants.DriveTrain.POSE_kD),
                 new ProfiledPIDController(
-                        HEADING_kP,
-                        HEADING_kI,
-                        HEADING_kD,
+                        Constants.DriveTrain.MOVING_HEADING_kP,
+                        Constants.DriveTrain.MOVING_HEADING_kI,
+                        Constants.DriveTrain.MOVING_HEADING_kD,
                         new TrapezoidProfile.Constraints(
                                 Constants.DriveTrain.MAX_ANG_VEL,
                                 Constants.DriveTrain.MAX_ANG_ACC)));
@@ -232,8 +229,8 @@ public class DriveTrain extends OutliersSubsystem {
                                                  // Constants class
                         new PIDConstants(Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI,
                                 Constants.DriveTrain.POSE_kD), // Translation PID constants
-                        new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI,
-                                Constants.DriveTrain.HEADING_kD), // Rotation PID constants
+                        new PIDConstants(Constants.DriveTrain.MOVING_HEADING_kD, Constants.DriveTrain.MOVING_HEADING_kI,
+                                Constants.DriveTrain.MOVING_HEADING_kD), // Rotation PID constants
                         // Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
                         // auto need to set to high gear mps
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
@@ -276,7 +273,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public double getRotationCorrection() {
-        return _headingController.getRotationCorrection(getHeading());
+        return _headingController.getRotationCorrection(getHeading(), _kinematics.toChassisSpeeds(_systemIO.measuredStates));
     }
 
     public void temporaryDisableHeadingController() {

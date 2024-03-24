@@ -6,6 +6,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.Intake.IndexState;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 
@@ -35,6 +36,7 @@ public class Shoot extends OutliersCommand{
         super.initialize();
         _shooter.setConfigSlot(0);
         _lights.setDebugLightsEnabled(true);
+        _intake.setIndexState(IndexState.SHOOTING);
     }
 
     @Override
