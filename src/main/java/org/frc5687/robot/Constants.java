@@ -293,12 +293,12 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 9.0;
+        public static final double HEADING_kP = 5.0;
         public static final double HEADING_kI = 0;
         public static final double HEADING_kD = 0.5;
         
         // Pose PID for trajectory and drive to pose
-        public static final double POSE_kP = 4.8;
+        public static final double POSE_kP = 5.5;
         public static final double POSE_kI = 0.0;
         public static final double POSE_kD = 0.0;
 
