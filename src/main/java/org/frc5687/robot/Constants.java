@@ -44,7 +44,7 @@ public class Constants {
 
         // this is the motor config for the swerve motors
         static {
-            CONFIG.TIME_OUT = 0.1;
+            CONFIG.TIME_OUT = 0.5;
 
             CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
@@ -52,11 +52,11 @@ public class Constants {
             CONFIG.MAX_VOLTAGE = 12.0;
 
             CONFIG.MAX_CURRENT = 80; // Max control requeset current
-            CONFIG.CURRENT_DEADBAND = 0.5;
+            CONFIG.CURRENT_DEADBAND = 0.1;
         }
 
         static {
-            STEER_CONFIG.TIME_OUT = 0.1;
+            STEER_CONFIG.TIME_OUT = 0.5;
 
             STEER_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             STEER_CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
@@ -221,6 +221,14 @@ public class Constants {
             SLOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
+        public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveVelocity = 2.0; // m/s
+            SLOW_MODE_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2
+            SLOW_MODE_KINEMATIC_LIMITS.maxSteeringVelocity = Double.MAX_VALUE; // rad/s
+        }
+
         /*
          * How to find offsets:
          * 
@@ -239,7 +247,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.48828125;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.00341796875;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -261,7 +269,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.407470703125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.406494140625;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -272,7 +280,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.497314453125;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.0302734375;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -285,12 +293,16 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double HEADING_kP = 6.5;
-        public static final double HEADING_kI = 0;
-        public static final double HEADING_kD = 0.7;
+        public static final double MOVING_HEADING_kP = 10;
+        public static final double MOVING_HEADING_kI = 0;
+        public static final double MOVING_HEADING_kD = 1;
+
+        public static final double AIMING_HEADING_kP = 7;
+        public static final double AIMING_HEADING_kI = 0;
+        public static final double AIMING_HEADING_kD = 0.5;
         
         // Pose PID for trajectory and drive to pose
-        public static final double POSE_kP = 4.8;
+        public static final double POSE_kP = 5.5;
         public static final double POSE_kI = 0.0;
         public static final double POSE_kD = 0.0;
 
@@ -312,6 +324,9 @@ public class Constants {
 
         public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
         public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
+        public static final Pose2d BLUE_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
+        public static final Pose2d RED_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
+
     }
 
     public static class Vision {
@@ -347,14 +362,27 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 30;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3800},
-            { 3.22, 3450},
-            { 3.66, 2550},
-            { 4.0, 2050},
-            { 4.4, 1880},
-            { 4.8, 1880 },
+            { 3.0, 3500},
+            { 3.4, 2500},
+            { 3.8, 2300},
+            { 4.2, 1950},
+            { 4.4, 1960},
+            { 4.8, 1880},
         };
 
+        // Old
+        // public static double[][] kRPMValues = {
+        //     { 3.0, 3800},
+        //     { 3.22, 3450},
+        //     { 3.66, 2550},
+        //     { 4.0, 2050},
+        //     { 4.4, 1880},
+        //     { 4.8, 1880 },
+        // };
+
+
+
+        // Older
         // public static double[][] kRPMValues = {
         //     { 3.0, 3800},
         //     { 3.4, 3200},
@@ -369,7 +397,9 @@ public class Constants {
         public static final double PASS_RPM = IDLE_RPM;
         public static final double DUNKER_IN_RPM = 750;
 
-        public static final double PASSTHROUGH_RPM = 460;
+        public static final double PASSTHROUGH_RPM = 350;
+        public static final double PASSTHROUGH_RPM_HARDER = 500;
+        public static final double MATCH_RPM_TOLERANCE = .8;
 
         public static final double OPTIMAL_SHOT_DISTANCE_LOWER_LIMIT = 3.0;
         public static final double OPTIMAL_SHOT_DISTANCE_UPPER_LIMIT = 4.2;
@@ -395,8 +425,11 @@ public class Constants {
         public static final OutliersTalon.ClosedLoopConfiguration SHOOTER_CONTROLLER_CONFIG = new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SHOOTER_CONTROLLER_CONFIG.kP = 9;
-            SHOOTER_CONTROLLER_CONFIG.kD = 0.03;
+            SHOOTER_CONTROLLER_CONFIG.kP = 0.25;
+            SHOOTER_CONTROLLER_CONFIG.kD = 0.00;
+            SHOOTER_CONTROLLER_CONFIG.kA = 0.023712;
+            SHOOTER_CONTROLLER_CONFIG.kV = 0.12;
+            SHOOTER_CONTROLLER_CONFIG.kS = 0.066854; 
 
             SHOOTER_CONTROLLER_CONFIG.IS_CONTINUOUS = false;
         }
@@ -412,6 +445,7 @@ public class Constants {
 
             // not sure which limit it is
             TOP_CONFIG.MAX_CURRENT = 120;
+            TOP_CONFIG.MAX_SUPPLY_CURRENT = 120;
             TOP_CONFIG.CURRENT_DEADBAND = 0.1;
             TOP_CONFIG.USE_FOC = true;
         }
@@ -427,6 +461,7 @@ public class Constants {
             BOTTOM_CONFIG.MAX_VOLTAGE = 12.0;
 
             BOTTOM_CONFIG.MAX_CURRENT = 120;
+            BOTTOM_CONFIG.MAX_SUPPLY_CURRENT = 120;
             BOTTOM_CONFIG.CURRENT_DEADBAND = 0.1;
             BOTTOM_CONFIG.USE_FOC = true;
         }
@@ -435,8 +470,9 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.2;
-        public static final double REVERSE_INDEX_SPEED = -0.2;
+        public static final double INDEX_SPEED = 0.3;
+        public static final double SLOW_INDEX_SPEED = 0.1;
+        public static final double REVERSE_INDEX_SPEED = -INDEX_SPEED;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         // this is the motor config for the swerve motors
@@ -557,6 +593,7 @@ public class Constants {
         public static final double CLIMB_ANGLE = 3.4;
         public static final double ANGLE_TOLERANCE = 0.02;
         public static final long EJECT_TIME = 1000; // 1 second
+        public static final double DUNKER_RPM_TOLERANCE = 100;
     }
     
     public static class Climber {

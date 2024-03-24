@@ -6,6 +6,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.Intake.IndexState;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 
@@ -35,6 +36,7 @@ public class Shoot extends OutliersCommand{
         super.initialize();
         _shooter.setConfigSlot(0);
         _lights.setDebugLightsEnabled(true);
+        _intake.setIndexState(IndexState.SHOOTING);
     }
 
     @Override
@@ -48,17 +50,18 @@ public class Shoot extends OutliersCommand{
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
-        // Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
-        // if (visionDistance.isPresent()) {
-            // _shooter.setRPMFromDistance(visionDistance.get());
-        // } else {
+        Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
+        if (visionDistance.isPresent()) {
+            _shooter.setRPMFromDistance(visionDistance.get());
+        } else {
             _shooter.setRPMFromDistance(distance);
-        // }
+        }
 
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         boolean isInAngle = _robotState.isAimedAtSpeaker();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);
+        metric("isStopped", isStopped);
         
         if (isAtTargetRPM && isInAngle && isStopped) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);

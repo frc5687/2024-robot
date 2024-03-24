@@ -7,21 +7,22 @@ import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
+import org.frc5687.robot.commands.EnableVisionUpdates;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Climber.AutoClimb;
-import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
 import org.frc5687.robot.commands.DriveTrain.Drive;
-import org.frc5687.robot.commands.DriveTrain.DriveToNote;
 import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
-import org.frc5687.robot.commands.DriveTrain.DynamicNotePathCommand;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
+import org.frc5687.robot.commands.DriveTrain.ReturnToShootOpposite;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
-import org.frc5687.robot.commands.Intake.IdleIntake;
+import org.frc5687.robot.commands.Intake.AutoIndexNote;
 import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Shooter.AutoPassthrough;
+import org.frc5687.robot.commands.Shooter.AutoPassthroughHarder;
 import org.frc5687.robot.commands.Shooter.AutoShoot;
-import org.frc5687.robot.commands.Shooter.Shoot;
+import org.frc5687.robot.commands.Shooter.ShootWhenRPMMatch;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.RevShooter;
@@ -37,17 +38,19 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.rlog.RLOGServer;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -72,6 +75,8 @@ public class RobotContainer extends OutliersContainer {
     private PhotonProcessor _photonProcessor;
 
     private RobotState _robotState = RobotState.getInstance();
+    Command _pathfindSourceSideCommand;
+    Command _pathfindAmpSideCommand;
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -99,30 +104,62 @@ public class RobotContainer extends OutliersContainer {
         _imu.getConfigurator().apply(pigeonConfig);
 
         _driveTrain = new DriveTrain(this, _imu);
-        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
-        _robotState.start();
 
         _shooter = new Shooter(this);
         _intake = new Intake(this);
         _dunker = new Dunker(this);
-
         _climber = new Climber(this);
         _lights = new Lights(this);
+
+        _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
+        _robotState.start();
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi, _intake, _shooter));
         setDefaultCommand(_shooter, new IdleShooter(_shooter, _intake));
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
-        setDefaultCommand(_intake, new IdleIntake(_intake));
+        setDefaultCommand(_intake, new IndexNote(_intake, _oi));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi));
+
+        // Load the path we want to pathfind to and follow
+        PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
+
+        // Create the constraints to use while pathfinding. The constraints defined in
+        // the path will only be used for the path.
+        PathConstraints sourceConstraints = new PathConstraints(
+                3.0, 4.0,
+                Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+        // Since AutoBuilder is configured, we can use it to build pathfinding commands
+        _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(
+                sourcePath,
+                sourceConstraints,
+                0.0 // Rotation delay distance in meters. This is how far the robot should travel
+                    // before attempting to rotate.
+        );
+
+        // Load the path we want to pathfind to and follow
+        PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
+
+        // Create the constraints to use while pathfinding. The constraints defined in
+        // the path will only be used for the path.
+        PathConstraints ampConstraints = new PathConstraints(
+                3.0, 4.0,
+                Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+        // Since AutoBuilder is configured, we can use it to build pathfinding commands
+        _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(
+                ampPath,
+                ampConstraints,
+                0.0 // Rotation delay distance in meters. This is how far the robot should travel
+                    // before attempting to rotate.
+        );
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
-
-
 
         _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
 
@@ -138,6 +175,7 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void disabledInit() {
     }
+
     @Override
     public void updateDashboard() {
         super.updateDashboard();
@@ -218,12 +256,15 @@ public class RobotContainer extends OutliersContainer {
         return Optional.empty();
         // // Some condition that should decide if we want to override rotation
         // if (_shooter.getAutoShootFlag()) {
-        //     // Return an optional containing the rotation override (this should be a field
-        //     // relative rotation)
-        //     return Optional.of(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+        // // Return an optional containing the rotation override (this should be a
+        // field
+        // // relative rotation)
+        // return Optional.of(new
+        // Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         // } else {
-        //     // return an empty optional when we don't want to override the path's rotation
-            // return Optional.empty();
+        // // return an empty optional when we don't want to override the path's
+        // rotation
+        // return Optional.empty();
         // }
 
     }
@@ -233,10 +274,22 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
-        NamedCommands.registerCommand("Intake", new IndexNote(_intake)); // was AutoIntake, but IndexNote currently has the behavior we want
+        NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently
+                                                                             // has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
+        NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
+        NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
+        NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 1000.0));
+        NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));
         NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2150.0));
+        NamedCommands.registerCommand("ShootWhenRPMMatch",
+                new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
+        NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
+        NamedCommands.registerCommand("PathfindToPathSource", _pathfindSourceSideCommand);
+        NamedCommands.registerCommand("EnableVision", new EnableVisionUpdates());
+        NamedCommands.registerCommand("DisableVision", new DisableVisionUpdates());
+
     }
 }

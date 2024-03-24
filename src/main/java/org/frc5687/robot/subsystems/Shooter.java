@@ -31,7 +31,7 @@ public class Shooter extends OutliersSubsystem {
         _bottomTalon.setConfigSlot(0);
         _topTalon.setConfigSlot(0);
 
-        _focVelocity = new VelocityTorqueCurrentFOC(0);
+        // _focVelocity = new VelocityTorqueCurrentFOC(0);
     }
 
     public void setConfigSlot(int slot) {
@@ -49,6 +49,10 @@ public class Shooter extends OutliersSubsystem {
 
     public void setToPassthrough() {
         setShooterMotorRPM(Constants.Shooter.PASSTHROUGH_RPM);
+    }
+
+    public void setToPassthroughHarder() {
+        setShooterMotorRPM(Constants.Shooter.PASSTHROUGH_RPM_HARDER);
     }
 
     public void setToStop() {
@@ -102,10 +106,19 @@ public class Shooter extends OutliersSubsystem {
         return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
+    
+    public boolean isAtRPMMatch(double distance, double vxMetersPerSecond, Double vyMetersPerSecond) {
+        double vMetersPerSecond = Math.pow((Math.pow(vxMetersPerSecond,2)+Math.pow(vyMetersPerSecond,2)),.5);
+        //double predictedDistance = I did my math wrong hol up
+        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance)+ Constants.Shooter.VELOCITY_TOLERANCE && Math.abs(_targetRPM - getCombinedRPM()) > Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance) - Constants.Shooter.VELOCITY_TOLERANCE;
+    }
+
     public void setShooterMotorRPM(double rpm) {
         _targetRPM = rpm;
-        _topTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
-        _bottomTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
+        // setVelocity does rpm to rps conversion
+        _topTalon.setVelocity(rpm);
+        _bottomTalon.setVelocity(rpm);
+        // _bottomTalon.setControl(_focVelocity.withVelocity(rpm / 60.0));
     }
 
     /**
@@ -121,6 +134,7 @@ public class Shooter extends OutliersSubsystem {
      */
     public void setSpinUpAutomatically(boolean value) {
         _spinUpAutomatically = value;
+        
     }
 
     public double calculateRPMFromDistance(double distance) {

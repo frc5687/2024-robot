@@ -1,8 +1,5 @@
 package org.frc5687.robot.subsystems;
 
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_kD;
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_kI;
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_kP;
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
@@ -174,7 +171,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         // frequency in Hz
         configureSignalFrequency(250);
-        configureModuleControlFrequency(0); // Modules are controlled as a one-shot frame 
+        configureModuleControlFrequency(250); // Modules are controlled as a one-shot frame 
 
         // configure startup offset
         _yawOffset = _imu.getYaw().getValue();
@@ -203,9 +200,9 @@ public class DriveTrain extends OutliersSubsystem {
                 new PIDController(
                         Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI, Constants.DriveTrain.POSE_kD),
                 new ProfiledPIDController(
-                        HEADING_kP,
-                        HEADING_kI,
-                        HEADING_kD,
+                        Constants.DriveTrain.MOVING_HEADING_kP,
+                        Constants.DriveTrain.MOVING_HEADING_kI,
+                        Constants.DriveTrain.MOVING_HEADING_kD,
                         new TrapezoidProfile.Constraints(
                                 Constants.DriveTrain.MAX_ANG_VEL,
                                 Constants.DriveTrain.MAX_ANG_ACC)));
@@ -232,8 +229,8 @@ public class DriveTrain extends OutliersSubsystem {
                                                  // Constants class
                         new PIDConstants(Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI,
                                 Constants.DriveTrain.POSE_kD), // Translation PID constants
-                        new PIDConstants(Constants.DriveTrain.HEADING_kP, Constants.DriveTrain.HEADING_kI,
-                                Constants.DriveTrain.HEADING_kD), // Rotation PID constants
+                        new PIDConstants(Constants.DriveTrain.MOVING_HEADING_kD, Constants.DriveTrain.MOVING_HEADING_kI,
+                                Constants.DriveTrain.MOVING_HEADING_kD), // Rotation PID constants
                         // Constants.DriveTrain.MAX_HIGH_GEAR_MPS, // If we enable auto_shifiting in
                         // auto need to set to high gear mps
                         Constants.DriveTrain.MAX_LOW_GEAR_MPS, // Max module speed, in m/s
@@ -276,7 +273,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public double getRotationCorrection() {
-        return _headingController.getRotationCorrection(getHeading());
+        return _headingController.getRotationCorrection(getHeading(), _kinematics.toChassisSpeeds(_systemIO.measuredStates));
     }
 
     public void temporaryDisableHeadingController() {
@@ -400,6 +397,9 @@ public class DriveTrain extends OutliersSubsystem {
                 twistVel.dx / Constants.UPDATE_PERIOD,
                 twistVel.dy / Constants.UPDATE_PERIOD,
                 twistVel.dtheta / Constants.UPDATE_PERIOD);
+
+        Logger.recordOutput("InputChassisSpeeds", _systemIO.desiredChassisSpeeds);
+        Logger.recordOutput("UpdatedChassisSpeeds", updatedChassisSpeeds);
 
         _systemIO.setpoint = _swerveSetpointGenerator.generateSetpoint(
                 _kinematicLimits,

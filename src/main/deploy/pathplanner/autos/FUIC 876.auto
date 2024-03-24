@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4118499755859375,
+      "y": 3.1471216678619385
+    },
+    "rotation": 4.4776724850577996e-26
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC 876.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC 876.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PathfindToPathAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC 876.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PathfindToPathSource"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

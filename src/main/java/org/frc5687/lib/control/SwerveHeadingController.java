@@ -11,32 +11,47 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // rewritten (probably poorly) by xavier bradford 03/09/24
 public class SwerveHeadingController {
 
-    // state machine
     private HeadingState _headingState;
     private Rotation2d _targetHeading;
-    private final PIDController _PIDController;
+    private final PIDController _movingPIDController;
+    private final PIDController _aimingPIDController;
+    private double _velocityThresholdForFullAiming;
+    private double _velocityThresholdForFullMoving;
 
-    // the timestamp at which the heading controller will enable again (after being temporarily disabled)
     private long _disableTime;
 
     public SwerveHeadingController(double kDt) {
-        _PIDController = new PIDController(
-            Constants.DriveTrain.HEADING_kP,
-            Constants.DriveTrain.HEADING_kI,
-            Constants.DriveTrain.HEADING_kD,
+        _movingPIDController = new PIDController(
+            Constants.DriveTrain.MOVING_HEADING_kP,
+            Constants.DriveTrain.MOVING_HEADING_kI,
+            Constants.DriveTrain.MOVING_HEADING_kD,
             kDt
         );
-                
-        _PIDController.enableContinuousInput(-Math.PI, Math.PI);
+
+            SmartDashboard.putNumber("MovingHeadingController/kP", Constants.DriveTrain.MOVING_HEADING_kP);
+            SmartDashboard.putNumber("MovingHeadingController/kI", Constants.DriveTrain.MOVING_HEADING_kI);
+            SmartDashboard.putNumber("MovingHeadingController/kD", Constants.DriveTrain.MOVING_HEADING_kD);
+
+        _aimingPIDController = new PIDController(
+            Constants.DriveTrain.AIMING_HEADING_kP,
+            Constants.DriveTrain.AIMING_HEADING_kI,
+            Constants.DriveTrain.AIMING_HEADING_kD,
+            kDt
+        );
+        SmartDashboard.putNumber("AimingHeadingController/kP", Constants.DriveTrain.AIMING_HEADING_kP);
+        SmartDashboard.putNumber("AimingHeadingController/kI", Constants.DriveTrain.AIMING_HEADING_kI);
+        SmartDashboard.putNumber("AimingHeadingController/kD", Constants.DriveTrain.AIMING_HEADING_kD);
+
+        _movingPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        _aimingPIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;
         _targetHeading = new Rotation2d();
         _disableTime = System.currentTimeMillis();
-
-        SmartDashboard.putNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP);
-        SmartDashboard.putNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI);
-        SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
-    }
-
+        _velocityThresholdForFullAiming = 0.1;
+        _velocityThresholdForFullMoving = 1.0;
+        SmartDashboard.putNumber("HeadingController/AimingThresholdMPS", 0.1);
+        SmartDashboard.putNumber("HeadingController/AimingThresholdMPS", 1.0);
+    } 
 
     public void setState(HeadingState state) {
         _headingState = state;
@@ -47,7 +62,8 @@ public class SwerveHeadingController {
     }
 
     /**
-     * Temporarily disable the heading controller. It will be reenabled after a small amount of time.
+     * Temporarily disable the heading controller. It will be reenabled after a
+     * small amount of time.
      * 
      * @see Constants.DriveTrain.DISABLE_TIME
      */
@@ -58,6 +74,7 @@ public class SwerveHeadingController {
 
     /**
      * Sets the target heading of the heading controller and enables it.
+     * 
      * @param targetHeading the heading to hold.
      */
     public void goToHeading(Rotation2d heading) {
@@ -73,16 +90,25 @@ public class SwerveHeadingController {
         return (Math.abs(heading.minus(_targetHeading).getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE);
     }
 
-    /**
-     * Get the output of the PID controller given a certain input.
-     * 
-     * @param heading The current heading of the drivetrain. This could be a gyro value or a vision value or some combination of both.
-     * @param measuredSpeed measured speed of the robot [vx, vy, omega]
-     * @param maxSpeed The max speed of the robot 
-     * @return The "power" that the heading controller outputs.
-     */
-    public double getRotationCorrection(Rotation2d heading) {
+    public double getRotationCorrection(Rotation2d heading, ChassisSpeeds measuredSpeed) {
         double power = 0;
+
+        double velocityMagnitude = Math.sqrt(measuredSpeed.vxMetersPerSecond * measuredSpeed.vxMetersPerSecond + measuredSpeed.vyMetersPerSecond * measuredSpeed.vyMetersPerSecond);
+        double scale = Math.min(Math.max((velocityMagnitude - _velocityThresholdForFullAiming) / (_velocityThresholdForFullMoving - _velocityThresholdForFullAiming), 0), 1);
+
+        _movingPIDController.setP(SmartDashboard.getNumber("MovingHeadingController/kP", Constants.DriveTrain.MOVING_HEADING_kP));
+        _movingPIDController.setI(SmartDashboard.getNumber("MovingHeadingController/kI", Constants.DriveTrain.MOVING_HEADING_kI));
+        _movingPIDController.setD(SmartDashboard.getNumber("MovingHeadingController/kD", Constants.DriveTrain.MOVING_HEADING_kD));
+
+        _aimingPIDController.setP(SmartDashboard.getNumber("AimingHeadingController/kP", Constants.DriveTrain.AIMING_HEADING_kP));
+        _aimingPIDController.setI(SmartDashboard.getNumber("AimingHeadingController/kI", Constants.DriveTrain.AIMING_HEADING_kI));
+        _aimingPIDController.setD(SmartDashboard.getNumber("AimingHeadingController/kD", Constants.DriveTrain.AIMING_HEADING_kD));
+
+        double movingPIDOutput = _movingPIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
+        double aimingPIDOutput = _aimingPIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
+
+        power = (1 - scale) * aimingPIDOutput + scale * movingPIDOutput;
+
         switch (_headingState) {
             case TEMPORARY_DISABLE:
                 _targetHeading = heading;
@@ -91,29 +117,17 @@ public class SwerveHeadingController {
                 }
                 break;
             case ON:
-                _PIDController.setPID(
-                        SmartDashboard.getNumber("HeadingController/kP", Constants.DriveTrain.HEADING_kP),
-                        SmartDashboard.getNumber("HeadingController/kI", Constants.DriveTrain.HEADING_kI),
-                        SmartDashboard.getNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD));
-                power = _PIDController.calculate(heading.getRadians(), _targetHeading.getRadians());
+                if (isAtTargetAngle(heading)) {
+                    power = 0;
+                }
                 break;
             default:
                 break;
         }
-    
-        double error = _targetHeading.minus(heading).getRadians();
-        if (isAtTargetAngle(heading)) {
-            power = 0;
-        } else if(error > Constants.DriveTrain.HEADING_TOLERANCE) {
-            power += 0.05;
-        } else if(error < -Constants.DriveTrain.HEADING_TOLERANCE) {
-            power -= 0.05;
-        }
 
         return power;
     }
-    
-    
+   
 
     public enum HeadingState {
         OFF(0),
@@ -131,4 +145,3 @@ public class SwerveHeadingController {
         }
     }
 }
-

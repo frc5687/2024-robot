@@ -70,6 +70,7 @@ public class RobotState {
 
     private volatile Optional<Rotation2d> _visionAngle = Optional.empty();
     private volatile Optional<Double> _visionDistance = Optional.empty();
+    private volatile boolean _useVisionUpdates = true;
 
     private static RobotState _instance;
     private double _lastTimestamp;
@@ -184,12 +185,15 @@ public class RobotState {
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
 
-        cameraPoses.forEach(this::processVisionMeasurement);
+       cameraPoses.forEach(this::processVisionMeasurement);
     }
 
     public void periodic() {
         updateOdometry();
-        updateWithVision();
+
+        if (_useVisionUpdates) {
+            updateWithVision();
+        }
 
         _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
         _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
@@ -215,6 +219,14 @@ public class RobotState {
         _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
         _estimatedPose = pose;
         _lastPose = pose;
+    }
+
+    public void enableVisionUpdates() {
+        _useVisionUpdates = true;
+    }
+
+    public void disableVisionUpdates() {
+        _useVisionUpdates = false;
     }
 
     private boolean isValidMeasurementTest(Pair<EstimatedRobotPose, String> estimatedRobotPose) {

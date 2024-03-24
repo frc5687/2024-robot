@@ -1,69 +1,60 @@
 package org.frc5687.robot.commands.Intake;
 
 import org.frc5687.robot.Constants;
-import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Intake.IndexState;
 
-public class IndexNote extends OutliersCommand {
+public class AutoIndexNote extends OutliersCommand {
     private final Intake _intake;
-    private final OI _oi;
 
-    public IndexNote(Intake intake, OI oi) {
+    public AutoIndexNote(Intake intake) {
         _intake = intake;
-        _oi = oi;
         addRequirements(_intake);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        _intake.setIndexState(IndexState.IDLE);
+        _intake.setIndexState(IndexState.INTAKING);
     }
 
     @Override
     public void execute() {
         switch (_intake.getIndexState()) {
             case IDLE:
-                _intake.setSpeed(0);
-                if (_oi.isIntakeButtonPressed()) {
-                    _intake.setIndexState(IndexState.INTAKING);
-                } else if (_intake.isNoteDetected()) {
-                    _intake.setIndexState(IndexState.INDEXING);
-                }
+                // this should never be called in here
                 break;
-
             case INTAKING:
                 _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isNoteDetected()) {
                     _intake.setIndexState(IndexState.INDEXING);
-                } else if (!_oi.isIntakeButtonPressed()) {
-                    _intake.setIndexState(IndexState.IDLE);
                 }
                 break;
 
             case INDEXING:
-                if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
+                if (_intake.isTopDetected() && _intake.isMiddleDetected() && _intake.isBottomDetected()) {
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.INDEXED);
                 } else if (_intake.isMiddleDetected()) {
-                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
+                    // Note is present in the robot
+                    if (_intake.isBottomDetected() || _intake.isTopDetected()) {
+                        _intake.setSpeed(0);
+                        _intake.setIndexState(IndexState.INDEXED);
+                    }
+
                 } else {
-                    _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                 }
                 break;
+
             case INDEXED:
                 _intake.setSpeed(0);
                 if (_intake.isNoteDetected()) {
-                    // Do nothing, note is already indexed
-                } else if (_oi.isIntakeButtonPressed()) {
-                    _intake.setIndexState(IndexState.INTAKING);
+                    _intake.setIndexState(IndexState.INDEXING);
                 } else {
-                    _intake.setIndexState(IndexState.IDLE);
+                    _intake.setIndexState(IndexState.INTAKING);
                 }
-                break;
-            default:
                 break;
         }
     }
@@ -81,6 +72,6 @@ public class IndexNote extends OutliersCommand {
             error("Index interrupted");
         }
         _intake.setSpeed(0);
-        _intake.setIndexState(IndexState.IDLE);
     }
+
 }

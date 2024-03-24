@@ -132,7 +132,7 @@ public class Dunker extends OutliersSubsystem {
     public boolean isAtTargetRPM() {
         return _targetRPM > 0
                 && Math.abs(_targetRPM
-                        - (_dunkerDriveTalon.getVelocity().getValue() * 60.0)) < Constants.Shooter.VELOCITY_TOLERANCE;
+                        - (_dunkerDriveTalon.getVelocity().getValue() * 60.0)) < Constants.Dunker.DUNKER_RPM_TOLERANCE;
     }
 
     @Override
