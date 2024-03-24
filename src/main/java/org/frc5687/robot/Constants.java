@@ -87,10 +87,10 @@ public class Constants {
             // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
-            DRIVE_CONTROLLER_CONFIG.kP = 8.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 7.5;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.3;
-            DRIVE_CONTROLLER_CONFIG.kV = 0.75;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.15;
             DRIVE_CONTROLLER_CONFIG.kA = 0.0;
             // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
@@ -180,6 +180,14 @@ public class Constants {
             LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
             LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2
             LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
+        }
+
+        public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            LOW_KINEMATIC_LIMITS.maxDriveVelocity = 2.5; // m/s
+            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
+            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
         public static final KinematicLimits KINEMATIC_LIMITS = LOW_KINEMATIC_LIMITS;
@@ -283,7 +291,7 @@ public class Constants {
 
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
-        public static final double HEADING_TOLERANCE = 0.02; // rad
+        public static final double HEADING_TOLERANCE = 0.04; // rad
         public static final double BUMP_DEGREES = 7;
 
         public static final double MIN_PSI = 80.0;

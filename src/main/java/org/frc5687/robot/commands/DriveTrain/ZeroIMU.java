@@ -20,5 +20,6 @@ public class ZeroIMU extends OutliersCommand {
     public void end(boolean interrupted) {
         _driveTrain.zeroGyroscope();
         _driveTrain.goToHeading(_driveTrain.getHeading());
+        System.out.println("ZERO THE IMUUUU");
     }
 }
