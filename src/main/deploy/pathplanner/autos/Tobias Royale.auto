@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3794728517532349,
-      "y": 7.345129013061523
+      "x": 1.3794739246368408,
+      "y": 6.020547866821289
     },
-    "rotation": -1.1514384493497191e-21
+    "rotation": 3.31221234304599e-24
   },
   "command": {
     "type": "sequential",
@@ -14,25 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Tobias Royale.1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Tobias Royale.2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Tobias Royale.3"
+            "pathName": "Tobias Royale"
           }
         }
       ]

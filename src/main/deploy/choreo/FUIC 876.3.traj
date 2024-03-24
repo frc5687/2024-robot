@@ -190,15 +190,5 @@
       "timestamp": 1.217152532831392
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "DisableVision"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

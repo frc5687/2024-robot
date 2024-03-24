@@ -82,24 +82,5 @@
       "timestamp": 0.5231007623335557
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "EnableVision"
-        }
-      }
-    },
-    {
-      "timestamp": 0.5231007623335557,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "DisableVision"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

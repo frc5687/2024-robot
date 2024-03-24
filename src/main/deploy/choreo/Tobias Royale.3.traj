@@ -208,15 +208,5 @@
       "timestamp": 1.8496562818664088
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 1.8496562818664088,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ShootRPM"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }
