@@ -134,6 +134,7 @@ public class Shooter extends OutliersSubsystem {
      */
     public void setSpinUpAutomatically(boolean value) {
         _spinUpAutomatically = value;
+        
     }
 
     public double calculateRPMFromDistance(double distance) {

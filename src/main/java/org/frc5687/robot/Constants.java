@@ -295,7 +295,7 @@ public class Constants {
         // PID controller settings
         public static final double HEADING_kP = 10;
         public static final double HEADING_kI = 0;
-        public static final double HEADING_kD = .1;
+        public static final double HEADING_kD = 3;
         
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 5.5;

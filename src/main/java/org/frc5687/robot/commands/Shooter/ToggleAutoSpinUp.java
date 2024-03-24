@@ -12,7 +12,9 @@ public class ToggleAutoSpinUp extends OutliersCommand{
 
     @Override
     public void initialize() {
-        _shooter.setSpinUpAutomatically(!_shooter.getSpinUpAutomatically());
+        _shooter.setSpinUpAutomatically(false);
+        _shooter.setToHandoffRPM();
+
     }
 
     @Override
