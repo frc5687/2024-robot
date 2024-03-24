@@ -19,6 +19,6 @@ public class ZeroIMU extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         _driveTrain.zeroGyroscope();
-        _driveTrain.disableHeadingController();
+        _driveTrain.goToHeading(_driveTrain.getHeading());
     }
 }

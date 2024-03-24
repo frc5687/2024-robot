@@ -38,7 +38,7 @@ public class Drive extends OutliersCommand {
     @Override
     public void execute() {
 
-        _driveTrain.autoShifter();
+        // _driveTrain.autoShifter();
 
         Vector2d vec = Helpers.axisToSegmentedUnitCircleRadians(
                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);

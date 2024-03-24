@@ -72,8 +72,8 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
         
-        _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
-        _driverGamepad.getRightBumper().onTrue(new ShiftUp(drivetrain));
+        // _driverGamepad.getLeftBumper().onTrue(new ShiftDown(drivetrain));
+        // _driverGamepad.getRightBumper().onTrue(new ShiftUp(drivetrain));
 
         _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
     }

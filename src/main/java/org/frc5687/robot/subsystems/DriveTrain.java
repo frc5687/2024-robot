@@ -342,10 +342,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void periodic() {
-        if (!_hasShiftInit) {
-            shiftDownModules();
-            _hasShiftInit = true;
-        }
+        // if (!_hasShiftInit) {
+        //     shiftDownModules();
+        //     _hasShiftInit = true;
+        // }
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
         _robotState.getWriteLock().lock();
