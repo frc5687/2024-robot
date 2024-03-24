@@ -22,26 +22,35 @@ public class SwerveHeadingController {
 
     public SwerveHeadingController(double kDt) {
         _movingPIDController = new PIDController(
-            SmartDashboard.getNumber("MovingHeadingController/kP", Constants.DriveTrain.MOVING_HEADING_kP),
-            SmartDashboard.getNumber("MovingHeadingController/kI", Constants.DriveTrain.MOVING_HEADING_kI),
-            SmartDashboard.getNumber("MovingHeadingController/kD", Constants.DriveTrain.MOVING_HEADING_kD),
+            Constants.DriveTrain.MOVING_HEADING_kP,
+            Constants.DriveTrain.MOVING_HEADING_kI,
+            Constants.DriveTrain.MOVING_HEADING_kD,
             kDt
         );
 
+            SmartDashboard.putNumber("MovingHeadingController/kP", Constants.DriveTrain.MOVING_HEADING_kP);
+            SmartDashboard.putNumber("MovingHeadingController/kI", Constants.DriveTrain.MOVING_HEADING_kI);
+            SmartDashboard.putNumber("MovingHeadingController/kD", Constants.DriveTrain.MOVING_HEADING_kD);
+
         _aimingPIDController = new PIDController(
-            SmartDashboard.getNumber("AimingHeadingController/kP", Constants.DriveTrain.AIMING_HEADING_kP),
-            SmartDashboard.getNumber("AimingHeadingController/kI", Constants.DriveTrain.AIMING_HEADING_kI),
-            SmartDashboard.getNumber("AimingHeadingController/kD", Constants.DriveTrain.AIMING_HEADING_kD),
+            Constants.DriveTrain.AIMING_HEADING_kP,
+            Constants.DriveTrain.AIMING_HEADING_kI,
+            Constants.DriveTrain.AIMING_HEADING_kD,
             kDt
         );
+        SmartDashboard.putNumber("AimingHeadingController/kP", Constants.DriveTrain.AIMING_HEADING_kP);
+        SmartDashboard.putNumber("AimingHeadingController/kI", Constants.DriveTrain.AIMING_HEADING_kI);
+        SmartDashboard.putNumber("AimingHeadingController/kD", Constants.DriveTrain.AIMING_HEADING_kD);
 
         _movingPIDController.enableContinuousInput(-Math.PI, Math.PI);
         _aimingPIDController.enableContinuousInput(-Math.PI, Math.PI);
         _headingState = HeadingState.OFF;
         _targetHeading = new Rotation2d();
         _disableTime = System.currentTimeMillis();
-        _velocityThresholdForFullAiming = SmartDashboard.getNumber("HeadingController/AimingThresholdMPS", 0.1);
-        _velocityThresholdForFullMoving = SmartDashboard.getNumber("HeadingController/AimingThresholdMPS", 1.0);
+        _velocityThresholdForFullAiming = 0.1;
+        _velocityThresholdForFullMoving = 1.0;
+        SmartDashboard.putNumber("HeadingController/AimingThresholdMPS", 0.1);
+        SmartDashboard.putNumber("HeadingController/AimingThresholdMPS", 1.0);
     } 
 
     public void setState(HeadingState state) {

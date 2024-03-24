@@ -61,6 +61,7 @@ public class Shoot extends OutliersCommand{
         boolean isInAngle = _robotState.isAimedAtSpeaker();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);
+        metric("isStopped", isStopped);
         
         if (isAtTargetRPM && isInAngle && isStopped) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);

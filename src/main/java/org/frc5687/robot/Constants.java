@@ -293,9 +293,9 @@ public class Constants {
         public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double MOVING_HEADING_kP = 4;
+        public static final double MOVING_HEADING_kP = 10;
         public static final double MOVING_HEADING_kI = 0;
-        public static final double MOVING_HEADING_kD = 0;
+        public static final double MOVING_HEADING_kD = 1;
 
         public static final double AIMING_HEADING_kP = 7;
         public static final double AIMING_HEADING_kI = 0;
