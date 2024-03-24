@@ -9958,6 +9958,18 @@
                             "name": "EnableVision"
                         }
                     }
+                },
+                {
+                    "name": "Marker",
+                    "target": 2,
+                    "targetTimestamp": 0.9122830396221342,
+                    "offset": 0,
+                    "command": {
+                        "type": "named",
+                        "data": {
+                            "name": "DisableVision"
+                        }
+                    }
                 }
             ],
             "isTrajectoryStale": false

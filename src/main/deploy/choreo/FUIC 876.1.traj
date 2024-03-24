@@ -1162,6 +1162,15 @@
           "name": "EnableVision"
         }
       }
+    },
+    {
+      "timestamp": 0.9122830396221342,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "DisableVision"
+        }
+      }
     }
   ]
 }

@@ -23,6 +23,7 @@ public class IntakeCommand extends OutliersCommand{
         super.initialize();
         if (_intake.isNoteIndexed()) {
             _noteInIndex = true;
+            error("Note already indexed!");
         }
     }
 
@@ -30,12 +31,14 @@ public class IntakeCommand extends OutliersCommand{
     public void execute() {
         if (!_noteInIndex) {
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+        } else {
+            _intake.setSpeed(0);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return _intake.isBottomDetected() || _noteInIndex || _intake.isNoteIndexed(); // check periodicy as well incase bottom sensor misses the index
+        return _intake.isBottomDetected() || _noteInIndex; // check periodicy as well incase bottom sensor misses the index
     }
 
     @Override
@@ -43,8 +46,9 @@ public class IntakeCommand extends OutliersCommand{
         super.end(interrupted);
         _intake.setSpeed(0);
         if (!interrupted) {
-            new RumbleGamepad(_oi).schedule();
+            _intake.setSpeed(0);
             new IndexNote(_intake).schedule();
+            new RumbleGamepad(_oi).schedule();
         }
     }
 }

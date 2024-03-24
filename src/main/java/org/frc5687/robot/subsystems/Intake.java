@@ -58,6 +58,7 @@ public class Intake extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Top Detected", isTopDetected() ? 1000.0: 0.0);
         metric("Bottom Detected", isBottomDetected() ? 1000.0: 0.0);
+        metric("Is note indexed", isNoteIndexed());
         metric("AutoIntake Flag", getAutoIntakeFlag());
     }
     

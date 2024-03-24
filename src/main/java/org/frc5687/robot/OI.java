@@ -12,6 +12,7 @@ import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.HandoffDunker;
+import org.frc5687.robot.commands.Intake.IndexNote;
 import org.frc5687.robot.commands.Intake.IntakeCommand;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.IntakeEject;
@@ -85,7 +86,7 @@ public class OI extends OutliersProxy {
             Lights lights,
             VisionProcessor visionProcessor) {
 
-        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IntakeCommand(intake, this)));
+        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IndexNote(intake)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
 
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,

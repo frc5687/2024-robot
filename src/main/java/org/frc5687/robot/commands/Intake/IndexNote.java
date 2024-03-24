@@ -20,6 +20,7 @@ public class IndexNote extends OutliersCommand {
         _state = IndexState.START;
         // Make sure when this is called again it doesn't start if the note is already indexed
         if (_intake.isNoteIndexed()) {
+            _intake.setSpeed(0);
             _state = IndexState.FINISH;
         }
     }

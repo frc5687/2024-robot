@@ -51,7 +51,8 @@ public class DriveToNote extends OutliersCommand {
         double vy = 0;
         double rot = 0;
 
-        if (_intake.isBottomDetected() || _intake.isTopDetected()) {
+        if (_intake.isNoteIndexed()) {
+            _driveTrain.setVelocity(new ChassisSpeeds(0, 0, 0));
             return;
         }
 
@@ -79,7 +80,7 @@ public class DriveToNote extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return false; // Determine your stop condition here
+        return false;
     }
 
     @Override
