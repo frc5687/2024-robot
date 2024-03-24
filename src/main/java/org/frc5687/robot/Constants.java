@@ -177,19 +177,11 @@ public class Constants {
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
-            LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
+            LOW_KINEMATIC_LIMITS.maxDriveVelocity = 3.18; // m/s
             LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 35; // m/s^2
             LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
-
-        public static final KinematicLimits SLOW_MODE_KINEMATIC_LIMITS = new KinematicLimits();
-
-        static {
-            LOW_KINEMATIC_LIMITS.maxDriveVelocity = 2.5; // m/s
-            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
-            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
-        }
-
+        
         public static final KinematicLimits KINEMATIC_LIMITS = LOW_KINEMATIC_LIMITS;
 
         public static final KinematicLimits DRIVE_POSE_KINEMATIC_LIMITS = new KinematicLimits();
