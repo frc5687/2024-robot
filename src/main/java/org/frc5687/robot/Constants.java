@@ -87,10 +87,10 @@ public class Constants {
             // DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
             // use these PID values when shifted down
-            DRIVE_CONTROLLER_CONFIG.kP = 7.5;
+            DRIVE_CONTROLLER_CONFIG.kP = 8.0;
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.3;
-            DRIVE_CONTROLLER_CONFIG.kV = 0.15;
+            DRIVE_CONTROLLER_CONFIG.kV = 0.55;
             DRIVE_CONTROLLER_CONFIG.kA = 0.0;
             // DRIVE_CONTROLLER_CONFIG.kS = 0.2;
             // use these PID values when shifted up
@@ -148,7 +148,7 @@ public class Constants {
         public static final double MAX_KRAKEN_FOC_RPM = 5800.0;
         public static final double MAX_MPS = 6.5; // Max speed of robot (m/s)
         public static final double MAX_LOW_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_FALCON_FOC_RPM)
-                / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS;
+                / SwerveModule.GEAR_RATIO_DRIVE_LOW) * SwerveModule.WHEEL_RADIUS; // 3.18 m/s
         public static final double MAX_HIGH_GEAR_MPS = (Units.rotationsPerMinuteToRadiansPerSecond(MAX_FALCON_FOC_RPM)
                 / SwerveModule.GEAR_RATIO_DRIVE_HIGH) * SwerveModule.WHEEL_RADIUS;
 
