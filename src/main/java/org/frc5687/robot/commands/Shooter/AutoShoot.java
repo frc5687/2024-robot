@@ -68,7 +68,10 @@ public class AutoShoot extends OutliersCommand{
         boolean isStopped = (speeds.vxMetersPerSecond < 0.1 && speeds.vyMetersPerSecond < 0.1);
 
         if (angle.isPresent()) {
-            _driveTrain.goToHeading(_driveTrain.getHeading().minus(angle.get()));
+            Rotation2d visionHeading = _driveTrain.getHeading().minus(angle.get());
+            metric("VisionAngleYaw", angle.get().getRadians());
+            metric("VisionAngleHeading", visionHeading.getRadians());
+            _driveTrain.goToHeading(visionHeading);
         } else {
             _driveTrain.goToHeading(new Rotation2d(distanceAndAngle.getSecond()));
         }

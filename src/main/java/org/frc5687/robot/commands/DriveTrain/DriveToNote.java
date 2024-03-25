@@ -24,14 +24,14 @@ public class DriveToNote extends OutliersCommand {
 
     public DriveToNote(DriveTrain driveTrain,  Intake intake) {
         _driveTrain = driveTrain;
-        _xController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _xController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _yController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yawController = new ProfiledPIDController(4.0, 0.0, 0.0,
-                new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL * 4.0));
+        _yawController = new ProfiledPIDController(5.0, 0.0, 0.0,
+                new Constraints(Constants.DriveTrain.FAST_MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL * 4.0));
         _intake = intake;
         addRequirements(_driveTrain);
     }
