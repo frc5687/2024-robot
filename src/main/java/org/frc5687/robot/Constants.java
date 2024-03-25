@@ -686,6 +686,6 @@ public class Constants {
     }
 
     public static class RobotState {
-        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(1.5);
+        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(2);
     }
 }
