@@ -3,16 +3,21 @@ package org.frc5687.robot.commands.Intake;
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.RumbleGamepad;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Intake.IndexState;
+
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class IndexNote extends OutliersCommand {
     private final Intake _intake;
     private final OI _oi;
+    private Command _rumbleCommand;
 
     public IndexNote(Intake intake, OI oi) {
         _intake = intake;
         _oi = oi;
+        _rumbleCommand = new RumbleGamepad(_oi);
         addRequirements(_intake);
     }
 
@@ -38,12 +43,14 @@ public class IndexNote extends OutliersCommand {
                 _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isNoteDetected()) {
                     _intake.setIndexState(IndexState.INDEXING);
+                    _rumbleCommand.schedule();
                 } else if (!_oi.isIntakeButtonPressed()) {
                     _intake.setIndexState(IndexState.IDLE);
                 }
                 break;
 
             case INDEXING:
+                _oi.stopRumbleDriver();
                 if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.INDEXED);

@@ -148,6 +148,10 @@ public class OI extends OutliersProxy {
         return _driverGamepad.isRightBumperPressed() || _driverLeftTriggerButton.get();
     }
 
+    public boolean isRotateFast() {
+        return _driverGamepad.isRightStickPresssed();
+    }
+
     public double getDriveY() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.TRANSLATION_DEADBAND);

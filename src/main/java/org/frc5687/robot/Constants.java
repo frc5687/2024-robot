@@ -166,6 +166,9 @@ public class Constants {
 
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
+
+        public static final double FAST_MAX_ANG_VEL = 4.0 * Math.PI; // Max rotation rate of robot (rads/s)
+
         public static final double MAX_ANG_ACC = 2.0 * Math.PI; // Max angular acceleration of robot (rads/s^2)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
