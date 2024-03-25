@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4000652114779404,
+      "y": 3.0784861569723136
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FUIC Win"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoFindUnderStage"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PathfindToPathAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoFindSourceSide"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PathfindToPathSource"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
