@@ -397,7 +397,7 @@ public class Constants {
         public static final double PASS_RPM = 2100;
         public static final double DUNKER_IN_RPM = 750;
 
-        public static final double MOVING_SHOOTING_TIME = 0.5;
+        public static final double MOVING_SHOOTING_TIME = 0.25;
 
         public static final double PASSTHROUGH_RPM = 460;
 

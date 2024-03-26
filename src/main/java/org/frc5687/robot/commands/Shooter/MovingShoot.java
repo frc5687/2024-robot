@@ -32,6 +32,7 @@ public class MovingShoot extends OutliersCommand {
 
     @Override
     public void initialize() {
+        _driveTrain.disableAutoShifter();
         _driveTrain.setKinematicLimits(Constants.DriveTrain.SHOOT_KINEMATIC_LIMITS);
     }
 
@@ -39,7 +40,7 @@ public class MovingShoot extends OutliersCommand {
     public void execute() {
         Pair<Double,Rotation2d> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
         _shooter.setShooterMotorRPM(shooterRPMAndAngle.getFirst().doubleValue());
-        _driveTrain.goToHeading(_driveTrain.getHeading().minus(shooterRPMAndAngle.getSecond()));
+        _driveTrain.goToHeading(shooterRPMAndAngle.getSecond());
         _intake.setSpeed((Constants.Intake.INTAKE_SPEED));
     }
 
@@ -50,6 +51,7 @@ public class MovingShoot extends OutliersCommand {
     
     @Override
     public void end(boolean interrupted) {
+        _driveTrain.enableAutoShifter();
         KinematicLimits limits = (_driveTrain.isLowGear() ?  Constants.DriveTrain.LOW_KINEMATIC_LIMITS: Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
         _driveTrain.setKinematicLimits(limits);
         _intake.setSpeed(0);
