@@ -17,7 +17,6 @@ public class MovingShoot extends OutliersCommand {
     private final Intake _intake;
     private final DriveTrain _driveTrain;
     private final RobotState _robotState;
-
     public MovingShoot(
         Shooter shooter, 
         Intake intake, 
@@ -28,9 +27,8 @@ public class MovingShoot extends OutliersCommand {
         _intake = intake;
         _driveTrain = drivetrain;
         _robotState = robotstate;
-
-        addRequirements(_shooter, _intake);
     }
+    
 
     @Override
     public void initialize() {

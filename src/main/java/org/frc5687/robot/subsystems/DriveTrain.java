@@ -315,10 +315,6 @@ public class DriveTrain extends OutliersSubsystem {
         return Math.abs(target.minus(getHeading()).getRadians()) < tolerance;
     }
 
-    public void setHeadingControllerState(HeadingState state) {
-        _headingController.setState(state);
-    }
-
     /* Heading Controller End */
 
     public void setVelocityPose(Pose2d pose) {

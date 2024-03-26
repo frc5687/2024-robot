@@ -85,7 +85,7 @@ public class OI extends OutliersProxy {
             Intake intake,
             Climber climber,
             Lights lights,
-            RobotState robotstate) {
+            VisionProcessor _visionProcessor, RobotState robotstate) {
 
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake).alongWith(new IntakeCommand(intake, this)));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));

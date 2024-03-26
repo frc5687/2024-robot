@@ -292,30 +292,30 @@ public class RobotState {
 
         double futureAngleToSpeaker = Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX());
 
-        double adjustedAngleCalculation = Math.atan(velocity / calculateNoteVelocity(adjustedShooterRPM)) - futureAngleToSpeaker;
+        double adjustedAngleCalculation =  futureAngleToSpeaker - Math.atan(velocity / calculateNoteVelocity(adjustedShooterRPM));
         Rotation2d adjustedAngle = new Rotation2d(
             adjustedAngleCalculation);
         return new Pair<Double, Rotation2d>(adjustedShooterRPM, adjustedAngle);
     }
 
-    public Pose2d calculateAdjustedRPMAndAngleToTargetPose() {
-        Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
-        double initialDistance = initialDistanceAndAngle.getFirst();
+    // public Pose2d calculateAdjustedRPMAndAngleToTargetPose() {
+    //     Pair<Double, Double> initialDistanceAndAngle = getDistanceAndAngleToSpeaker();
+    //     double initialDistance = initialDistanceAndAngle.getFirst();
 
-        double initialShooterRPM = Constants.Shooter.kRPMMap
-                .getInterpolated(new InterpolatingDouble(initialDistance)).value;
+    //     double initialShooterRPM = Constants.Shooter.kRPMMap
+    //             .getInterpolated(new InterpolatingDouble(initialDistance)).value;
 
-        double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM);
-        double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
-        double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
+    //     double shotTravelTime = calculateShotTravelTime(initialDistance, initialShooterRPM);
+    //     double futureX = _lastPose.getX() + _velocity.dx * shotTravelTime;
+    //     double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
 
-        Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+    //     Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
+    //     Pose3d targetPose = getSpeakerTagPose();
 
-        Rotation2d adjustedAngle = new Rotation2d(
-                Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
-        return new Pose2d(futureX, futureY, adjustedAngle);
-    }
+    //     Rotation2d adjustedAngle = new Rotation2d(
+    //             Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
+    //     return new Pose2d(futureX, futureY, adjustedAngle);
+    // }
 
     public Pose2d predictedPositionWithVelocity(double shootTime) {
         double futureX = _lastPose.getX() + _velocity.dx * shootTime;

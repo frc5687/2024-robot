@@ -36,11 +36,6 @@ public class SwerveHeadingController {
         // SmartDashboard.putNumber("HeadingController/kD", Constants.DriveTrain.HEADING_kD);
     }
 
-
-    public void setState(HeadingState state) {
-        _headingState = state;
-    }
-
     public void disable() {
         _headingState = HeadingState.OFF;
     }
