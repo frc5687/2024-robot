@@ -36,7 +36,7 @@ public class IndexNote extends OutliersCommand {
                     _intake.setIndexState(IndexState.INTAKING);
                 } else if (_intake.isNoteDetected()) {
                     _intake.setSpeed(0);
-                    error("Note detected");
+                    // error("Note detected");
                     _intake.setIndexState(IndexState.INDEXING);
                 }
                 break;
@@ -45,12 +45,12 @@ public class IndexNote extends OutliersCommand {
                 _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isNoteDetected()) {
                     _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
-                    error("Note detected moving to indexing");
+                    // error("Note detected moving to indexing");
                     _intake.setIndexState(IndexState.INDEXING);
                     _rumbleCommand.schedule();
                 } else if (!_oi.isIntakeButtonPressed()) {
                     _intake.setSpeed(0);
-                    error("Intake button released going back to IDLE");
+                    // error("Intake button released going back to IDLE");
                     _intake.setIndexState(IndexState.IDLE);
                 }
                 break;
@@ -58,11 +58,11 @@ public class IndexNote extends OutliersCommand {
             case INDEXING:
                 _oi.stopRumbleDriver();
                 if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
-                    error("Top and Middle detected, note should be indexed");
+                    // error("Top and Middle detected, note should be indexed");
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.INDEXED);
                 } else if (_intake.isMiddleDetected()) {
-                    error("Middle detected, slowing indexing");
+                    // error("Middle detected, slowing indexing");
                     _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
                 } else {
                     _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
@@ -75,7 +75,7 @@ public class IndexNote extends OutliersCommand {
                     _intake.setSpeed(0);
                     // Do nothing, note is already indexed
                 } else if (_oi.isIntakeButtonPressed()) {
-                    error("Inake requiest occured when note indexed");
+                    // error("Inake requiest occured when note indexed");
                     _intake.setIndexState(IndexState.INTAKING);
                     // Just to make sure.
                     _intake.setSpeed(0);
