@@ -16,7 +16,7 @@ import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Pass;
-import org.frc5687.robot.commands.Shooter.ToggleAutoSpinUp;
+import org.frc5687.robot.commands.Shooter.ToggleAmpMode;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.commands.Shooter.ShooterEject;
 import org.frc5687.robot.subsystems.Climber;
@@ -112,8 +112,8 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
         _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
-        _operatorGamepad.getLeftBumper().onTrue(new ToggleAutoSpinUp(shooter));
-        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake));
+        _operatorGamepad.getLeftBumper().onTrue(new ToggleAmpMode(shooter));
+        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, drivetrain, lights));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
     }
@@ -128,7 +128,7 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isShooting() {
-        return _driverLeftTriggerButton.get();
+        return _driverRightTriggerButton.get();
     }
 
     public boolean shiftUp() {
@@ -150,6 +150,10 @@ public class OI extends OutliersProxy {
 
     public boolean isRotateFast() {
         return _driverGamepad.isRightStickPresssed();
+    }
+
+    public boolean isPassing() {
+        return _operatorGamepad.isRightBumperPressed();
     }
 
     public double getDriveY() {
