@@ -13,13 +13,6 @@ public class ToggleAmpMode extends OutliersCommand{
     @Override
     public void initialize() {
 
-
-    }
-
-    @Override
-    public void execute() {
-
-
         if(_shooter.getAmpMode() == false)
         {_shooter.setToHandoffRPM();
         _shooter.setAmpMode(true);}
@@ -30,6 +23,13 @@ public class ToggleAmpMode extends OutliersCommand{
         }
 
     }
+    
+
+    @Override
+    public void execute() {
+
+    }
+
 
     @Override
     public boolean isFinished() {

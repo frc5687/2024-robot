@@ -47,5 +47,6 @@ public class DunkNote extends OutliersCommand {
         _dunker.setToStop();
         _dunker.setDunkerState(DunkerState.DUNKED_NOTE);
         _shooter.setAmpMode(false);
+        _shooter.setToIdle();
     }
 }
