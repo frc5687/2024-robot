@@ -74,17 +74,21 @@ public class IndexNote extends OutliersCommand {
                     // Just to make sure.
                     _intake.setSpeed(0);
                     // Do nothing, note is already indexed
-                } else if (_oi.isIntakeButtonPressed()) {
-                    // error("Inake requiest occured when note indexed");
-                    _intake.setIndexState(IndexState.INTAKING);
-                    // Just to make sure.
-                    _intake.setSpeed(0);
                 } else {
                     // Just to make sure.
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.IDLE);
                 }
                 break;
+            case SHOOTING:
+                // This is when we exit out of a shot, should go back to idle
+                if (_intake.isNoteDetected()) {
+                    // Just dont shoot
+                    _intake.setSpeed(0);
+                    _intake.setIndexState(IndexState.INDEXED);
+                } else {
+                    _intake.setIndexState(IndexState.IDLE);
+                }
             default:
                 break;
         }
