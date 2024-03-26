@@ -95,7 +95,7 @@ public class RobotState {
         _lastTimestamp = Timer.getFPGATimestamp();
 
         _robotToCamera = new Transform3d(
-                0.381, 0.0285, 0.3556,
+                0.381, 0.0635, 0.3556,
                 new Rotation3d());
         initPoseEstimator();
         _periodicThread = new Thread(this::run);
@@ -374,8 +374,7 @@ public class RobotState {
     private Optional<Boolean> isVisionAimedAtSpeaker() {
         Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
         if (visionAngle.isPresent()) {
-            double angle = visionAngle.get().getRadians();
-            return Optional.of(Math.abs(angle) < Constants.RobotState.VISION_AIMING_TOLERANCE);
+            return Optional.of(Math.abs((_driveTrain.getHeading().minus(visionAngle.get()).getRadians())) > Constants.RobotState.VISION_AIMING_TOLERANCE);
         }
         return Optional.empty();
     }
