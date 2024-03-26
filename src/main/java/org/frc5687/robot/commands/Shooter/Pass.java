@@ -1,21 +1,32 @@
 package org.frc5687.robot.commands.Shooter;
 
+import java.util.Optional;
+
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Intake.IndexState;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.subsystems.Lights;
+
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class Pass extends OutliersCommand{
-    private Shooter _shooter;
-    private Intake _intake;
+    private final Shooter _shooter;
+    private final Intake _intake;
+    private final Lights _lights;
+    private final RobotState _robotState = RobotState.getInstance();
 
     public Pass(
         Shooter shooter,
-        Intake intake
+        Intake intake,
+        Lights lights
     ) {
         _shooter = shooter;
         _intake = intake;
+        _lights = lights;
         addRequirements(_shooter, _intake);
     }
 
@@ -23,13 +34,29 @@ public class Pass extends OutliersCommand{
     @Override
     public void initialize() {
         super.initialize();
+        _shooter.setConfigSlot(0);
+        _lights.setDebugLightsEnabled(true);
         _intake.setIndexState(IndexState.SHOOTING);
     }
+
     @Override
     public void execute() {
+        // Pair<Double, Double> shooterRPMAndAngle = _robotState.calculateAdjustedRPMAndAngleToTarget();
+        // _shooter.setShooterMotorRPM(shooterRPMAndAngle.getFirst().doubleValue());
+        // Rotation2d angle = new Rotation2d(shooterRPMAndAngle.getSecond() + Math.PI); // FIXME HACKING IN FOR TESTING DO NOT DOE
+        // _driveTrain.setSnapHeading(angle);
+        ChassisSpeeds speeds = _robotState.getMeasuredSpeeds();
+        boolean isStopped = (Math.abs(speeds.vxMetersPerSecond) < 0.1 && Math.abs(speeds.vyMetersPerSecond) < 0.1 && Math.abs(speeds.omegaRadiansPerSecond) < 0.1);
+
         _shooter.setToPassRPM();
-       
-        if (_shooter.isAtTargetRPM()) {
+
+        boolean isAtTargetRPM = _shooter.isAtTargetRPM();
+        boolean isInAngle = _robotState.isAimedAtSpeaker();
+        metric("IsInAngle", isInAngle);
+        metric("isAtTargetRPM", isAtTargetRPM);
+        metric("isStopped", isStopped);
+        
+        if (isAtTargetRPM && isInAngle && isStopped) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
     }
@@ -41,7 +68,6 @@ public class Pass extends OutliersCommand{
 
     @Override
     public void end(boolean interrupted) {
-        _intake.setIndexState(IndexState.IDLE);
-        // _driveTrain.setMaintainHeading(_driveTrain.getHeading());
+        _lights.setDebugLightsEnabled(false);
     }
 }
