@@ -14,7 +14,7 @@ public class Shooter extends OutliersSubsystem {
     private OutliersTalon _topTalon;
     private double _manualShootRPM = 3200;
     private double _targetRPM = 0;
-    private boolean _isAmpMode = false;
+    private boolean _isAmpMode;
     private VelocityTorqueCurrentFOC _focVelocity;
 
     public Shooter(OutliersContainer container) {
@@ -104,6 +104,10 @@ public class Shooter extends OutliersSubsystem {
 
     public boolean isAtTargetRPM() {
         return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
+    }
+
+    public double getTargetRPM() {
+        return _targetRPM;
     }
 
     
