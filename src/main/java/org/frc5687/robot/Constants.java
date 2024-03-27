@@ -22,7 +22,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
-    public static final int TICKS_PER_UPDATE = 10; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
+    public static final int TICKS_PER_UPDATE = 1; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
     public static final double METRIC_FLUSH_PERIOD = 5;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double EPSILON = 1e-9;
@@ -303,6 +303,10 @@ public class Constants {
         public static final double AIMING_HEADING_kP = 7;
         public static final double AIMING_HEADING_kI = 0;
         public static final double AIMING_HEADING_kD = 0.5;
+
+        public static final double AUTO_HEADING_kP = 5.0;
+        public static final double AUTO_HEADING_kI = 0.0;
+        public static final double AUTO_HEADING_kD = 0.0;
         
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 5.5;
