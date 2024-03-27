@@ -303,7 +303,6 @@ public class Constants {
         public static final double AIMING_HEADING_kP = 7;
         public static final double AIMING_HEADING_kI = 0;
         public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
-        public static final double AIMING_HEADING_kD = 0.5;
 
         public static final double AUTO_HEADING_kP = 5.0;
         public static final double AUTO_HEADING_kI = 0.0;
@@ -402,7 +401,7 @@ public class Constants {
         // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = 2150;
+        public static final double PASS_RPM = 2100;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;
