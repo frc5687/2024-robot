@@ -46,9 +46,7 @@ public class Drive extends OutliersCommand {
         double vy;
         double rot = _oi.getRotationX();
 
-        double max_mps = _driveTrain.isLowGear() ? 
-                 Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
+        double max_mps = Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
 
         rot = Math.signum(rot) * rot * rot;
 

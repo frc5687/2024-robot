@@ -171,7 +171,7 @@ public class Constants {
 
         static {
             HIGH_KINEMATIC_LIMITS.maxDriveVelocity = 4.0; // m/s
-            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 20; // m/s^2
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = Double.MAX_VALUE; // m/s^2
             HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
         public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
