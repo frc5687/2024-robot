@@ -38,6 +38,10 @@ public class RobotMap {
             public static final int DUNKER_DRIVE = 13;
         }
 
+        public static class TALONSRX {
+            public static final int TRAPMECH_ROLLER = 0; //FIXME Ensure this is the right ID!
+        }
+
         public static class CANCODER {
             public static final int ENCODER_SE = 0;
             public static final int ENCODER_NE = 1;
@@ -72,8 +76,12 @@ public class RobotMap {
         public static final int SHIFTER_HIGH = 3; // these values may be flip-flopped
         public static final int SHIFTER_LOW = 2;
 
-        public static final int RATCHET_RAISE = 4;
-        public static final int RATCHET_LOWER = 5;
+        //FIXME Below values need to be assigned
+        public static final int ARM_RAISE = 4;
+        public static final int ARM_LOWER = 1;
+
+        public static final int RELEASE_ATTACH = 5;
+        public static final int RELEASE_DETACH = 0;
     }
 
     /**
