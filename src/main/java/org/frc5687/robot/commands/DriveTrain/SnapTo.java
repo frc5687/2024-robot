@@ -32,6 +32,9 @@ public class SnapTo extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         error(" finished");
+        if (interrupted){
+            error("SNAP WAS INTERRUPTED");
+        }
         super.end(interrupted);
     }
 }

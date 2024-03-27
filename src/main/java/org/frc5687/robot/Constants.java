@@ -250,7 +250,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.00341796875;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.238769531255;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -261,7 +261,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.28564453125;
+            NORTH_EAST_CONFIG.encoderOffset = 0.28076171875;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -272,7 +272,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.406494140625;
+            NORTH_WEST_CONFIG.encoderOffset = -0.455810546875;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -283,7 +283,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.0302734375;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.033935546875;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -302,7 +302,7 @@ public class Constants {
 
         public static final double AIMING_HEADING_kP = 7;
         public static final double AIMING_HEADING_kI = 0;
-        public static final double AIMING_HEADING_kD = 0.5;
+        public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
         
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 5.5;
@@ -397,7 +397,7 @@ public class Constants {
         // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = IDLE_RPM;
+        public static final double PASS_RPM = 1900;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;
@@ -594,8 +594,8 @@ public class Constants {
         public static final double DUNK_ANGLE = 3.24;
         public static final double STOWED_ANGLE = 5.18;
         public static final double CLIMB_ANGLE = 3.4;
-        public static final double ANGLE_TOLERANCE = 0.02;
-        public static final long EJECT_TIME = 1000; // 1 second
+        public static final double ANGLE_TOLERANCE = 0.03;
+        public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;
     }
     
