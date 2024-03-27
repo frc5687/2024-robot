@@ -2026,5 +2026,69 @@
       "timestamp": 14.24083764875619
     }
   ],
-  "eventMarkers": []
+  "eventMarkers": [
+    {
+      "timestamp": 0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Rev"
+        }
+      }
+    },
+    {
+      "timestamp": 1.861286138984732,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake"
+        }
+      }
+    },
+    {
+      "timestamp": 4.022024310680198,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Rev"
+        }
+      }
+    },
+    {
+      "timestamp": 6.4571499141857265,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake"
+        }
+      }
+    },
+    {
+      "timestamp": 8.201010440534645,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Rev"
+        }
+      }
+    },
+    {
+      "timestamp": 10.976373659694241,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake"
+        }
+      }
+    },
+    {
+      "timestamp": 12.523728786504691,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Rev"
+        }
+      }
+    }
+  ]
 }

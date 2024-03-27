@@ -3,19 +3,33 @@ package org.frc5687.robot.commands.Shooter;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
 
-public class ToggleAutoSpinUp extends OutliersCommand{
+public class ToggleAmpMode extends OutliersCommand{
     public Shooter _shooter;
 
-    public ToggleAutoSpinUp(Shooter shooter) {
+    public ToggleAmpMode(Shooter shooter) {
         _shooter = shooter;
     }
 
     @Override
     public void initialize() {
-        _shooter.setSpinUpAutomatically(false);
-        _shooter.setToHandoffRPM();
+
+        if(_shooter.getAmpMode() == false)
+        {_shooter.setToHandoffRPM();
+        _shooter.setAmpMode(true);}
+        else if(_shooter.getAmpMode() == true)
+        {
+            _shooter.setAmpMode(false);
+            _shooter.setToIdle();
+        }
 
     }
+    
+
+    @Override
+    public void execute() {
+
+    }
+
 
     @Override
     public boolean isFinished() {
