@@ -45,7 +45,7 @@ deploy {
                         jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
                         jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
                         jvmArgs.add("-Djava.rmi.server.hostname=${TEAM_IP}")
-                        jvmArgs.add("-XX:MaxGCPauseMillis=5")
+                        omegajvmArgs.add("-XX:MaxGCPauseMillis=5")
                     } else {
                         project.logger.lifecycle('Normal mode, profiling disabled.')
                         jvmArgs.add("-XX:MaxGCPauseMillis=5")

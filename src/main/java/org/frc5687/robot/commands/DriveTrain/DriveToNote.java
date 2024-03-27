@@ -6,6 +6,7 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -18,20 +19,19 @@ public class DriveToNote extends OutliersCommand {
     private final DriveTrain _driveTrain;
     private final ProfiledPIDController _xController;
     private final ProfiledPIDController _yController;
-    private final ProfiledPIDController _yawController;
+    private final PIDController _yawController;
     private final RobotState _robotState = RobotState.getInstance();
     private final Intake _intake;
 
     public DriveToNote(DriveTrain driveTrain,  Intake intake) {
         _driveTrain = driveTrain;
-        _xController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _xController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yController = new ProfiledPIDController(2.0, 0.0, 0.0,
+        _yController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
-        _yawController = new ProfiledPIDController(4.0, 0.0, 0.0,
-                new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL * 4.0));
+        _yawController = new PIDController(4.0, 0.0, 0.0);
         _intake = intake;
         addRequirements(_driveTrain);
     }
@@ -41,7 +41,7 @@ public class DriveToNote extends OutliersCommand {
         super.initialize();
         _xController.setGoal(0.0);
         _yController.setGoal(0.0);
-        _yawController.setGoal(0.0);
+        _yawController.setSetpoint(0.0);
         _driveTrain.disableAutoShifter();
     }
 

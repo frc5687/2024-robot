@@ -336,10 +336,10 @@ public class DriveTrain extends OutliersSubsystem {
         // State estimation thread is doing this now. Might cause issues
         // readSignals();
         updateDesiredStates();
-        Logger.recordOutput("DriveTrain/RobotHeading", _systemIO.heading.getRadians());
-        Logger.recordOutput("DriveTrain/MeasuredModuleStates", _systemIO.measuredStates);
-        Logger.recordOutput("DriveTrain/DesiredSetpoint", _systemIO.setpoint.moduleStates);
-        Logger.recordOutput("RobotState/EsimatedPose", _robotState.getEstimatedPose());
+        // Logger.recordOutput("DriveTrain/RobotHeading", _systemIO.heading.getRadians());
+        // Logger.recordOutput("DriveTrain/MeasuredModuleStates", _systemIO.measuredStates);
+        // Logger.recordOutput("DriveTrain/DesiredSetpoint", _systemIO.setpoint.moduleStates);
+        // Logger.recordOutput("RobotState/EsimatedPose", _robotState.getEstimatedPose());
         setModuleStates(_systemIO.setpoint.moduleStates);
     }
 
@@ -398,8 +398,8 @@ public class DriveTrain extends OutliersSubsystem {
                 twistVel.dy / Constants.UPDATE_PERIOD,
                 twistVel.dtheta / Constants.UPDATE_PERIOD);
 
-        Logger.recordOutput("InputChassisSpeeds", _systemIO.desiredChassisSpeeds);
-        Logger.recordOutput("UpdatedChassisSpeeds", updatedChassisSpeeds);
+        // Logger.recordOutput("InputChassisSpeeds", _systemIO.desiredChassisSpeeds);
+        // Logger.recordOutput("UpdatedChassisSpeeds", updatedChassisSpeeds);
 
         _systemIO.setpoint = _swerveSetpointGenerator.generateSetpoint(
                 _kinematicLimits,

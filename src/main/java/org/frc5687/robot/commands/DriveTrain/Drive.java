@@ -58,7 +58,11 @@ public class Drive extends OutliersCommand {
                 : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
 
         rot = Math.signum(rot) * rot * rot;
-        rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
+        if (_oi.isRotateFast()) {
+            rot = rot * Constants.DriveTrain.FAST_MAX_ANG_VEL;
+        } else {
+            rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
+        }
 
         // if has note and is within shooting range and is in speaker mode
         boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();

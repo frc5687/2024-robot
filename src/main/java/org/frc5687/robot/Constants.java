@@ -166,6 +166,9 @@ public class Constants {
 
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = 2.0 * Math.PI; // Max rotation rate of robot (rads/s)
+
+        public static final double FAST_MAX_ANG_VEL = 4.0 * Math.PI; // Max rotation rate of robot (rads/s)
+
         public static final double MAX_ANG_ACC = 2.0 * Math.PI; // Max angular acceleration of robot (rads/s^2)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
@@ -479,7 +482,7 @@ public class Constants {
         static {
             CONFIG.TIME_OUT = 0.1;
 
-            CONFIG.NEUTRAL_MODE = NeutralModeValue.Coast;
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
             CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
 
             CONFIG.MAX_VOLTAGE = 12.0;
@@ -683,6 +686,6 @@ public class Constants {
     }
 
     public static class RobotState {
-        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(1.5);
+        public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(2);
     }
 }
