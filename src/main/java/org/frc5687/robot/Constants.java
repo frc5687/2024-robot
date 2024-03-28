@@ -250,7 +250,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.00341796875;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.2348632812;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -272,7 +272,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.406494140625;
+            NORTH_WEST_CONFIG.encoderOffset = -0.465576171875;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -283,7 +283,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.0302734375;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.04370117188;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
