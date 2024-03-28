@@ -52,6 +52,8 @@ public class OI extends OutliersProxy {
     protected Trigger _opPovButtonUp;
     protected Trigger _opPovButtonLeft;
 
+    private boolean _passButtonHeld; // xavier bradford 03/28/24 probably a pretty bad way to do this but I don't want to poll the thing because maybe its expensive apprently
+
     public OI() {
 
         _driverGamepad = new Gamepad(0);
@@ -94,8 +96,6 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
-
-        // _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
         // _povButtonLeft.onTrue(new AmpShot(shooter, deflector, drivetrain, intake));

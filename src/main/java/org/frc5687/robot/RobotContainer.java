@@ -119,7 +119,7 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IndexNote(_intake, _oi));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi));
+        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi, _dunker, _climber));
 
         // Load the path we want to pathfind to and follow
         PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
