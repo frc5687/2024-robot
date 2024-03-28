@@ -12,9 +12,15 @@ public class ToggleAutoSpinUp extends OutliersCommand{
 
     @Override
     public void initialize() {
-        _shooter.setSpinUpAutomatically(false);
-        _shooter.setToHandoffRPM();
-
+        if (_shooter.getSpinUpAutomatically()) {
+            // start in speaker mode, go to amp mode
+            _shooter.setSpinUpAutomatically(false);
+            _shooter.setToHandoffRPM();
+        } else {
+            // start in amp mode, go to speaker mode
+            _shooter.setSpinUpAutomatically(true);
+            _shooter.setToIdle();
+        }
     }
 
     @Override
