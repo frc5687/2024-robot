@@ -89,6 +89,10 @@ public class Dunker extends OutliersSubsystem {
         return Math.abs(getDunkerAngle() - angle) < Constants.Dunker.ANGLE_TOLERANCE;
     }
 
+    public double getRollerEncoder() {
+        return _dunkerDriveTalon.getPosition().getValueAsDouble();
+    }
+
     public boolean isNoteInDunker() {
         return _dunkerProx.get();
     }
@@ -105,6 +109,11 @@ public class Dunker extends OutliersSubsystem {
 
     public void setToDunkRPM() {
         _dunkerDriveTalon.setVelocity(Constants.Dunker.DUNKER_OUT_RPM);
+        _targetRPM = Constants.Dunker.DUNKER_OUT_RPM;
+    }
+
+    public void setToRetractRPM() {
+        _dunkerDriveTalon.setVelocity(Constants.Dunker.RETRACT_RPM);
         _targetRPM = Constants.Dunker.DUNKER_OUT_RPM;
     }
 

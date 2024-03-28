@@ -11,7 +11,7 @@ import org.frc5687.robot.commands.DriveTrain.SlowMode;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
-import org.frc5687.robot.commands.Dunker.HandoffDunker;
+import org.frc5687.robot.commands.Dunker.SetupForTrap;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
 import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
@@ -107,7 +107,7 @@ public class OI extends OutliersProxy {
         _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
         _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
 
-        _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
+        _operatorGamepad.getYButton().onTrue(new SetupForTrap(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
         _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
         _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));

@@ -467,6 +467,14 @@ public class Constants {
         }
     }
 
+    public static class TrapMech {
+        public static final double IN_SPEED = 0.5;
+        public static final double OUT_SPEED = 0.75;
+
+        public static final double PNEUMATIC_TIMEOUT = 500.0;
+        public static final double SHOOT_TIMEOUT = 1500.0;
+    }
+
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
@@ -515,6 +523,9 @@ public class Constants {
 
         public static final double DUNKER_IN_RPM = Shooter.DUNKER_IN_RPM * 7.4375;
         public static final double DUNKER_OUT_RPM = 6000;
+        public static final double RETRACT_RPM = 1000; 
+
+        public static final double RETRACT_DISTANCE = 1000; //FIXME super arbitrary number!!! pls change!!!
 
         public static final double DUNKER_ARM_GEAR_RATIO = (84.0/8.0); //8:84
         
@@ -623,6 +634,7 @@ public class Constants {
 
         public static double PREP_METERS = -2.15;
         public static double SOLO_METERS = -1.15;
+        public static double TRAP_METERS = -2; // FIXME needs correct value!
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;

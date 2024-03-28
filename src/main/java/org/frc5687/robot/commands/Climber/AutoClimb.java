@@ -11,6 +11,7 @@ import org.frc5687.robot.Constants;
 import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.Dunker.PositionForClimb;
+import org.frc5687.robot.commands.Dunker.PositionForTrap;
 
 public class AutoClimb extends OutliersCommand{
     
@@ -41,7 +42,7 @@ public class AutoClimb extends OutliersCommand{
                 }
                 break;
             case CLEARING_DUNKER:
-                if (!(_dunker.getCurrentCommand() instanceof PositionForClimb)) {
+                if (!(_dunker.getCurrentCommand() instanceof PositionForTrap)) {
                     new PositionForClimb(_dunker).schedule(); // doing it this way because requiring dunker in this command would not work
                 }
                 if (Math.abs(Constants.Dunker.CLIMB_ANGLE - _dunker.getDunkerAngle()) < Constants.Dunker.ANGLE_TOLERANCE) {
