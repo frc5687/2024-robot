@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4000652114779404,
-      "y": 3.0784861569723136
+      "x": 1.4,
+      "y": 3.08
     },
     "rotation": 0
   },
@@ -14,49 +14,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FUIC Win"
+            "pathName": "Copy of FUIC Win"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "NoteEightCommandChain"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DynamicNote"
+            "name": "NoteSevenCommandChain"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PathfindToPathAmp"
+            "name": "NoteSixCommandChain"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "UnderStageBloopCommandChain"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PathfindToPathSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "name": "NearSourceBloopCommandChain"
           }
         }
       ]

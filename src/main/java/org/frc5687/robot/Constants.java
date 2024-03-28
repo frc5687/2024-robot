@@ -334,6 +334,16 @@ public class Constants {
         public static final Pose2d BLUE_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
         public static final Pose2d RED_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
 
+
+        //some auto poses
+        public static final Pose2d AUTO_POSE_NOTE_EIGHT_PASSTHROUGH = new Pose2d(new Translation2d(5.42, 1.54), new Rotation2d(-0.31));
+        public static final Pose2d AUTO_POSE_NOTE_SEVEN_PICKUP = new Pose2d(new Translation2d(6.58, 2.03), new Rotation2d(.54));
+        public static final Pose2d AUTO_POSE_NOTE_SEVEN_PASSTHROUGH = new Pose2d(new Translation2d(5.96, 3.74), new Rotation2d(.31));
+        public static final Pose2d AUTO_POSE_NOTE_SIX_PICKUP = new Pose2d(new Translation2d(6.8, 3.96), new Rotation2d(.25));
+        public static final Pose2d AUTO_POSE_NOTE_FUIC_UNDER_STAGE = new Pose2d(new Translation2d(4.62,4.67), new Rotation2d(-1.09));
+        public static final Pose2d AUTO_POSE_NOTE_FUIC_NEAR_SOURCE = new Pose2d(new Translation2d(4.37, 3.96), new Rotation2d(-1.56));
+        public static final Pose2d AUTO_POSE_SHOOT_SOURCE = new Pose2d(new Translation2d(3.25, 3.17), new Rotation2d(-0.65));
+        public static final Pose2d AUTO_POSE_SHOOT_AMP = new Pose2d(new Translation2d(4.53, 4.84), new Rotation2d(-0.115));
     }
 
     public static class Vision {
