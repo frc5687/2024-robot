@@ -22,7 +22,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
-    public static final int TICKS_PER_UPDATE = 10; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
+    public static final int TICKS_PER_UPDATE = 1; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
     public static final double METRIC_FLUSH_PERIOD = 5;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double EPSILON = 1e-9;
@@ -261,7 +261,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.28564453125;
+            NORTH_EAST_CONFIG.encoderOffset = 0.28076171875;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -302,7 +302,11 @@ public class Constants {
 
         public static final double AIMING_HEADING_kP = 7;
         public static final double AIMING_HEADING_kI = 0;
-        public static final double AIMING_HEADING_kD = 0.5;
+        public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
+
+        public static final double AUTO_HEADING_kP = 5.0;
+        public static final double AUTO_HEADING_kI = 0.0;
+        public static final double AUTO_HEADING_kD = 0.0;
         
         // Pose PID for trajectory and drive to pose
         public static final double POSE_kP = 5.5;
@@ -397,7 +401,7 @@ public class Constants {
         // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = IDLE_RPM;
+        public static final double PASS_RPM = 2100;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;
@@ -594,8 +598,8 @@ public class Constants {
         public static final double DUNK_ANGLE = 3.24;
         public static final double STOWED_ANGLE = 5.18;
         public static final double CLIMB_ANGLE = 3.4;
-        public static final double ANGLE_TOLERANCE = 0.02;
-        public static final long EJECT_TIME = 1000; // 1 second
+        public static final double ANGLE_TOLERANCE = 0.03;
+        public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;
     }
     

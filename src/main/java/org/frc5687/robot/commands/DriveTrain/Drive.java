@@ -65,11 +65,12 @@ public class Drive extends OutliersCommand {
         }
 
         // if has note and is within shooting range and is in speaker mode
-        boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && _shooter.getSpinUpAutomatically();
+        boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && !_shooter.getAmpMode();
         
         if (shouldAutoAim) {
             _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
         }
+
 
         Logger.recordOutput("Drive/Rot", rot);
 

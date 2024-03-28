@@ -7,6 +7,8 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Dunker.DunkerState;
 
+import com.fasterxml.jackson.databind.node.BooleanNode;
+
 public class HandoffDunker extends OutliersCommand {
     private Dunker _dunker;
     private Shooter _shooter;
@@ -41,7 +43,13 @@ public class HandoffDunker extends OutliersCommand {
             case PREPARED_FOR_NOTE:
                 _dunker.setToHandoffRPM();
                 _shooter.setToHandoffRPM();
-                if (_dunker.isAtTargetRPM() && _shooter.isAtTargetRPM()) {
+                boolean shooterAtTargetRPM = _shooter.isAtTargetRPM();
+                boolean dunkerAtTargetRPM= _dunker.isAtTargetRPM();
+
+                metric("shooter at rpm", shooterAtTargetRPM);
+                metric("dunker at rpm", dunkerAtTargetRPM);
+
+                if (shooterAtTargetRPM && dunkerAtTargetRPM) {
                     _intake.setSpeed(Constants.Intake.HANDOFF_SPEED);
                 }
                 if (_dunker.isNoteInDunker()) {

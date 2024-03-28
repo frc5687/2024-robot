@@ -2,6 +2,7 @@ package org.frc5687.robot.subsystems;
 
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
+
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
 import org.frc5687.robot.util.OutliersContainer;
@@ -18,6 +19,32 @@ public class Lights extends OutliersSubsystem{
     private boolean _debugLightsEnabled = false;
 
     private boolean _dirty  = true;
+    private LightState _lightState = LightState.IDLE;
+
+    
+    public enum LightState { 
+        IDLE(0),
+        SEEKING_NOTE(1),
+        FOUND_NOTE(2),
+        HAS_NOTE(3),
+        IN_RANGE_SPEAKER(4),
+        AMP_MODE(5),
+        AMP_HANDOFF_COMPLETE(6),
+        PASSING(7),
+        CLIMBING(8),
+        DISCONNECTED(9),
+        SHOOTING(10);
+
+        private final int _value;
+        LightState(int value) { 
+            _value = value; 
+        }
+
+        public int getValue() { 
+            return _value; 
+        }
+    }
+
 
     public Lights(OutliersContainer _container) {
         super(_container);
@@ -188,6 +215,15 @@ public class Lights extends OutliersSubsystem{
         return _debugLightsEnabled;
     }
 
+
+    public LightState getLightState() {
+        return _lightState;
+    }
+    public void setLightState(LightState state) {
+        _lightState = state;
+    }
+
+
     public void updateDashboard() {}
 
     public enum AnimationType {
@@ -212,5 +248,7 @@ public class Lights extends OutliersSubsystem{
             return _value;
         }
     }
+
+
 }
 
