@@ -20,31 +20,31 @@
         {
           "type": "named",
           "data": {
-            "name": "NoteEightCommandChain"
+            "name": "NoteEightCommand"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "NoteSevenCommandChain"
+            "name": "NoteSevenCommand"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "NoteSixCommandChain"
+            "name": "NoteSixCommand"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "UnderStageBloopCommandChain"
+            "name": "UnderStageBloopCommand"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "NearSourceBloopCommandChain"
+            "name": "NearSourceBloopCommand"
           }
         }
       ]

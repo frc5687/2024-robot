@@ -10,12 +10,15 @@ import java.util.Optional;
 import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.EnableVisionUpdates;
-import org.frc5687.robot.commands.NearSourceBloopCommandChain;
-import org.frc5687.robot.commands.NoteEightCommandChain;
-import org.frc5687.robot.commands.NoteSevenCommandChain;
-import org.frc5687.robot.commands.NoteSixCommandChain;
 import org.frc5687.robot.commands.OutliersCommand;
-import org.frc5687.robot.commands.UnderStageBloopCommandChain;
+import org.frc5687.robot.commands.AutoCommands.NearSourceBloopPickup;
+import org.frc5687.robot.commands.AutoCommands.NoteEightPickupNo;
+import org.frc5687.robot.commands.AutoCommands.NoteEightPickupYes;
+import org.frc5687.robot.commands.AutoCommands.NoteIntakedCommand;
+import org.frc5687.robot.commands.AutoCommands.NoteSevenPickupNo;
+import org.frc5687.robot.commands.AutoCommands.NoteSevenPickupYes;
+import org.frc5687.robot.commands.AutoCommands.NoteSixPickupYes;
+import org.frc5687.robot.commands.AutoCommands.UnderStageBloopPickup;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
@@ -61,6 +64,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
     private OI _oi;
@@ -272,11 +277,11 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("DisableVision", new DisableVisionUpdates());
 
         //auto command groups
-        NamedCommands.registerCommand("NoteEightCommandChain", new NoteEightCommandChain(_shooter, _intake, _driveTrain));
-        NamedCommands.registerCommand("NoteSevenCommandChain", new NoteSevenCommandChain(_shooter, _intake, _driveTrain));
-        NamedCommands.registerCommand("NoteSixCommandChain", new NoteSixCommandChain(_shooter, _intake, _driveTrain));
-        NamedCommands.registerCommand("UnderStageBloopCommandChain", new UnderStageBloopCommandChain(_shooter, _intake, _driveTrain));
-        NamedCommands.registerCommand("NearSourceBloopCommandChain", new NearSourceBloopCommandChain(_shooter, _intake, _driveTrain));
+        NamedCommands.registerCommand("NoteEightCommand", new ConditionalCommand(new NoteEightPickupYes(_shooter, _intake, _driveTrain), new NoteEightPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+        NamedCommands.registerCommand("NoteSevenCommand", new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain),new NoteSevenPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+        NamedCommands.registerCommand("NoteSixCommand", new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain), new NoteIntakedCommand(6,false) , _intake::isNoteDetected));
+        NamedCommands.registerCommand("UnderStageBloopCommand", new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
+        NamedCommands.registerCommand("NearSourceBloopCommand", new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), null, () -> _robotState.isNoteIntaked(8)));
 
 
 

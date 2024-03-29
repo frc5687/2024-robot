@@ -78,17 +78,6 @@
         "maxAngularVelocity": 534.0,
         "maxAngularAcceleration": 1000.0
       }
-    },
-    {
-      "name": "heading back",
-      "minWaypointRelativePos": 2.9,
-      "maxWaypointRelativePos": 2.95,
-      "constraints": {
-        "maxVelocity": 4.0,
-        "maxAcceleration": 5.0,
-        "maxAngularVelocity": 534.0,
-        "maxAngularAcceleration": 1000.0
-      }
     }
   ],
   "eventMarkers": [

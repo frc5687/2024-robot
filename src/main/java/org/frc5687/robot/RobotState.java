@@ -77,6 +77,8 @@ public class RobotState {
     private Transform3d _robotToCamera;
     private final double _period = 1.0 / 250.0; // Run at 200Hz
 
+    private boolean[] _notesPickedUp = {false, false, false, false, false, false, false, false};
+
     public RobotState() {
     }
 
@@ -577,5 +579,22 @@ public class RobotState {
 
     public Lock getReadLock() {
         return readLock;
+    }
+
+    // id is from 1 - 8 not 0-7
+    public void setIntakedNote(int id, boolean noteIntaked) {
+        if (id - 1 >= _notesPickedUp.length) {
+            DriverStation.reportError("Cannot set id greater than size of array", false);
+            return;
+        }
+        _notesPickedUp[id - 1] = noteIntaked;
+    }
+
+    public boolean isNoteIntaked(int id) {
+        if (id - 1 >= _notesPickedUp.length) {
+            DriverStation.reportError("Cannot set id greater than size of array", false);
+            return false;
+        }
+        return _notesPickedUp[id - 1];
     }
 }
