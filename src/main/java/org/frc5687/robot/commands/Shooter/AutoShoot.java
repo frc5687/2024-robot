@@ -66,6 +66,8 @@ public class AutoShoot extends OutliersCommand{
 
         ChassisSpeeds speeds = _driveTrain.getMeasuredChassisSpeeds();
         boolean isStopped = (speeds.vxMetersPerSecond < 0.1 && speeds.vyMetersPerSecond < 0.1);
+        boolean isAtTargetRPM = _shooter.isAtTargetRPM();
+        boolean isInAngle = _robotState.isAimedAtSpeaker();
 
         if (angle.isPresent()) {
             Rotation2d visionHeading = _driveTrain.getHeading().minus(angle.get());
@@ -75,18 +77,15 @@ public class AutoShoot extends OutliersCommand{
         } else {
             _driveTrain.goToHeading(new Rotation2d(distanceAndAngle.getSecond()));
         }
-
         
         _driveTrain.setVelocity(new ChassisSpeeds(0.0, 0.0, _driveTrain.getRotationCorrection()));
-
-        boolean isAtTargetRPM = _shooter.isAtTargetRPM();
-        boolean isInAngle = _robotState.isAimedAtSpeaker();
         
         if (isAtTargetRPM && isInAngle && isStopped) { 
             if (_intakeTimestamp.isEmpty()) {
                 _intakeTimestamp = Optional.of(System.currentTimeMillis());
             }
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+            metric("Shot RPM of: ", _shooter.getTargetRPM());
         }
     }
 

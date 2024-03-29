@@ -200,9 +200,9 @@ public class DriveTrain extends OutliersSubsystem {
                 new PIDController(
                         Constants.DriveTrain.POSE_kP, Constants.DriveTrain.POSE_kI, Constants.DriveTrain.POSE_kD),
                 new ProfiledPIDController(
-                        Constants.DriveTrain.MOVING_HEADING_kP,
-                        Constants.DriveTrain.MOVING_HEADING_kI,
-                        Constants.DriveTrain.MOVING_HEADING_kD,
+                        Constants.DriveTrain.AUTO_HEADING_kP,
+                        Constants.DriveTrain.AUTO_HEADING_kI,
+                        Constants.DriveTrain.AUTO_HEADING_kD,
                         new TrapezoidProfile.Constraints(
                                 Constants.DriveTrain.MAX_ANG_VEL,
                                 Constants.DriveTrain.MAX_ANG_ACC)));

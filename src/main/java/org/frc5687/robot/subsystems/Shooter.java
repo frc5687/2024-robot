@@ -14,7 +14,7 @@ public class Shooter extends OutliersSubsystem {
     private OutliersTalon _topTalon;
     private double _manualShootRPM = 3200;
     private double _targetRPM = 0;
-    private boolean _spinUpAutomatically = true;
+    private boolean _isAmpMode;
     private VelocityTorqueCurrentFOC _focVelocity;
 
     public Shooter(OutliersContainer container) {
@@ -106,6 +106,10 @@ public class Shooter extends OutliersSubsystem {
         return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
     }
 
+    public double getTargetRPM() {
+        return _targetRPM;
+    }
+
     
     public boolean isAtRPMMatch(double distance, double vxMetersPerSecond, Double vyMetersPerSecond) {
         double vMetersPerSecond = Math.pow((Math.pow(vxMetersPerSecond,2)+Math.pow(vyMetersPerSecond,2)),.5);
@@ -125,15 +129,15 @@ public class Shooter extends OutliersSubsystem {
      * TODO either remove this or move it to robotstate... either way rename it speaker mode amp mode seems nicer.
      * @return if we automatically spin up the shooter in idleshooter
      */
-    public boolean getSpinUpAutomatically() {
-        return _spinUpAutomatically;
+    public boolean getAmpMode() {
+        return _isAmpMode;
     }
 
     /**
      * @param value true if we want to spin up automatically, false otherwise. this happens in idleshooter
      */
-    public void setSpinUpAutomatically(boolean value) {
-        _spinUpAutomatically = value;
+    public void setAmpMode(boolean value) {
+        _isAmpMode = value;
         
     }
 
@@ -149,6 +153,6 @@ public class Shooter extends OutliersSubsystem {
         metric("Average Output", getCombinedRPM());
         metric("Target RPM", _targetRPM);
         metric("At Target RPM", isAtTargetRPM());
-        metric("Spin Up Automatically?", getSpinUpAutomatically());
+        metric("Spin Up Automatically?", getAmpMode());
     }
 }
