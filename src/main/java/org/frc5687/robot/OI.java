@@ -6,6 +6,7 @@ import static org.frc5687.robot.util.Helpers.applyDeadband;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
+import org.frc5687.robot.commands.DriveTrain.CrawlForward;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
 import org.frc5687.robot.commands.DriveTrain.SlowMode;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
@@ -40,9 +41,13 @@ public class OI extends OutliersProxy {
 
     protected AxisButton _driverLeftTriggerButton;
     protected AxisButton _driverRightTriggerButton;
+    protected AxisButton _opLeftTriggerButton;
+    protected AxisButton _opRightTriggerButton;
 
     protected Trigger _driverLeftTrigger;
     protected Trigger _driverRightTrigger;
+    protected Trigger _opLeftTrigger;
+    protected Trigger _opRightTrigger;
     protected Trigger _povButtonLeft;
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
@@ -72,6 +77,12 @@ public class OI extends OutliersProxy {
 
         _driverRightTriggerButton = new AxisButton(_driverGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), 0.05);
         _driverRightTrigger = new Trigger(_driverRightTriggerButton::get);
+
+        _opLeftTriggerButton = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), 0.05);
+        _opLeftTrigger = new Trigger(_opLeftTriggerButton::get);
+
+        _opRightTriggerButton = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), 0.05);
+        _opRightTrigger = new Trigger(_opRightTriggerButton::get);
     }
 
     public void initializeButtons(
@@ -106,6 +117,8 @@ public class OI extends OutliersProxy {
         _opPovButtonDown.onTrue(new ChangeRPM(shooter, -100));
         _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
         _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
+
+        _opRightTrigger.whileTrue(new CrawlForward(drivetrain));
 
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
