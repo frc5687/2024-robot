@@ -26,7 +26,7 @@ public class IdleShooter extends OutliersCommand {
         // _shooter.getSpinUpAutomatically()) {
         // _shooter.setRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst());
         // } else {
-        _shooter.setToIdle();
+        // _shooter.setToIdle();
         // }
 
     }

@@ -33,6 +33,7 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.TrapMech;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
@@ -69,6 +70,7 @@ public class RobotContainer extends OutliersContainer {
     private Dunker _dunker;
     private Climber _climber;
     private Lights _lights;
+    private TrapMech _trap;
 
     private Field2d _field;
 
@@ -110,6 +112,7 @@ public class RobotContainer extends OutliersContainer {
         _dunker = new Dunker(this);
         _climber = new Climber(this);
         _lights = new Lights(this);
+        _trap = new TrapMech(this);
 
         _robotState.initializeRobotState(_driveTrain, _photonProcessor, _visionProcessor);
         _robotState.start();
@@ -161,7 +164,7 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _trap, _lights, _visionProcessor);
 
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }

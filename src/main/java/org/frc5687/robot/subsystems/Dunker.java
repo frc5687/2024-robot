@@ -148,6 +148,7 @@ public class Dunker extends OutliersSubsystem {
     public void updateDashboard() {
         metric("Dunker Angle", getDunkerAngle());
         metric("Note in Dunker", isNoteInDunker());
+        metric("Dunker Roller Encoder", getRollerEncoder());
         metric("Dunker absolute angle radians", getDunkerAbsAngleRadians());
         metric("Dunker target angle", _dunkerArmTalon.getClosedLoopReference().getValue());
         metric("Dunker Drive Target RPM", _targetRPM);

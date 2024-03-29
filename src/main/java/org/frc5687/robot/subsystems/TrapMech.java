@@ -4,16 +4,15 @@ import org.frc5687.lib.sensors.ProximitySensor;
 import org.frc5687.robot.RobotContainer;
 import org.frc5687.robot.RobotMap;
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class TrapMech extends OutliersSubsystem {
-    private final TalonSRX _roller;
-    private final ProximitySensor _prox;
+    private final VictorSPX _roller;
     //FIXME No idea if this forward/reverse configuration is correct
     private final DoubleSolenoid _release;
     private final DoubleSolenoid _arm;
@@ -23,14 +22,13 @@ public class TrapMech extends OutliersSubsystem {
 
     public TrapMech(RobotContainer container){
         super(container);
-        _roller = new TalonSRX(RobotMap.CAN.TALONSRX.TRAPMECH_ROLLER);
-        _prox = new ProximitySensor(RobotMap.DIO.TRAP_PROXIMIMITY);
+        _roller = new VictorSPX(RobotMap.CAN.TALONSRX.TRAPMECH_ROLLER);
         _release = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.PCM.RELEASE_ATTACH, RobotMap.PCM.RELEASE_DETACH);
         _arm = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.PCM.ARM_RAISE, RobotMap.PCM.ARM_LOWER);
     }
 
     public void setRollerSpeed(double value) {
-        _roller.set(TalonSRXControlMode.PercentOutput, value);
+        _roller.set(VictorSPXControlMode.PercentOutput, value);
     }
 
     public void releaseElevator() {
@@ -43,10 +41,6 @@ public class TrapMech extends OutliersSubsystem {
 
     public void armDown() {
         _arm.set(Value.kReverse);
-    }
-
-    public boolean isNoteInTrap() {
-        return _prox.get();
     }
 
     public void updateDashboard() {}
@@ -65,12 +59,13 @@ public class TrapMech extends OutliersSubsystem {
         RELEASING_ELEVATOR(2),
         CLEARING_ARM(3),
         RETRACTING_NOTE(4),
-        ARM_TO_HANDOFF(5),
-        HANDOFF_TO_TRAP(6),
-        WINCH_IN(7),
-        ARM_TO_TRAP(8),
-        SHOOT_TRAPMECH(9),
-        DONE(10);
+        DUNKER_TO_TRAP_HANDOFF(5),
+        ARM_TO_HANDOFF(6),
+        HANDOFF_TO_TRAP(7),
+        WINCH_IN(8),
+        ARM_TO_TRAP(9),
+        SHOOT_TRAPMECH(10),
+        DONE(11);
 
         private final int _value;
         TrapStep(int value) { 

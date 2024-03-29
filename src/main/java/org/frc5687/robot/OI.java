@@ -13,10 +13,10 @@ import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
 import org.frc5687.robot.commands.Dunker.DunkNote;
 import org.frc5687.robot.commands.Dunker.SetupForTrap;
 import org.frc5687.robot.commands.Shooter.ChangeRPM;
-import org.frc5687.robot.commands.Shooter.IntakeEject;
 import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.Pass;
 import org.frc5687.robot.commands.Shooter.ToggleAutoSpinUp;
+import org.frc5687.robot.commands.TrapMech.TrapSequence;
 import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.commands.Shooter.ShooterEject;
 import org.frc5687.robot.subsystems.Climber;
@@ -25,12 +25,14 @@ import org.frc5687.robot.subsystems.Dunker;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.subsystems.TrapMech;
 import org.frc5687.robot.util.OutliersProxy;
 import org.frc5687.robot.util.VisionProcessor;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OI extends OutliersProxy {
@@ -80,6 +82,7 @@ public class OI extends OutliersProxy {
             Dunker dunker,
             Intake intake,
             Climber climber,
+            TrapMech trap,
             Lights lights,
             VisionProcessor visionProcessor) {
 
@@ -94,7 +97,6 @@ public class OI extends OutliersProxy {
         _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
         _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
-
         // _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
         _driverGamepad.getStartButton().onTrue(new ZeroIMU(drivetrain));
@@ -108,9 +110,14 @@ public class OI extends OutliersProxy {
         _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
 
         _operatorGamepad.getYButton().onTrue(new SetupForTrap(dunker, shooter, intake));
-        _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
-        _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
-        _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
+        _operatorGamepad.getAButton().onTrue(new TrapSequence(dunker, trap, climber, drivetrain));
+
+        _operatorGamepad.getXButton().onTrue(Commands.runOnce(trap::armUp, trap));
+        _operatorGamepad.getBButton().onTrue(Commands.runOnce(trap::armDown, trap));
+
+        // _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
+        // _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
+        // _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
         _operatorGamepad.getLeftBumper().onTrue(new ToggleAutoSpinUp(shooter));
         _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake));

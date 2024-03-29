@@ -39,7 +39,7 @@ public class RobotMap {
         }
 
         public static class TALONSRX {
-            public static final int TRAPMECH_ROLLER = 0; //FIXME Ensure this is the right ID!
+            public static final int TRAPMECH_ROLLER = 46; //FIXME Ensure this is the right ID!
         }
 
         public static class CANCODER {
@@ -77,11 +77,11 @@ public class RobotMap {
         public static final int SHIFTER_LOW = 2;
 
         //FIXME Below values need to be assigned
-        public static final int ARM_RAISE = 4;
+        public static final int ARM_RAISE = 0;
         public static final int ARM_LOWER = 1;
 
         public static final int RELEASE_ATTACH = 5;
-        public static final int RELEASE_DETACH = 0;
+        public static final int RELEASE_DETACH = 4;
     }
 
     /**
