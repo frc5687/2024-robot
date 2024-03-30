@@ -197,8 +197,8 @@ public class RobotState {
             updateWithVision();
         }
 
-        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        // _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        // _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -278,6 +278,24 @@ public class RobotState {
 
         double xDistance = tagPose.getX() - robotPose.getX();
         double yDistance = tagPose.getY() - robotPose.getY();
+
+        double distance = Math.sqrt(
+                Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+
+        // flip because intake is pi radians from shooter
+        Rotation2d angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI));
+
+        // using a pair here to return both values without doing excess math in multiple
+        // methods
+        return new Pair<Double, Double>(distance, angle.getRadians());
+    }
+
+    public Pair<Double, Double> getDistanceAndAngleToCorner() {
+        Pose2d robotPose = getEstimatedPose();
+        Pose2d cornerPose = _driveTrain.isRedAlliance() ? Constants.RobotState.RED_CORNER : Constants.RobotState.BLUE_CORNER;
+
+        double xDistance = cornerPose.getX() - robotPose.getX();
+        double yDistance = cornerPose.getY() - robotPose.getY();
 
         double distance = Math.sqrt(
                 Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
@@ -440,7 +458,7 @@ public class RobotState {
         );
         
         _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
-                estimatedPose.timestampSeconds);
+                estimatedPose.timestampSeconds + Constants.RobotState.VISION_TIMESTAMP_FUDGE);
     }
    
 

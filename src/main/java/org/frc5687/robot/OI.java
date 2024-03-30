@@ -8,6 +8,7 @@ import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
 import org.frc5687.robot.commands.DriveTrain.CrawlForward;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.PassAimSetpoint;
 import org.frc5687.robot.commands.DriveTrain.SlowMode;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
@@ -32,6 +33,8 @@ import org.frc5687.robot.util.VisionProcessor;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OI extends OutliersProxy {
@@ -100,11 +103,15 @@ public class OI extends OutliersProxy {
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,
         // drivetrain));
 
-        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
-        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
-        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
-        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
+        // _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        // _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
+        // _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        // _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
+        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        _driverGamepad.getBButton().onTrue(new ConditionalCommand(new SnapTo(drivetrain, new Rotation2d(Math.PI / 4)), new SnapTo(drivetrain, new Rotation2d(-Math.PI / 2)), drivetrain::isRedAlliance));
+        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        _driverGamepad.getXButton().onTrue(new ConditionalCommand(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)), new SnapTo(drivetrain, new Rotation2d(-Math.PI / 4)), drivetrain::isRedAlliance));
 
         // _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
@@ -124,7 +131,7 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
         _operatorGamepad.getLeftBumper().onTrue(new ToggleAmpMode(shooter));
-        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
+        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new PassAimSetpoint(drivetrain)));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
         _povButtonDown.whileTrue(new CrawlForward(drivetrain));

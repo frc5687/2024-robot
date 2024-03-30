@@ -413,7 +413,7 @@ public class Constants {
         // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = 2100;
+        public static final double PASS_RPM = 2200;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;
@@ -702,10 +702,15 @@ public class Constants {
     }
 
     public static class RobotState {
+        public static final double VISION_TIMESTAMP_FUDGE = 0.000;
+
         public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(2);
         
         public static double ZED_X_OFFSET = 0.381;
         public static double ZED_Y_OFFSET = 0.0285;
         public static double ZED_Z_OFFSET = 0.3556;
+
+        public static final Pose2d BLUE_CORNER = new Pose2d(0.5, 7.5, new Rotation2d());
+        public static final Pose2d RED_CORNER = new Pose2d(15.5, 7.5, new Rotation2d());
     }
 }
