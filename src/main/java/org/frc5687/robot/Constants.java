@@ -703,5 +703,9 @@ public class Constants {
 
     public static class RobotState {
         public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(2);
+        
+        public static double ZED_X_OFFSET = 0.381;
+        public static double ZED_Y_OFFSET = 0.0285;
+        public static double ZED_Z_OFFSET = 0.3556;
     }
 }

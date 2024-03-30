@@ -95,8 +95,10 @@ public class RobotState {
         _lastTimestamp = Timer.getFPGATimestamp();
 
         _robotToCamera = new Transform3d(
-                0.381, 0.0635, 0.3556,
-                new Rotation3d());
+            Constants.RobotState.ZED_X_OFFSET, 
+            Constants.RobotState.ZED_Y_OFFSET, 
+            Constants.RobotState.ZED_Z_OFFSET,
+            new Rotation3d());
         initPoseEstimator();
         _periodicThread = new Thread(this::run);
         _periodicThread.setName("RobotState Thread");
