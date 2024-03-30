@@ -4,6 +4,8 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import org.frc5687.robot.subsystems.DriveTrain;
@@ -18,7 +20,8 @@ public class NoteSevenPickupYes extends SequentialCommandGroup {
     public NoteSevenPickupYes(Shooter shooter, Intake intake, DriveTrain driveTrain) {
         addCommands(  
             new NoteIntakedCommand(7,true),
-            new RevShooter(shooter, Constants.Shooter.PASSTHROUGH_RPM),        
+            new ParallelDeadlineGroup(new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_SEVEN_PASSTHROUGH),
+            new RevShooter(shooter, Constants.Shooter.PASSTHROUGH_RPM)),        
             new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_SEVEN_PASSTHROUGH),
             new AutoPassthrough(shooter, intake, 250),
             new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_SIX_PICKUP),

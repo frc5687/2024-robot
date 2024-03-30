@@ -10,6 +10,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import org.frc5687.robot.subsystems.DriveTrain;
@@ -28,7 +29,8 @@ public class NoteSixPickupYes extends SequentialCommandGroup {
     public NoteSixPickupYes(Shooter shooter, Intake intake, DriveTrain driveTrain) {
         addCommands(
             new NoteIntakedCommand(6,true),
-            new RevShooter(shooter, Constants.Shooter.IDLE_RPM), 
+            new ParallelDeadlineGroup(_pathfindShootSixCommand,
+            new RevShooter(shooter, Constants.Shooter.IDLE_RPM)),  
             _pathfindShootSixCommand,       
             new AutoShoot(shooter, intake, driveTrain, null)
         );
