@@ -252,7 +252,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.2348632812;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.234619140625;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -263,7 +263,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.28076171875;
+            NORTH_EAST_CONFIG.encoderOffset = 0.340576171875;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -274,7 +274,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.465576171875;
+            NORTH_WEST_CONFIG.encoderOffset = 0.1123046875;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -285,7 +285,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.04370117188;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.0439453125;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -336,6 +336,16 @@ public class Constants {
         public static final Pose2d BLUE_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
         public static final Pose2d RED_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
 
+
+        //some auto poses
+        public static final Pose2d AUTO_POSE_NOTE_EIGHT_PASSTHROUGH = new Pose2d(new Translation2d(5.42, 1.54), new Rotation2d(-0.31));
+        public static final Pose2d AUTO_POSE_NOTE_SEVEN_PICKUP = new Pose2d(new Translation2d(6.58, 2.03), new Rotation2d(.54));
+        public static final Pose2d AUTO_POSE_NOTE_SEVEN_PASSTHROUGH = new Pose2d(new Translation2d(5.96, 3.74), new Rotation2d(.31));
+        public static final Pose2d AUTO_POSE_NOTE_SIX_PICKUP = new Pose2d(new Translation2d(6.8, 3.96), new Rotation2d(.25));
+        public static final Pose2d AUTO_POSE_NOTE_FUIC_UNDER_STAGE = new Pose2d(new Translation2d(4.62,4.67), new Rotation2d(-1.09));
+        public static final Pose2d AUTO_POSE_NOTE_FUIC_NEAR_SOURCE = new Pose2d(new Translation2d(4.37, 3.96), new Rotation2d(-1.56));
+        public static final Pose2d AUTO_POSE_SHOOT_SOURCE = new Pose2d(new Translation2d(3.25, 3.17), new Rotation2d(-0.65));
+        public static final Pose2d AUTO_POSE_SHOOT_AMP = new Pose2d(new Translation2d(4.53, 4.84), new Rotation2d(-0.115));
     }
 
     public static class Vision {
