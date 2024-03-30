@@ -32,12 +32,6 @@
         {
           "type": "named",
           "data": {
-            "name": "PathfindToPathAmp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
           }
         },
@@ -45,12 +39,6 @@
           "type": "named",
           "data": {
             "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PathfindToPathSource"
           }
         },
         {

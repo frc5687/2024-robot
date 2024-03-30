@@ -85,8 +85,8 @@ public class RobotContainer extends OutliersContainer {
     private PhotonProcessor _photonProcessor;
 
     private RobotState _robotState = RobotState.getInstance();
-    Command _pathfindSourceSideCommand;
-    Command _pathfindAmpSideCommand;
+    //Command _pathfindSourceSideCommand;
+    //Command _pathfindAmpSideCommand;
 
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
@@ -132,13 +132,13 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi,_dunker));
         
-        PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
-        PathConstraints sourceConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
-            _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(sourcePath,sourceConstraints,0.0);
+        // PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
+        // PathConstraints sourceConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
+        //     _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(sourcePath,sourceConstraints,0.0);
 
-        PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
-        PathConstraints ampConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
-            _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath,ampConstraints,0.0);
+        // PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
+        // PathConstraints ampConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
+        //     _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath,ampConstraints,0.0);
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -261,7 +261,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently
                                                                              // has the behavior we want
-        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake));
+        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake, 250));
         NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
@@ -271,8 +271,8 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2150.0));
         NamedCommands.registerCommand("ShootWhenRPMMatch",
                 new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
-        NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
-        NamedCommands.registerCommand("PathfindToPathSource", _pathfindSourceSideCommand);
+        //NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
+        //NamedCommands.registerCommand("PathfindToPathSource", _pathfindSourceSideCommand);
         NamedCommands.registerCommand("EnableVision", new EnableVisionUpdates());
         NamedCommands.registerCommand("DisableVision", new DisableVisionUpdates());
 
@@ -281,7 +281,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("NoteSevenCommand", new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain),new NoteSevenPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
         NamedCommands.registerCommand("NoteSixCommand", new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain), new NoteIntakedCommand(6,false) , _intake::isNoteDetected));
         NamedCommands.registerCommand("UnderStageBloopCommand", new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
-        NamedCommands.registerCommand("NearSourceBloopCommand", new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), null, () -> _robotState.isNoteIntaked(8)));
+        NamedCommands.registerCommand("NearSourceBloopCommand", new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
 
 
 

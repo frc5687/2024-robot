@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.2,
-        "y": 4.9
+        "x": 4.635371071867848,
+        "y": 4.620617121159196
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.0127214700958485,
-        "y": 4.335679065354379
+        "x": 5.448092541963696,
+        "y": 4.056296186513574
       },
       "isLocked": false,
       "linkedName": null
@@ -32,28 +32,28 @@
     },
     {
       "anchor": {
-        "x": 8.216349340766223,
-        "y": 2.4335250171438436
+        "x": 7.9776174561729984,
+        "y": 2.618349701990211
       },
       "prevControl": {
-        "x": 8.481770249064652,
-        "y": 2.3125445100298037
+        "x": 8.532091510712103,
+        "y": 2.310308560579598
       },
       "nextControl": {
-        "x": 7.9509284324677925,
-        "y": 2.554505524257884
+        "x": 7.722632294289749,
+        "y": 2.7600081252586826
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.2,
-        "y": 4.9
+        "x": 4.204113473892989,
+        "y": 4.897854148428747
       },
       "prevControl": {
-        "x": 5.028123527166379,
-        "y": 4.320277008283848
+        "x": 5.031520569783591,
+        "y": 4.31863269020238
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,19 +62,35 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.35,
-      "rotationDegrees": -32.54266753913922,
-      "rotateFast": true
+      "waypointRelativePos": 1.1500000000000001,
+      "rotationDegrees": -45.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.7999999999999998,
+      "rotationDegrees": -60.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [
     {
       "name": "slow for pickup",
-      "minWaypointRelativePos": 1.75,
+      "minWaypointRelativePos": 1.5500000000000003,
       "maxWaypointRelativePos": 2.0,
       "constraints": {
         "maxVelocity": 5.0,
         "maxAcceleration": 3.0,
+        "maxAngularVelocity": 534.0,
+        "maxAngularAcceleration": 1000.0
+      }
+    },
+    {
+      "name": "Slow for shot",
+      "minWaypointRelativePos": 2.9,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 4.0,
         "maxAngularVelocity": 534.0,
         "maxAngularAcceleration": 1000.0
       }
@@ -92,6 +108,23 @@
               "type": "named",
               "data": {
                 "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rev 3",
+      "waypointRelativePos": 1.1500000000000001,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Rev"
               }
             }
           ]

@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Shoot"
@@ -39,6 +45,12 @@
           "type": "path",
           "data": {
             "pathName": "4p pp.3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
           }
         },
         {

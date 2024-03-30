@@ -9,11 +9,19 @@ public class AutoPassthrough extends OutliersCommand {
 
     private Shooter _shooter;
     private Intake _intake;
+    private long _timeOut;
+    private long _timeOutDuration;
 
-    public AutoPassthrough(Shooter shooter, Intake intake) {
+    public AutoPassthrough(Shooter shooter, Intake intake, long timeOutDuration) {
         _shooter = shooter;
         _intake = intake;
+        _timeOutDuration = timeOutDuration;
         addRequirements(_shooter, _intake);
+    }
+
+    @Override
+    public void initialize() {
+        _timeOut = System.currentTimeMillis() + _timeOutDuration;
     }
 
     @Override
@@ -26,5 +34,14 @@ public class AutoPassthrough extends OutliersCommand {
     public void end(boolean interrupted) { // not sure if this matters, idle commands might change it immediately.
         _shooter.setToIdle();
         _intake.setSpeed(0);
+    }
+
+    @Override
+    public boolean isFinished() {
+        if (System.currentTimeMillis() > _timeOut){
+            return true;
+        } else {
+            return false;
+        }
     }
 }
