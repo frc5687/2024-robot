@@ -118,8 +118,6 @@ public class OI extends OutliersProxy {
         _opPovButtonLeft.onTrue(new ChangeRPM(shooter, -10));
         _opPovButtonRight.onTrue(new ChangeRPM(shooter, 10));
 
-        _opRightTrigger.whileTrue(new CrawlForward(drivetrain));
-
         _operatorGamepad.getYButton().onTrue(new HandoffDunker(dunker, shooter, intake));
         _operatorGamepad.getXButton().onTrue(new DunkNote(dunker, shooter));
         _operatorGamepad.getBButton().whileTrue(new ShooterEject(shooter, intake));
@@ -129,6 +127,7 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
 
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
+        _povButtonDown.whileTrue(new CrawlForward(drivetrain));
     }
 
     public boolean shiftDown() {
