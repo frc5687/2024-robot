@@ -20,9 +20,10 @@ public class UnderStageBloopPickup extends SequentialCommandGroup {
         addCommands(
                 new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_FUIC_UNDER_STAGE),
                 new DriveToNote(driveTrain, intake),
-                new ParallelDeadlineGroup(new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_AMP),
-                new RevShooter(shooter)),
-                new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_AMP),
+                new ParallelDeadlineGroup(
+                    new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_AMP),
+                    new RevShooter(shooter)
+                ),
                 new AutoShoot(shooter, intake, driveTrain, null)
         );
     }

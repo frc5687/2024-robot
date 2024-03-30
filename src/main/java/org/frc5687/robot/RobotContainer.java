@@ -279,8 +279,8 @@ public class RobotContainer extends OutliersContainer {
         //auto command groups
         NamedCommands.registerCommand("NoteEightCommand", new ConditionalCommand(new NoteEightPickupYes(_shooter, _intake, _driveTrain), new NoteEightPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
         NamedCommands.registerCommand("NoteSevenCommand", new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain),new NoteSevenPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
-        NamedCommands.registerCommand("NoteSixCommand", new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain), new NoteIntakedCommand(6,false) , _intake::isNoteDetected));
-        NamedCommands.registerCommand("UnderStageBloopCommand", new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
+        NamedCommands.registerCommand("NoteSixCommand", new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain), new NoteSixPickupYes(_shooter, _intake, _driveTrain) , _intake::isNoteDetected));
+        NamedCommands.registerCommand("UnderStageBloopCommand", new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(7)));
         NamedCommands.registerCommand("NearSourceBloopCommand", new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
 
 

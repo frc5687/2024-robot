@@ -21,8 +21,10 @@ public class NoteEightPickupYes extends SequentialCommandGroup {
     public NoteEightPickupYes(Shooter shooter, Intake intake, DriveTrain driveTrain) {
                 addCommands(  
                 new NoteIntakedCommand(8,true), 
-                new ParallelDeadlineGroup(new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_EIGHT_PASSTHROUGH), 
-                new RevShooter(shooter, Constants.Shooter.PASSTHROUGH_RPM)),                 
+                new ParallelDeadlineGroup(
+                    new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_EIGHT_PASSTHROUGH), 
+                    new RevShooter(shooter, Constants.Shooter.PASSTHROUGH_RPM)
+                ),                 
                 new AutoPassthrough(shooter, intake, 500),
                 new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_SEVEN_PICKUP),
                 new DriveToNote(driveTrain, intake)

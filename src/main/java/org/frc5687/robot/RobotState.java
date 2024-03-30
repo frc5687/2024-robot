@@ -409,6 +409,33 @@ public class RobotState {
         return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
     }
 
+    public boolean isAimedAtCorner() {
+        Optional<Boolean> visionAimed = isVisionAimedAtCorner();
+
+        if (visionAimed.isPresent()) {
+            return visionAimed.get();
+        }
+
+        return isPoseAimedAtCorner();
+    }
+
+    private Optional<Boolean> isVisionAimedAtCorner() {
+        // we should make getAngleToCornerFromVision at some point, hacking for now.
+        // Optional<Rotation2d> visionAngle = getAngleToCornerFromVision();
+        // if (visionAngle.isPresent()) {
+        //     return Optional.of(Math.abs((_driveTrain.getHeading().minus(visionAngle.get()).getRadians())) > Constants.RobotState.VISION_AIMING_TOLERANCE);
+        // }
+        return Optional.empty();
+    }
+
+    private boolean isPoseAimedAtCorner() {
+        Rotation2d heading = _driveTrain.getHeading();
+        Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToCorner().getSecond());
+
+        Rotation2d difference = heading.minus(targetAngle);
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+    }
+
     /**
      * breaks if the driver station has no alliance
      * 

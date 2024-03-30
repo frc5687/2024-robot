@@ -29,9 +29,10 @@ public class NoteSixPickupYes extends SequentialCommandGroup {
     public NoteSixPickupYes(Shooter shooter, Intake intake, DriveTrain driveTrain) {
         addCommands(
             new NoteIntakedCommand(6,true),
-            new ParallelDeadlineGroup(_pathfindShootSixCommand,
-            new RevShooter(shooter, Constants.Shooter.IDLE_RPM)),  
-            _pathfindShootSixCommand,       
+            new ParallelDeadlineGroup(
+                _pathfindShootSixCommand,
+                new RevShooter(shooter, Constants.Shooter.IDLE_RPM)
+            ),    
             new AutoShoot(shooter, intake, driveTrain, null)
         );
 

@@ -21,9 +21,10 @@ public class NearSourceBloopPickup extends SequentialCommandGroup {
         addCommands(
                 new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_FUIC_NEAR_SOURCE),
                 new DriveToNote(driveTrain, intake),
-                new ParallelDeadlineGroup(new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_SOURCE),
-                new RevShooter(shooter)),
-                new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_SOURCE),
+                new ParallelDeadlineGroup(
+                    new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_SOURCE),
+                    new RevShooter(shooter)
+                ),
                 new AutoShoot(shooter, intake, driveTrain, null)
         );
     }

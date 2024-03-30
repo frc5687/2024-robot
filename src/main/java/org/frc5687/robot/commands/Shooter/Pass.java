@@ -53,7 +53,7 @@ public class Pass extends OutliersCommand{
         _shooter.setToPassRPM();
 
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
-        boolean isInAngle = _robotState.isAimedAtSpeaker();
+        boolean isInAngle = _robotState.isAimedAtCorner();
         metric("IsInAngle", isInAngle);
         metric("isAtTargetRPM", isAtTargetRPM);
         metric("isStopped", isStopped);
