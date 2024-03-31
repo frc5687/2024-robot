@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.635371071867848,
-        "y": 4.620617121159196
+        "x": 4.05,
+        "y": 4.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.448092541963696,
-        "y": 4.056296186513574
+        "x": 4.974216327419522,
+        "y": 4.281771865607522
       },
       "isLocked": false,
       "linkedName": null
@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 4.204113473892989,
-        "y": 4.897854148428747
+        "x": 4.05,
+        "y": 4.75
       },
       "prevControl": {
-        "x": 5.031520569783591,
-        "y": 4.31863269020238
+        "x": 5.0127214700958485,
+        "y": 4.297173922678052
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,13 +63,18 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.1500000000000001,
-      "rotationDegrees": -45.0,
+      "rotationDegrees": -14.10627181437523,
       "rotateFast": false
     },
     {
       "waypointRelativePos": 1.7999999999999998,
       "rotationDegrees": -60.0,
       "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.55,
+      "rotationDegrees": -14.0,
+      "rotateFast": true
     }
   ],
   "constraintZones": [
@@ -86,7 +91,7 @@
     },
     {
       "name": "Slow for shot",
-      "minWaypointRelativePos": 2.9,
+      "minWaypointRelativePos": 3.0,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 3.0,

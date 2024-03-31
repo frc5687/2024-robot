@@ -33,31 +33,31 @@
     {
       "anchor": {
         "x": 8.02382362738459,
-        "y": 0.8779172530202478
+        "y": 0.8317110818086559
       },
       "prevControl": {
         "x": 6.796831472477471,
-        "y": 1.270554742590525
+        "y": 1.2243485713789326
       },
       "nextControl": {
         "x": 8.601400767529492,
-        "y": 0.6930925681738803
+        "y": 0.6468863969622884
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 3.0
+        "x": 3.1,
+        "y": 3.3
       },
       "prevControl": {
-        "x": 3.957227076930698,
-        "y": 2.626277472442374
+        "x": 3.9114743895529065,
+        "y": 2.5644425022433532
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "lard1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -73,8 +73,13 @@
     },
     {
       "waypointRelativePos": 2.65,
-      "rotationDegrees": -40.0,
+      "rotationDegrees": -37.198449507957534,
       "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.2000000000000002,
+      "rotationDegrees": -14.0,
+      "rotateFast": true
     }
   ],
   "constraintZones": [
@@ -96,17 +101,6 @@
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 3.0,
-        "maxAngularVelocity": 534.0,
-        "maxAngularAcceleration": 1000.0
-      }
-    },
-    {
-      "name": "Slow for shot",
-      "minWaypointRelativePos": 2.7,
-      "maxWaypointRelativePos": 3.0,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 4.0,
         "maxAngularVelocity": 534.0,
         "maxAngularAcceleration": 1000.0
       }
@@ -132,7 +126,7 @@
     },
     {
       "name": "Shoot1",
-      "waypointRelativePos": 0.3,
+      "waypointRelativePos": 0.30000000000000004,
       "command": {
         "type": "parallel",
         "data": {
@@ -190,7 +184,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.0,
+    "rotation": -37.20168748333185,
     "rotateFast": false
   },
   "reversed": false,
