@@ -15,6 +15,7 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -124,7 +125,7 @@ public class RobotState {
     }
 
     private void run() {
-        Threads.setCurrentThreadPriority(true, 1); // People say lowest priority works well. 
+        Threads.setCurrentThreadPriority(true, 5); // People say lowest priority works well. 
         _running = true;
         while (_running) {
             double startTime = Timer.getFPGATimestamp();
@@ -173,9 +174,9 @@ public class RobotState {
 
         _poseEstimator.update(heading, positions);
         _lastTimestamp = currentTime;
-
-        _estimatedPose = _poseEstimator.getEstimatedPosition();
+        // _estimatedPose = _poseEstimator.getEstimatedPosition();
     }
+    
 
     private void updateWithVision() {
         Pose2d prevEstimatedPose = _estimatedPose;
@@ -207,6 +208,9 @@ public class RobotState {
         // if (_visionDistance.isPresent()) {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
+        _estimatedPose = _poseEstimator.getEstimatedPosition();
+        Logger.recordOutput("RobotState/EstimatedRobotPose", _estimatedPose);
+
     }
 
     public Pose2d getEstimatedPose() {
@@ -454,25 +458,27 @@ public class RobotState {
 
     private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
         EstimatedRobotPose estimatedPose = cameraPose.getFirst();
+        Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
+
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
         double positionDev, angleDev;
         
         if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // multi-tag estimate, trust it more
-            positionDev = 0.15;
+            positionDev = 0.035;
             angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
         } else {
             // single-tag estimates, adjust deviations based on distance
             if (dist < 1.5) {
                 positionDev = 0.30;
-                angleDev = Units.degreesToRadians(20);
+                angleDev = Units.degreesToRadians(500);
             } else if (dist < 4.0) {
-                positionDev = 0.35;
-                angleDev = Units.degreesToRadians(50);
+                positionDev = 0.45;
+                angleDev = Units.degreesToRadians(500);
             } else {
                 positionDev = 0.5;
-                angleDev = Units.degreesToRadians(100);
+                angleDev = Units.degreesToRadians(500);
             }
         }
         

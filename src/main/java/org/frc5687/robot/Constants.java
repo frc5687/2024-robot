@@ -702,7 +702,7 @@ public class Constants {
     }
 
     public static class RobotState {
-        public static final double VISION_TIMESTAMP_FUDGE = -0.01;
+        public static final double VISION_TIMESTAMP_FUDGE = -0.00;
 
         public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(2);
         
