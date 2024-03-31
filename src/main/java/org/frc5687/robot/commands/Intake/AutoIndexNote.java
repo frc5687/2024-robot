@@ -16,6 +16,7 @@ public class AutoIndexNote extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
+        error("Init AutoIntake");
         _intake.setIndexState(IndexState.INTAKING);
     }
 
