@@ -30,7 +30,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -208,11 +207,6 @@ public class RobotState {
         // if (_visionDistance.isPresent()) {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
-
-        SwerveDriveState newState = new SwerveDriveState();
-        newState.pose = _estimatedPose;
-        newState.speeds = _driveTrain.getMeasuredChassisSpeeds();
-        _cachedState = newState;
     }
 
     public Pose2d getEstimatedPose() {
