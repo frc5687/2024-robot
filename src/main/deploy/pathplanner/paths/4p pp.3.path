@@ -83,7 +83,7 @@
       "minWaypointRelativePos": 1.9,
       "maxWaypointRelativePos": 2.1999999999999997,
       "constraints": {
-        "maxVelocity": 5.0,
+        "maxVelocity": 6.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 534.0,
         "maxAngularAcceleration": 360.0
@@ -118,7 +118,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Rev"
+                "name": "RevRPM"
               }
             }
           ]
@@ -127,7 +127,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.8,
+    "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 534.0,
     "maxAngularAcceleration": 360.0
@@ -143,5 +143,5 @@
     "rotation": -11.091267692793249,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
