@@ -24,9 +24,21 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "TurnToFindUnderstage"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PathfindToPathSource"
           }
         },
         {
@@ -39,12 +51,6 @@
           "type": "named",
           "data": {
             "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
           }
         }
       ]
