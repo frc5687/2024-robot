@@ -5,6 +5,7 @@ import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.NUM_MODULES;
 import static org.frc5687.robot.Constants.DriveTrain.SHIFT_UP_SPEED_MPS;
 
+import java.lang.reflect.Array;
 import java.util.Optional;
 
 import org.frc5687.lib.control.SwerveHeadingController;
@@ -300,6 +301,11 @@ public class DriveTrain extends OutliersSubsystem {
                 Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
     }
 
+    /**
+     * Sets the target heading of the heading controller and enables it.
+     * 
+     * @param heading the heading to hold.
+     */
     public void goToHeading(Rotation2d heading) {
         _headingController.goToHeading(heading);
     }

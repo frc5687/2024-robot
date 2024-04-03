@@ -21,6 +21,7 @@ public class RevShooter extends OutliersCommand {
 
     @Override
     public void initialize() {
+        error("Init RevShooter");
         super.initialize();
     }
 

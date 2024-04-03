@@ -15,6 +15,7 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -30,7 +31,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -77,6 +77,8 @@ public class RobotState {
     private Transform3d _robotToCamera;
     private final double _period = 1.0 / 250.0; // Run at 200Hz
 
+    private boolean[] _notesPickedUp = {false, false, false, false, false, false, false, false};
+
     public RobotState() {
     }
 
@@ -95,8 +97,10 @@ public class RobotState {
         _lastTimestamp = Timer.getFPGATimestamp();
 
         _robotToCamera = new Transform3d(
-                0.381, 0.0635, 0.3556,
-                new Rotation3d());
+            Constants.RobotState.ZED_X_OFFSET, 
+            Constants.RobotState.ZED_Y_OFFSET, 
+            Constants.RobotState.ZED_Z_OFFSET,
+            new Rotation3d());
         initPoseEstimator();
         _periodicThread = new Thread(this::run);
         _periodicThread.setName("RobotState Thread");
@@ -121,7 +125,7 @@ public class RobotState {
     }
 
     private void run() {
-        Threads.setCurrentThreadPriority(true, 1); // People say lowest priority works well. 
+        Threads.setCurrentThreadPriority(true, 5); // People say lowest priority works well. 
         _running = true;
         while (_running) {
             double startTime = Timer.getFPGATimestamp();
@@ -170,9 +174,9 @@ public class RobotState {
 
         _poseEstimator.update(heading, positions);
         _lastTimestamp = currentTime;
-
-        _estimatedPose = _poseEstimator.getEstimatedPosition();
+        // _estimatedPose = _poseEstimator.getEstimatedPosition();
     }
+    
 
     private void updateWithVision() {
         Pose2d prevEstimatedPose = _estimatedPose;
@@ -195,8 +199,8 @@ public class RobotState {
             updateWithVision();
         }
 
-        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        // _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        // _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -204,11 +208,9 @@ public class RobotState {
         // if (_visionDistance.isPresent()) {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
+        _estimatedPose = _poseEstimator.getEstimatedPosition();
+        Logger.recordOutput("RobotState/EstimatedRobotPose", _estimatedPose);
 
-        SwerveDriveState newState = new SwerveDriveState();
-        newState.pose = _estimatedPose;
-        newState.speeds = _driveTrain.getMeasuredChassisSpeeds();
-        _cachedState = newState;
     }
 
     public Pose2d getEstimatedPose() {
@@ -276,6 +278,24 @@ public class RobotState {
 
         double xDistance = tagPose.getX() - robotPose.getX();
         double yDistance = tagPose.getY() - robotPose.getY();
+
+        double distance = Math.sqrt(
+                Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+
+        // flip because intake is pi radians from shooter
+        Rotation2d angle = new Rotation2d(Math.atan2(yDistance, xDistance)).plus(new Rotation2d(Math.PI));
+
+        // using a pair here to return both values without doing excess math in multiple
+        // methods
+        return new Pair<Double, Double>(distance, angle.getRadians());
+    }
+
+    public Pair<Double, Double> getDistanceAndAngleToCorner() {
+        Pose2d robotPose = getEstimatedPose();
+        Pose2d cornerPose = _driveTrain.isRedAlliance() ? Constants.RobotState.RED_CORNER : Constants.RobotState.BLUE_CORNER;
+
+        double xDistance = cornerPose.getX() - robotPose.getX();
+        double yDistance = cornerPose.getY() - robotPose.getY();
 
         double distance = Math.sqrt(
                 Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
@@ -387,6 +407,33 @@ public class RobotState {
         return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
     }
 
+    public boolean isAimedAtCorner() {
+        Optional<Boolean> visionAimed = isVisionAimedAtCorner();
+
+        if (visionAimed.isPresent()) {
+            return visionAimed.get();
+        }
+
+        return isPoseAimedAtCorner();
+    }
+
+    private Optional<Boolean> isVisionAimedAtCorner() {
+        // we should make getAngleToCornerFromVision at some point, hacking for now.
+        // Optional<Rotation2d> visionAngle = getAngleToCornerFromVision();
+        // if (visionAngle.isPresent()) {
+        //     return Optional.of(Math.abs((_driveTrain.getHeading().minus(visionAngle.get()).getRadians())) > Constants.RobotState.VISION_AIMING_TOLERANCE);
+        // }
+        return Optional.empty();
+    }
+
+    private boolean isPoseAimedAtCorner() {
+        Rotation2d heading = _driveTrain.getHeading();
+        Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToCorner().getSecond());
+
+        Rotation2d difference = heading.minus(targetAngle);
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+    }
+
     /**
      * breaks if the driver station has no alliance
      * 
@@ -411,25 +458,27 @@ public class RobotState {
 
     private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
         EstimatedRobotPose estimatedPose = cameraPose.getFirst();
+        Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
+
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
         double positionDev, angleDev;
         
         if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // multi-tag estimate, trust it more
-            positionDev = 0.15;
+            positionDev = 0.035;
             angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
         } else {
             // single-tag estimates, adjust deviations based on distance
             if (dist < 1.5) {
                 positionDev = 0.30;
-                angleDev = Units.degreesToRadians(20);
+                angleDev = Units.degreesToRadians(500);
             } else if (dist < 4.0) {
-                positionDev = 0.35;
-                angleDev = Units.degreesToRadians(50);
+                positionDev = 0.45;
+                angleDev = Units.degreesToRadians(500);
             } else {
                 positionDev = 0.5;
-                angleDev = Units.degreesToRadians(100);
+                angleDev = Units.degreesToRadians(500);
             }
         }
         
@@ -438,7 +487,7 @@ public class RobotState {
         );
         
         _poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(),
-                estimatedPose.timestampSeconds);
+                estimatedPose.timestampSeconds + Constants.RobotState.VISION_TIMESTAMP_FUDGE);
     }
    
 
@@ -577,5 +626,22 @@ public class RobotState {
 
     public Lock getReadLock() {
         return readLock;
+    }
+
+    // id is from 1 - 8 not 0-7
+    public void setIntakedNote(int id, boolean noteIntaked) {
+        if (id - 1 >= _notesPickedUp.length) {
+            DriverStation.reportError("Cannot set id greater than size of array", false);
+            return;
+        }
+        _notesPickedUp[id - 1] = noteIntaked;
+    }
+
+    public boolean isNoteIntaked(int id) {
+        if (id - 1 >= _notesPickedUp.length) {
+            DriverStation.reportError("Cannot set id greater than size of array", false);
+            return false;
+        }
+        return _notesPickedUp[id - 1];
     }
 }

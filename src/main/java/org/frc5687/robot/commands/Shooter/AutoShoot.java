@@ -45,6 +45,7 @@ public class AutoShoot extends OutliersCommand{
         _shooter.setConfigSlot(0);
         _intakeTimestamp = Optional.empty();
         _lights.setDebugLightsEnabled(true);
+        error("Init AutoShoot");
     }
 
     @Override

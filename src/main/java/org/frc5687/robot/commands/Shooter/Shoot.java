@@ -51,11 +51,11 @@ public class Shoot extends OutliersCommand{
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
         Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
-        if (visionDistance.isPresent()) {
-            _shooter.setRPMFromDistance(visionDistance.get());
-        } else {
+        // if (visionDistance.isPresent()) {
+            // _shooter.setRPMFromDistance(visionDistance.get());
+        // } else {
             _shooter.setRPMFromDistance(distance);
-        }
+        // }
 
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         boolean isInAngle = _robotState.isAimedAtSpeaker();

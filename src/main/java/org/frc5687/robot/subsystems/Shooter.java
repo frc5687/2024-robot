@@ -153,6 +153,6 @@ public class Shooter extends OutliersSubsystem {
         metric("Average Output", getCombinedRPM());
         metric("Target RPM", _targetRPM);
         metric("At Target RPM", isAtTargetRPM());
-        metric("Spin Up Automatically?", getAmpMode());
+        metric("Speaker Mode", !getAmpMode()); // violet likes speakler mode to be green speaerker spe.rka spaerklaler mode speaeker spaerker mode 
     }
 }

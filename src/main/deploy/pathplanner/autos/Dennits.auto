@@ -26,31 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "GoFindUnderStage"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PathfindToPathAmp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GoFindSourceSide"
+            "pathName": "TurnToFindUnderstage"
           }
         },
         {
@@ -69,6 +45,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
           }
         }
       ]

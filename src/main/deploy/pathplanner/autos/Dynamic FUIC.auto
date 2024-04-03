@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3973729610443115,
-      "y": 3.3713855743408203
+      "x": 1.4,
+      "y": 3.08
     },
-    "rotation": 1.2168402196536084e-25
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,36 +14,42 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FUIC 8763.1"
+            "pathName": "Copy of FUIC Win"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "FUIC 8763.2"
+            "name": "NoteEightCommand"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DynamicNote"
+            "name": "NoteSevenCommand"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "FUIC 8763.3"
+            "name": "NoteSixCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "UnderStageBloopCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NearSourceBloopCommand"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": true
+  "choreoAuto": false
 }

@@ -8285,8 +8285,8 @@
                     "controlIntervalCount": 15
                 },
                 {
-                    "x": 4.547728061676025,
-                    "y": 4.391671180725098,
+                    "x": 4.368730545043945,
+                    "y": 3.9620771408081055,
                     "heading": -1.558523807082665,
                     "isInitialGuess": false,
                     "translationConstrained": true,
@@ -10045,7 +10045,7 @@
                     }
                 }
             ],
-            "isTrajectoryStale": false
+            "isTrajectoryStale": true
         },
         "FUIC 8763": {
             "waypoints": [

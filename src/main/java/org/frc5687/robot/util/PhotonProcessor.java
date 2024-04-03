@@ -40,16 +40,17 @@ public class PhotonProcessor {
         // FIXME: look at the order the rotation transformations are applied -xavier
         // bradford
         _robotToSouthEastCam = new Transform3d(
-                // new Translation3d(0.0, -0.155635, 0.5937), // for centered camera
+                // South East (-X, -Y)
                 new Translation3d(-0.107009, -0.104835, 0.57991),
-                // new Rotation3d(0.0, 0.0, Units.degreesToRadians(180)) // for centered camera
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(162.5)));
 
         _robotToNorthEastCam = new Transform3d(
+                // North East (+X, -Y)
                 new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(-7.05), Units.inchesToMeters(11.00)),
                 new Rotation3d(Units.degreesToRadians(180), Units.degreesToRadians(16.5), Units.degreesToRadians(-25.5)));
 
         _robotToNorthWestCam = new Transform3d(
+                // North West (+X, +Y)
                 new Translation3d(Units.inchesToMeters(3.90), Units.inchesToMeters(7.05), Units.inchesToMeters(11.00)),
                 new Rotation3d(Units.degreesToRadians(180), Units.degreesToRadians(16.5), Units.degreesToRadians(25.5)));
 

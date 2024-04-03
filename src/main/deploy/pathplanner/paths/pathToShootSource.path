@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.580330162536498,
-        "y": 3.0034011287534774
+        "x": 3.4956188486485793,
+        "y": 2.926390843400824
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.361997810978178,
-        "y": 3.13440053968847
+        "x": 3.2772864970902593,
+        "y": 3.0573902543358167
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.1976682393081095,
-        "y": 3.25315203821897
+        "x": 3.079763307744252,
+        "y": 3.234431984811437
       },
       "prevControl": {
-        "x": 3.481500296333924,
-        "y": 3.0348196866606494
+        "x": 3.318495192337477,
+        "y": 3.057308328500335
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,10 +30,28 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RevRPM"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.8,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 534.0,
     "maxAngularAcceleration": 1000.0
   },

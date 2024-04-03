@@ -6,7 +6,10 @@ import static org.frc5687.robot.util.Helpers.applyDeadband;
 import org.frc5687.lib.oi.AxisButton;
 import org.frc5687.lib.oi.Gamepad;
 import org.frc5687.robot.commands.DriveTrain.AutoAimSetpoint;
+import org.frc5687.robot.commands.DriveTrain.CrawlForward;
 import org.frc5687.robot.commands.DriveTrain.DriveToNote;
+import org.frc5687.robot.commands.DriveTrain.PassAimSetpoint;
+import org.frc5687.robot.commands.DriveTrain.PointSwervesForward;
 import org.frc5687.robot.commands.DriveTrain.SlowMode;
 import org.frc5687.robot.commands.DriveTrain.SnapTo;
 import org.frc5687.robot.commands.DriveTrain.ZeroIMU;
@@ -31,6 +34,8 @@ import org.frc5687.robot.util.VisionProcessor;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OI extends OutliersProxy {
@@ -40,9 +45,13 @@ public class OI extends OutliersProxy {
 
     protected AxisButton _driverLeftTriggerButton;
     protected AxisButton _driverRightTriggerButton;
+    protected AxisButton _opLeftTriggerButton;
+    protected AxisButton _opRightTriggerButton;
 
     protected Trigger _driverLeftTrigger;
     protected Trigger _driverRightTrigger;
+    protected Trigger _opLeftTrigger;
+    protected Trigger _opRightTrigger;
     protected Trigger _povButtonLeft;
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
@@ -72,6 +81,12 @@ public class OI extends OutliersProxy {
 
         _driverRightTriggerButton = new AxisButton(_driverGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), 0.05);
         _driverRightTrigger = new Trigger(_driverRightTriggerButton::get);
+
+        _opLeftTriggerButton = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), 0.05);
+        _opLeftTrigger = new Trigger(_opLeftTriggerButton::get);
+
+        _opRightTriggerButton = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), 0.05);
+        _opRightTrigger = new Trigger(_opRightTriggerButton::get);
     }
 
     public void initializeButtons(
@@ -89,11 +104,15 @@ public class OI extends OutliersProxy {
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,
         // drivetrain));
 
-        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
-        _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
-        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
-        _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
+        // _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        // _driverGamepad.getBButton().onTrue(new SnapTo(drivetrain, new Rotation2d(3 * Math.PI / 2)));
+        // _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        // _driverGamepad.getXButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)));
 
+        _driverGamepad.getYButton().onTrue(new SnapTo(drivetrain, new Rotation2d(0)));
+        _driverGamepad.getBButton().onTrue(new ConditionalCommand(new SnapTo(drivetrain, new Rotation2d(Math.PI / 4)), new SnapTo(drivetrain, new Rotation2d(-Math.PI / 2)), drivetrain::isRedAlliance));
+        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Math.PI)));
+        _driverGamepad.getXButton().onTrue(new ConditionalCommand(new SnapTo(drivetrain, new Rotation2d(Math.PI / 2)), new SnapTo(drivetrain, new Rotation2d(-Math.PI / 4)), drivetrain::isRedAlliance));
 
         // _driverGamepad.getRightBumper().whileTrue(new IntakeCommand(intake, this));
 
@@ -113,9 +132,11 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
         _operatorGamepad.getLeftBumper().onTrue(new ToggleAmpMode(shooter));
-        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
+        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new PassAimSetpoint(drivetrain)));
 
+        _opLeftTrigger.whileTrue(new PointSwervesForward(drivetrain));
         _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
+        _povButtonDown.whileTrue(new CrawlForward(drivetrain));
     }
 
     public boolean shiftDown() {
