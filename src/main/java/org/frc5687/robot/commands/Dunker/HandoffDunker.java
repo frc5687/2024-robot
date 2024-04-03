@@ -7,8 +7,6 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.subsystems.Dunker.DunkerState;
 
-import com.fasterxml.jackson.databind.node.BooleanNode;
-
 public class HandoffDunker extends OutliersCommand {
     private Dunker _dunker;
     private Shooter _shooter;

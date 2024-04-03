@@ -301,6 +301,11 @@ public class DriveTrain extends OutliersSubsystem {
                 Rotation2d.fromDegrees(heading.getDegrees() - Constants.DriveTrain.BUMP_DEGREES));
     }
 
+    /**
+     * Sets the target heading of the heading controller and enables it.
+     * 
+     * @param heading the heading to hold.
+     */
     public void goToHeading(Rotation2d heading) {
         _headingController.goToHeading(heading);
     }

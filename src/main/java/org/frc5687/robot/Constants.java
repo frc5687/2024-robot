@@ -289,8 +289,8 @@ public class Constants {
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
-        public static final double ROTATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
-        public static final long DISABLE_TIME = 500; // ms
+        public static final double ROTATION_DEADBAND = 0.1; // Avoid unintentional joystick movement
+        public static final long HEADING_CONTROLLER_DISABLE_TIME = 500; // ms
 
         public static final double LINEAR_VELOCITY_REFERENCE = 0.5;
 
@@ -413,7 +413,7 @@ public class Constants {
         // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = 2200;
+        public static final double PASS_RPM = 2250;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;

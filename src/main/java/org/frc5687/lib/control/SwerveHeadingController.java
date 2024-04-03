@@ -65,10 +65,10 @@ public class SwerveHeadingController {
      * Temporarily disable the heading controller. It will be reenabled after a
      * small amount of time.
      * 
-     * @see Constants.DriveTrain.DISABLE_TIME
+     * @see Constants.DriveTrain.HEADING_CONTROLLER_DISABLE_TIME
      */
     public void temporaryDisable() {
-        _disableTime = System.currentTimeMillis() + Constants.DriveTrain.DISABLE_TIME;
+        _disableTime = System.currentTimeMillis() + Constants.DriveTrain.HEADING_CONTROLLER_DISABLE_TIME;
         _headingState = HeadingState.TEMPORARY_DISABLE;
     }
 
