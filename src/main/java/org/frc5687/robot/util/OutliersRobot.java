@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public abstract class OutliersRobot extends TimedRobot implements ILoggingSource {
+public abstract class OutliersRobot extends LoggedRobot implements ILoggingSource {
 // public abstract class OutliersRobot extends LoggedRobot implements ILoggingSource {
 
     public OutliersRobot() {
