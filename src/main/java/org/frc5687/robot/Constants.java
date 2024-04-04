@@ -489,7 +489,7 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.3;
+        public static final double INDEX_SPEED = 0.5;
         public static final double SLOW_INDEX_SPEED = 0.1;
         public static final double REVERSE_INDEX_SPEED = -INDEX_SPEED;
         public static final double HANDOFF_SPEED = 0.75;

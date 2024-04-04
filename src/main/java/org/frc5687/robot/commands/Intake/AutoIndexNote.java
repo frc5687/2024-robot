@@ -23,33 +23,28 @@ public class AutoIndexNote extends OutliersCommand {
     @Override
     public void execute() {
         switch (_intake.getIndexState()) {
-            case IDLE:
-                // this should never be called in here
-                break;
             case INTAKING:
-                _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isNoteDetected()) {
-                    _intake.setIndexState(IndexState.INDEXING);
-                }
-                break;
-
-            case INDEXING:
-                if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
-                    _intake.setSpeed(0);
-                    _intake.setIndexState(IndexState.INDEXED);
-                } else if (_intake.isMiddleDetected()) {
                     _intake.setSpeed(Constants.Intake.INDEX_SPEED);
+                    _intake.setIndexState(IndexState.BOTTOM_HAS_BEEN_DETECTED);
                 } else {
+                    // no note, intake hard
                     _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 }
                 break;
-
-            case INDEXED:
-                _intake.setSpeed(0);
-                if (_intake.isNoteDetected()) {
-                    _intake.setIndexState(IndexState.INDEXING);
-                } else {
-                    _intake.setIndexState(IndexState.INTAKING);
+            case BOTTOM_HAS_BEEN_DETECTED:
+                if (_intake.isTopDetected()) {
+                    _intake.setSpeed(0);
+                    _intake.setIndexState(IndexState.INDEXED);
+                } else if (_intake.isMiddleDetected()) {
+                    _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
+                    _intake.setIndexState(IndexState.MIDDLE_HAS_BEEN_DETECTED);
+                }
+                break;
+            case MIDDLE_HAS_BEEN_DETECTED:
+                if (_intake.isTopDetected()) {
+                    _intake.setSpeed(0);
+                    _intake.setIndexState(IndexState.INDEXED);
                 }
                 break;
             default:
@@ -59,7 +54,7 @@ public class AutoIndexNote extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return false; // Always running
+        return _intake.getIndexState() == IndexState.INDEXED;
     }
 
     @Override

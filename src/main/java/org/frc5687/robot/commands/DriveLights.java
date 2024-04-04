@@ -75,15 +75,12 @@ public class DriveLights extends OutliersCommand {
             _lights.setLightState(LightState.IDLE);
         } else if (_dunker.getDunkerState() == DunkerState.READY_TO_DUNK) {
             _lights.setLightState(LightState.AMP_HANDOFF_COMPLETE);
-        } else if (_shooter.getAmpMode() && _intake.isNoteDetected()) {
+        } else if (_shooter.getAmpMode() && _intake.isMiddleDetected()) {
             _lights.setLightState(LightState.AMP_MODE);
-        } else if (_robotState.isWithinOptimalRange() && _intake.isNoteDetected()) {
+        } else if (_robotState.isWithinOptimalRange() && _intake.isMiddleDetected()) {
             _lights.setLightState(LightState.IN_RANGE_SPEAKER);
         }
-        // else if (_oi.isShooting()) { //violet doesnt like it
-        // _lights.setLightState(LightState.SHOOTING);
-        // }
-        else if (_intake.isNoteDetected()) {
+        else if (_intake.isMiddleDetected()) {
             _lights.setLightState(LightState.HAS_NOTE);
         } else if (hasObjects && _driveTrain.getCurrentCommand() != null
                 && _driveTrain.getCurrentCommand().hasRequirement(_intake)) { // I hate this but it works :P
