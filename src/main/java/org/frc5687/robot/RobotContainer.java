@@ -43,7 +43,7 @@ import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
-import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.photonvision.EstimatedRobotPose;
 
@@ -99,8 +99,8 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
 
-        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        Logger.start();
+        // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        // Logger.start();
 
         _oi = new OI();
         // create the vision processor
