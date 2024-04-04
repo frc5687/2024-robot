@@ -381,9 +381,9 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 30;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3500},
-            { 3.4, 2500},
-            { 3.8, 2300},
+            { 3.0, 3700}, // 4/3/24
+            { 3.4, 2450}, // 4/3/24
+            { 3.8, 2150}, // 4/3/24
             { 4.2, 1950},
             { 4.4, 1960},
             { 4.8, 1880},
@@ -413,7 +413,7 @@ public class Constants {
         // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = 2250;
+        public static final double PASS_RPM = 2200;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;
