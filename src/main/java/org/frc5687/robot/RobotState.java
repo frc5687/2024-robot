@@ -215,6 +215,7 @@ public class RobotState {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
         _estimatedPose = _poseEstimator.getEstimatedPosition();
+        // Logger.recordOutput("RobotState/EstimatedRobotPose", _estimatedPose);
     }
 
     public Pose2d getEstimatedPose() {

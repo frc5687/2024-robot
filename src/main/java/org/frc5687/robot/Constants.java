@@ -382,35 +382,13 @@ public class Constants {
 
         public static double[][] kRPMValues = {
             { 3.0, 3700}, // 4/3/24
-            { 3.4, 2450}, // 4/3/24
-            { 3.8, 2150}, // 4/3/24
-            { 4.2, 1950},
-            { 4.4, 1960},
+            { 3.4, 2550}, // 4/4/24
+            { 3.8, 2150}, // 4/4/24
+            { 4.0, 2100}, // 4/4/24
+            { 4.2, 1990}, // 4/4/24
+            { 4.4, 1950}, // 4/4/24
             { 4.8, 1880},
         };
-
-        // Old
-        // public static double[][] kRPMValues = {
-        //     { 3.0, 3800},
-        //     { 3.22, 3450},
-        //     { 3.66, 2550},
-        //     { 4.0, 2050},
-        //     { 4.4, 1880},
-        //     { 4.8, 1880 },
-        // };
-
-
-
-        // Older
-        // public static double[][] kRPMValues = {
-        //     { 3.0, 3800},
-        //     { 3.4, 3200},
-        //     { 3.6, 2600},
-        //     { 3.8, 2500},
-        //     { 4.2, 2100},
-        //     { 4.4, 1960},
-        //     { 4.8, 1880 },
-        // };
 
         public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
         public static final double PASS_RPM = 2200;
@@ -489,8 +467,8 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.5;
-        public static final double SLOW_INDEX_SPEED = 0.1;
+        public static final double INDEX_SPEED = 0.7;
+        public static final double SLOW_INDEX_SPEED = 0.2;
         public static final double REVERSE_INDEX_SPEED = -INDEX_SPEED;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
