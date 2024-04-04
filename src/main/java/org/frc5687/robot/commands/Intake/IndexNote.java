@@ -58,7 +58,7 @@ public class IndexNote extends OutliersCommand {
                 if (_intake.isMiddleDetected()) {
                     _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
                     _intake.setIndexState(IndexState.MIDDLE_HAS_BEEN_DETECTED);
-                    _oi.rumbleDriver();
+                    _rumbleCommand.schedule();
                 }
                 break;
 
