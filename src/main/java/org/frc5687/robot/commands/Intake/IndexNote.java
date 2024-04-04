@@ -31,55 +31,56 @@ public class IndexNote extends OutliersCommand {
     public void execute() {
         switch (_intake.getIndexState()) {
             case IDLE:
-                _intake.setSpeed(0);
                 if (_oi.isIntakeButtonPressed()) {
+                    _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                     _intake.setIndexState(IndexState.INTAKING);
-                } else if (_intake.isNoteDetected()) {
+                } else {
                     _intake.setSpeed(0);
-                    // error("Note detected");
-                    _intake.setIndexState(IndexState.INDEXING);
                 }
                 break;
 
             case INTAKING:
-                _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 if (_intake.isNoteDetected()) {
-                    _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
-                    // error("Note detected moving to indexing");
-                    _intake.setIndexState(IndexState.INDEXING);
-                    _rumbleCommand.schedule();
+                    // we have seen the note on the bottom one (using the others as well for redundancy) - xavier bradford 4/4/24
+                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
+                    _intake.setIndexState(IndexState.BOTTOM_HAS_BEEN_DETECTED);
                 } else if (!_oi.isIntakeButtonPressed()) {
+                    // button released, stop
                     _intake.setSpeed(0);
-                    // error("Intake button released going back to IDLE");
                     _intake.setIndexState(IndexState.IDLE);
-                }
-                break;
-
-            case INDEXING:
-                _oi.stopRumbleDriver();
-                if (_intake.isTopDetected() && _intake.isMiddleDetected()) {
-                    // error("Top and Middle detected, note should be indexed");
-                    _intake.setSpeed(0);
-                    _intake.setIndexState(IndexState.INDEXED);
-                } else if (_intake.isMiddleDetected()) {
-                    // error("Middle detected, slowing indexing");
-                    _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
                 } else {
+                    // still intaking
                     _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 }
                 break;
+
+            case BOTTOM_HAS_BEEN_DETECTED:
+                if (_intake.isMiddleDetected()) {
+                    _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
+                    _intake.setIndexState(IndexState.MIDDLE_HAS_BEEN_DETECTED);
+                    _oi.rumbleDriver();
+                }
+                break;
+
+            case MIDDLE_HAS_BEEN_DETECTED:
+                if (_intake.isTopDetected()) {
+                    _intake.setSpeed(0);
+                    _intake.setIndexState(IndexState.INDEXED);
+                }
+                break;
+
             case INDEXED:
                 _intake.setSpeed(0);
+                _oi.stopRumbleDriver();
                 if (_intake.isNoteDetected()) {
                     // Just to make sure.
                     _intake.setSpeed(0);
                     // Do nothing, note is already indexed
                 } else {
-                    // Just to make sure.
-                    _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.IDLE);
                 }
                 break;
+
             case SHOOTING:
                 // This is when we exit out of a shot, should go back to idle
                 if (_intake.isNoteDetected()) {

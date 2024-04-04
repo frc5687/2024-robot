@@ -12,9 +12,10 @@ public class Intake extends OutliersSubsystem {
     public enum IndexState {
         IDLE(0),
         INTAKING(1),
-        INDEXING(2),
-        INDEXED(3),
-        SHOOTING(4);
+        BOTTOM_HAS_BEEN_DETECTED(2),
+        MIDDLE_HAS_BEEN_DETECTED(3),
+        INDEXED(4),
+        SHOOTING(5);
 
         private final int _value;
 
@@ -65,9 +66,8 @@ public class Intake extends OutliersSubsystem {
         return isBottomDetected() || isTopDetected() || isMiddleDetected();
     }
 
-    /* Checks if the two configurations for a note that is indexed is present */
     public boolean isNoteIndexed() {
-        return (isMiddleDetected() && isTopDetected()) || (isBottomDetected() && isTopDetected()) || isMiddleDetected();
+        return isMiddleDetected() && isTopDetected();
     }
 
     public void setAutoIntakeFlag(boolean flag) {
@@ -89,6 +89,7 @@ public class Intake extends OutliersSubsystem {
     @Override
     public void updateDashboard() {
         metric("Top Detected", isTopDetected() ? 1000.0: 0.0);
+        metric("Middle Detected", isMiddleDetected() ? 1000.0: 0.0);
         metric("Bottom Detected", isBottomDetected() ? 1000.0: 0.0);
         metric("Is note indexed", isNoteIndexed());
         metric("AutoIntake Flag", getAutoIntakeFlag());
