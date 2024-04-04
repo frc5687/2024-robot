@@ -75,9 +75,9 @@ public class DriveLights extends OutliersCommand {
             _lights.setLightState(LightState.IDLE);
         } else if (_dunker.getDunkerState() == DunkerState.READY_TO_DUNK) {
             _lights.setLightState(LightState.AMP_HANDOFF_COMPLETE);
-        } else if (_shooter.getAmpMode() && _intake.isMiddleDetected()) {
+        } else if (_shooter.getAmpMode() && _intake.isNoteDetected()) {
             _lights.setLightState(LightState.AMP_MODE);
-        } else if (_robotState.isWithinOptimalRange() && _intake.isMiddleDetected()) {
+        } else if (_robotState.isWithinOptimalRange() && _intake.isNoteDetected()) {
             _lights.setLightState(LightState.IN_RANGE_SPEAKER);
         }
         else if (_intake.isMiddleDetected()) {

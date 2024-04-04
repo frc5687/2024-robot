@@ -72,7 +72,7 @@ public class Drive extends OutliersCommand {
         }
 
 
-        Logger.recordOutput("Drive/Rot", rot);
+        // Logger.recordOutput("Drive/Rot", rot);
 
         if (Math.abs(rot) != 0) {
             _driveTrain.temporaryDisableHeadingController();

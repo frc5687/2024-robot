@@ -458,7 +458,7 @@ public class RobotState {
 
     private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
         EstimatedRobotPose estimatedPose = cameraPose.getFirst();
-        Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
+        // Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
 
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
