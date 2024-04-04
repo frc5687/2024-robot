@@ -1,12 +1,17 @@
 package org.frc5687.robot.commands.Intake;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.OI;
 import org.frc5687.robot.commands.OutliersCommand;
+import org.frc5687.robot.commands.RumbleGamepad;
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Intake.IndexState;
 
+import edu.wpi.first.wpilibj2.command.Command;
+
 public class AutoIndexNote extends OutliersCommand {
     private final Intake _intake;
+    private Command _rumbleCommand;
 
     public AutoIndexNote(Intake intake) {
         _intake = intake;
@@ -16,7 +21,7 @@ public class AutoIndexNote extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
-        error("Init AutoIntake");
+        _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         _intake.setIndexState(IndexState.INTAKING);
     }
 
@@ -25,27 +30,29 @@ public class AutoIndexNote extends OutliersCommand {
         switch (_intake.getIndexState()) {
             case INTAKING:
                 if (_intake.isNoteDetected()) {
+                    // we have seen the note on the bottom one (using the others as well for redundancy) - xavier bradford 4/4/24
                     _intake.setSpeed(Constants.Intake.INDEX_SPEED);
                     _intake.setIndexState(IndexState.BOTTOM_HAS_BEEN_DETECTED);
-                } else {
-                    // no note, intake hard
-                    _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
                 }
                 break;
+
             case BOTTOM_HAS_BEEN_DETECTED:
-                if (_intake.isTopDetected()) {
-                    _intake.setSpeed(0);
-                    _intake.setIndexState(IndexState.INDEXED);
-                } else if (_intake.isMiddleDetected()) {
+                if (_intake.isMiddleDetected()) {
                     _intake.setSpeed(Constants.Intake.SLOW_INDEX_SPEED);
                     _intake.setIndexState(IndexState.MIDDLE_HAS_BEEN_DETECTED);
                 }
                 break;
+
             case MIDDLE_HAS_BEEN_DETECTED:
                 if (_intake.isTopDetected()) {
                     _intake.setSpeed(0);
                     _intake.setIndexState(IndexState.INDEXED);
                 }
+                break;
+                
+
+            case INDEXED:
+                _intake.setSpeed(0);
                 break;
             default:
                 break;
@@ -65,6 +72,6 @@ public class AutoIndexNote extends OutliersCommand {
             error("Index interrupted");
         }
         _intake.setSpeed(0);
+        _intake.setIndexState(IndexState.IDLE);
     }
-
 }
