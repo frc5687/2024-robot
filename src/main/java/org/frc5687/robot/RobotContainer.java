@@ -43,6 +43,7 @@ import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
+import org.littletonrobotics.junction.Logger;
 // import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.photonvision.EstimatedRobotPose;
