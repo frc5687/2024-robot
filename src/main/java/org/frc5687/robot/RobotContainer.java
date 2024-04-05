@@ -100,8 +100,8 @@ public class RobotContainer extends OutliersContainer {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Thread.currentThread().setName("Robot Thread");
 
-        // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        // Logger.start();
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.start();
 
         _oi = new OI();
         // create the vision processor
