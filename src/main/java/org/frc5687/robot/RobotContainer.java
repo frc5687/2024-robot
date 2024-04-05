@@ -14,7 +14,6 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.AutoCommands.NearSourceBloopPickup;
 import org.frc5687.robot.commands.AutoCommands.NoteEightPickupNo;
 import org.frc5687.robot.commands.AutoCommands.NoteEightPickupYes;
-import org.frc5687.robot.commands.AutoCommands.NoteIntakedCommand;
 import org.frc5687.robot.commands.AutoCommands.NoteSevenPickupNo;
 import org.frc5687.robot.commands.AutoCommands.NoteSevenPickupYes;
 import org.frc5687.robot.commands.AutoCommands.NoteSixPickupYes;
@@ -46,6 +45,7 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -56,6 +56,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -182,6 +183,18 @@ public class RobotContainer extends OutliersContainer {
             var fieldNotes = _field.getObject("notes");
             fieldNotes.setPoses(new ArrayList<Pose2d>()); // Clear all notes by setting an empty list of poses
         }
+        Pair<EstimatedRobotPose, String>[] cameraPoses = _robotState.getLatestCameraPoses();
+
+        for (int i = 0; i < cameraPoses.length; i++) {
+            Pair<EstimatedRobotPose, String> cameraPose = cameraPoses[i];
+
+            if (cameraPose != null) {
+                Logger.recordOutput("RobotState/CameraPose/" + cameraPose.getSecond(),
+                        cameraPose.getFirst().estimatedPose.toPose2d());
+            }
+        }
+
+        Logger.recordOutput("RobotState/EstimatedRobotPose", _robotState.getEstimatedPose());
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         SmartDashboard.putData(_field);
     }

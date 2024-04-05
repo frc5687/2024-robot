@@ -70,6 +70,8 @@ public class RobotState {
 
     private volatile Optional<Rotation2d> _visionAngle = Optional.empty();
     private volatile Optional<Double> _visionDistance = Optional.empty();
+
+    private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
     private volatile boolean _useVisionUpdates = true;
 
     private static RobotState _instance;
@@ -188,6 +190,10 @@ public class RobotState {
                 .filter(pair -> pair.getFirst() != null)
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
+            
+        for (int i = 0; i < cameraPoses.size() && i < 4; i++) {
+            _latestCameraPoses[i] = cameraPoses.get(i);
+        }
 
        cameraPoses.forEach(this::processVisionMeasurement);
     }
@@ -209,8 +215,6 @@ public class RobotState {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
         _estimatedPose = _poseEstimator.getEstimatedPosition();
-        Logger.recordOutput("RobotState/EstimatedRobotPose", _estimatedPose);
-
     }
 
     public Pose2d getEstimatedPose() {
@@ -458,7 +462,6 @@ public class RobotState {
 
     private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
         EstimatedRobotPose estimatedPose = cameraPose.getFirst();
-        Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
 
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
@@ -643,5 +646,9 @@ public class RobotState {
             return false;
         }
         return _notesPickedUp[id - 1];
+    }
+
+    public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
+        return _latestCameraPoses;
     }
 }
