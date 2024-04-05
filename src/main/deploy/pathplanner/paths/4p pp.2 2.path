@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.825629366080496,
-        "y": 3.1805247850645797
+        "x": 4.111701131469806,
+        "y": 4.9671634052461355
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.612267986262052,
-        "y": 3.3576484413756824
+        "x": 5.759721238016586,
+        "y": 3.496266955010458
       },
       "isLocked": false,
-      "linkedName": "PP2Start"
+      "linkedName": "adamgaming"
     },
     {
       "anchor": {
-        "x": 4.989618384490052,
-        "y": 3.750400896674214
+        "x": 7.846699971073488,
+        "y": 4.0199368954085
       },
       "prevControl": {
-        "x": 4.196412445357724,
-        "y": 3.52707106915152
+        "x": 8.601400767529489,
+        "y": 4.096947180761153
       },
       "nextControl": {
-        "x": 5.4661188951609,
-        "y": 3.8845612346300835
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.76198865718557,
-        "y": 4.043039981014296
-      },
-      "prevControl": {
-        "x": 8.516689453641568,
-        "y": 4.120050266366949
-      },
-      "nextControl": {
-        "x": 6.65781197550293,
-        "y": 3.93036889104668
+        "x": 6.742523289390848,
+        "y": 3.907265805440884
       },
       "isLocked": false,
       "linkedName": null
@@ -68,27 +52,27 @@
         "y": 4.9671634052461355
       },
       "prevControl": {
-        "x": 4.858907173536673,
-        "y": 4.637553784488433
+        "x": 4.866401927925807,
+        "y": 4.4974006645949505
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "N3_Shoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.45,
+      "waypointRelativePos": 0.75,
       "rotationDegrees": 8.767878640429412,
       "rotateFast": true
     },
     {
-      "waypointRelativePos": 3.7,
+      "waypointRelativePos": 2.7,
       "rotationDegrees": -11.029999999999973,
       "rotateFast": true
     },
     {
-      "waypointRelativePos": 1.85,
+      "waypointRelativePos": 0.95,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -97,7 +81,7 @@
     {
       "name": "slowed",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.7,
+      "maxWaypointRelativePos": 0.35,
       "constraints": {
         "maxVelocity": 6.0,
         "maxAcceleration": 3.5,
@@ -107,8 +91,8 @@
     },
     {
       "name": "slow for shot",
-      "minWaypointRelativePos": 3.25,
-      "maxWaypointRelativePos": 4.0,
+      "minWaypointRelativePos": 2.25,
+      "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 6.0,
         "maxAcceleration": 4.0,
@@ -118,8 +102,8 @@
     },
     {
       "name": "slow intake 2",
-      "minWaypointRelativePos": 1.65,
-      "maxWaypointRelativePos": 2.1,
+      "minWaypointRelativePos": 0.85,
+      "maxWaypointRelativePos": 1.1,
       "constraints": {
         "maxVelocity": 5.0,
         "maxAcceleration": 4.0,
@@ -131,7 +115,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 1.55,
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -148,7 +132,7 @@
     },
     {
       "name": "rev shot 2",
-      "waypointRelativePos": 2.6,
+      "waypointRelativePos": 1.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -178,7 +162,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -38.48142289178678,
+    "rotation": -14.58891873287466,
     "velocity": 0
   },
   "useDefaultConstraints": false

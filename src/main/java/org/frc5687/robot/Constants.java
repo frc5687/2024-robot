@@ -285,7 +285,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.0439453125;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.364501953125;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -378,7 +378,7 @@ public class Constants {
         public static final double GEAR_RATIO = 0.625;
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
 
-        public static final double VELOCITY_TOLERANCE = 30;
+        public static final double VELOCITY_TOLERANCE = 20;
 
         public static double[][] kRPMValues = {
             { 3.0, 3700}, // 4/3/24

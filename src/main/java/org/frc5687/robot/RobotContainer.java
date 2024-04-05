@@ -203,14 +203,14 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void teleopInit() {
         _driveTrain.enableAutoShifter();
-        _robotState.useTeleopStandardDeviations();
+        // _robotState.useTeleopStandardDeviations();
         // enforce to make sure kinematic limits are set back to normal.
         _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? LOW_KINEMATIC_LIMITS : HIGH_KINEMATIC_LIMITS);
     }
 
     @Override
     public void autonomousInit() {
-        _robotState.useAutoStandardDeviations();
+        // _robotState.useAutoStandardDeviations();
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
         // yolo
         _driveTrain.disableAutoShifter();

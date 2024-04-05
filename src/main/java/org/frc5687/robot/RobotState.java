@@ -468,7 +468,8 @@ public class RobotState {
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
         double positionDev, angleDev;
-        
+
+        // DriverStation.reportError(estimatedPose.strategy.name(), false);
         if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // multi-tag estimate, trust it more
             positionDev = 0.035;
@@ -496,19 +497,19 @@ public class RobotState {
     }
    
 
-    public void useAutoStandardDeviations() {
-        _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
-                Constants.VisionConfig.Auto.VISION_STD_DEV_X,
-                Constants.VisionConfig.Auto.VISION_STD_DEV_Y,
-                Constants.VisionConfig.Auto.VISION_STD_DEV_ANGLE));
-    }
+    // public void useAutoStandardDeviations() {
+    //     _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
+    //             Constants.VisionConfig.Auto.VISION_STD_DEV_X,
+    //             Constants.VisionConfig.Auto.VISION_STD_DEV_Y,
+    //             Constants.VisionConfig.Auto.VISION_STD_DEV_ANGLE));
+    // }
 
-    public void useTeleopStandardDeviations() {
-        _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
-                Constants.VisionConfig.Teleop.VISION_STD_DEV_X,
-                Constants.VisionConfig.Teleop.VISION_STD_DEV_Y,
-                Constants.VisionConfig.Teleop.VISION_STD_DEV_ANGLE));
-    }
+    // public void useTeleopStandardDeviations() {
+    //     _poseEstimator.setVisionMeasurementStdDevs(createVisionStandardDeviations(
+    //             Constants.VisionConfig.Teleop.VISION_STD_DEV_X,
+    //             Constants.VisionConfig.Teleop.VISION_STD_DEV_Y,
+    //             Constants.VisionConfig.Teleop.VISION_STD_DEV_ANGLE));
+    // }
 
     protected Vector<N3> createStandardDeviations(double x, double y, double z) {
         return VecBuilder.fill(x, y, z);
