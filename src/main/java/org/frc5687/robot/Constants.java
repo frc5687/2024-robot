@@ -285,7 +285,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.364501953125;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.40844;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -381,16 +381,16 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 20;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3700}, // 4/3/24
+            { 3.0, 3700}, // 4/3/24 FIXME maybe add a bit of rpm
             { 3.4, 2550}, // 4/4/24
             { 3.8, 2150}, // 4/4/24
             { 4.0, 2100}, // 4/4/24
             { 4.2, 1990}, // 4/4/24
-            { 4.4, 1950}, // 4/4/24
-            { 4.8, 1880},
+            { 4.4, 1950 + 20}, // guess on 4/5/24
+            { 4.8, 1880 + 20}, // guess on 4/5/24
         };
 
-        public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
+        public static final double IDLE_RPM = 2200;
         public static final double PASS_RPM = 2200;
         public static final double DUNKER_IN_RPM = 750;
 
