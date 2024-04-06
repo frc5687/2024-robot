@@ -584,10 +584,10 @@ public class Constants {
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
 
-        public static final double PREP_ANGLE = 2.3;
-        public static final double DUNK_ANGLE = 3.24;
-        public static final double STOWED_ANGLE = 5.18;
-        public static final double CLIMB_ANGLE = 3.4;
+        public static final double PREP_ANGLE = 2.27; // now 2.27
+        public static final double DUNK_ANGLE = 3.21;
+        public static final double STOWED_ANGLE = 5.15;
+        public static final double CLIMB_ANGLE = 3.37;
         public static final double ANGLE_TOLERANCE = 0.03;
         public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;
