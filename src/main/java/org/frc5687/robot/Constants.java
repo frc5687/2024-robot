@@ -285,7 +285,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.0439453125;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.40844;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
@@ -378,42 +378,20 @@ public class Constants {
         public static final double GEAR_RATIO = 0.625;
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
 
-        public static final double VELOCITY_TOLERANCE = 30;
+        public static final double VELOCITY_TOLERANCE = 20;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3500},
-            { 3.4, 2500},
-            { 3.8, 2300},
-            { 4.2, 1950},
-            { 4.4, 1960},
-            { 4.8, 1880},
+            { 3.0, 3700}, // 4/3/24 FIXME maybe add a bit of rpm
+            { 3.4, 2550}, // 4/4/24
+            { 3.8, 2150}, // 4/4/24
+            { 4.0, 2100}, // 4/4/24
+            { 4.2, 1990}, // 4/4/24
+            { 4.4, 1950 + 20}, // guess on 4/5/24
+            { 4.8, 1880 + 20}, // guess on 4/5/24
         };
 
-        // Old
-        // public static double[][] kRPMValues = {
-        //     { 3.0, 3800},
-        //     { 3.22, 3450},
-        //     { 3.66, 2550},
-        //     { 4.0, 2050},
-        //     { 4.4, 1880},
-        //     { 4.8, 1880 },
-        // };
-
-
-
-        // Older
-        // public static double[][] kRPMValues = {
-        //     { 3.0, 3800},
-        //     { 3.4, 3200},
-        //     { 3.6, 2600},
-        //     { 3.8, 2500},
-        //     { 4.2, 2100},
-        //     { 4.4, 1960},
-        //     { 4.8, 1880 },
-        // };
-
-        public static final double IDLE_RPM = 1800;//kRPMValues[kRPMValues.length - 1][1]; // last rpm value
-        public static final double PASS_RPM = 2250;
+        public static final double IDLE_RPM = 2200;
+        public static final double PASS_RPM = 2200;
         public static final double DUNKER_IN_RPM = 750;
 
         public static final double PASSTHROUGH_RPM = 350;
@@ -489,8 +467,8 @@ public class Constants {
     public static class Intake {
         public static final String CAN_BUS = "CANivore";
         public static final double INTAKE_SPEED = 1.0;
-        public static final double INDEX_SPEED = 0.3;
-        public static final double SLOW_INDEX_SPEED = 0.1;
+        public static final double INDEX_SPEED = 0.7;
+        public static final double SLOW_INDEX_SPEED = 0.2;
         public static final double REVERSE_INDEX_SPEED = -INDEX_SPEED;
         public static final double HANDOFF_SPEED = 0.75;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -606,10 +584,10 @@ public class Constants {
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
 
-        public static final double PREP_ANGLE = 2.3;
-        public static final double DUNK_ANGLE = 3.24;
-        public static final double STOWED_ANGLE = 5.18;
-        public static final double CLIMB_ANGLE = 3.4;
+        public static final double PREP_ANGLE = 2.27; // now 2.27
+        public static final double DUNK_ANGLE = 3.21;
+        public static final double STOWED_ANGLE = 5.15;
+        public static final double CLIMB_ANGLE = 3.37;
         public static final double ANGLE_TOLERANCE = 0.03;
         public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;

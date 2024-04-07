@@ -12,7 +12,7 @@ import org.frc5687.robot.RobotMap;
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
     private OutliersTalon _topTalon;
-    private double _manualShootRPM = 3200;
+    private double _manualShootRPM = 2350;
     private double _targetRPM = 0;
     private boolean _isAmpMode;
     private VelocityTorqueCurrentFOC _focVelocity;

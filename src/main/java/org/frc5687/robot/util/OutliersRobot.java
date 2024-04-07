@@ -5,12 +5,11 @@ import org.frc5687.lib.logging.ILoggingSource;
 import org.frc5687.lib.logging.RioLogger;
 import org.frc5687.robot.Constants;
 import org.littletonrobotics.junction.LoggedRobot;
-// import edu.wpi.first.wpilibj.TimedRobot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-// public abstract class OutliersRobot extends TimedRobot implements ILoggingSource {
 public abstract class OutliersRobot extends LoggedRobot implements ILoggingSource {
+// public abstract class OutliersRobot extends LoggedRobot implements ILoggingSource {
 
     public OutliersRobot() {
         super(Constants.UPDATE_PERIOD);

@@ -80,10 +80,7 @@ public class DriveLights extends OutliersCommand {
         } else if (_robotState.isWithinOptimalRange() && _intake.isNoteDetected()) {
             _lights.setLightState(LightState.IN_RANGE_SPEAKER);
         }
-        // else if (_oi.isShooting()) { //violet doesnt like it
-        // _lights.setLightState(LightState.SHOOTING);
-        // }
-        else if (_intake.isNoteDetected()) {
+        else if (_intake.isMiddleDetected()) {
             _lights.setLightState(LightState.HAS_NOTE);
         } else if (hasObjects && _driveTrain.getCurrentCommand() != null
                 && _driveTrain.getCurrentCommand().hasRequirement(_intake)) { // I hate this but it works :P

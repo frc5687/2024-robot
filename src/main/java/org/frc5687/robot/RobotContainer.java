@@ -14,7 +14,6 @@ import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.commands.AutoCommands.NearSourceBloopPickup;
 import org.frc5687.robot.commands.AutoCommands.NoteEightPickupNo;
 import org.frc5687.robot.commands.AutoCommands.NoteEightPickupYes;
-import org.frc5687.robot.commands.AutoCommands.NoteIntakedCommand;
 import org.frc5687.robot.commands.AutoCommands.NoteSevenPickupNo;
 import org.frc5687.robot.commands.AutoCommands.NoteSevenPickupYes;
 import org.frc5687.robot.commands.AutoCommands.NoteSixPickupYes;
@@ -45,7 +44,9 @@ import org.frc5687.robot.util.OutliersContainer;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -56,6 +57,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -182,6 +184,18 @@ public class RobotContainer extends OutliersContainer {
             var fieldNotes = _field.getObject("notes");
             fieldNotes.setPoses(new ArrayList<Pose2d>()); // Clear all notes by setting an empty list of poses
         }
+        Pair<EstimatedRobotPose, String>[] cameraPoses = _robotState.getLatestCameraPoses();
+
+        for (int i = 0; i < cameraPoses.length; i++) {
+            Pair<EstimatedRobotPose, String> cameraPose = cameraPoses[i];
+
+            if (cameraPose != null) {
+                Logger.recordOutput("RobotState/CameraPose/" + cameraPose.getSecond(),
+                        cameraPose.getFirst().estimatedPose.toPose2d());
+            }
+        }
+
+        Logger.recordOutput("RobotState/EstimatedRobotPose", _robotState.getEstimatedPose());
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
         SmartDashboard.putData(_field);
     }
@@ -189,14 +203,14 @@ public class RobotContainer extends OutliersContainer {
     @Override
     public void teleopInit() {
         _driveTrain.enableAutoShifter();
-        _robotState.useTeleopStandardDeviations();
+        // _robotState.useTeleopStandardDeviations();
         // enforce to make sure kinematic limits are set back to normal.
         _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? LOW_KINEMATIC_LIMITS : HIGH_KINEMATIC_LIMITS);
     }
 
     @Override
     public void autonomousInit() {
-        _robotState.useAutoStandardDeviations();
+        // _robotState.useAutoStandardDeviations();
         _driveTrain.setKinematicLimits(Constants.DriveTrain.AUTO_KINEMATIC_LIMITS);
         // yolo
         _driveTrain.disableAutoShifter();
@@ -268,7 +282,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
         NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 1000.0));
         NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));
-        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2150.0));
+        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2200.0));
         NamedCommands.registerCommand("ShootWhenRPMMatch",
                 new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
         NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);

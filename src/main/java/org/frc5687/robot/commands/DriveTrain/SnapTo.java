@@ -25,7 +25,7 @@ public class SnapTo extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return _driveTrain.getHeading().minus(_rotation).getRadians() < Constants.DriveTrain.HEADING_TOLERANCE;
+        return true;
     }
 
     @Override
