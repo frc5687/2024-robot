@@ -331,6 +331,9 @@ public class Constants {
         public static final double MIN_PSI = 80.0;
         public static final double MAX_PSI = 120.0;
 
+        public static final Rotation2d BLUE_SHOOT_ROTATION = Rotation2d.fromDegrees(-55);
+        public static final Rotation2d RED_SHOOT_ROTATION = Rotation2d.fromDegrees(55 + 180); // absolutely no idea why I have to add 180 this is definitely a skill issue
+
         public static final Pose2d BLUE_SHOOT_POSE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
         public static final Pose2d RED_SHOOT_POSE = new Pose2d(new Translation2d(13.19, 3.0198), new Rotation2d(0.65));
         public static final Pose2d BLUE_SHOOT_POSE_OPPOSITE = new Pose2d(new Translation2d(3.386, 3.0198), new Rotation2d(-0.65));
@@ -653,8 +656,7 @@ public class Constants {
     public static class CANdle {
         public static int NUM_LED = 38;
         public static double SPEED = 0.1;
-        public static double SPEAKER_BRIGHTNESS = 1.0;
-        public static double AMP_BRIGHTNESS = 0.25;
+        public static double BRIGHTNESS = 1.0;
         public static TwinklePercent TWINKLEPERCENT = TwinklePercent.Percent42;
         public static TwinkleOffPercent TWINKLEOFFPERCENT = TwinkleOffPercent.Percent42;
 
