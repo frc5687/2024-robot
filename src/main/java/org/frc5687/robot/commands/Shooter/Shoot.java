@@ -47,14 +47,11 @@ public class Shoot extends OutliersCommand{
         // _driveTrain.setSnapHeading(angle);
         ChassisSpeeds speeds = _robotState.getMeasuredSpeeds();
         boolean isStopped = (Math.abs(speeds.vxMetersPerSecond) < 0.1 && Math.abs(speeds.vyMetersPerSecond) < 0.1 && Math.abs(speeds.omegaRadiansPerSecond) < 0.1);
-        boolean isPrettySlow = (Math.abs(speeds.vxMetersPerSecond) < 0.5 && Math.abs(speeds.vyMetersPerSecond) < 0.5 && Math.abs(speeds.omegaRadiansPerSecond) < 0.1);
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
         Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
-        if (isPrettySlow) { // ask adam about this change - xavier bradford 4/5/24
-            _shooter.setRPMFromDistance(distance);
-        }
+        _shooter.setRPMFromDistance(distance);
 
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         boolean isInAngle = _robotState.isAimedAtSpeaker();
