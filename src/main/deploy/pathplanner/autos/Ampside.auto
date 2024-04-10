@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.36,
+      "y": 7.65
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside 6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
