@@ -89,6 +89,7 @@ public class RobotContainer extends OutliersContainer {
     private RobotState _robotState = RobotState.getInstance();
     Command _pathfindSourceSideCommand;
     Command _pathfindAmpSideCommand;
+    Command _pathfindAmpSideCloseCommand;
 
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
@@ -141,6 +142,10 @@ public class RobotContainer extends OutliersContainer {
         PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
         PathConstraints ampConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
             _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath,ampConstraints,0.0);
+
+            PathPlannerPath ampPathClose = PathPlannerPath.fromPathFile("pathToShootAmpClose");
+        PathConstraints ampConstraintsClose = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
+            _pathfindAmpSideCloseCommand = AutoBuilder.pathfindThenFollowPath(ampPathClose,ampConstraintsClose,0.0);
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
@@ -287,6 +292,7 @@ public class RobotContainer extends OutliersContainer {
                 new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
         NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
         NamedCommands.registerCommand("PathfindToPathSource", _pathfindSourceSideCommand);
+        NamedCommands.registerCommand("PathfindToPathAmpClose", _pathfindAmpSideCloseCommand);
         NamedCommands.registerCommand("EnableVision", new EnableVisionUpdates());
         NamedCommands.registerCommand("DisableVision", new DisableVisionUpdates());
 
