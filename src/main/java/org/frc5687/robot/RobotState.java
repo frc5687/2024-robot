@@ -184,8 +184,7 @@ public class RobotState {
         Pose2d prevEstimatedPose = _estimatedPose;
         List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
+                _photonProcessor.getSouthCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
                 .filter(pair -> pair.getFirst() != null)
                 .filter(pair -> isValidMeasurementTest(pair))
@@ -539,13 +538,7 @@ public class RobotState {
     }
 
     private Optional<Rotation2d> getAngleToTagFromVision(int tagId) {
-        Optional<Rotation2d> angle = Optional.empty();
-
-        Optional<Double> angleRads = _photonProcessor.calculateAngleToTag(tagId);
-        if (angleRads.isPresent()) {
-            angle = Optional.of(new Rotation2d(angleRads.get()));
-        }
-        return angle;
+        return _photonProcessor.calculateAngleToTag(tagId);
     }
 
     public Optional<Rotation2d> getAngleToSpeakerFromVision() {
