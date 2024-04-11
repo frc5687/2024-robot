@@ -33,9 +33,18 @@ public class PhotonProcessor {
         _southCamera = new PhotonCamera("South_Camera");
         _southWestCamera = new PhotonCamera("South_West_Camera");
 
-        _robotToSouthEastCam = new Transform3d();
-        _robotToSouthCam = new Transform3d();
-        _robotToSouthWestCam = new Transform3d();
+        _robotToSouthEastCam = new Transform3d(
+            -0.235, -0.117, 0.578, 
+            new Rotation3d(0, 0, Units.degreesToRadians(162.5))
+        );
+        _robotToSouthCam = new Transform3d(
+            -0.242, 0.0, 0.578, 
+            new Rotation3d(0, 0, Units.degreesToRadians(180))
+        );
+        _robotToSouthWestCam = new Transform3d(
+            -0.235, 0.09, 0.578,
+            new Rotation3d(0, 0, Units.degreesToRadians(-162.5))
+        );
 
         _southEastCameraEstimator = new PhotonPoseEstimator(
                 layout,
