@@ -33,6 +33,7 @@ import org.frc5687.robot.commands.Shooter.ShootWhenRPMMatch;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
 import org.frc5687.robot.commands.Shooter.RevShooter;
+import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
@@ -67,6 +68,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
@@ -135,15 +137,28 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi,_dunker));
         
         PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
-        PathConstraints sourceConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
+        PathConstraints sourceConstraints = new PathConstraints(3.8, 4.0,Units.degreesToRadians(534), Units.degreesToRadians(360));
             _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(sourcePath,sourceConstraints,0.0);
 
         PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
-        PathConstraints ampConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
+        PathConstraints ampConstraints = new PathConstraints(3.8, 4.0,Units.degreesToRadians(534), Units.degreesToRadians(360));
             _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath,ampConstraints,0.0);
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
+        _autoChooser.addOption("Vision 3 Piece", new SequentialCommandGroup(
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("3p passthrough 1")),
+            new ConditionalCommand(
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("3p passthrough 2 true")),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("3p passthrough 2 false")),
+                _intake::isNoteDetected
+            ),
+            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("3p passthrough 3")), 
+            new DriveToNoteStop(_driveTrain, _intake),
+            _pathfindSourceSideCommand,
+            new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+        ));
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
@@ -275,7 +290,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently
                                                                              // has the behavior we want
-        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake, 250));
+        NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake, 1000));
         NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
