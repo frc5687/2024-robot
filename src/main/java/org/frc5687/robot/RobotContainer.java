@@ -69,6 +69,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -148,15 +149,18 @@ public class RobotContainer extends OutliersContainer {
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
-
+        var path = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
+        var startPose = path.getPreviewStartingHolonomicPose();
         _autoChooser.addOption("Xavier's Child", new SequentialCommandGroup(
-            new Shoot(_shooter, _intake, _lights),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child start-1")),
+            Commands.runOnce(() -> {_robotState.setEstimatedPose(startPose);}),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot")),
+            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
             // at this point we are at note 1
             new ConditionalCommand(
                 new SequentialCommandGroup(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-shoot")),
-                    new Shoot(_shooter, _intake, _lights),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-2"))
                 ),
                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-2")),
@@ -166,7 +170,7 @@ public class RobotContainer extends OutliersContainer {
             new ConditionalCommand(
                 new SequentialCommandGroup(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-shoot")),
-                    new Shoot(_shooter, _intake, _lights),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-3"))
                 ),
                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-3")),
@@ -176,7 +180,7 @@ public class RobotContainer extends OutliersContainer {
             new ConditionalCommand(
                 new SequentialCommandGroup(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-shoot")),
-                    new Shoot(_shooter, _intake, _lights)
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights)
                     // FIXME what now
                 ),
                 new WaitCommand(0), // FIXME what now

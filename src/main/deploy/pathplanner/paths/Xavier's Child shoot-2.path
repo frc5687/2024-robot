@@ -16,12 +16,28 @@
     },
     {
       "anchor": {
-        "x": 8.0,
-        "y": 2.4164691107159997
+        "x": 6.807619309683064,
+        "y": 1.9292202889961334
       },
       "prevControl": {
-        "x": 5.6594817448894155,
-        "y": 1.0326943339071872
+        "x": 6.0700059501970856,
+        "y": 1.6896043236530927
+      },
+      "nextControl": {
+        "x": 7.399694348802783,
+        "y": 2.1215576839601504
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.012528339871494,
+        "y": 2.270502309523138
+      },
+      "prevControl": {
+        "x": 7.471833577926415,
+        "y": 2.272461993998063
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +49,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.85,
+      "waypointRelativePos": 1.7,
       "command": {
         "type": "parallel",
         "data": {

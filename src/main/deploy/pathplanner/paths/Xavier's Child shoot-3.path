@@ -8,11 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.150795162701437,
-        "y": 2.8053180180434443
+        "x": 4.802505785567127,
+        "y": 2.9324599714014252
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
+    },
+    {
+      "anchor": {
+        "x": 4.883862383465508,
+        "y": 3.7801719677513437
+      },
+      "prevControl": {
+        "x": 3.9347170794424065,
+        "y": 3.4681450470114226
+      },
+      "nextControl": {
+        "x": 5.3282356842491465,
+        "y": 3.926257537700261
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +36,8 @@
         "y": 4.114935548166836
       },
       "prevControl": {
-        "x": 3.11486114638896,
-        "y": 4.415703581407163
+        "x": 6.62192435958946,
+        "y": 4.155243699376288
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +49,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 1.7,
       "command": {
         "type": "parallel",
         "data": {
