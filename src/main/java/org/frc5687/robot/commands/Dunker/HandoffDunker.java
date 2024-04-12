@@ -12,6 +12,9 @@ public class HandoffDunker extends OutliersCommand {
     private Shooter _shooter;
     private Intake _intake;
 
+    private double _rollerExtendRotation;
+    private double _rollerDunkRotation;
+
     public HandoffDunker(Dunker dunker, Shooter shooter, Intake intake) {
         _dunker = dunker;
         _shooter = shooter;
@@ -22,6 +25,8 @@ public class HandoffDunker extends OutliersCommand {
     @Override
     public void initialize() {
         super.initialize();
+        _rollerDunkRotation = _dunker.getDunkerRollerRotations();
+        _rollerExtendRotation = _dunker.getDunkerRollerRotations();
     }
 
     @Override
@@ -55,17 +60,35 @@ public class HandoffDunker extends OutliersCommand {
                     _shooter.setToStop();
                     _dunker.setToStop();
                     _intake.setSpeed(0);
+                    _rollerDunkRotation = _dunker.getDunkerRollerRotations() + Constants.Dunker.ROLLER_RETRACT_ROTATIONS;
+                    _rollerExtendRotation = _dunker.getDunkerRollerRotations() + Constants.Dunker.ROLLER_EXTEND_ROTATIONS;
+                    _dunker.setDunkerState(DunkerState.CLEAR_CAMERA_BAR);
+                }
+                break;
+            case CLEAR_CAMERA_BAR:
+                if (_dunker.getDunkerRollerRotations() > _rollerExtendRotation) {
+                    _dunker.setRollerSpeed(0);
                     _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
+                } else {
+                    _dunker.setRollerSpeed(0.5);
                 }
                 break;
             case NOTE_IN_DUNKER:
                 _dunker.setDunkerAngle(Constants.Dunker.DUNK_ANGLE);
+
                 if (_dunker.isAtAngle(Constants.Dunker.DUNK_ANGLE)) {
-                    _dunker.setDunkerState(DunkerState.READY_TO_DUNK);
+                    _dunker.setDunkerState(DunkerState.CORRECT_NOTE_LOCATION);
                 }
                 break;
+            case CORRECT_NOTE_LOCATION:
+                if (_dunker.getDunkerRollerRotations() < _rollerDunkRotation) {
+                    _dunker.setRollerSpeed(0);
+                    _dunker.setDunkerState(DunkerState.READY_TO_DUNK);
+                } else {
+                    _dunker.setRollerSpeed(-0.5);
+                }
+                break;  
             case READY_TO_DUNK:
-                // finish the command, the dunker has the note and is READY :)
                 break;
             case DUNKED_NOTE:
                 // you should never be here in this command

@@ -274,7 +274,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = 0.1123046875;
+            NORTH_WEST_CONFIG.encoderOffset = -0.16845703125;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -591,6 +591,9 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.03;
         public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;
+
+        public static final double ROLLER_EXTEND_ROTATIONS = 10;
+        public static final double ROLLER_RETRACT_ROTATIONS = 10;
     }
     
     public static class Climber {
