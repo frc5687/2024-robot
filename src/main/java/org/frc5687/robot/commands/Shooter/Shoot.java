@@ -13,7 +13,7 @@ import org.frc5687.robot.subsystems.Lights;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
-public class Shoot extends OutliersCommand{
+public class Shoot extends OutliersCommand {
     private final Shooter _shooter;
     private final Intake _intake;
     private final Lights _lights;

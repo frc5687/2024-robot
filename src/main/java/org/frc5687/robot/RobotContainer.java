@@ -7,6 +7,7 @@ import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.frc5687.robot.Constants.VisionConfig.Auto;
 import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.EnableVisionUpdates;
@@ -32,7 +33,9 @@ import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.ShootWhenRPMMatch;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
+import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.RevShooter;
+import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
@@ -67,6 +70,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
@@ -144,6 +148,41 @@ public class RobotContainer extends OutliersContainer {
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
+
+        _autoChooser.addOption("Xavier's Child", new SequentialCommandGroup(
+            new Shoot(_shooter, _intake, _lights),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child start-1")),
+            // at this point we are at note 1
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-shoot")),
+                    new Shoot(_shooter, _intake, _lights),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-2"))
+                ),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-2")),
+                _intake::isNoteDetected
+            ),
+            // at this point we are at note 2
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-shoot")),
+                    new Shoot(_shooter, _intake, _lights),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-3"))
+                ),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-3")),
+                _intake::isNoteDetected
+            ),
+            // at this point we are at note 3
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-shoot")),
+                    new Shoot(_shooter, _intake, _lights)
+                    // FIXME what now
+                ),
+                new WaitCommand(0), // FIXME what now
+                _intake::isNoteDetected
+            )
+        ));
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);

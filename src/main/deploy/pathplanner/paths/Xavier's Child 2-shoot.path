@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.325620264691894,
-        "y": 1.598722732549252
+        "x": 5.391895737495179,
+        "y": 0.6726468499233303
       },
       "isLocked": false,
       "linkedName": "F4"
@@ -20,8 +20,8 @@
         "y": 3.0
       },
       "prevControl": {
-        "x": 4.227271576743513,
-        "y": 1.8769129317163005
+        "x": 4.357954331649404,
+        "y": 1.8242880930206304
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,25 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.1,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Rev"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.8,
     "maxAcceleration": 6.0,
@@ -57,8 +39,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.214466584265494,
-    "rotateFast": false
+    "rotation": -42.27497217597322,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,
