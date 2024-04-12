@@ -17,16 +17,10 @@ public class IdleShooter extends OutliersCommand {
     }
 
     public void execute() {
-        boolean hasNote = false;
-        if (_intake.isBottomDetected() || _intake.isTopDetected()) {
-            hasNote = true;
-        }
-
-        // if (_robotState.isWithinOptimalRange() && hasNote &&
-        // _shooter.getSpinUpAutomatically()) {
-        // _shooter.setRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst());
+        // if (_robotState.isWithinOptimalRange() && _intake.isNoteDetected() && !_shooter.getAmpMode()) {
+        //     _shooter.setRPMFromDistance(_robotState.getDistanceAndAngleToSpeaker().getFirst());
         // } else {
-        _shooter.setToIdle();
+            _shooter.setToIdle();
         // }
 
     }
