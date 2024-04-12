@@ -65,7 +65,7 @@ public class Drive extends OutliersCommand {
         }
 
         // if has note and is within shooting range and is in speaker mode
-        boolean shouldAutoAim = (_intake.isBottomDetected() || _intake.isTopDetected()) && _robotState.isWithinOptimalRange() && !_shooter.getAmpMode();
+        boolean shouldAutoAim = _intake.isNoteDetected() && _robotState.isWithinOptimalRange() && !_shooter.getAmpMode() && !_robotState.isAutoAiming(); // robot is already autoaiming
         
         if (shouldAutoAim) {
             _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));

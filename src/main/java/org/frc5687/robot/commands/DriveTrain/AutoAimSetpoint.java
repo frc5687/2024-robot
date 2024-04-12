@@ -26,6 +26,7 @@ public class AutoAimSetpoint extends OutliersCommand {
     public void initialize() {
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
+        _robotState.setAutoAiming(true);
     }
 
     @Override
@@ -55,6 +56,7 @@ public class AutoAimSetpoint extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         _driveTrain.goToHeading(_driveTrain.getHeading());
+        _robotState.setAutoAiming(false);
     }
 
 

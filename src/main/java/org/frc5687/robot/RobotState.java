@@ -74,6 +74,8 @@ public class RobotState {
     private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
     private volatile boolean _useVisionUpdates = true;
 
+    private boolean _isAutoAiming = false;
+
     private static RobotState _instance;
     private double _lastTimestamp;
     private Transform3d _robotToCamera;
@@ -642,6 +644,14 @@ public class RobotState {
             return false;
         }
         return _notesPickedUp[id - 1];
+    }
+
+    public void setAutoAiming(boolean value) {
+        _isAutoAiming = value;
+    }
+
+    public boolean isAutoAiming() {
+        return _isAutoAiming;
     }
 
     public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
