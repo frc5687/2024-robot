@@ -159,27 +159,27 @@ public class RobotContainer extends OutliersContainer {
             // at this point we are at note 1
             new ConditionalCommand(
                 new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-shoot")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.1 part 2")),
                     new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-2"))
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1"))
                 ),
-                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-2")),
-                _intake::isNoteDetected
-            ),
-            // at this point we are at note 2
-            new ConditionalCommand(
-                new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-shoot")),
-                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-3"))
-                ),
-                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-3")),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-3")),
                 _intake::isNoteDetected
             ),
             // at this point we are at note 3
             new ConditionalCommand(
                 new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-shoot")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1"))
+                ),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
+                _intake::isNoteDetected
+            ),
+            // at this point we are at note 2
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
                     new AutoShoot(_shooter, _intake, _driveTrain, _lights)
                     // FIXME what now
                 ),
