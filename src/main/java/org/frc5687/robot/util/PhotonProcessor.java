@@ -127,7 +127,7 @@ public class PhotonProcessor {
             results.targets.removeIf(tag -> tag.getPoseAmbiguity() > Constants.Vision.AMBIGUITY_TOLERANCE);
         }
         Optional<EstimatedRobotPose> pose = _southCameraEstimator.update(results);
-        return new Pair<>(pose.orElse(null), "NorthEast");
+        return new Pair<>(pose.orElse(null), "South");
     }
 
     public Pair<EstimatedRobotPose, String> getSouthWestCameraEstimatedGlobalPoseWithName(
