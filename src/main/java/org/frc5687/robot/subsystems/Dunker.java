@@ -16,9 +16,11 @@ public class Dunker extends OutliersSubsystem {
         STOWING(1),
         STOWED(2),
         PREPARED_FOR_NOTE(3),
-        NOTE_IN_DUNKER(4),
-        READY_TO_DUNK(5),
-        DUNKED_NOTE(6);
+        CLEAR_CAMERA_BAR(4),
+        NOTE_IN_DUNKER(5),
+        CORRECT_NOTE_LOCATION(6),
+        READY_TO_DUNK(7),
+        DUNKED_NOTE(8);
 
         private final int _value;
 
@@ -93,6 +95,10 @@ public class Dunker extends OutliersSubsystem {
         return _dunkerProx.get();
     }
 
+    public void setRollerSpeed(double speed) {
+        _dunkerDriveTalon.set(speed);
+    }
+
     public void setToStop() {
         _dunkerDriveTalon.setVelocity(0);
         _targetRPM = 0;
@@ -114,6 +120,10 @@ public class Dunker extends OutliersSubsystem {
 
     public void setDunkerState(DunkerState state) {
         _dunkerState = state;
+    }
+
+    public double getDunkerRollerRotations() {
+        return _dunkerDriveTalon.getRotorPosition().getValueAsDouble();
     }
 
     @Override

@@ -591,6 +591,9 @@ public class Constants {
         public static final double ANGLE_TOLERANCE = 0.03;
         public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;
+
+        public static final double ROLLER_EXTEND_ROTATIONS = 10;
+        public static final double ROLLER_RETRACT_ROTATIONS = 10;
     }
     
     public static class Climber {
