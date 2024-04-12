@@ -26,22 +26,23 @@ public class AutoAimSetpoint extends OutliersCommand {
     public void initialize() {
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
+        _robotState.setAutoAiming(true);
     }
 
     @Override
     public void execute() {
         Optional<Rotation2d> visionAngle = _robotState.getAngleToSpeakerFromVision();
 
-        // if (visionAngle.isPresent()) {
-        //     double angleRadians = visionAngle.get().getRadians();
-        //     metric("Vision Angle", angleRadians);
-        //     _targetHeading = _driveTrain.getHeading().minus(Rotation2d.fromRadians(angleRadians));
-        //     metric("Vision Angle Robot Heading", _targetHeading.getRadians());
-        // } else {
+        if (visionAngle.isPresent()) {
+            double angleRadians = visionAngle.get().getRadians();
+            metric("Vision Angle", angleRadians);
+            _targetHeading = _driveTrain.getHeading().minus(Rotation2d.fromRadians(angleRadians));
+            metric("Vision Angle Robot Heading", _targetHeading.getRadians());
+        } else {
             Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
             _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
             metric("Pose Angle Robot Heading", _targetHeading.getRadians());
-        // }
+        }
 
         _driveTrain.goToHeading(_targetHeading);
     }
@@ -55,6 +56,7 @@ public class AutoAimSetpoint extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         _driveTrain.goToHeading(_driveTrain.getHeading());
+        _robotState.setAutoAiming(false);
     }
 
 

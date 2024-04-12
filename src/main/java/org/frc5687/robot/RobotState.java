@@ -74,6 +74,8 @@ public class RobotState {
     private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
     private volatile boolean _useVisionUpdates = true;
 
+    private boolean _isAutoAiming = false;
+
     private static RobotState _instance;
     private double _lastTimestamp;
     private Transform3d _robotToCamera;
@@ -184,8 +186,7 @@ public class RobotState {
         Pose2d prevEstimatedPose = _estimatedPose;
         List<Pair<EstimatedRobotPose, String>> cameraPoses = Stream.of(
                 _photonProcessor.getSouthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthEastCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
-                _photonProcessor.getNorthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
+                _photonProcessor.getSouthCameraEstimatedGlobalPoseWithName(prevEstimatedPose),
                 _photonProcessor.getSouthWestCameraEstimatedGlobalPoseWithName(prevEstimatedPose))
                 .filter(pair -> pair.getFirst() != null)
                 .filter(pair -> isValidMeasurementTest(pair))
@@ -205,8 +206,8 @@ public class RobotState {
             updateWithVision();
         }
 
-        // _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        // _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -399,7 +400,7 @@ public class RobotState {
     private Optional<Boolean> isVisionAimedAtSpeaker() {
         Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
         if (visionAngle.isPresent()) {
-            return Optional.of(Math.abs((_driveTrain.getHeading().minus(visionAngle.get()).getRadians())) > Constants.RobotState.VISION_AIMING_TOLERANCE);
+            return Optional.of(Math.abs(_driveTrain.getHeading().minus(visionAngle.get()).getRadians()) > Constants.RobotState.VISION_AIMING_TOLERANCE);
         }
         return Optional.empty();
     }
@@ -539,13 +540,7 @@ public class RobotState {
     }
 
     private Optional<Rotation2d> getAngleToTagFromVision(int tagId) {
-        Optional<Rotation2d> angle = Optional.empty();
-
-        Optional<Double> angleRads = _photonProcessor.calculateAngleToTag(tagId);
-        if (angleRads.isPresent()) {
-            angle = Optional.of(new Rotation2d(angleRads.get()));
-        }
-        return angle;
+        return _photonProcessor.calculateAngleToTag(tagId);
     }
 
     public Optional<Rotation2d> getAngleToSpeakerFromVision() {
@@ -649,6 +644,14 @@ public class RobotState {
             return false;
         }
         return _notesPickedUp[id - 1];
+    }
+
+    public void setAutoAiming(boolean value) {
+        _isAutoAiming = value;
+    }
+
+    public boolean isAutoAiming() {
+        return _isAutoAiming;
     }
 
     public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
