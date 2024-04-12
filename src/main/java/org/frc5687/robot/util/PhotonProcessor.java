@@ -145,7 +145,7 @@ public class PhotonProcessor {
         Optional<Rotation2d> southYaw = Optional.empty();
         for (PhotonTrackedTarget target : _southCamera.getLatestResult().targets) {
             if (target.getFiducialId() == tagId) {
-                southYaw = Optional.of(new Rotation2d(target.getYaw() + Math.PI)); // hardcoding this lmao - xavier
+                southYaw = Optional.of(Rotation2d.fromDegrees(target.getYaw()));
                 break;
             }
         }
@@ -153,53 +153,19 @@ public class PhotonProcessor {
     }
 
     public Optional<Double> calculateDistanceToTag(int tagId) {
-        PhotonPipelineResult southEastResults = _southEastCamera.getLatestResult();
-        PhotonPipelineResult southWestResults = _southWestCamera.getLatestResult();
-
-        Optional<Double> southEastDistance = Optional.empty();
-        Optional<Double> southWestDistance = Optional.empty();
-
-        // Always check if targets are available
-        if (southEastResults.hasTargets()) {
-            Optional<PhotonTrackedTarget> southEastTag = southEastResults.getTargets().stream()
-                    .filter(target -> target.getFiducialId() == tagId)
-                    .findFirst();
-
-            if (southEastTag.isPresent()) {
-                var camToTarget = southEastTag.get().getBestCameraToTarget();
-                var robotToCamera = _robotToSouthEastCam;
+        Optional<Double> southDist = Optional.empty();
+        for (PhotonTrackedTarget target : _southCamera.getLatestResult().targets) {
+            if (target.getFiducialId() == tagId) {
+                var camToTarget = target.getBestCameraToTarget();
+                var robotToCamera = _robotToSouthCam;
                 var robotToTarget = robotToCamera.plus(camToTarget);
 
                 double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
-                southEastDistance = Optional.of(distance);
+                southDist = Optional.of(distance);
+                break;
             }
         }
-
-        if (southWestResults.hasTargets()) {
-            Optional<PhotonTrackedTarget> southWestTag = southWestResults.getTargets().stream()
-                    .filter(target -> target.getFiducialId() == tagId)
-                    .findFirst();
-
-            if (southWestTag.isPresent()) {
-                var camToTarget = southWestTag.get().getBestCameraToTarget();
-                var robotToCamera = _robotToSouthWestCam;
-                var robotToTarget = robotToCamera.plus(camToTarget);
-
-                double distance = Math.sqrt(Math.pow(robotToTarget.getX(), 2) + Math.pow(robotToTarget.getY(), 2));
-                southWestDistance = Optional.of(distance);
-            }
-        }
-
-        if (southEastDistance.isPresent() && southWestDistance.isPresent()) {
-            double averageDistance = (southEastDistance.get() + southWestDistance.get()) / 2.0;
-            return Optional.of(averageDistance);
-        } else if (southEastDistance.isPresent()) {
-            return southEastDistance;
-        } else if (southWestDistance.isPresent()) {
-            return southWestDistance;
-        } else {
-            return Optional.empty();
-        }
+        return southDist;
     }
 
     public enum Pipeline {

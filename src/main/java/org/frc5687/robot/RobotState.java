@@ -204,8 +204,8 @@ public class RobotState {
             updateWithVision();
         }
 
-        // _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        // _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -398,7 +398,7 @@ public class RobotState {
     private Optional<Boolean> isVisionAimedAtSpeaker() {
         Optional<Rotation2d> visionAngle = getAngleToSpeakerFromVision();
         if (visionAngle.isPresent()) {
-            return Optional.of(Math.abs((_driveTrain.getHeading().minus(visionAngle.get()).getRadians())) > Constants.RobotState.VISION_AIMING_TOLERANCE);
+            return Optional.of(Math.abs(_driveTrain.getHeading().minus(visionAngle.get()).getRadians()) > Constants.RobotState.VISION_AIMING_TOLERANCE);
         }
         return Optional.empty();
     }
