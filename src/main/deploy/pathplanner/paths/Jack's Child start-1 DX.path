@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0,
-        "y": 3.0
+        "x": 1.4324184098605162,
+        "y": 1.5368114148550551
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.011980945258187,
-        "y": 2.4050673101346205
+        "x": 2.7768175837103555,
+        "y": 1.121319936875463
       },
       "isLocked": false,
-      "linkedName": "LW_SHOOT"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.280543879383497,
-        "y": 0.761263076410865
+        "x": 6.161352072077578,
+        "y": 0.8332744485037843
       },
       "prevControl": {
-        "x": 6.389210823569237,
-        "y": 1.3004732289052434
+        "x": 4.227332364439166,
+        "y": 0.761263076410865
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F5"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.8,
+      "name": "Drop",
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,24 @@
             {
               "type": "named",
               "data": {
-                "name": "Intake"
+                "name": "Passthrough"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "RevStop",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RevStop"
               }
             }
           ]
@@ -56,15 +73,15 @@
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -1.4370518703953585,
+    "velocity": 3.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -40.0,
-    "velocity": 0.0
+    "rotation": 0.0,
+    "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7459555670991045,
-        "y": 2.6644207674380267
+        "x": 3.1883111385270393,
+        "y": 2.602696734215524
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
     },
     {
       "anchor": {
-        "x": 2.2624506401895013,
-        "y": 2.222065196010092
+        "x": 3.9598615538083215,
+        "y": 1.8208589800638249
       },
       "prevControl": {
-        "x": 2.4681974175978434,
-        "y": 2.3660879401959307
+        "x": 3.682103404307061,
+        "y": 2.2529272126213415
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
     "maxAngularAcceleration": 420.0
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": -140.0,
+    "velocity": 3.0,
+    "rotation": -50.0,
     "rotateFast": true
   },
   "reversed": false,

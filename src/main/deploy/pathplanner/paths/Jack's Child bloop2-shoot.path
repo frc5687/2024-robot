@@ -3,34 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.511121593671759,
-        "y": 0.9052858205967037
+        "x": 7.3341087033051275,
+        "y": 0.7304010597996147
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.163480201647121,
-        "y": 1.460802119599227
+        "x": 5.98646731128049,
+        "y": 1.2859173588021378
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 3.0
+        "x": 3.445494610287466,
+        "y": 2.715857461790112
       },
       "prevControl": {
-        "x": 3.9084248594562356,
-        "y": 2.2117778571396745
+        "x": 4.3539194697437,
+        "y": 1.9276353189297866
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LW_SHOOT"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Rev",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "RevRPM"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.8,
     "maxAcceleration": 6.0,

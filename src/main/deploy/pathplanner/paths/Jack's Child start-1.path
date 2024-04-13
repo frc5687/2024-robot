@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 8.24246465159597,
-        "y": 0.776153820826161
+        "x": 8.280543879383497,
+        "y": 0.761263076410865
       },
       "prevControl": {
-        "x": 7.242491310238885,
-        "y": 0.7688520008382409
+        "x": 7.280570538026412,
+        "y": 0.7539612564229448
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Passthrough",
+      "name": "PassthroughNT",
       "waypointRelativePos": 0.75,
       "command": {
         "type": "parallel",

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7459555670991045,
-        "y": 2.6644207674380267
+        "x": 3.5483679989916372,
+        "y": 1.5739628471738154
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
     },
     {
       "anchor": {
-        "x": 2.2624506401895013,
-        "y": 2.222065196010092
+        "x": 6.706581032209684,
+        "y": 1.2653426810613029
       },
       "prevControl": {
-        "x": 2.4681974175978434,
-        "y": 2.3660879401959307
+        "x": 5.194342218258372,
+        "y": 0.4114935548166845
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,14 +32,14 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.8,
     "maxAcceleration": 6.0,
-    "maxAngularVelocity": 700.0,
-    "maxAngularAcceleration": 420.0
+    "maxAngularVelocity": 534.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": -140.0,
+    "velocity": 2.0,
+    "rotation": 30.0,
     "rotateFast": true
   },
   "reversed": false,
@@ -48,5 +48,5 @@
     "rotation": -45.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

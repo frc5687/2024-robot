@@ -686,10 +686,16 @@ public class Constants {
         public static final double VISION_TIMESTAMP_FUDGE = -0.00;
 
         public static double VISION_AIMING_TOLERANCE = Units.degreesToRadians(2);
+
+        // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
         
-        public static double ZED_X_OFFSET = 0.381;
-        public static double ZED_Y_OFFSET = 0.0285;
-        public static double ZED_Z_OFFSET = 0.3556;
+        public static double ZED_X_OFFSET = 0.3662; // positive north
+        public static double ZED_Y_OFFSET = 0.0000; // positive west
+        public static double ZED_Z_OFFSET = 0.3082; // positive up
+
+        public static double ZED_ROLL = 0.0; // positive tilt right
+        public static double ZED_PITCH = Units.degreesToRadians(9.16); // positive down
+        public static double ZED_YAW = 0.0; // positive counterclockwise
 
         public static final Pose2d BLUE_CORNER = new Pose2d(0.5, 7.5, new Rotation2d());
         public static final Pose2d RED_CORNER = new Pose2d(15.5, 7.5, new Rotation2d());

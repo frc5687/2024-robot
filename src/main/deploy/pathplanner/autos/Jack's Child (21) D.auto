@@ -14,19 +14,68 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Jack's Child start-1"
+            "pathName": "Jack's Child start-2 D"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "DynamicNoteNoIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PassthroughNoTimeout"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Jack's Child 1-2"
+            "pathName": "Jack's Child 2-1 D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Jack's Child 2-shoot"
+            "pathName": "Jack's Child 1-shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Jack's Child shoot-bloop2a"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DynamicNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Jack's Child bloop2a-shoot"
           }
         },
         {
@@ -51,30 +100,6 @@
           "type": "path",
           "data": {
             "pathName": "Jack's Child bloop1-shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Jack's Child shoot-bloop2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Jack's Child bloop2-shoot"
           }
         },
         {
