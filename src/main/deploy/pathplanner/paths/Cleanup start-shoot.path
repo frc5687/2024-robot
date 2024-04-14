@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.012528339871494,
-        "y": 2.270502309523138
+        "x": 1.3935117917629198,
+        "y": 5.515013115334288
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.338148604563388,
-        "y": 1.45275593135639
+        "x": 1.501187563778637,
+        "y": 6.491310827233184
       },
       "isLocked": false,
-      "linkedName": "F4"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 3.0
+        "x": 3.6409540488253915,
+        "y": 6.275276710954424
       },
       "prevControl": {
-        "x": 4.227271576743513,
-        "y": 1.8769129317163005
+        "x": 2.6409540488253915,
+        "y": 6.275276710954424
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LW_SHOOT"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.1,
+      "name": "Intake",
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,11 +57,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.214466584265494,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": true
 }

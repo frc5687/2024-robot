@@ -8,45 +8,45 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.725280983577504,
-        "y": 2.404671846949627
+        "x": 2.7459555670991045,
+        "y": 2.6644207674380267
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
     },
     {
       "anchor": {
-        "x": 8.280543879383497,
-        "y": 0.761263076410865
+        "x": 2.2624506401895013,
+        "y": 2.222065196010092
       },
       "prevControl": {
-        "x": 6.751407797625908,
-        "y": 0.8429738065279386
+        "x": 2.4681974175978434,
+        "y": 2.3660879401959307
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F5"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.8,
+    "maxVelocity": 3.0,
     "maxAcceleration": 6.0,
-    "maxAngularVelocity": 534.0,
-    "maxAngularAcceleration": 360.0
+    "maxAngularVelocity": 700.0,
+    "maxAngularAcceleration": 420.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0,
-    "rotateFast": false
+    "velocity": 1.0,
+    "rotation": -140.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -40.129999999999995,
+    "rotation": -45.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -70,7 +70,7 @@ public class HandoffDunker extends OutliersCommand {
                     _dunker.setRollerSpeed(0);
                     _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
                 } else {
-                    _dunker.setRollerSpeed(0.5);
+                    _dunker.setRollerSpeed(0.8);
                 }
                 break;
             case NOTE_IN_DUNKER:
@@ -85,7 +85,7 @@ public class HandoffDunker extends OutliersCommand {
                     _dunker.setRollerSpeed(0);
                     _dunker.setDunkerState(DunkerState.READY_TO_DUNK);
                 } else {
-                    _dunker.setRollerSpeed(-0.5);
+                    _dunker.setRollerSpeed(-0.8);
                 }
                 break;  
             case READY_TO_DUNK:

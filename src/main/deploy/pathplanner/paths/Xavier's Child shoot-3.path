@@ -8,32 +8,48 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.725280983577504,
-        "y": 2.404671846949627
+        "x": 4.802505785567127,
+        "y": 2.9324599714014252
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
     },
     {
       "anchor": {
-        "x": 8.280543879383497,
-        "y": 0.761263076410865
+        "x": 4.883862383465508,
+        "y": 3.7801719677513437
       },
       "prevControl": {
-        "x": 6.751407797625908,
-        "y": 0.8429738065279386
+        "x": 3.9347170794424065,
+        "y": 3.4681450470114226
+      },
+      "nextControl": {
+        "x": 5.3282356842491465,
+        "y": 3.926257537700261
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.280543879383497,
+        "y": 4.114935548166836
+      },
+      "prevControl": {
+        "x": 6.62192435958946,
+        "y": 4.155243699376288
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F5"
+      "linkedName": "F3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.75,
+      "name": "Intake",
+      "waypointRelativePos": 1.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +57,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Passthrough"
+                "name": "Intake"
               }
             }
           ]
@@ -57,13 +73,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
-    "rotateFast": false
+    "rotation": 1.2145559378957607,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -40.129999999999995,
+    "rotation": -43.54231457917136,
     "velocity": 0
   },
   "useDefaultConstraints": true

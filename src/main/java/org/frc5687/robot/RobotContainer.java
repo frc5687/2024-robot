@@ -4,9 +4,12 @@ package org.frc5687.robot;
 import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
 import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 
+import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.frc5687.robot.Constants.VisionConfig.Auto;
 import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.EnableVisionUpdates;
@@ -21,6 +24,8 @@ import org.frc5687.robot.commands.AutoCommands.UnderStageBloopPickup;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
+import org.frc5687.robot.commands.DriveTrain.DriveToNoteStopNoIndex;
+import org.frc5687.robot.commands.DriveTrain.DriveToNoteStopNoIntake;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShootOpposite;
 import org.frc5687.robot.commands.Dunker.IdleDunker;
@@ -32,7 +37,9 @@ import org.frc5687.robot.commands.Shooter.AutoShoot;
 import org.frc5687.robot.commands.Shooter.ShootWhenRPMMatch;
 import org.frc5687.robot.commands.Shooter.DefinedRPMShoot;
 import org.frc5687.robot.commands.Shooter.IdleShooter;
+import org.frc5687.robot.commands.Shooter.ManualShoot;
 import org.frc5687.robot.commands.Shooter.RevShooter;
+import org.frc5687.robot.commands.Shooter.Shoot;
 import org.frc5687.robot.subsystems.Climber;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Dunker;
@@ -56,17 +63,22 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer extends OutliersContainer {
@@ -109,7 +121,19 @@ public class RobotContainer extends OutliersContainer {
 
         _field = new Field2d();
 
-        _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+        try {
+            if (!DriverStation.isFMSAttached()) {
+                _photonProcessor = new PhotonProcessor(new AprilTagFieldLayout("home/lvuser/deploy/layouts/2024-colliseum.json"));
+                System.out.println("loaded home apriltag layout");
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (_photonProcessor == null) {
+            _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+            info("loaded comp apriltag layout");
+        }
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
@@ -144,13 +168,51 @@ public class RobotContainer extends OutliersContainer {
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("");
+        var path = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
+        var startPose = path.getPreviewStartingHolonomicPose();
+        _autoChooser.addOption("Xavier's Child", new SequentialCommandGroup(
+            Commands.runOnce(() -> {_robotState.setEstimatedPose(startPose);}),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot")),
+            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
+            // at this point we are at note 1
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.1 part 2")),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1"))
+                ),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-3")),
+                _intake::isNoteDetected
+            ),
+            // at this point we are at note 3
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1"))
+                ),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
+                _intake::isNoteDetected
+            ),
+            // at this point we are at note 2
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                    // FIXME what now
+                ),
+                new WaitCommand(0), // FIXME what now
+                _intake::isNoteDetected
+            )
+        ));
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
         _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
 
-        PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
+        // PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
     public void periodic() {
@@ -271,14 +333,18 @@ public class RobotContainer extends OutliersContainer {
     public void registerNamedCommands() {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
+        NamedCommands.registerCommand("DynamicNoteNoIndex", new DriveToNoteStopNoIndex(_driveTrain, _intake));
+        NamedCommands.registerCommand("DynamicNoteNoIntake", new DriveToNoteStopNoIntake(_driveTrain));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently
                                                                              // has the behavior we want
         NamedCommands.registerCommand("Passthrough", new AutoPassthrough(_shooter, _intake, 250));
+        NamedCommands.registerCommand("PassthroughNoTimeout", new AutoPassthrough(_shooter, _intake, 99999999));
         NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
+        NamedCommands.registerCommand("RevStop", new RevShooter(_shooter, 0.0));
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
         NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 1000.0));
         NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));

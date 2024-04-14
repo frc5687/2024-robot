@@ -49,6 +49,7 @@ public class RobotState {
         public ChassisSpeeds speeds;
     }
 
+    //should probably reflect the layout in RobotContainer at some point.
     private static AprilTagFieldLayout _layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     private Thread _periodicThread;
@@ -104,7 +105,12 @@ public class RobotState {
             Constants.RobotState.ZED_X_OFFSET, 
             Constants.RobotState.ZED_Y_OFFSET, 
             Constants.RobotState.ZED_Z_OFFSET,
-            new Rotation3d());
+            new Rotation3d(
+                Constants.RobotState.ZED_ROLL,
+                Constants.RobotState.ZED_PITCH,
+                Constants.RobotState.ZED_YAW
+            )
+        );
         initPoseEstimator();
         _periodicThread = new Thread(this::run);
         _periodicThread.setName("RobotState Thread");

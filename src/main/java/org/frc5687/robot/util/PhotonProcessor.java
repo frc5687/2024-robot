@@ -33,6 +33,8 @@ public class PhotonProcessor {
         _southCamera = new PhotonCamera("South_Camera");
         _southWestCamera = new PhotonCamera("South_West_Camera");
 
+        // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
+
         _robotToSouthEastCam = new Transform3d(
             -0.235, -0.117, 0.578, 
             new Rotation3d(0, 0, Units.degreesToRadians(162.5))

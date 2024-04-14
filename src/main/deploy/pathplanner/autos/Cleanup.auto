@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4519767344255718,
-      "y": 3.498942845525176
+      "x": 1.3935117917629198,
+      "y": 5.515013115334288
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Start to Source Side Shoot"
+            "pathName": "Cleanup start-shoot"
           }
         },
         {
@@ -26,19 +26,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side Shoot to F5 Passthrough "
+            "pathName": "Cleanup shoot-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F5 to F1 "
+            "pathName": "Cleanup 2-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F1 to Amp Side Shoot "
+            "pathName": "Cleanup 3-shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cleanup shoot-1"
           }
         },
         {
