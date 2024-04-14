@@ -43,15 +43,35 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "DynamicNoteNoIndex"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Jack's Child 2-shoot"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "DynamicNoteNoIndex"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Jack's Child 2-shoot"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
           }
         },
         {

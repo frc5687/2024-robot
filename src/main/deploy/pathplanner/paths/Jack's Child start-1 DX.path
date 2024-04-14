@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 6.161352072077578,
-        "y": 0.8332744485037843
+        "x": 6.840316437525107,
+        "y": 0.8641364651150358
       },
       "prevControl": {
-        "x": 4.227332364439166,
-        "y": 0.761263076410865
+        "x": 5.122330846165453,
+        "y": 0.8949984817262873
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Drop",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
         "data": {
@@ -74,7 +74,7 @@
   },
   "goalEndState": {
     "velocity": 3.8,
-    "rotation": 0.0,
+    "rotation": -11.534620653644733,
     "rotateFast": false
   },
   "reversed": false,

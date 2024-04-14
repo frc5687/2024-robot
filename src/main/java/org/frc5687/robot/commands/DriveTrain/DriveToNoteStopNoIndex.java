@@ -36,7 +36,7 @@ public class DriveToNoteStopNoIndex extends OutliersCommand {
         _yawController = new ProfiledPIDController(4.0, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.MAX_ANG_VEL, Constants.DriveTrain.MAX_ANG_VEL * 4.0));
         _intake = intake;
-        addRequirements(_driveTrain, _intake);
+        addRequirements(_driveTrain);
     }
 
     @Override
@@ -52,10 +52,7 @@ public class DriveToNoteStopNoIndex extends OutliersCommand {
 
     @Override
     public void execute() {
-
-        _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
-        if (_intake.isMiddleDetected()) {
-            _intake.setSpeed(0);
+        if (_intake.isBottomDetected()) {
             isFinished = true;
         }
 
@@ -104,6 +101,5 @@ public class DriveToNoteStopNoIndex extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        _intake.setSpeed(0);
     }
 }
