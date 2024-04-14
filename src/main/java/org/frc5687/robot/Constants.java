@@ -303,7 +303,7 @@ public class Constants {
         public static final double MOVING_HEADING_kD = 1;
 
         public static final double AIMING_HEADING_kP = 7;
-        public static final double AIMING_HEADING_kI = 0;
+        public static final double AIMING_HEADING_kI = 0.3;
         public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
 
         public static final double AUTO_HEADING_kP = 5.0;

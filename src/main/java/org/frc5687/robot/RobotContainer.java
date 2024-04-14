@@ -95,8 +95,6 @@ public class RobotContainer extends OutliersContainer {
 
     private PhotonProcessor _photonProcessor;
 
-    private PowerDistribution _pdh;
-
     private boolean _isRotationOverrideEnabled;
 
     private RobotState _robotState = RobotState.getInstance();
@@ -123,8 +121,6 @@ public class RobotContainer extends OutliersContainer {
         _field = new Field2d();
 
         _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-
-        _pdh = new PowerDistribution(1, ModuleType.kRev);
 
         _isRotationOverrideEnabled = false;
 
@@ -161,44 +157,83 @@ public class RobotContainer extends OutliersContainer {
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("test");
-        var path = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
-        var startPose = path.getPreviewStartingHolonomicPose();
-        _autoChooser.addOption("Xavier's Child", new SequentialCommandGroup(
-            Commands.runOnce(() -> {_robotState.setEstimatedPose(startPose);}),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot")),
+        var firstPath = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
+        var startPose = firstPath.getPreviewStartingHolonomicPose();
+        _autoChooser.addOption("Source Side Dynamic Four Piece", new SequentialCommandGroup(
+            Commands.runOnce(() -> {
+                _robotState.setEstimatedPose(startPose);
+                _isRotationOverrideEnabled = true;
+            }),
+            AutoBuilder.followPath(firstPath),
+            new WaitCommand(0.01),
             new AutoShoot(_shooter, _intake, _driveTrain, _lights),
             AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
             new DriveToNoteStop(_driveTrain, _intake),
-            // at this point we are at note 1
+            // we are at note 1
             new ConditionalCommand(
+                // we have note 1
                 new SequentialCommandGroup(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.1 part 2")),
+                    new WaitCommand(0.01),
                     new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1"))
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1")),
+                    new DriveToNoteStop(_driveTrain, _intake),
+                    // we are at note 3
+                    new ConditionalCommand(
+                        // we have note 3
+                        new SequentialCommandGroup(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                            new WaitCommand(0.01),
+                            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1")),
+                            new DriveToNoteStop(_driveTrain, _intake),
+                            // we are at note 2
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                            new WaitCommand(0.01),
+                            new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                        ),
+                        // we do not have note 3
+                        new SequentialCommandGroup(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                            new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                        ),
+                        _intake::isNoteDetected
+                    )
                 ),
-                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-3")),
-                _intake::isNoteDetected // FIXME this is no longer the correct boolean supplier
-            ),
-            // at this point we are at note 3
-            new ConditionalCommand(
+                // we do not have note 1
                 new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
-                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1"))
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-2")),
+                    // we are at note 2
+                    new ConditionalCommand(
+                        // we have note 2
+                        new SequentialCommandGroup(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                            new WaitCommand(0.01),
+                            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child amp-3")),
+                            new DriveToNoteStop(_driveTrain, _intake),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                            new WaitCommand(0.01),
+                            new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                            // end
+                        ),
+                        // we do not have note 2
+                        new SequentialCommandGroup(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-3")),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                            new WaitCommand(0.01),
+                            new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                            // end
+                        ),
+                        _intake::isNoteDetected
+                    )
                 ),
-                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
-                _intake::isNoteDetected // FIXME this is no longer the correct boolean supplier
+                _intake::isNoteDetected
             ),
-            // at this point we are at note 2
-            new ConditionalCommand(
-                new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
-                    new AutoShoot(_shooter, _intake, _driveTrain, _lights)
-                    // FIXME what now
-                ),
-                new WaitCommand(0), // FIXME what now
-                _intake::isNoteDetected // FIXME this is no longer the correct boolean supplier
-            )
+            Commands.runOnce(() -> {
+                _isRotationOverrideEnabled = false;
+            })
         ));
 
         SmartDashboard.putData(_field);
@@ -213,10 +248,6 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void disabledPeriodic() {
-        double voltage = _pdh.getVoltage();
-        if (voltage < 12.30) {
-            _lights.setColor(Constants.CANdle.ORANGE_RED);
-        }
     }
 
     @Override
