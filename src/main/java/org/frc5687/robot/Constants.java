@@ -360,18 +360,10 @@ public class Constants {
         public static double STATE_STD_DEV_Y = 0.01;
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.1); // imu deviations lower number to trust more
 
-        // we can't change the odometry stddev easily,,,, just change the vision stddev --xavier bradford 02/25/24
-        public static class Auto {
-            public static double VISION_STD_DEV_X = 0.35 ;
-            public static double VISION_STD_DEV_Y = 0.35;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
-        }
-
-        public static class Teleop {
-            public static double VISION_STD_DEV_X = 0.15;
-            public static double VISION_STD_DEV_Y = 0.15;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
-        }
+        
+        public static double VISION_STD_DEV_X = 0.35 ;
+        public static double VISION_STD_DEV_Y = 0.35;
+        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
     }
 
     public static class Shooter {
@@ -593,7 +585,7 @@ public class Constants {
         public static final double DUNKER_RPM_TOLERANCE = 100;
 
         public static final double ROLLER_EXTEND_ROTATIONS = 10;
-        public static final double ROLLER_RETRACT_ROTATIONS = 10;
+        public static final double ROLLER_RETRACT_ROTATIONS = 4;
     }
     
     public static class Climber {
@@ -622,7 +614,7 @@ public class Constants {
         public static double ZERO_VALUE = 0.0; 
 
         public static double PREP_METERS = -2.15;
-        public static double SOLO_METERS = -1.15;
+        public static double SOLO_METERS = -1.45;
         public static double CLIMB_METERS = LOWER_LIMIT; // 0.2
 
         public static double CLIMBER_TRANSLATION = .05;

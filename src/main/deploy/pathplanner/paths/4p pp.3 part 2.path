@@ -16,33 +16,27 @@
     },
     {
       "anchor": {
-        "x": 4.604566957726786,
-        "y": 4.512802721665481
+        "x": 3.810786672499271,
+        "y": 5.165431354010857
       },
       "prevControl": {
-        "x": 5.567288427822639,
-        "y": 4.059976644343533
+        "x": 4.773508142595126,
+        "y": 4.712605276688909
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5499999999999998,
-      "rotationDegrees": -14.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
-      "name": "slow for pickup",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.19999999999999973,
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.7,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 6.0,
-        "maxAcceleration": 3.0,
+        "maxVelocity": 3.8,
+        "maxAcceleration": 4.0,
         "maxAngularVelocity": 534.0,
         "maxAngularAcceleration": 360.0
       }
@@ -68,7 +62,7 @@
     },
     {
       "name": "Rev 3",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -85,14 +79,14 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.0,
+    "maxVelocity": 3.8,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 534.0,
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -12.425942865427482,
+    "rotation": -6.852697116781443,
     "rotateFast": false
   },
   "reversed": false,
@@ -101,5 +95,5 @@
     "rotation": -11.091267692793249,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

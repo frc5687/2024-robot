@@ -8,81 +8,43 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.65781197550293,
-        "y": 3.93036889104668
+        "x": 5.799450723901448,
+        "y": 3.881006641642913
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.559494496099687,
-        "y": 4.25096775146646
+        "x": 3.7743840487680975,
+        "y": 5.166500272815361
       },
       "prevControl": {
-        "x": 6.429710720584668,
-        "y": 3.958328667126378
-      },
-      "nextControl": {
-        "x": 4.939264313290366,
-        "y": 4.4595407332961425
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.15,
-        "y": 4.75
-      },
-      "prevControl": {
-        "x": 5.0127214700958485,
-        "y": 4.420390379242297
+        "x": 5.123894039454746,
+        "y": 4.10732050630768
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "N3_Shoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.7000000000000002,
-      "rotationDegrees": -11.029999999999973,
+      "waypointRelativePos": 0.65,
+      "rotationDegrees": -16.494810438619606,
       "rotateFast": true
     }
   ],
   "constraintZones": [
     {
-      "name": "slowed",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.0,
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.3,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 6.0,
-        "maxAcceleration": 3.5,
-        "maxAngularVelocity": 534.0,
-        "maxAngularAcceleration": 1000.0
-      }
-    },
-    {
-      "name": "slow for shot",
-      "minWaypointRelativePos": 1.25,
-      "maxWaypointRelativePos": 2.0,
-      "constraints": {
-        "maxVelocity": 6.0,
+        "maxVelocity": 3.8,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 534.0,
-        "maxAngularAcceleration": 1000.0
-      }
-    },
-    {
-      "name": "slow intake 2",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.10000000000000009,
-      "constraints": {
-        "maxVelocity": 5.0,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 534.0,
-        "maxAngularAcceleration": 1000.0
+        "maxAngularAcceleration": 360.0
       }
     }
   ],
@@ -106,7 +68,7 @@
     },
     {
       "name": "rev shot 2",
-      "waypointRelativePos": 0.6000000000000001,
+      "waypointRelativePos": 0.3,
       "command": {
         "type": "parallel",
         "data": {
@@ -123,15 +85,15 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.0,
+    "maxVelocity": 3.8,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 534.0,
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -7.132661025442589,
-    "rotateFast": false
+    "rotation": -7.691500180417079,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,
@@ -139,5 +101,5 @@
     "rotation": 1.6334291770949332,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

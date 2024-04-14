@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 8.24246465159597,
-        "y": 0.776153820826161
+        "x": 6.3743049740689885,
+        "y": 1.4827768462034097
       },
       "prevControl": {
-        "x": 8.535103735936058,
-        "y": 0.6144322215855895
+        "x": 6.666944058409077,
+        "y": 1.321055246962838
       },
       "nextControl": null,
       "isLocked": false,
@@ -52,7 +52,7 @@
     },
     {
       "waypointRelativePos": 1.2000000000000002,
-      "rotationDegrees": -7.717498700964134,
+      "rotationDegrees": -41.85778877706967,
       "rotateFast": true
     }
   ],
@@ -116,8 +116,8 @@
       }
     },
     {
-      "name": "Intake1",
-      "waypointRelativePos": 1.5500000000000003,
+      "name": "Enable Rotation Override",
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -125,7 +125,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Intake"
+                "name": "EnableRotationOverride"
               }
             }
           ]
@@ -133,8 +133,8 @@
       }
     },
     {
-      "name": "rev 1",
-      "waypointRelativePos": 2,
+      "name": "Disable Rotation Override",
+      "waypointRelativePos": 1.15,
       "command": {
         "type": "parallel",
         "data": {
@@ -142,7 +142,7 @@
             {
               "type": "named",
               "data": {
-                "name": "RevRPM"
+                "name": "DisableRotationOverride"
               }
             }
           ]
@@ -157,9 +157,9 @@
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 3.0,
     "rotation": -20.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,

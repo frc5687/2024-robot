@@ -7,7 +7,9 @@ import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.frc5687.robot.Constants.VisionConfig.Auto;
+import javax.swing.text.html.Option;
+
+import org.frc5687.robot.RobotMap.PDP;
 import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.EnableVisionUpdates;
@@ -64,6 +66,8 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -91,6 +95,10 @@ public class RobotContainer extends OutliersContainer {
 
     private PhotonProcessor _photonProcessor;
 
+    private PowerDistribution _pdh;
+
+    private boolean _isRotationOverrideEnabled;
+
     private RobotState _robotState = RobotState.getInstance();
     Command _pathfindSourceSideCommand;
     Command _pathfindAmpSideCommand;
@@ -115,6 +123,10 @@ public class RobotContainer extends OutliersContainer {
         _field = new Field2d();
 
         _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+
+        _pdh = new PowerDistribution(1, ModuleType.kRev);
+
+        _isRotationOverrideEnabled = false;
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
@@ -148,7 +160,7 @@ public class RobotContainer extends OutliersContainer {
             _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath,ampConstraints,0.0);
 
         registerNamedCommands();
-        _autoChooser = AutoBuilder.buildAutoChooser("");
+        _autoChooser = AutoBuilder.buildAutoChooser("test");
         var path = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
         var startPose = path.getPreviewStartingHolonomicPose();
         _autoChooser.addOption("Xavier's Child", new SequentialCommandGroup(
@@ -156,6 +168,7 @@ public class RobotContainer extends OutliersContainer {
             AutoBuilder.followPath(PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot")),
             new AutoShoot(_shooter, _intake, _driveTrain, _lights),
             AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
+            new DriveToNoteStop(_driveTrain, _intake),
             // at this point we are at note 1
             new ConditionalCommand(
                 new SequentialCommandGroup(
@@ -164,7 +177,7 @@ public class RobotContainer extends OutliersContainer {
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1"))
                 ),
                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-3")),
-                _intake::isNoteDetected
+                _intake::isNoteDetected // FIXME this is no longer the correct boolean supplier
             ),
             // at this point we are at note 3
             new ConditionalCommand(
@@ -174,7 +187,7 @@ public class RobotContainer extends OutliersContainer {
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1"))
                 ),
                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
-                _intake::isNoteDetected
+                _intake::isNoteDetected // FIXME this is no longer the correct boolean supplier
             ),
             // at this point we are at note 2
             new ConditionalCommand(
@@ -184,7 +197,7 @@ public class RobotContainer extends OutliersContainer {
                     // FIXME what now
                 ),
                 new WaitCommand(0), // FIXME what now
-                _intake::isNoteDetected
+                _intake::isNoteDetected // FIXME this is no longer the correct boolean supplier
             )
         ));
 
@@ -200,6 +213,10 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void disabledPeriodic() {
+        double voltage = _pdh.getVoltage();
+        if (voltage < 12.30) {
+            _lights.setColor(Constants.CANdle.ORANGE_RED);
+        }
     }
 
     @Override
@@ -291,29 +308,22 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride() {
-        var visionAngle = _robotState.getAngleToSpeakerFromVision();
-        if (visionAngle.isPresent()) {
-            return Optional.of(_driveTrain.getHeading().minus(visionAngle.get()));
+        if (_isRotationOverrideEnabled) {
+            var visionAngle = _robotState.getAngleToSpeakerFromVision();
+            if (visionAngle.isPresent()) {
+                return Optional.of(_driveTrain.getHeading().minus(visionAngle.get()));
+            }
+            return Optional.empty();
+        } else {
+            return Optional.empty();
         }
-        return Optional.empty();
-        // // Some condition that should decide if we want to override rotation
-        // if (_shooter.getAutoShootFlag()) {
-        // // Return an optional containing the rotation override (this should be a
-        // field
-        // // relative rotation)
-        // return Optional.of(new
-        // Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
-        // } else {
-        // // return an empty optional when we don't want to override the path's
-        // rotation
-        // return Optional.empty();
-        // }
-
     }
 
     public void registerNamedCommands() {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
+        NamedCommands.registerCommand("EnableRotationOverride", Commands.runOnce(() -> {_isRotationOverrideEnabled = true;}));
+        NamedCommands.registerCommand("DisableRotationOverride", Commands.runOnce(() -> {_isRotationOverrideEnabled = false;}));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently
@@ -322,10 +332,10 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("ReturnToShootOpposite", new ReturnToShootOpposite());
         NamedCommands.registerCommand("PassthroughHarder", new AutoPassthroughHarder(_shooter, _intake));
         NamedCommands.registerCommand("Rev", new RevShooter(_shooter));
-        NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
+        NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 1800.0));
         NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 1000.0));
         NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));
-        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2200.0));
+        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 1800.0));
         NamedCommands.registerCommand("ShootWhenRPMMatch",
                 new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
         NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
@@ -339,9 +349,6 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("NoteSixCommand", new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain), new NoteSixPickupYes(_shooter, _intake, _driveTrain) , _intake::isNoteDetected));
         NamedCommands.registerCommand("UnderStageBloopCommand", new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(7)));
         NamedCommands.registerCommand("NearSourceBloopCommand", new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
-
-
-
 
         //NamedCommands.registerCommand("NoteEightCommandChain", new NoteEightCommandChain(_shooter,_driveTrain,_intake));
 

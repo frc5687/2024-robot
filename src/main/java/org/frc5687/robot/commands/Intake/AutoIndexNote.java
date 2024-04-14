@@ -31,7 +31,7 @@ public class AutoIndexNote extends OutliersCommand {
             case INTAKING:
                 if (_intake.isNoteDetected()) {
                     // we have seen the note on the bottom one (using the others as well for redundancy) - xavier bradford 4/4/24
-                    _intake.setSpeed(Constants.Intake.INDEX_SPEED);
+                    _intake.setSpeed(1.0);
                     _intake.setIndexState(IndexState.BOTTOM_HAS_BEEN_DETECTED);
                 }
                 break;

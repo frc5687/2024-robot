@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7349421413005919,
-        "y": 2.7083797274890684
+        "x": 1.7411762851421184,
+        "y": 2.831539387478492
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 3.0
+        "x": 2.2438765428378313,
+        "y": 2.85
       },
       "prevControl": {
-        "x": 2.727063826802904,
-        "y": 3.0874320439628002
+        "x": 1.9828757736611518,
+        "y": 2.8408934360241602
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LW_SHOOT"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -69,7 +69,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.14946119920681,
+    "rotation": -50.948326568904406,
     "rotateFast": false
   },
   "reversed": false,

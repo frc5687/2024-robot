@@ -128,7 +128,7 @@ public class DriveToNoteStop extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return isFinished  || _intake.isNoteIndexed();  // Maybe use note indexed but I think isBottomDetected should work without much delay.
+        return isFinished  || _intake.isNoteDetected();  // yolo
     }
 
     @Override

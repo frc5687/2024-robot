@@ -15,6 +15,7 @@ import org.frc5687.robot.subsystems.Lights;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoShoot extends OutliersCommand{
     private final Shooter _shooter;
@@ -22,6 +23,10 @@ public class AutoShoot extends OutliersCommand{
     private final DriveTrain _driveTrain;
     private final Lights _lights;
     private final RobotState _robotState = RobotState.getInstance();
+
+    private boolean _prevIsAtAngle;
+    private boolean _prevIsAtRPM;
+    private boolean _prevIsStopped;
 
     private Optional<Long> _intakeTimestamp;
 
@@ -45,7 +50,10 @@ public class AutoShoot extends OutliersCommand{
         _shooter.setConfigSlot(0);
         _intakeTimestamp = Optional.empty();
         _lights.setDebugLightsEnabled(true);
-        error("Init AutoShoot");
+        error("Init AutoShoot at timestamp "+System.currentTimeMillis());
+        _prevIsAtAngle = false;
+        _prevIsAtRPM = false;
+        _prevIsStopped = false;
     }
 
     @Override
@@ -57,18 +65,33 @@ public class AutoShoot extends OutliersCommand{
 
         Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
         double distance = distanceAndAngle.getFirst();
-        // Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
+        Optional<Double> visionDistance = _robotState.getDistanceToSpeakerFromVision();
         Optional<Rotation2d> angle = _robotState.getAngleToSpeakerFromVision();
-        // if (visionDistance.isPresent()) {
-            // _shooter.setRPMFromDistance(visionDistance.get());
-        // } else {
+        if (visionDistance.isPresent()) {
+            _shooter.setRPMFromDistance(visionDistance.get());
+        } else {
             _shooter.setRPMFromDistance(distance);
-        // }
+        }
 
         ChassisSpeeds speeds = _driveTrain.getMeasuredChassisSpeeds();
         boolean isStopped = (speeds.vxMetersPerSecond < 0.1 && speeds.vyMetersPerSecond < 0.1);
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         boolean isInAngle = _robotState.isAimedAtSpeaker();
+        if (isStopped != _prevIsStopped) {
+            error((isStopped ? "Is " : "Isn't") + " stopped at "+System.currentTimeMillis());
+            _prevIsStopped = isStopped;
+        }
+        if (isAtTargetRPM != _prevIsAtRPM) {
+            error((isAtTargetRPM ? "Is " : "Isn't") + " rpm at "+System.currentTimeMillis());
+            _prevIsAtRPM = isAtTargetRPM;
+        }
+        if (isInAngle != _prevIsAtAngle) {
+            error((isInAngle ? "Is " : "Isn't") + " angle at "+System.currentTimeMillis());
+            _prevIsAtAngle = isInAngle;
+        }
+        SmartDashboard.putBoolean("Shoot/IsInAngle", isInAngle);
+        SmartDashboard.putBoolean("Shoot/isAtTargetRPM", isAtTargetRPM);
+        SmartDashboard.putBoolean("Shoot/isStopped", isStopped);
 
         if (angle.isPresent()) {
             Rotation2d visionHeading = _driveTrain.getHeading().minus(angle.get());
@@ -86,6 +109,7 @@ public class AutoShoot extends OutliersCommand{
                 _intakeTimestamp = Optional.of(System.currentTimeMillis());
             }
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
+            error( "Shot at " + _shooter.getTargetRPM() + " rpm at " + System.currentTimeMillis());
             metric("Shot RPM of: ", _shooter.getTargetRPM());
         }
     }
