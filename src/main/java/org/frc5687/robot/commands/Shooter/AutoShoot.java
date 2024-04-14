@@ -3,6 +3,7 @@ package org.frc5687.robot.commands.Shooter;
 import java.util.Optional;
 
 import javax.swing.plaf.OptionPaneUI;
+import javax.swing.text.html.Option;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
@@ -23,10 +24,6 @@ public class AutoShoot extends OutliersCommand{
     private final DriveTrain _driveTrain;
     private final Lights _lights;
     private final RobotState _robotState = RobotState.getInstance();
-
-    private boolean _prevIsAtAngle;
-    private boolean _prevIsAtRPM;
-    private boolean _prevIsStopped;
 
     private Optional<Long> _intakeTimestamp;
 
@@ -50,10 +47,7 @@ public class AutoShoot extends OutliersCommand{
         _shooter.setConfigSlot(0);
         _intakeTimestamp = Optional.empty();
         _lights.setDebugLightsEnabled(true);
-        error("Init AutoShoot at timestamp "+System.currentTimeMillis());
-        _prevIsAtAngle = false;
-        _prevIsAtRPM = false;
-        _prevIsStopped = false;
+        error("Init AutoShoot");
     }
 
     @Override
@@ -77,18 +71,6 @@ public class AutoShoot extends OutliersCommand{
         boolean isStopped = (speeds.vxMetersPerSecond < 0.1 && speeds.vyMetersPerSecond < 0.1);
         boolean isAtTargetRPM = _shooter.isAtTargetRPM();
         boolean isInAngle = _robotState.isAimedAtSpeaker();
-        if (isStopped != _prevIsStopped) {
-            error((isStopped ? "Is " : "Isn't") + " stopped at "+System.currentTimeMillis());
-            _prevIsStopped = isStopped;
-        }
-        if (isAtTargetRPM != _prevIsAtRPM) {
-            error((isAtTargetRPM ? "Is " : "Isn't") + " rpm at "+System.currentTimeMillis());
-            _prevIsAtRPM = isAtTargetRPM;
-        }
-        if (isInAngle != _prevIsAtAngle) {
-            error((isInAngle ? "Is " : "Isn't") + " angle at "+System.currentTimeMillis());
-            _prevIsAtAngle = isInAngle;
-        }
         SmartDashboard.putBoolean("Shoot/IsInAngle", isInAngle);
         SmartDashboard.putBoolean("Shoot/isAtTargetRPM", isAtTargetRPM);
         SmartDashboard.putBoolean("Shoot/isStopped", isStopped);
@@ -109,7 +91,6 @@ public class AutoShoot extends OutliersCommand{
                 _intakeTimestamp = Optional.of(System.currentTimeMillis());
             }
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
-            error( "Shot at " + _shooter.getTargetRPM() + " rpm at " + System.currentTimeMillis());
             metric("Shot RPM of: ", _shooter.getTargetRPM());
         }
     }

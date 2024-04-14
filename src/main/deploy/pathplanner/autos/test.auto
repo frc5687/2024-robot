@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "EnableRotationOverride"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Source Side Start to Source Side Shoot"
@@ -117,6 +123,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DisableRotationOverride"
           }
         }
       ]
