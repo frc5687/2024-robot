@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1883111385270393,
-        "y": 2.602696734215524
+        "x": 3.280482769496345,
+        "y": 2.6164700670633563
       },
       "isLocked": false,
       "linkedName": "LW_SHOOT"
@@ -38,7 +38,7 @@
     "maxAngularAcceleration": 420.0
   },
   "goalEndState": {
-    "velocity": 3.0,
+    "velocity": 3.8,
     "rotation": -50.0,
     "rotateFast": true
   },

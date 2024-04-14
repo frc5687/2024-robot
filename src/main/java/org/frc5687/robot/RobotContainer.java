@@ -24,6 +24,7 @@ import org.frc5687.robot.commands.AutoCommands.UnderStageBloopPickup;
 import org.frc5687.robot.commands.Climber.AutoClimb;
 import org.frc5687.robot.commands.DriveTrain.Drive;
 import org.frc5687.robot.commands.DriveTrain.DriveToNoteStop;
+import org.frc5687.robot.commands.DriveTrain.DriveToNoteStopNoIndex;
 import org.frc5687.robot.commands.DriveTrain.DriveToNoteStopNoIntake;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShoot;
 import org.frc5687.robot.commands.DriveTrain.ReturnToShootOpposite;
@@ -332,6 +333,7 @@ public class RobotContainer extends OutliersContainer {
     public void registerNamedCommands() {
         // NamedCommands.registerCommand("DynamicNote", new DynamicNotePathCommand());
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
+        NamedCommands.registerCommand("DynamicNoteNoIndex", new DriveToNoteStopNoIndex(_driveTrain, _intake));
         NamedCommands.registerCommand("DynamicNoteNoIntake", new DriveToNoteStopNoIntake(_driveTrain));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));

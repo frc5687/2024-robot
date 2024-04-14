@@ -51,13 +51,13 @@ public class AutoClimb extends OutliersCommand{
             case RAISING:
                 _climber.setPositionMeters(_climbHeight);
                 _driveTrain.setKinematicLimits(SLOW_KINEMATIC_LIMITS);
-                if (Math.abs(_climber.getPositionMeters() - _climbHeight) < Constants.Climber.CLIMBER_TOLERANCE) {
+                if (Math.abs(_climber.getPositionMeters() - _climbHeight) < Constants.Climber.CLIMBER_TOLERANCE || _oi.getClimbButton() || _oi.getSoloClimbButton()) {
                     _climber.setStep(ClimberStep.RAISED);
                 }
                 break;
             case RAISED:
                 _driveTrain.setKinematicLimits(SLOW_KINEMATIC_LIMITS);
-                if (_oi.getClimbButton()) {
+                if (_oi.getClimbButton() || _oi.getSoloClimbButton()) {
                     _climber.setStep(ClimberStep.STOWING);
                 }
                 break;

@@ -38,7 +38,7 @@
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 2.0,
+    "velocity": 3.8,
     "rotation": 30.0,
     "rotateFast": true
   },
