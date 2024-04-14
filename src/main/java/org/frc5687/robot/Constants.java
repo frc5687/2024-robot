@@ -378,8 +378,6 @@ public class Constants {
         public static final double GEAR_RATIO = 0.625;
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
 
-        public static final double VELOCITY_TOLERANCE = 20;
-
         public static double[][] kRPMValues = {
             { 3.0, 3700}, // 4/3/24 FIXME maybe add a bit of rpm
             { 3.4, 2550}, // 4/4/24

@@ -543,8 +543,21 @@ public class RobotState {
         return _photonProcessor.calculateAngleToTag(tagId);
     }
 
-    public Optional<Rotation2d> getAngleToSpeakerFromVision() {
+    private Optional<Rotation2d> getAngleToSpeakerFromVision() {
         return _visionAngle;
+    }
+
+    public double getToleranceFromDistance(double dist) {
+        return 60 / (dist - 1.5);
+    }
+
+    public double getToleranceFromVision() {
+        Optional<Double> distance = getDistanceToSpeakerFromVision();
+        if (distance.isEmpty()) {
+            return getToleranceFromDistance(getDistanceAndAngleToSpeaker().getFirst());
+        } else {
+            return getToleranceFromDistance(distance.get());
+        }
     }
 
     public Optional<Pose3d> getClosestNoteRelativeRobotCenter() {

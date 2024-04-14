@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotMap;
+import org.frc5687.robot.RobotState;
 
 public class Shooter extends OutliersSubsystem {
     private OutliersTalon _bottomTalon;
@@ -16,6 +17,8 @@ public class Shooter extends OutliersSubsystem {
     private double _targetRPM = 0;
     private boolean _isAmpMode;
     private VelocityTorqueCurrentFOC _focVelocity;
+
+    private RobotState _robotState = RobotState.getInstance();
 
     public Shooter(OutliersContainer container) {
         super(container);
@@ -103,7 +106,7 @@ public class Shooter extends OutliersSubsystem {
     }
 
     public boolean isAtTargetRPM() {
-        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.VELOCITY_TOLERANCE;
+        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < _robotState.getToleranceFromVision();
     }
 
     public double getTargetRPM() {
@@ -114,7 +117,7 @@ public class Shooter extends OutliersSubsystem {
     public boolean isAtRPMMatch(double distance, double vxMetersPerSecond, Double vyMetersPerSecond) {
         double vMetersPerSecond = Math.pow((Math.pow(vxMetersPerSecond,2)+Math.pow(vyMetersPerSecond,2)),.5);
         //double predictedDistance = I did my math wrong hol up
-        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance)+ Constants.Shooter.VELOCITY_TOLERANCE && Math.abs(_targetRPM - getCombinedRPM()) > Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance) - Constants.Shooter.VELOCITY_TOLERANCE;
+        return _targetRPM > 0 && Math.abs(_targetRPM - getCombinedRPM()) < Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance)+ _robotState.getToleranceFromVision() && Math.abs(_targetRPM - getCombinedRPM()) > Constants.Shooter.MATCH_RPM_TOLERANCE*calculateRPMFromDistance(distance) - _robotState.getToleranceFromVision();
     }
 
     public void setShooterMotorRPM(double rpm) {
