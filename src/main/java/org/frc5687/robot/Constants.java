@@ -303,7 +303,7 @@ public class Constants {
         public static final double MOVING_HEADING_kD = 1;
 
         public static final double AIMING_HEADING_kP = 7;
-        public static final double AIMING_HEADING_kI = 0;
+        public static final double AIMING_HEADING_kI = 0.3;
         public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
 
         public static final double AUTO_HEADING_kP = 5.0;
@@ -360,18 +360,10 @@ public class Constants {
         public static double STATE_STD_DEV_Y = 0.01;
         public static double STATE_STD_DEV_ANGLE = Units.degreesToRadians(0.1); // imu deviations lower number to trust more
 
-        // we can't change the odometry stddev easily,,,, just change the vision stddev --xavier bradford 02/25/24
-        public static class Auto {
-            public static double VISION_STD_DEV_X = 0.35 ;
-            public static double VISION_STD_DEV_Y = 0.35;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
-        }
-
-        public static class Teleop {
-            public static double VISION_STD_DEV_X = 0.15;
-            public static double VISION_STD_DEV_Y = 0.15;
-            public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
-        }
+        
+        public static double VISION_STD_DEV_X = 0.35 ;
+        public static double VISION_STD_DEV_Y = 0.35;
+        public static double VISION_STD_DEV_ANGLE = Units.degreesToRadians(900); // imu deviations lower number to trust
     }
 
     public static class Shooter {

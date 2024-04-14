@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 8.280543879383497,
-        "y": 0.761263076410865
+        "x": 6.3743049740689885,
+        "y": 1.4827768462034097
       },
       "prevControl": {
-        "x": 8.573182963723585,
-        "y": 0.5995414771702936
+        "x": 6.666944058409077,
+        "y": 1.321055246962838
       },
       "nextControl": null,
       "isLocked": false,
@@ -66,17 +66,6 @@
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 534.0,
         "maxAngularAcceleration": 1000.0
-      }
-    },
-    {
-      "name": "slow pickup",
-      "minWaypointRelativePos": 1.8,
-      "maxWaypointRelativePos": 2,
-      "constraints": {
-        "maxVelocity": 6.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 534.0,
-        "maxAngularAcceleration": 360.0
       }
     }
   ],
@@ -140,7 +129,7 @@
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 3.14,
     "rotation": -13.94185201965523,
     "rotateFast": false
   },

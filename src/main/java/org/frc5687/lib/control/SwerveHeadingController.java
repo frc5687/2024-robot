@@ -117,9 +117,6 @@ public class SwerveHeadingController {
                 }
                 break;
             case ON:
-                if (isAtTargetAngle(heading)) {
-                    power = 0;
-                }
                 break;
             default:
                 break;

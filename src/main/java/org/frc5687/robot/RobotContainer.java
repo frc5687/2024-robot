@@ -9,7 +9,9 @@ import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.frc5687.robot.Constants.VisionConfig.Auto;
+import javax.swing.text.html.Option;
+
+import org.frc5687.robot.RobotMap.PDP;
 import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.EnableVisionUpdates;
@@ -98,10 +100,11 @@ public class RobotContainer extends OutliersContainer {
 
     private PhotonProcessor _photonProcessor;
 
+    private boolean _isRotationOverrideEnabled;
+
     private RobotState _robotState = RobotState.getInstance();
     Command _pathfindSourceSideCommand;
     Command _pathfindAmpSideCommand;
-
 
     public RobotContainer(Robot robot, IdentityMode identityMode) {
         super(identityMode);
@@ -123,7 +126,8 @@ public class RobotContainer extends OutliersContainer {
 
         try {
             if (!DriverStation.isFMSAttached()) {
-                _photonProcessor = new PhotonProcessor(new AprilTagFieldLayout("home/lvuser/deploy/layouts/2024-colliseum.json"));
+                _photonProcessor = new PhotonProcessor(
+                        new AprilTagFieldLayout("home/lvuser/deploy/layouts/2024-colliseum.json"));
                 System.out.println("loaded home apriltag layout");
             }
         } catch (IOException e) {
@@ -134,6 +138,8 @@ public class RobotContainer extends OutliersContainer {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
             info("loaded comp apriltag layout");
         }
+
+        _isRotationOverrideEnabled = false;
 
         // configure pigeon
         _imu = new Pigeon2(RobotMap.CAN.PIGEON.PIGEON, "CANivore");
@@ -156,56 +162,94 @@ public class RobotContainer extends OutliersContainer {
         setDefaultCommand(_dunker, new IdleDunker(_dunker));
         setDefaultCommand(_intake, new IndexNote(_intake, _oi));
         setDefaultCommand(_climber, new AutoClimb(_climber, _dunker, _driveTrain, _oi));
-        setDefaultCommand(_lights, new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi,_dunker));
-        
+        setDefaultCommand(_lights,
+                new DriveLights(_lights, _driveTrain, _intake, _visionProcessor, _shooter, _oi, _dunker));
+
         PathPlannerPath sourcePath = PathPlannerPath.fromPathFile("pathToShootSource");
-        PathConstraints sourceConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
-            _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(sourcePath,sourceConstraints,0.0);
+        PathConstraints sourceConstraints = new PathConstraints(3.0, 4.0, Units.degreesToRadians(540),
+                Units.degreesToRadians(720));
+        _pathfindSourceSideCommand = AutoBuilder.pathfindThenFollowPath(sourcePath, sourceConstraints, 0.0);
 
         PathPlannerPath ampPath = PathPlannerPath.fromPathFile("pathToShootAmp");
-        PathConstraints ampConstraints = new PathConstraints(3.0, 4.0,Units.degreesToRadians(540), Units.degreesToRadians(720));
-            _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath,ampConstraints,0.0);
+        PathConstraints ampConstraints = new PathConstraints(3.0, 4.0, Units.degreesToRadians(540),
+                Units.degreesToRadians(720));
+        _pathfindAmpSideCommand = AutoBuilder.pathfindThenFollowPath(ampPath, ampConstraints, 0.0);
 
         registerNamedCommands();
-        _autoChooser = AutoBuilder.buildAutoChooser("");
-        var path = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
-        var startPose = path.getPreviewStartingHolonomicPose();
-        _autoChooser.addOption("Xavier's Child", new SequentialCommandGroup(
-            Commands.runOnce(() -> {_robotState.setEstimatedPose(startPose);}),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot")),
-            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
-            // at this point we are at note 1
-            new ConditionalCommand(
-                new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.1 part 2")),
-                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1"))
-                ),
-                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-3")),
-                _intake::isNoteDetected
-            ),
-            // at this point we are at note 3
-            new ConditionalCommand(
-                new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
-                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1"))
-                ),
-                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
-                _intake::isNoteDetected
-            ),
-            // at this point we are at note 2
-            new ConditionalCommand(
-                new SequentialCommandGroup(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
-                    new AutoShoot(_shooter, _intake, _driveTrain, _lights)
-                    // FIXME what now
-                ),
-                new WaitCommand(0), // FIXME what now
-                _intake::isNoteDetected
-            )
-        ));
+        _autoChooser = AutoBuilder.buildAutoChooser("test");
+        var firstPath = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
+        var startPose = firstPath.getPreviewStartingHolonomicPose();
+        _autoChooser.addOption("Source Side Dynamic Four Piece", new SequentialCommandGroup(
+                Commands.runOnce(() -> {
+                    _robotState.setEstimatedPose(startPose);
+                    _isRotationOverrideEnabled = true;
+                }),
+                AutoBuilder.followPath(firstPath),
+                new WaitCommand(0.01),
+                new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
+                new DriveToNoteStop(_driveTrain, _intake),
+                // we are at note 1
+                new ConditionalCommand(
+                        // we have note 1
+                        new SequentialCommandGroup(
+                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.1 part 2")),
+                                new WaitCommand(0.01),
+                                new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1")),
+                                new DriveToNoteStop(_driveTrain, _intake),
+                                // we are at note 3
+                                new ConditionalCommand(
+                                        // we have note 3
+                                        new SequentialCommandGroup(
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                                                new WaitCommand(0.01),
+                                                new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1")),
+                                                new DriveToNoteStop(_driveTrain, _intake),
+                                                // we are at note 2
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                                                new WaitCommand(0.01),
+                                                new AutoShoot(_shooter, _intake, _driveTrain, _lights)),
+                                        // we do not have note 3
+                                        new SequentialCommandGroup(
+                                                AutoBuilder
+                                                        .followPath(PathPlannerPath.fromPathFile("Xavier's Child 3-2")),
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                                                new AutoShoot(_shooter, _intake, _driveTrain, _lights)),
+                                        _intake::isNoteDetected)),
+                        // we do not have note 1
+                        new SequentialCommandGroup(
+                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child 1-2")),
+                                // we are at note 2
+                                new ConditionalCommand(
+                                        // we have note 2
+                                        new SequentialCommandGroup(
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
+                                                new WaitCommand(0.01),
+                                                new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                                                AutoBuilder.followPath(
+                                                        PathPlannerPath.fromPathFile("Xavier's Child amp-3")),
+                                                new DriveToNoteStop(_driveTrain, _intake),
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                                                new WaitCommand(0.01),
+                                                new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                                        // end
+                                        ),
+                                        // we do not have note 2
+                                        new SequentialCommandGroup(
+                                                AutoBuilder
+                                                        .followPath(PathPlannerPath.fromPathFile("Xavier's Child 2-3")),
+                                                AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
+                                                new WaitCommand(0.01),
+                                                new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+                                        // end
+                                        ),
+                                        _intake::isNoteDetected)),
+                        _intake::isNoteDetected),
+                Commands.runOnce(() -> {
+                    _isRotationOverrideEnabled = false;
+                })));
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
@@ -310,24 +354,15 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride() {
-        var visionAngle = _robotState.getAngleToSpeakerFromVision();
-        if (visionAngle.isPresent()) {
-            return Optional.of(_driveTrain.getHeading().minus(visionAngle.get()));
+        if (_isRotationOverrideEnabled) {
+            var visionAngle = _robotState.getAngleToSpeakerFromVision();
+            if (visionAngle.isPresent()) {
+                return Optional.of(_driveTrain.getHeading().minus(visionAngle.get()));
+            }
+            return Optional.empty();
+        } else {
+            return Optional.empty();
         }
-        return Optional.empty();
-        // // Some condition that should decide if we want to override rotation
-        // if (_shooter.getAutoShootFlag()) {
-        // // Return an optional containing the rotation override (this should be a
-        // field
-        // // relative rotation)
-        // return Optional.of(new
-        // Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
-        // } else {
-        // // return an empty optional when we don't want to override the path's
-        // rotation
-        // return Optional.empty();
-        // }
-
     }
 
     public void registerNamedCommands() {
@@ -335,6 +370,12 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("DynamicNote", new DriveToNoteStop(_driveTrain, _intake));
         NamedCommands.registerCommand("DynamicNoteNoIndex", new DriveToNoteStopNoIndex(_driveTrain, _intake));
         NamedCommands.registerCommand("DynamicNoteNoIntake", new DriveToNoteStopNoIntake(_driveTrain));
+        NamedCommands.registerCommand("EnableRotationOverride", Commands.runOnce(() -> {
+            _isRotationOverrideEnabled = true;
+        }));
+        NamedCommands.registerCommand("DisableRotationOverride", Commands.runOnce(() -> {
+            _isRotationOverrideEnabled = false;
+        }));
         NamedCommands.registerCommand("ReturnToShoot", new ReturnToShoot());
         NamedCommands.registerCommand("Shoot", new AutoShoot(_shooter, _intake, _driveTrain, _lights));
         NamedCommands.registerCommand("Intake", new AutoIndexNote(_intake)); // was AutoIntake, but IndexNote currently
@@ -348,7 +389,7 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("RevRPM", new RevShooter(_shooter, 2200.0));
         NamedCommands.registerCommand("RevRPMBloopHarder", new RevShooter(_shooter, 1000.0));
         NamedCommands.registerCommand("RevRPMBloop", new RevShooter(_shooter, 460.0));
-        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 2200.0));
+        NamedCommands.registerCommand("ShootRPM", new DefinedRPMShoot(_shooter, _intake, 1800.0));
         NamedCommands.registerCommand("ShootWhenRPMMatch",
                 new ShootWhenRPMMatch(_shooter, _intake, 2150.0, _driveTrain));
         NamedCommands.registerCommand("PathfindToPathAmp", _pathfindAmpSideCommand);
@@ -356,17 +397,25 @@ public class RobotContainer extends OutliersContainer {
         NamedCommands.registerCommand("EnableVision", new EnableVisionUpdates());
         NamedCommands.registerCommand("DisableVision", new DisableVisionUpdates());
 
-        //auto command groups
-        NamedCommands.registerCommand("NoteEightCommand", new ConditionalCommand(new NoteEightPickupYes(_shooter, _intake, _driveTrain), new NoteEightPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
-        NamedCommands.registerCommand("NoteSevenCommand", new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain),new NoteSevenPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
-        NamedCommands.registerCommand("NoteSixCommand", new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain), new NoteSixPickupYes(_shooter, _intake, _driveTrain) , _intake::isNoteDetected));
-        NamedCommands.registerCommand("UnderStageBloopCommand", new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(7)));
-        NamedCommands.registerCommand("NearSourceBloopCommand", new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0), () -> _robotState.isNoteIntaked(8)));
+        // auto command groups
+        NamedCommands.registerCommand("NoteEightCommand",
+                new ConditionalCommand(new NoteEightPickupYes(_shooter, _intake, _driveTrain),
+                        new NoteEightPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+        NamedCommands.registerCommand("NoteSevenCommand",
+                new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain),
+                        new NoteSevenPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+        NamedCommands.registerCommand("NoteSixCommand",
+                new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain),
+                        new NoteSixPickupYes(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+        NamedCommands.registerCommand("UnderStageBloopCommand",
+                new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0),
+                        () -> _robotState.isNoteIntaked(7)));
+        NamedCommands.registerCommand("NearSourceBloopCommand",
+                new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0),
+                        () -> _robotState.isNoteIntaked(8)));
 
-
-
-
-        //NamedCommands.registerCommand("NoteEightCommandChain", new NoteEightCommandChain(_shooter,_driveTrain,_intake));
+        // NamedCommands.registerCommand("NoteEightCommandChain", new
+        // NoteEightCommandChain(_shooter,_driveTrain,_intake));
 
     }
 }

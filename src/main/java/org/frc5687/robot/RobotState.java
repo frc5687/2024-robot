@@ -129,9 +129,9 @@ public class RobotState {
                         Constants.VisionConfig.STATE_STD_DEV_Y,
                         Constants.VisionConfig.STATE_STD_DEV_ANGLE),
                 createVisionStandardDeviations(
-                        Constants.VisionConfig.Auto.VISION_STD_DEV_X,
-                        Constants.VisionConfig.Auto.VISION_STD_DEV_Y,
-                        Constants.VisionConfig.Auto.VISION_STD_DEV_ANGLE));
+                        Constants.VisionConfig.VISION_STD_DEV_X,
+                        Constants.VisionConfig.VISION_STD_DEV_Y,
+                        Constants.VisionConfig.VISION_STD_DEV_ANGLE));
     }
 
     private void run() {
@@ -479,7 +479,7 @@ public class RobotState {
         // DriverStation.reportError(estimatedPose.strategy.name(), false);
         if (estimatedPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
             // multi-tag estimate, trust it more
-            positionDev = 0.035;
+            positionDev = 0.1;
             angleDev = Units.degreesToRadians(10); // Try this but IMU is still probably way better
         } else {
             // single-tag estimates, adjust deviations based on distance
