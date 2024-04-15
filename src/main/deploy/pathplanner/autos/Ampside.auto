@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Ampside 3"
@@ -51,18 +57,6 @@
           "type": "path",
           "data": {
             "pathName": "Ampside 5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DynamicNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Ampside 6"
           }
         },
         {

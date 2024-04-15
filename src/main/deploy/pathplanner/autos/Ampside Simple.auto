@@ -44,18 +44,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ampside Simple 4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Ampside Simple 5"
           }
         },

@@ -3,37 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.27,
-        "y": 7.18
+        "x": 3.77,
+        "y": 7.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.017197030114459,
-        "y": 7.3544053507507865
+        "x": 6.353267290024261,
+        "y": 7.554708993095284
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.281967377058862,
-        "y": 7.436381206571257
+        "x": 7.900607170820345,
+        "y": 7.416090479460509
       },
       "prevControl": {
-        "x": 6.267703491184442,
-        "y": 7.272429494930316
+        "x": 8.418855680877,
+        "y": 7.4540111021475814
+      },
+      "nextControl": {
+        "x": 7.269122830928589,
+        "y": 7.369884308248917
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.795958961523927,
+        "y": 6.4
+      },
+      "prevControl": {
+        "x": 4.442845358486213,
+        "y": 6.600226741916898
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "bloop",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
