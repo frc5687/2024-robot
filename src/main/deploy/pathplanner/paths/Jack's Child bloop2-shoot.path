@@ -50,7 +50,7 @@
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {

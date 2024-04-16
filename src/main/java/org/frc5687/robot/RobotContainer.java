@@ -80,6 +80,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -250,6 +251,32 @@ public class RobotContainer extends OutliersContainer {
                 Commands.runOnce(() -> {
                     _isRotationOverrideEnabled = false;
                 })));
+
+        _autoChooser.addOption("Jack Dynamic", new SequentialCommandGroup(
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child start-1 DX")),
+            new ParallelDeadlineGroup(
+                new DriveToNoteStopNoIntake(_driveTrain), 
+                new AutoPassthrough(_shooter, _intake, 999999)
+            ),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child 1-2 D")),
+            new DriveToNoteStop(_driveTrain, _intake),
+            new ConditionalCommand(
+                new SequentialCommandGroup(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child 2-shoot")),
+                    new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child shoot-bloop2 DX"))
+                ),
+                new WaitCommand(0),
+                _intake::isNoteDetected
+            ),
+            new DriveToNoteStop(_driveTrain, _intake),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child bloop2-shoot")),
+            new AutoShoot(_shooter, _intake, _driveTrain, _lights),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child shoot-bloop1 DX")),
+            new DriveToNoteStop(_driveTrain, _intake),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child bloop1-shoot DX")),
+            new AutoShoot(_shooter, _intake, _driveTrain, _lights)
+        ));
 
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
