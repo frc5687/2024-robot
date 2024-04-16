@@ -56,6 +56,7 @@ public class OI extends OutliersProxy {
     protected Trigger _povButtonLeft;
     protected Trigger _povButtonRight;
     protected Trigger _povButtonUp;
+    protected Trigger _povButtonKindaUp;
     protected Trigger _povButtonDown;
     protected Trigger _opPovButtonDown;
     protected Trigger _opPovButtonRight;
@@ -71,6 +72,7 @@ public class OI extends OutliersProxy {
         _povButtonLeft = new Trigger(() -> _driverGamepad.getPOV() == 270);
         _povButtonRight = new Trigger(() -> _driverGamepad.getPOV() == 90);
         _povButtonUp = new Trigger(() -> _driverGamepad.getPOV() == 0);
+        _povButtonKindaUp = new Trigger(() -> _driverGamepad.getPOV() == 0 || _driverGamepad.getPOV() == 45 || _driverGamepad.getPOV() == 315);
         _povButtonDown = new Trigger(() -> _driverGamepad.getPOV() == 180);
         _opPovButtonDown = new Trigger(() -> _operatorGamepad.getPOV() == 180);
         _opPovButtonRight = new Trigger(() -> _operatorGamepad.getPOV() == 90);
@@ -138,7 +140,7 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new PassAimSetpoint(drivetrain)));
 
         _opLeftTrigger.whileTrue(new PointSwervesForward(drivetrain));
-        _povButtonUp.whileTrue(new ManualShoot(shooter, intake));
+        _povButtonKindaUp.whileTrue(new ManualShoot(shooter, intake));
         _povButtonDown.whileTrue(new CrawlForward(drivetrain));
     }
 
