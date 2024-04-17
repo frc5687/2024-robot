@@ -571,6 +571,35 @@ public class RobotState {
         return closestNotePose;
     }
 
+    /**
+     * 
+     * @param blindingRadians the angle outside which to reject note poses. For example, a value of 0.1 radians would reject notes at 0.11 radians and -0.11 radians
+     * @return an optional pose of the closest note (within the blinded zone)
+     */
+    public Optional<Pose3d> getClosestNoteRelativeRobotCenterBlindedAngle(double blindingRadians) {
+        DetectedNoteArray notes = _visionProcessor.getDetectedObjects();
+        double closestDistance = Double.MAX_VALUE;
+        Optional<Pose3d> closestNotePose = Optional.empty();
+
+        for (DetectedNote note : notes.getNotes()) {
+            Pose3d notePoseRelativeCamera = note.getPose();
+            Pose3d notePoseRelativeRobotCenter = notePoseRelativeCamera.transformBy(_robotToCamera);
+            Translation3d translation = notePoseRelativeRobotCenter.getTranslation();
+            double noteAngleRadians = Math.atan2(translation.getX(), translation.getY());
+            System.out.println("Note angle: "+noteAngleRadians+" radians");
+            // reject notes outside the blinders 🐴
+            if (noteAngleRadians > blindingRadians || noteAngleRadians < -blindingRadians) {
+                continue;
+            }
+            double distance = Math.sqrt(Math.pow(translation.getX(), 2) + Math.pow(translation.getY(), 2));
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestNotePose = Optional.of(notePoseRelativeRobotCenter);
+            }
+        }
+        return closestNotePose;
+    }
+
     public Optional<Pose2d> getClosestNoteRelativeField() {
         Pose2d robotPose = getEstimatedPose();
         Optional<Pose3d> optionalPose3d = getClosestNoteRelativeRobotCenter();
