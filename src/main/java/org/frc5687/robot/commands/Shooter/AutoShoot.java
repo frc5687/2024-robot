@@ -98,7 +98,7 @@ public class AutoShoot extends OutliersCommand{
     @Override
     public boolean isFinished() {
         if (_intakeTimestamp.isPresent()) {
-            return System.currentTimeMillis() > _intakeTimestamp.get() + 150; // 200ms intake
+            return System.currentTimeMillis() > _intakeTimestamp.get() + 250; // 200ms intake
         }
         return false;
     }
