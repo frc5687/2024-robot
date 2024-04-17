@@ -124,15 +124,15 @@ public class RobotContainer extends OutliersContainer {
 
         _field = new Field2d();
 
-        try {
-            if (!DriverStation.isFMSAttached()) {
-                _photonProcessor = new PhotonProcessor(
-                        new AprilTagFieldLayout("home/lvuser/deploy/layouts/2024-colliseum.json"));
-                System.out.println("loaded home apriltag layout");
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        // try {
+        //     if (!DriverStation.isFMSAttached()) {
+        //         _photonProcessor = new PhotonProcessor(
+        //                 new AprilTagFieldLayout("home/lvuser/deploy/layouts/2024-colliseum.json"));
+        //         System.out.println("loaded home apriltag layout");
+        //     }
+        // } catch (IOException e) {
+        //     System.out.println(e.getMessage());
+        // }
 
         if (_photonProcessor == null) {
             _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
