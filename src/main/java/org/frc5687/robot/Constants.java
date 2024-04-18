@@ -252,7 +252,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.234619140625;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.221435546875;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -303,7 +303,7 @@ public class Constants {
         public static final double MOVING_HEADING_kD = 1;
 
         public static final double AIMING_HEADING_kP = 7;
-        public static final double AIMING_HEADING_kI = 0.3;
+        public static final double AIMING_HEADING_kI = 0.6;
         public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
 
         public static final double AUTO_HEADING_kP = 5.0;
@@ -527,7 +527,7 @@ public class Constants {
         static {
             ARM_CLOSED_LOOP_CONFIG.SLOT = 0;
             ARM_CLOSED_LOOP_CONFIG.kP = 10;
-            ARM_CLOSED_LOOP_CONFIG.kI = 0;
+            ARM_CLOSED_LOOP_CONFIG.kI = 1.5;
             ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
             ARM_CLOSED_LOOP_CONFIG.kV = 0;
 
