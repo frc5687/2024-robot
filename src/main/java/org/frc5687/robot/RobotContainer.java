@@ -190,7 +190,7 @@ public class RobotContainer extends OutliersContainer {
                 new WaitCommand(0.01),
                 new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Xavier's Child shoot-1")),
-                new DriveToNoteStop(_driveTrain, _intake),
+                new DriveToNoteStopBlinded(_driveTrain, _intake),
                 // we are at note 1
                 new ConditionalCommand(
                         // we have note 1
@@ -199,7 +199,7 @@ public class RobotContainer extends OutliersContainer {
                                 new WaitCommand(0.01),
                                 new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 1")),
-                                new DriveToNoteStop(_driveTrain, _intake),
+                                new DriveToNoteStopBlinded(_driveTrain, _intake),
                                 // we are at note 3
                                 new ConditionalCommand(
                                         // we have note 3
@@ -208,7 +208,7 @@ public class RobotContainer extends OutliersContainer {
                                                 new WaitCommand(0.01),
                                                 new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                                                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 1")),
-                                                new DriveToNoteStop(_driveTrain, _intake),
+                                                new DriveToNoteStopBlinded(_driveTrain, _intake),
                                                 // we are at note 2
                                                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.3 part 2")),
                                                 new WaitCommand(0.01),
@@ -232,7 +232,7 @@ public class RobotContainer extends OutliersContainer {
                                                 new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                                                 AutoBuilder.followPath(
                                                         PathPlannerPath.fromPathFile("Xavier's Child amp-3")),
-                                                new DriveToNoteStop(_driveTrain, _intake),
+                                                new DriveToNoteStopBlinded(_driveTrain, _intake),
                                                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
                                                 new WaitCommand(0.01),
                                                 new AutoShoot(_shooter, _intake, _driveTrain, _lights)
