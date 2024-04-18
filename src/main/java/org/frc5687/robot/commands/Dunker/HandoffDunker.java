@@ -62,18 +62,25 @@ public class HandoffDunker extends OutliersCommand {
                     _intake.setSpeed(0);
                     _rollerDunkRotation = _dunker.getDunkerRollerRotations() + Constants.Dunker.ROLLER_RETRACT_ROTATIONS;
                     _rollerExtendRotation = _dunker.getDunkerRollerRotations() + Constants.Dunker.ROLLER_EXTEND_ROTATIONS;
-                    _dunker.setDunkerState(DunkerState.CLEAR_CAMERA_BAR);
+                    // _dunker.setDunkerState(DunkerState.CLEAR_CAMERA_BAR);
+                    _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
                 }
                 break;
             case CLEAR_CAMERA_BAR:
+                // if (_dunker.getDunkerRollerRotations() > _rollerExtendRotation) {
+                //     _dunker.setRollerSpeed(0);
+                //     _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
+                // } else {
+                //     _dunker.setRollerSpeed(0.8);
+                // }
+                break;
+            case NOTE_IN_DUNKER:
                 if (_dunker.getDunkerRollerRotations() > _rollerExtendRotation) {
                     _dunker.setRollerSpeed(0);
-                    _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
+                    // _dunker.setDunkerState(DunkerState.NOTE_IN_DUNKER);
                 } else {
                     _dunker.setRollerSpeed(0.8);
                 }
-                break;
-            case NOTE_IN_DUNKER:
                 _dunker.setDunkerAngle(Constants.Dunker.DUNK_ANGLE);
 
                 if (_dunker.isAtAngle(Constants.Dunker.DUNK_ANGLE)) {
