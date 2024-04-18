@@ -212,8 +212,8 @@ public class RobotState {
             updateWithVision();
         }
 
-        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        // _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        // _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -280,13 +280,15 @@ public class RobotState {
         return _driveTrain.isRedAlliance() ? 4 : 7;
     }
 
-    public Pose3d getSpeakerTagPose() {
-        return _layout.getTagPose(getSpeakerTargetTagId()).get();
+    public Pose3d getSpeakerOpeningPose() {
+        Pose3d tagToAim = _layout.getTagPose(getSpeakerTargetTagId()).get();
+        double offset = isRedAlliance() ? -0.1 : 0.1;
+        return new Pose3d(tagToAim.getX() + offset, tagToAim.getY(), tagToAim.getZ(), tagToAim.getRotation());
     }
 
     public Pair<Double, Double> getDistanceAndAngleToSpeaker() {
         Pose2d robotPose = getEstimatedPose();
-        Pose3d tagPose = getSpeakerTagPose();
+        Pose3d tagPose = getSpeakerOpeningPose();
 
         double xDistance = tagPose.getX() - robotPose.getX();
         double yDistance = tagPose.getY() - robotPose.getY();
@@ -332,7 +334,7 @@ public class RobotState {
         double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+        Pose3d targetPose = getSpeakerOpeningPose();
         // This tries to predict the RPM you want while moving, Didn't seem to help much so we just used the initial guess RPM.
         // double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
         //         targetPose.getY() - futurePose.getY());
@@ -358,7 +360,7 @@ public class RobotState {
         double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+        Pose3d targetPose = getSpeakerOpeningPose();
 
         Rotation2d adjustedAngle = new Rotation2d(
                 Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
@@ -370,7 +372,7 @@ public class RobotState {
         double futureY = _lastPose.getY() + _velocity.dy * shootTime;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+        Pose3d targetPose = getSpeakerOpeningPose();
         Rotation2d adjustedAngle = new Rotation2d(
                 Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
         futurePose = new Pose2d(futureX, futureY, adjustedAngle);
@@ -585,13 +587,13 @@ public class RobotState {
             Pose3d notePoseRelativeCamera = note.getPose();
             Pose3d notePoseRelativeRobotCenter = notePoseRelativeCamera.transformBy(_robotToCamera);
             Translation3d translation = notePoseRelativeRobotCenter.getTranslation();
-            double noteAngleRadians = Math.atan2(translation.getX(), translation.getY());
-            System.out.println("Note angle: "+noteAngleRadians+" radians");
+            double noteAngleRadians = Math.atan2(translation.getY(), translation.getX());
+            double distance = Math.sqrt(Math.pow(translation.getX(), 2) + Math.pow(translation.getY(), 2));
+            System.out.println("Note angle: "+noteAngleRadians+" radians, distance: "+distance+" meters");
             // reject notes outside the blinders 🐴
             if (noteAngleRadians > blindingRadians || noteAngleRadians < -blindingRadians) {
                 continue;
             }
-            double distance = Math.sqrt(Math.pow(translation.getX(), 2) + Math.pow(translation.getY(), 2));
             if (distance < closestDistance) {
                 closestDistance = distance;
                 closestNotePose = Optional.of(notePoseRelativeRobotCenter);
