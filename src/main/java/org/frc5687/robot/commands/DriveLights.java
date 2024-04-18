@@ -1,7 +1,5 @@
 package org.frc5687.robot.commands;
 
-import static org.frc5687.robot.Constants.DriveTrain.HEADING_TOLERANCE;
-
 import java.util.Optional;
 
 import org.frc5687.robot.Constants;

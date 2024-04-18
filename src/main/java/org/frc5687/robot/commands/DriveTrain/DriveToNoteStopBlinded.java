@@ -129,7 +129,7 @@ public class DriveToNoteStopBlinded extends OutliersCommand {
 
     @Override
     public boolean isFinished() {
-        return isFinished  || _intake.isNoteDetected();  // yolo
+        return isFinished  || _intake.isNoteDetected() || _robotState.crossedTheMidline();
     }
 
     @Override

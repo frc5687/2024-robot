@@ -86,10 +86,6 @@ public class SwerveHeadingController {
         return _targetHeading;
     }
 
-    public boolean isAtTargetAngle(Rotation2d heading) {
-        return (Math.abs(heading.minus(_targetHeading).getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE);
-    }
-
     public double getRotationCorrection(Rotation2d heading, ChassisSpeeds measuredSpeed) {
         double power = 0;
 

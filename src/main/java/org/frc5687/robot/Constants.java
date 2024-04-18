@@ -318,7 +318,8 @@ public class Constants {
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
 
-        public static final double HEADING_TOLERANCE = Units.degreesToRadians(1.5); // rad
+        public static final double STRAIGHT_HEADING_TOLERANCE = Units.degreesToRadians(2.5);
+        public static final double ANGLED_HEADING_TOLERANCE = Units.degreesToRadians(1.5);
 
         public static final double BUMP_DEGREES = 7;
 

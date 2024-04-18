@@ -40,6 +40,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Threads;
 
 public class RobotState {
@@ -417,8 +418,14 @@ public class RobotState {
         Rotation2d heading = _driveTrain.getHeading();
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToSpeaker().getSecond());
 
+        // i chose a function w a period of pi bc i didn't wanna deal w if red side was +pi.... worlds 2024, xavier
+        double lerpInputValue = Math.abs(targetAngle.getSin());
+        double tolerance = Constants.DriveTrain.ANGLED_HEADING_TOLERANCE * lerpInputValue + Constants.DriveTrain.STRAIGHT_HEADING_TOLERANCE * (1 - lerpInputValue);
+
         Rotation2d difference = heading.minus(targetAngle);
-        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+        SmartDashboard.putNumber("Speaker angle error", difference.getRadians());
+        SmartDashboard.putNumber("Tolerance", tolerance);
+        return Math.abs(difference.getRadians()) < tolerance;
     }
 
     public boolean isAimedAtCorner() {
@@ -445,7 +452,7 @@ public class RobotState {
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToCorner().getSecond());
 
         Rotation2d difference = heading.minus(targetAngle);
-        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.ANGLED_HEADING_TOLERANCE; // use angled tolerance idk
     }
 
     /**
@@ -459,6 +466,14 @@ public class RobotState {
             return pose.getX() > Constants.FieldConstants.FIELD_LENGTH / 2.0;
         } else {
             return pose.getX() < Constants.FieldConstants.FIELD_LENGTH / 2.0;
+        }
+    }
+
+    public boolean crossedTheMidline(Pose2d pose) {
+        if (getAlliance().get() == Alliance.Red) {
+            return pose.getX() < Constants.FieldConstants.FIELD_LENGTH / 2.0 - 0.3; // i aint putting this in constants no way
+        } else {
+            return pose.getX() > Constants.FieldConstants.FIELD_LENGTH / 2.0 + 0.3;
         }
     }
 

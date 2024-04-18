@@ -102,7 +102,7 @@ public class OI extends OutliersProxy {
             VisionProcessor visionProcessor) {
 
         _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake));
-        _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights).alongWith(new AutoAimSetpoint(drivetrain)));
+        _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights, this).alongWith(new AutoAimSetpoint(drivetrain)));
 
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,
         // drivetrain));
@@ -141,7 +141,6 @@ public class OI extends OutliersProxy {
 
         _opLeftTrigger.whileTrue(new PointSwervesForward(drivetrain));
         _povButtonKindaUp.whileTrue(new ManualShoot(shooter, intake));
-        _povButtonDown.whileTrue(new CrawlForward(drivetrain));
     }
 
     public boolean shiftDown() {
@@ -168,6 +167,10 @@ public class OI extends OutliersProxy {
 
     public boolean getSoloClimbButton(){
         return _operatorGamepad.isBackPressed();
+    }
+
+    public boolean getShootYoloButton() {
+        return _povButtonDown.getAsBoolean();
     }
 
     public boolean isIntakeButtonPressed() {
