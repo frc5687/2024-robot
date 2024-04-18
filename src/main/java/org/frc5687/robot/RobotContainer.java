@@ -267,7 +267,7 @@ public class RobotContainer extends OutliersContainer {
                     new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child shoot-bloop2 DX"))
                 ),
-                new WaitCommand(0),
+                AutoBuilder.followPath(PathPlannerPath.fromPathFile("Jack's Child 2-bloop2")),
                 _intake::isNoteDetected
             ),
             new DriveToNoteStop(_driveTrain, _intake),
