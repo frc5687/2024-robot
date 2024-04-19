@@ -15,7 +15,6 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -136,7 +135,7 @@ public class RobotState {
     }
 
     private void run() {
-        Threads.setCurrentThreadPriority(true, 5); // People say lowest priority works well. 
+        Threads.setCurrentThreadPriority(true, 1); // People say lowest priority works well. 
         _running = true;
         while (_running) {
             double startTime = Timer.getFPGATimestamp();
@@ -223,10 +222,9 @@ public class RobotState {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
         _estimatedPose = _poseEstimator.getEstimatedPosition();
-        // Logger.recordOutput("RobotState/EstimatedRobotPose", _estimatedPose);
     }
 
-    public Pose2d getEstimatedPose() {
+    public synchronized Pose2d getEstimatedPose() {
         return _estimatedPose;
     }
 
@@ -423,8 +421,8 @@ public class RobotState {
         double tolerance = Constants.DriveTrain.ANGLED_HEADING_TOLERANCE * lerpInputValue + Constants.DriveTrain.STRAIGHT_HEADING_TOLERANCE * (1 - lerpInputValue);
 
         Rotation2d difference = heading.minus(targetAngle);
-        SmartDashboard.putNumber("Speaker angle error", difference.getRadians());
-        SmartDashboard.putNumber("Tolerance", tolerance);
+        // SmartDashboard.putNumber("Speaker angle error", difference.getRadians());
+        // SmartDashboard.putNumber("Tolerance", tolerance);
         return Math.abs(difference.getRadians()) < tolerance;
     }
 
@@ -487,7 +485,6 @@ public class RobotState {
 
     private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
         EstimatedRobotPose estimatedPose = cameraPose.getFirst();
-        // Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
 
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
@@ -604,7 +601,7 @@ public class RobotState {
             Translation3d translation = notePoseRelativeRobotCenter.getTranslation();
             double noteAngleRadians = Math.atan2(translation.getY(), translation.getX());
             double distance = Math.sqrt(Math.pow(translation.getX(), 2) + Math.pow(translation.getY(), 2));
-            System.out.println("Note angle: "+noteAngleRadians+" radians, distance: "+distance+" meters");
+            // System.out.println("Note angle: "+noteAngleRadians+" radians, distance: "+distance+" meters");
             // reject notes outside the blinders 🐴
             if (noteAngleRadians > blindingRadians || noteAngleRadians < -blindingRadians) {
                 continue;
