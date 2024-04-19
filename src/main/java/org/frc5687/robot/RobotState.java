@@ -453,7 +453,7 @@ public class RobotState {
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToCorner().getSecond());
 
         Rotation2d difference = heading.minus(targetAngle);
-        return Math.abs(difference.getRadians()) < Constants.DriveTrain.STRAIGHT_HEADING_TOLERANCE; // use angled tolerance idk
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.PASS_HEADING_TOLERANCE;
     }
 
     /**

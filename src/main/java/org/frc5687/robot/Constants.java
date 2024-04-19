@@ -263,7 +263,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.340576171875;
+            NORTH_EAST_CONFIG.encoderOffset = 0.425048828125;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -320,6 +320,8 @@ public class Constants {
 
         public static final double STRAIGHT_HEADING_TOLERANCE = Units.degreesToRadians(2.5);
         public static final double ANGLED_HEADING_TOLERANCE = Units.degreesToRadians(1.5);
+        
+        public static final double PASS_HEADING_TOLERANCE = Units.degreesToRadians(3.5);
 
         public static final double BUMP_DEGREES = 7;
 
@@ -690,7 +692,7 @@ public class Constants {
         public static double ZED_PITCH = Units.degreesToRadians(9.16); // positive down
         public static double ZED_YAW = 0.0; // positive counterclockwise
 
-        public static final Pose2d BLUE_CORNER = new Pose2d(0.5, 7.5, new Rotation2d());
-        public static final Pose2d RED_CORNER = new Pose2d(15.5, 7.5, new Rotation2d());
+        public static final Pose2d BLUE_CORNER = new Pose2d(0.5, 7, new Rotation2d());
+        public static final Pose2d RED_CORNER = new Pose2d(15.5, 7, new Rotation2d());
     }
 }
