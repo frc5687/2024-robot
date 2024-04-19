@@ -72,7 +72,7 @@ public class RobotState {
     private volatile Optional<Rotation2d> _visionAngle = Optional.empty();
     private volatile Optional<Double> _visionDistance = Optional.empty();
 
-    private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
+    // private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
     private volatile boolean _useVisionUpdates = true;
 
     private boolean _isAutoAiming = false;
@@ -148,7 +148,10 @@ public class RobotState {
 
             if (sleepTime > 0) {
                 Timer.delay(sleepTime);
-            }
+            } 
+            // else {
+            //     DriverStation.reportWarning("State thread exceeded "+_period+" second period. duration was "+duration+" seconds", false);
+            // }
         }
     }
 
@@ -198,9 +201,9 @@ public class RobotState {
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
             
-        for (int i = 0; i < cameraPoses.size() && i < 4; i++) {
-            _latestCameraPoses[i] = cameraPoses.get(i);
-        }
+        // for (int i = 0; i < cameraPoses.size() && i < 4; i++) {
+        //     _latestCameraPoses[i] = cameraPoses.get(i);
+        // }
 
        cameraPoses.forEach(this::processVisionMeasurement);
     }
@@ -450,7 +453,7 @@ public class RobotState {
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToCorner().getSecond());
 
         Rotation2d difference = heading.minus(targetAngle);
-        return Math.abs(difference.getRadians()) < Constants.DriveTrain.ANGLED_HEADING_TOLERANCE; // use angled tolerance idk
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.STRAIGHT_HEADING_TOLERANCE; // use angled tolerance idk
     }
 
     /**
@@ -703,7 +706,7 @@ public class RobotState {
         return _isAutoAiming;
     }
 
-    public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
-        return _latestCameraPoses;
-    }
+    // public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
+    //     return _latestCameraPoses;
+    // }
 }
