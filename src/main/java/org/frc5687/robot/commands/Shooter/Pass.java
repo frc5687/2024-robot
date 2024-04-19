@@ -62,7 +62,7 @@ public class Pass extends OutliersCommand{
         metric("isAtTargetRPM", isAtTargetRPM);
         metric("isStopped", isStopped);
         
-        if ((isAtTargetRPM && isInAngle && isStopped) || _oi.getShootYoloButton()) { 
+        if ((isAtTargetRPM && isInAngle) || _oi.getShootYoloButton()) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
     }
