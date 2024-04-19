@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 6.3368635503987205,
-        "y": 1.3679937092415044
+        "x": 6.98514715885364,
+        "y": 1.1365401614984023
       },
       "prevControl": {
-        "x": 5.933813776641024,
-        "y": 1.5087504630027684
+        "x": 6.582097385095944,
+        "y": 1.2772969152596665
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F5"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -64,8 +64,8 @@
   "constraintZones": [
     {
       "name": "Shoot Zone",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.95,
+      "minWaypointRelativePos": 0.85,
+      "maxWaypointRelativePos": 1.1,
       "constraints": {
         "maxVelocity": 3.8,
         "maxAcceleration": 3.0,
@@ -94,7 +94,7 @@
     },
     {
       "name": "Shoot1",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 1.05,
       "command": {
         "type": "parallel",
         "data": {
