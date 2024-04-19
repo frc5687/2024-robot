@@ -228,7 +228,7 @@ public class RobotState {
         return _estimatedPose;
     }
 
-    public void setEstimatedPose(Pose2d pose) {
+    public synchronized void setEstimatedPose(Pose2d pose) {
         _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
         _estimatedPose = pose;
         _lastPose = pose;

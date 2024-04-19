@@ -179,14 +179,12 @@ public class RobotContainer extends OutliersContainer {
 
         registerNamedCommands();
         _autoChooser = AutoBuilder.buildAutoChooser("test");
-        var firstPath = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Source Side Start to Source Side Shoot");
         _autoChooser.addOption("Source Side Dynamic Four Piece", new SequentialCommandGroup(
                 Commands.runOnce(() -> {
                     if (_driveTrain.isRedAlliance()) {
-                        System.out.println("starting as red, the pose is "+firstPath.flipPath().getPreviewStartingHolonomicPose().toString());
                         _robotState.setEstimatedPose(firstPath.flipPath().getPreviewStartingHolonomicPose());
                     } else {
-                        System.out.println("starting as blue, the pose is "+firstPath.getPreviewStartingHolonomicPose());
                         _robotState.setEstimatedPose(firstPath.getPreviewStartingHolonomicPose());
                     }
                     _isRotationOverrideEnabled = true;
@@ -262,10 +260,8 @@ public class RobotContainer extends OutliersContainer {
                 _autoChooser.addOption("Adam Xavier Dynamic", new SequentialCommandGroup(
                 Commands.runOnce(() -> {
                     if (_driveTrain.isRedAlliance()) {
-                        System.out.println("starting as red, the pose is "+_adamFirstPath.flipPath().getPreviewStartingHolonomicPose().toString());
                         _robotState.setEstimatedPose(_adamFirstPath.flipPath().getPreviewStartingHolonomicPose());
                     } else {
-                        System.out.println("starting as blue, the pose is "+_adamFirstPath.getPreviewStartingHolonomicPose());
                         _robotState.setEstimatedPose(_adamFirstPath.getPreviewStartingHolonomicPose());
                     }
                     _isRotationOverrideEnabled = true;

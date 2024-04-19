@@ -137,7 +137,7 @@ public class OI extends OutliersProxy {
         _operatorGamepad.getAButton().whileTrue(new IntakeEject(shooter, intake));
 
         _operatorGamepad.getLeftBumper().onTrue(new ToggleAmpMode(shooter));
-        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights).alongWith(new PassAimSetpoint(drivetrain)));
+        _operatorGamepad.getRightBumper().whileTrue(new Pass(shooter, intake, lights, this).alongWith(new PassAimSetpoint(drivetrain)));
 
         _opLeftTrigger.whileTrue(new PointSwervesForward(drivetrain));
         _povButtonKindaUp.whileTrue(new ManualShoot(shooter, intake));
