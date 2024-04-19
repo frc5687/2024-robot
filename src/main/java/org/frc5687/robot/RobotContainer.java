@@ -136,10 +136,8 @@ public class RobotContainer extends OutliersContainer {
         //     System.out.println(e.getMessage());
         // }
 
-        if (_photonProcessor == null) {
-            _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-            info("loaded comp apriltag layout");
-        }
+        _photonProcessor = new PhotonProcessor(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+        info("loaded comp apriltag layout");
 
         _isRotationOverrideEnabled = false;
 
@@ -264,9 +262,11 @@ public class RobotContainer extends OutliersContainer {
                     } else {
                         _robotState.setEstimatedPose(_adamFirstPath.getPreviewStartingHolonomicPose());
                     }
-                    _isRotationOverrideEnabled = true;
                 }, _driveTrain),
                 AutoBuilder.followPath(_adamFirstPath),
+                Commands.runOnce(() -> {
+                    _isRotationOverrideEnabled = true;
+                }),
                 new DriveToNoteStopBlinded(_driveTrain, _intake),
                 // we are at note 1
                 new ConditionalCommand(
@@ -395,16 +395,16 @@ public class RobotContainer extends OutliersContainer {
             var fieldNotes = _field.getObject("notes");
             fieldNotes.setPoses(new ArrayList<Pose2d>()); // Clear all notes by setting an empty list of poses
         }
-        Pair<EstimatedRobotPose, String>[] cameraPoses = _robotState.getLatestCameraPoses();
+        // Pair<EstimatedRobotPose, String>[] cameraPoses = _robotState.getLatestCameraPoses();
 
-        for (int i = 0; i < cameraPoses.length; i++) {
-            Pair<EstimatedRobotPose, String> cameraPose = cameraPoses[i];
+        // for (int i = 0; i < cameraPoses.length; i++) {
+        //     Pair<EstimatedRobotPose, String> cameraPose = cameraPoses[i];
 
-            if (cameraPose != null) {
-                Logger.recordOutput("RobotState/CameraPose/" + cameraPose.getSecond(),
-                        cameraPose.getFirst().estimatedPose.toPose2d());
-            }
-        }
+        //     if (cameraPose != null) {
+        //         Logger.recordOutput("RobotState/CameraPose/" + cameraPose.getSecond(),
+        //                 cameraPose.getFirst().estimatedPose.toPose2d());
+        //     }
+        // }
 
         Logger.recordOutput("RobotState/EstimatedRobotPose", _robotState.getEstimatedPose());
         // _field.getObject("futurePose").setPose(_robotState.calculateAdjustedRPMAndAngleToTargetPose());
