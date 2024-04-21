@@ -232,7 +232,7 @@ public class RobotContainer extends OutliersContainer {
                                                 new AutoShoot(_shooter, _intake, _driveTrain, _lights),
                                                 AutoBuilder.followPath(
                                                         PathPlannerPath.fromPathFile("Xavier's Child amp-3")),
-                                                new DriveToNoteStopBlinded(_driveTrain, _intake),
+                                                new DriveToNoteStop(_driveTrain, _intake),
                                                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("4p pp.2 part 2")),
                                                 new WaitCommand(0.01),
                                                 new AutoShoot(_shooter, _intake, _driveTrain, _lights)
