@@ -3,6 +3,7 @@ package org.frc5687.robot.commands.DriveTrain;
 import java.util.Optional;
 
 import org.frc5687.robot.RobotState;
+import org.frc5687.robot.commands.DisableAimAfterTime;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 
@@ -56,7 +57,7 @@ public class AutoAimSetpoint extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         _driveTrain.goToHeading(_driveTrain.getHeading());
-        _robotState.setAutoAiming(false);
+        (new DisableAimAfterTime(500)).schedule();
     }
 
 

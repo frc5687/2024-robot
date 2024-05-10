@@ -15,7 +15,6 @@ import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
 import org.frc5687.robot.util.VisionProcessor.DetectedNoteArray;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -40,6 +39,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Threads;
 
 public class RobotState {
@@ -72,7 +72,7 @@ public class RobotState {
     private volatile Optional<Rotation2d> _visionAngle = Optional.empty();
     private volatile Optional<Double> _visionDistance = Optional.empty();
 
-    private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
+    // private volatile Pair<EstimatedRobotPose, String>[] _latestCameraPoses = new Pair[4];
     private volatile boolean _useVisionUpdates = true;
 
     private boolean _isAutoAiming = false;
@@ -135,7 +135,7 @@ public class RobotState {
     }
 
     private void run() {
-        Threads.setCurrentThreadPriority(true, 5); // People say lowest priority works well. 
+        Threads.setCurrentThreadPriority(true, 1); // People say lowest priority works well. 
         _running = true;
         while (_running) {
             double startTime = Timer.getFPGATimestamp();
@@ -148,7 +148,10 @@ public class RobotState {
 
             if (sleepTime > 0) {
                 Timer.delay(sleepTime);
-            }
+            } 
+            // else {
+            //     DriverStation.reportWarning("State thread exceeded "+_period+" second period. duration was "+duration+" seconds", false);
+            // }
         }
     }
 
@@ -198,9 +201,9 @@ public class RobotState {
                 .filter(pair -> isValidMeasurementTest(pair))
                 .collect(Collectors.toList());
             
-        for (int i = 0; i < cameraPoses.size() && i < 4; i++) {
-            _latestCameraPoses[i] = cameraPoses.get(i);
-        }
+        // for (int i = 0; i < cameraPoses.size() && i < 4; i++) {
+        //     _latestCameraPoses[i] = cameraPoses.get(i);
+        // }
 
        cameraPoses.forEach(this::processVisionMeasurement);
     }
@@ -212,8 +215,8 @@ public class RobotState {
             updateWithVision();
         }
 
-        _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
-        _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
+        // _visionAngle = getAngleToTagFromVision(getSpeakerTargetTagId());
+        // _visionDistance = getDistanceToTagFromVision(getSpeakerTargetTagId());
 
         // if (_visionAngle.isPresent()) {
         //     SmartDashboard.putNumber("Vision Angle", _visionAngle.get().getRadians());
@@ -222,14 +225,13 @@ public class RobotState {
         //     SmartDashboard.putNumber("Vision Distance", _visionDistance.get());
         // }
         _estimatedPose = _poseEstimator.getEstimatedPosition();
-        // Logger.recordOutput("RobotState/EstimatedRobotPose", _estimatedPose);
     }
 
-    public Pose2d getEstimatedPose() {
+    public synchronized Pose2d getEstimatedPose() {
         return _estimatedPose;
     }
 
-    public void setEstimatedPose(Pose2d pose) {
+    public synchronized void setEstimatedPose(Pose2d pose) {
         _poseEstimator.resetPosition(_driveTrain.getHeading(), _driveTrain.getSwerveModuleMeasuredPositions(), pose);
         _estimatedPose = pose;
         _lastPose = pose;
@@ -280,13 +282,15 @@ public class RobotState {
         return _driveTrain.isRedAlliance() ? 4 : 7;
     }
 
-    public Pose3d getSpeakerTagPose() {
-        return _layout.getTagPose(getSpeakerTargetTagId()).get();
+    public Pose3d getSpeakerOpeningPose() {
+        Pose3d tagToAim = _layout.getTagPose(getSpeakerTargetTagId()).get();
+        double offset = isRedAlliance() ? -0.1 : 0.1;
+        return new Pose3d(tagToAim.getX() + offset, tagToAim.getY(), tagToAim.getZ(), tagToAim.getRotation());
     }
 
     public Pair<Double, Double> getDistanceAndAngleToSpeaker() {
         Pose2d robotPose = getEstimatedPose();
-        Pose3d tagPose = getSpeakerTagPose();
+        Pose3d tagPose = getSpeakerOpeningPose();
 
         double xDistance = tagPose.getX() - robotPose.getX();
         double yDistance = tagPose.getY() - robotPose.getY();
@@ -332,7 +336,7 @@ public class RobotState {
         double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+        Pose3d targetPose = getSpeakerOpeningPose();
         // This tries to predict the RPM you want while moving, Didn't seem to help much so we just used the initial guess RPM.
         // double futureDistance = Math.hypot(targetPose.getX() - futurePose.getX(),
         //         targetPose.getY() - futurePose.getY());
@@ -358,7 +362,7 @@ public class RobotState {
         double futureY = _lastPose.getY() + _velocity.dy * shotTravelTime;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+        Pose3d targetPose = getSpeakerOpeningPose();
 
         Rotation2d adjustedAngle = new Rotation2d(
                 Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
@@ -370,7 +374,7 @@ public class RobotState {
         double futureY = _lastPose.getY() + _velocity.dy * shootTime;
 
         Pose2d futurePose = new Pose2d(futureX, futureY, _driveTrain.getHeading());
-        Pose3d targetPose = getSpeakerTagPose();
+        Pose3d targetPose = getSpeakerOpeningPose();
         Rotation2d adjustedAngle = new Rotation2d(
                 Math.atan2(targetPose.getY() - futurePose.getY(), targetPose.getX() - futurePose.getX()));
         futurePose = new Pose2d(futureX, futureY, adjustedAngle);
@@ -415,8 +419,14 @@ public class RobotState {
         Rotation2d heading = _driveTrain.getHeading();
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToSpeaker().getSecond());
 
+        // i chose a function w a period of pi bc i didn't wanna deal w if red side was +pi.... worlds 2024, xavier
+        double lerpInputValue = Math.abs(targetAngle.getSin());
+        double tolerance = Constants.DriveTrain.ANGLED_HEADING_TOLERANCE * lerpInputValue + Constants.DriveTrain.STRAIGHT_HEADING_TOLERANCE * (1 - lerpInputValue);
+
         Rotation2d difference = heading.minus(targetAngle);
-        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+        // SmartDashboard.putNumber("Speaker angle error", difference.getRadians());
+        // SmartDashboard.putNumber("Tolerance", tolerance);
+        return Math.abs(difference.getRadians()) < tolerance;
     }
 
     public boolean isAimedAtCorner() {
@@ -443,7 +453,7 @@ public class RobotState {
         Rotation2d targetAngle = new Rotation2d(getDistanceAndAngleToCorner().getSecond());
 
         Rotation2d difference = heading.minus(targetAngle);
-        return Math.abs(difference.getRadians()) < Constants.DriveTrain.HEADING_TOLERANCE;
+        return Math.abs(difference.getRadians()) < Constants.DriveTrain.PASS_HEADING_TOLERANCE;
     }
 
     /**
@@ -460,6 +470,14 @@ public class RobotState {
         }
     }
 
+    public boolean crossedTheMidline(Pose2d pose) {
+        if (getAlliance().get() == Alliance.Red) {
+            return pose.getX() < Constants.FieldConstants.FIELD_LENGTH / 2.0 - 0.3; // i aint putting this in constants no way
+        } else {
+            return pose.getX() > Constants.FieldConstants.FIELD_LENGTH / 2.0 + 0.3;
+        }
+    }
+
     public Optional<Alliance> getAlliance() {
         return DriverStation.getAlliance();
     }
@@ -470,7 +488,6 @@ public class RobotState {
 
     private void processVisionMeasurement(Pair<EstimatedRobotPose, String> cameraPose) {
         EstimatedRobotPose estimatedPose = cameraPose.getFirst();
-        // Logger.recordOutput("AprilTagVision/" + cameraPose.getSecond() + "/EstimatedRobotPose", estimatedPose.estimatedPose.toPose2d());
 
         double dist = estimatedPose.estimatedPose.toPose2d().getTranslation().getDistance(_estimatedPose.getTranslation());
         
@@ -571,6 +588,35 @@ public class RobotState {
         return closestNotePose;
     }
 
+    /**
+     * 
+     * @param blindingRadians the angle outside which to reject note poses. For example, a value of 0.1 radians would reject notes at 0.11 radians and -0.11 radians
+     * @return an optional pose of the closest note (within the blinded zone)
+     */
+    public Optional<Pose3d> getClosestNoteRelativeRobotCenterBlindedAngle(double blindingRadians) {
+        DetectedNoteArray notes = _visionProcessor.getDetectedObjects();
+        double closestDistance = Double.MAX_VALUE;
+        Optional<Pose3d> closestNotePose = Optional.empty();
+
+        for (DetectedNote note : notes.getNotes()) {
+            Pose3d notePoseRelativeCamera = note.getPose();
+            Pose3d notePoseRelativeRobotCenter = notePoseRelativeCamera.transformBy(_robotToCamera);
+            Translation3d translation = notePoseRelativeRobotCenter.getTranslation();
+            double noteAngleRadians = Math.atan2(translation.getY(), translation.getX());
+            double distance = Math.sqrt(Math.pow(translation.getX(), 2) + Math.pow(translation.getY(), 2));
+            // System.out.println("Note angle: "+noteAngleRadians+" radians, distance: "+distance+" meters");
+            // reject notes outside the blinders 🐴
+            if (noteAngleRadians > blindingRadians || noteAngleRadians < -blindingRadians) {
+                continue;
+            }
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestNotePose = Optional.of(notePoseRelativeRobotCenter);
+            }
+        }
+        return closestNotePose;
+    }
+
     public Optional<Pose2d> getClosestNoteRelativeField() {
         Pose2d robotPose = getEstimatedPose();
         Optional<Pose3d> optionalPose3d = getClosestNoteRelativeRobotCenter();
@@ -660,7 +706,7 @@ public class RobotState {
         return _isAutoAiming;
     }
 
-    public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
-        return _latestCameraPoses;
-    }
+    // public Pair<EstimatedRobotPose, String>[] getLatestCameraPoses() {
+    //     return _latestCameraPoses;
+    // }
 }

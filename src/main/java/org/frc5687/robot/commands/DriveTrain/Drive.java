@@ -1,8 +1,11 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot.commands.DriveTrain;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
+import java.util.Optional;
 
 import org.frc5687.lib.math.Vector2d;
 import org.frc5687.robot.Constants;
@@ -70,7 +73,21 @@ public class Drive extends OutliersCommand {
         metric("Autoaiming with Setpoint", _robotState.isAutoAiming());
         
         if (shouldAutoAim) {
-            _driveTrain.goToHeading(new Rotation2d(_robotState.getDistanceAndAngleToSpeaker().getSecond()));
+            Optional<Rotation2d> visionAngle = _robotState.getAngleToSpeakerFromVision();
+            Rotation2d _targetHeading;
+
+            if (visionAngle.isPresent()) {
+                double angleRadians = visionAngle.get().getRadians();
+                metric("Vision Angle", angleRadians);
+                _targetHeading = _driveTrain.getHeading().minus(Rotation2d.fromRadians(angleRadians));
+                metric("Vision Angle Robot Heading", _targetHeading.getRadians());
+            } else {
+                Pair<Double, Double> distanceAndAngle = _robotState.getDistanceAndAngleToSpeaker();
+                _targetHeading = Rotation2d.fromRadians(distanceAndAngle.getSecond());
+                metric("Pose Angle Robot Heading", _targetHeading.getRadians());
+            }
+            
+            _driveTrain.goToHeading(_targetHeading);
         }
 
 

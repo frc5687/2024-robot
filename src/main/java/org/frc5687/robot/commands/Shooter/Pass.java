@@ -3,6 +3,7 @@ package org.frc5687.robot.commands.Shooter;
 import java.util.Optional;
 
 import org.frc5687.robot.Constants;
+import org.frc5687.robot.OI;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.Shooter;
@@ -18,17 +19,20 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class Pass extends OutliersCommand{
     private final Shooter _shooter;
     private final Intake _intake;
+    private final OI _oi;
     private final Lights _lights;
     private final RobotState _robotState = RobotState.getInstance();
 
     public Pass(
         Shooter shooter,
         Intake intake,
-        Lights lights
+        Lights lights,
+        OI oi
     ) {
         _shooter = shooter;
         _intake = intake;
         _lights = lights;
+        _oi = oi;
         addRequirements(_shooter, _intake);
     }
 
@@ -58,7 +62,7 @@ public class Pass extends OutliersCommand{
         metric("isAtTargetRPM", isAtTargetRPM);
         metric("isStopped", isStopped);
         
-        if (isAtTargetRPM && isInAngle && isStopped) { 
+        if ((isAtTargetRPM && isInAngle) || _oi.getShootYoloButton()) { 
             _intake.setSpeed(Constants.Intake.INTAKE_SPEED);
         }
     }

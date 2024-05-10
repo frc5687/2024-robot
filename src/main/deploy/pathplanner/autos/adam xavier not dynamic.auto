@@ -12,39 +12,21 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "EnableRotationOverride"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Source Side Start to Source Side Shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.01
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Xavier's Child shoot-1"
+            "pathName": "4p pp.1 part 1"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "DynamicNoteBlinded"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EnableRotationOverride"
           }
         },
         {

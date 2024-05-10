@@ -252,7 +252,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.234619140625;
+            SOUTH_EAST_CONFIG.encoderOffset = 0.03662109375;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -263,7 +263,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = 0.340576171875;
+            NORTH_EAST_CONFIG.encoderOffset = 0.425048828125;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -303,7 +303,7 @@ public class Constants {
         public static final double MOVING_HEADING_kD = 1;
 
         public static final double AIMING_HEADING_kP = 7;
-        public static final double AIMING_HEADING_kI = 0.3;
+        public static final double AIMING_HEADING_kI = 0;
         public static final double AIMING_HEADING_kD = 0.8; // 0.5 w/ better wheels
 
         public static final double AUTO_HEADING_kP = 5.0;
@@ -318,7 +318,10 @@ public class Constants {
         public static final double POSITION_TOLERANCE = 0.01;
         public static final double LEVEL_TOLERANCE = 0.5;
 
-        public static final double HEADING_TOLERANCE = Units.degreesToRadians(1.5); // rad
+        public static final double STRAIGHT_HEADING_TOLERANCE = Units.degreesToRadians(2.5);
+        public static final double ANGLED_HEADING_TOLERANCE = Units.degreesToRadians(1.5);
+        
+        public static final double PASS_HEADING_TOLERANCE = Units.degreesToRadians(3.5);
 
         public static final double BUMP_DEGREES = 7;
 
@@ -374,12 +377,12 @@ public class Constants {
 
         public static double[][] kRPMValues = {
             { 3.0, 3700}, // 4/3/24 FIXME maybe add a bit of rpm
-            { 3.4, 2550}, // 4/4/24
-            { 3.8, 2150}, // 4/4/24
-            { 4.0, 2100}, // 4/4/24
-            { 4.2, 1990}, // 4/4/24
-            { 4.4, 1950 + 20}, // guess on 4/5/24
-            { 4.8, 1880 + 20}, // guess on 4/5/24
+            { 3.4, 2550}, // 4/17/24
+            { 3.8, 2200}, // 4/17/24
+            { 4.0, 2150}, // 4/17/24
+            { 4.2, 1960}, // 4/17/24
+            { 4.4, 1960}, // guess on 4/17/24
+            { 4.8, 1920}, // guess on 4/17/24
         };
 
         public static final double IDLE_RPM = 2200;
@@ -527,7 +530,7 @@ public class Constants {
         static {
             ARM_CLOSED_LOOP_CONFIG.SLOT = 0;
             ARM_CLOSED_LOOP_CONFIG.kP = 10;
-            ARM_CLOSED_LOOP_CONFIG.kI = 0;
+            ARM_CLOSED_LOOP_CONFIG.kI = 1.5;
             ARM_CLOSED_LOOP_CONFIG.kD = 0.0001;
             ARM_CLOSED_LOOP_CONFIG.kV = 0;
 
@@ -689,7 +692,7 @@ public class Constants {
         public static double ZED_PITCH = Units.degreesToRadians(9.16); // positive down
         public static double ZED_YAW = 0.0; // positive counterclockwise
 
-        public static final Pose2d BLUE_CORNER = new Pose2d(0.5, 7.5, new Rotation2d());
-        public static final Pose2d RED_CORNER = new Pose2d(15.5, 7.5, new Rotation2d());
+        public static final Pose2d BLUE_CORNER = new Pose2d(0.5, 7, new Rotation2d());
+        public static final Pose2d RED_CORNER = new Pose2d(15.5, 7, new Rotation2d());
     }
 }
