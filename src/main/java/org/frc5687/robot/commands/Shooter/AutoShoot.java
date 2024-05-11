@@ -2,9 +2,6 @@ package org.frc5687.robot.commands.Shooter;
 
 import java.util.Optional;
 
-import javax.swing.plaf.OptionPaneUI;
-import javax.swing.text.html.Option;
-
 import org.frc5687.robot.Constants;
 import org.frc5687.robot.RobotState;
 import org.frc5687.robot.subsystems.DriveTrain;

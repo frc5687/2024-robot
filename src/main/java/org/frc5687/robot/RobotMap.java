@@ -68,13 +68,7 @@ public class RobotMap {
      * PCM only one device can connect to each port, so the numbers should be
      * unique.
      */
-    public static class PCM {
-        public static final int SHIFTER_HIGH = 3; // these values may be flip-flopped
-        public static final int SHIFTER_LOW = 2;
-
-        public static final int RATCHET_RAISE = 4;
-        public static final int RATCHET_LOWER = 5;
-    }
+    public static class PCM {}
 
     /**
      * There should be an entry here for each PDP breaker, preferrably in numerical

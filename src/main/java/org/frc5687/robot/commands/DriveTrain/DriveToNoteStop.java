@@ -93,10 +93,6 @@ public class DriveToNoteStop extends OutliersCommand {
         double vy = 0;
         double rot = 0;
 
-        if (!_driveTrain.isLowGear()) {
-            _driveTrain.shiftDownModules();
-        }
-
         _closestNote = _robotState.getClosestNoteRelativeRobotCenter();
 
         if (_closestNote.isPresent()) {

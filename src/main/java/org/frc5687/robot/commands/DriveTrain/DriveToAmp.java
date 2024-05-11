@@ -17,7 +17,6 @@ public class DriveToAmp extends OutliersCommand {
     private final RobotState _robotState = RobotState.getInstance();
     private Pose2d _goalPose;
     private PIDController _controller;
-    private double _maxSpeed;
 
     public DriveToAmp(DriveTrain driveTrain, OI oi) {
         _driveTrain = driveTrain;
@@ -27,10 +26,6 @@ public class DriveToAmp extends OutliersCommand {
 
     @Override
     public void initialize() {
-        _maxSpeed = _driveTrain.isLowGear() 
-            ? Constants.DriveTrain.MAX_LOW_GEAR_MPS
-            : Constants.DriveTrain.MAX_HIGH_GEAR_MPS
-        ;
         _goalPose = _driveTrain.isRedAlliance() ? Constants.Shooter.RED_AMP_SHOT_POSE : Constants.Shooter.BLUE_AMP_SHOT_POSE;
         _controller = new PIDController(
             Constants.DriveTrain.POSE_kP, 
@@ -51,7 +46,7 @@ public class DriveToAmp extends OutliersCommand {
         _driveTrain.setVelocity(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 output, 
-                _oi.getDriveY() * _maxSpeed / 2.0,
+                _oi.getDriveY() * Constants.DriveTrain.MAX_MPS / 2.0,
                 _driveTrain.getRotationCorrection(),
                 rotation
             )

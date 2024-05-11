@@ -44,7 +44,6 @@ public class Drive extends OutliersCommand {
     @Override
     public void initialize() {
         _driveTrain.goToHeading(_driveTrain.getHeading());
-        _driveTrain.enableAutoShifter();
     }
 
     @Override
@@ -55,10 +54,6 @@ public class Drive extends OutliersCommand {
         double vx;
         double vy;
         double rot = _oi.getRotationX();
-
-        double max_mps = _driveTrain.isLowGear() ? 
-                 Constants.DriveTrain.MAX_LOW_GEAR_MPS
-                : Constants.DriveTrain.MAX_HIGH_GEAR_MPS;
 
         rot = Math.signum(rot) * rot * rot;
         if (_oi.isRotateFast()) {
@@ -99,20 +94,10 @@ public class Drive extends OutliersCommand {
             rot = _driveTrain.getRotationCorrection();
         }
 
-        vx = vec.x() * max_mps;
-        vy = vec.y() * max_mps;
+        vx = vec.x() * Constants.DriveTrain.MAX_MPS;
+        vy = vec.y() * Constants.DriveTrain.MAX_MPS;
 
         Rotation2d rotation = _driveTrain.isRedAlliance() ? _driveTrain.getHeading().plus(new Rotation2d(Math.PI)) : _driveTrain.getHeading();
-        // set kinematics limits if shooting.
-        // if (_oi.isShooting()) {
-        // } else {
-        //     _driveTrain.setKinematicLimits(
-        //         _driveTrain.isLowGear() ? 
-        //         LOW_KINEMATIC_LIMITS :
-        //         HIGH_KINEMATIC_LIMITS
-        //     );
-        // }
-
 
         if (_driveTrain.isFieldCentric()) {
             _driveTrain.setVelocity(

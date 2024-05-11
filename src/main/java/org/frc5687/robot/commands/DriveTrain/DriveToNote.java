@@ -42,7 +42,6 @@ public class DriveToNote extends OutliersCommand {
         _xController.setGoal(0.0);
         _yController.setGoal(0.0);
         _yawController.setSetpoint(0.0);
-        _driveTrain.disableAutoShifter();
     }
 
     @Override
@@ -54,10 +53,6 @@ public class DriveToNote extends OutliersCommand {
         if (_intake.isNoteIndexed()) {
             _driveTrain.setVelocity(new ChassisSpeeds(0, 0, 0));
             return;
-        }
-
-        if (!_driveTrain.isLowGear()) {
-            _driveTrain.shiftDownModules();
         }
 
         Optional<Pose3d> closestNoteRelativeField = _robotState.getClosestNoteRelativeRobotCenter();
@@ -86,7 +81,5 @@ public class DriveToNote extends OutliersCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-
-        _driveTrain.enableAutoShifter();
     }
 }

@@ -1,17 +1,11 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.robot;
 
-import static org.frc5687.robot.Constants.DriveTrain.HIGH_KINEMATIC_LIMITS;
-import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.KINEMATIC_LIMITS;
 
-import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
-import org.frc5687.robot.RobotMap.PDP;
 import org.frc5687.robot.commands.DisableVisionUpdates;
 import org.frc5687.robot.commands.DriveLights;
 import org.frc5687.robot.commands.EnableVisionUpdates;
@@ -412,16 +406,14 @@ public class RobotContainer extends OutliersContainer {
 
     @Override
     public void teleopInit() {
-        _driveTrain.enableAutoShifter();
         // _robotState.useTeleopStandardDeviations();
         // enforce to make sure kinematic limits are set back to normal.
-        _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? LOW_KINEMATIC_LIMITS : HIGH_KINEMATIC_LIMITS);
+        _driveTrain.setKinematicLimits(KINEMATIC_LIMITS);
     }
 
     @Override
     public void autonomousInit() {
         // _robotState.useAutoStandardDeviations();
-        _driveTrain.disableAutoShifter();
     }
 
     private void setDefaultCommand(OutliersSubsystem subSystem, OutliersCommand command) {

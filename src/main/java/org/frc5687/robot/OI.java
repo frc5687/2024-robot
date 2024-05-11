@@ -143,22 +143,12 @@ public class OI extends OutliersProxy {
         _povButtonKindaUp.whileTrue(new ManualShoot(shooter, intake));
     }
 
-    public boolean shiftDown() {
-        // return _driverGamepad.getLeftBumper().getAsBoolean();
-        return false;
-    }
-
     public boolean zeroIMU() {
         return _driverGamepad.isStartPressed();
     }
 
     public boolean isShooting() {
         return _driverRightTriggerButton.get();
-    }
-
-    public boolean shiftUp() {
-        // return _driverGamepad.getLeftBumper().getAsBoolean();
-        return false;
     }
 
     public boolean getClimbButton() {

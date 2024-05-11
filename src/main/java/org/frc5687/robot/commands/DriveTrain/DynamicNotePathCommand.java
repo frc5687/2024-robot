@@ -9,7 +9,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
-import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.KINEMATIC_LIMITS;
 import java.util.Optional;
 
 import org.frc5687.robot.RobotState;
@@ -34,10 +34,10 @@ public class DynamicNotePathCommand extends Command {
             if (closestNotePose.isPresent() && _robotState.isOnAllianceHalf(closestNotePose.get())) {
                 // If there's a closest note, schedule pathfinding to it
                 scheduledCommand = AutoBuilder.pathfindToPose(closestNotePose.get(), new PathConstraints(
-                    LOW_KINEMATIC_LIMITS.maxDriveVelocity,
-                    LOW_KINEMATIC_LIMITS.maxDriveAcceleration,
-                    LOW_KINEMATIC_LIMITS.maxSteeringVelocity,
-                    LOW_KINEMATIC_LIMITS.maxSteeringVelocity * 3
+                    KINEMATIC_LIMITS.maxDriveVelocity,
+                    KINEMATIC_LIMITS.maxDriveAcceleration,
+                    KINEMATIC_LIMITS.maxSteeringVelocity,
+                    KINEMATIC_LIMITS.maxSteeringVelocity * 3
                 ));
             } else {
                 scheduledCommand = new WaitCommand(0);// just end

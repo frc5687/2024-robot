@@ -17,7 +17,6 @@ public class CrawlForward extends OutliersCommand {
     @Override
     public void initialize() {
         _driveTrain.setRobotCentric();
-        _driveTrain.shiftDownModules();
     }
 
     @Override

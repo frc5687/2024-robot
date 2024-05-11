@@ -67,7 +67,6 @@ public class SwerveModule {
     private double _wantedSpeed;
     private double _stateMPS;
 
-    private boolean _isLowGear;
     private String _moduleName;
 
 
@@ -100,8 +99,6 @@ public class SwerveModule {
         //  motionMagicConfigs.MotionMagicExpo_kA = 0.001;
 
         // _steeringMotor.getConfigurator().apply(motionMagicConfigs);
-
-        _isLowGear = false;
 
         _encoder = new CANcoder(encoderPort, config.canBus);
 
@@ -173,23 +170,9 @@ public class SwerveModule {
         _steeringVelocityRotationsPerSec.refresh();
     }
 
-    public void shiftDown() {
-        if (!_isLowGear) {
-            setLowGear();
-            transformEncoderFromHighGearToLowGear();
-        }
-    }
-
-    public void shiftUp() {
-        if (_isLowGear) {
-            setHighGear();
-            transformEncoderFromLowGearToHighGear();
-        }
-    }
-
     private SwerveModulePosition calculatePosition() {
         double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-        double distanceMeters = currentEncoderRotations * 2.0 * Math.PI / getGearRatio() * Constants.SwerveModule.WHEEL_RADIUS ;
+        double distanceMeters = currentEncoderRotations * 2.0 * Math.PI / Constants.SwerveModule.GEAR_RATIO_DRIVE * Constants.SwerveModule.WHEEL_RADIUS ;
         double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
                 _steeringVelocityRotationsPerSec);
 
@@ -199,16 +182,12 @@ public class SwerveModule {
         return _internalState;
     }
 
-    private double getGearRatio() {
-        return _isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH;
-    }
-
     public BaseStatusSignal[] getSignals() {
         return _signals;
     }
 
     private double calculateWantedSpeed(SwerveModuleState state) {
-        return state.speedMetersPerSecond * getGearRatio() * _rotPerMet;
+        return state.speedMetersPerSecond * Constants.SwerveModule.GEAR_RATIO_DRIVE * _rotPerMet;
     }
 
     public void setIdealState(SwerveModuleState state) {
@@ -229,18 +208,6 @@ public class SwerveModule {
         cosineScalar = Math.max(cosineScalar, 0.0); // Ensure it does not invert drive
         _wantedSpeed *= cosineScalar;
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(_wantedSpeed));
-    }
-
-    private void transformEncoderFromHighGearToLowGear() {
-        refreshSignals();
-        double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-        _driveMotor.setPosition(currentEncoderRotations * Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW / Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH);
-    }
-
-    private void transformEncoderFromLowGearToHighGear() {
-        refreshSignals();
-        double currentEncoderRotations = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-        _driveMotor.setPosition(currentEncoderRotations * Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH / Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW);
     }
 
     public SwerveModuleState getState() {
@@ -288,16 +255,6 @@ public class SwerveModule {
         }
     }
 
-    private void setLowGear() {
-        _isLowGear = true;
-        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(0);
-    }
-
-    private void setHighGear() {
-        _isLowGear = false;
-        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);
-    }
-
     public double getDriveRPM() {
         return OutliersTalon.rotationsPerSecToRPM(_driveVelocityRotationsPerSec.getValue(), 1.0);
     }
@@ -319,7 +276,7 @@ public class SwerveModule {
     }
 
     public double getWheelAngularVelocity() {
-        return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM() / getGearRatio());
+        return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM() / Constants.SwerveModule.GEAR_RATIO_DRIVE);
     }
 
     public Translation2d getModuleLocation() {
@@ -335,7 +292,7 @@ public class SwerveModule {
     }
 
     public double getDistance() {
-        return _drivePositionRotations.getValue() * (Math.PI * 2.0) / (getGearRatio());
+        return _drivePositionRotations.getValue() * (Math.PI * 2.0) / (Constants.SwerveModule.GEAR_RATIO_DRIVE);
     }
 
     public void resetEncoders() {
@@ -361,7 +318,6 @@ public class SwerveModule {
         SmartDashboard.putNumber(_moduleName + "/moduleAngle", getEncoderAngleDouble());
         SmartDashboard.putNumber(_moduleName + "/driveRPM", getDriveRPM());
 
-        SmartDashboard.putBoolean(_moduleName + "/isLowGear", _isLowGear);
         SmartDashboard.putNumber(_moduleName + "/wantedSpeed", _wantedSpeed);
 
         SmartDashboard.putNumber(_moduleName + "/wantedWheelVelocity", _stateMPS);

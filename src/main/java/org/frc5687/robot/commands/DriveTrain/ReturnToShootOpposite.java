@@ -9,7 +9,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import static org.frc5687.robot.Constants.DriveTrain.LOW_KINEMATIC_LIMITS;
+import static org.frc5687.robot.Constants.DriveTrain.KINEMATIC_LIMITS;
 
 
 public class ReturnToShootOpposite extends Command {
@@ -32,10 +32,10 @@ public class ReturnToShootOpposite extends Command {
 
                 
                 scheduledCommand = AutoBuilder.pathfindToPose(pose, new PathConstraints(
-                    LOW_KINEMATIC_LIMITS.maxDriveVelocity,
-                    LOW_KINEMATIC_LIMITS.maxDriveAcceleration,
-                    LOW_KINEMATIC_LIMITS.maxSteeringVelocity,
-                    LOW_KINEMATIC_LIMITS.maxSteeringVelocity * 3
+                    KINEMATIC_LIMITS.maxDriveVelocity,
+                    KINEMATIC_LIMITS.maxDriveAcceleration,
+                    KINEMATIC_LIMITS.maxSteeringVelocity,
+                    KINEMATIC_LIMITS.maxSteeringVelocity * 3
                 ));
             
             CommandScheduler.getInstance().schedule(scheduledCommand);
