@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1; // This is for the smartdashboard. 1 means it will update at the rate of the robot code, 5 will update every 5th loop and so on.
-    public static final double METRIC_FLUSH_PERIOD = 5;
+    public static final double METRIC_FLUSH_PERIOD = 1;
     public static final double UPDATE_PERIOD = 0.02; // 20 ms
     public static final double EPSILON = 1e-9;
 
@@ -46,7 +46,7 @@ public class Constants {
 
             CONFIG.MAX_VOLTAGE = 12.0;
 
-            CONFIG.MAX_CURRENT = 80; // Max control requeset current
+            CONFIG.MAX_CURRENT = 120; // Max control requeset current
             CONFIG.CURRENT_DEADBAND = 0.1;
         }
 

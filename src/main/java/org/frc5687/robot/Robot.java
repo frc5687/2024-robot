@@ -69,10 +69,8 @@ public class Robot extends OutliersRobot {
 
         _robotContainer.init();
 
-        // Periodically flushes metrics (might be good to configure enable/disable via
-        // USB config
-        // file)
-        // new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
+        // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
+        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
     }
 
     /**
@@ -159,7 +157,7 @@ public class Robot extends OutliersRobot {
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _robotContainer.disabledInit();
-        // MetricTracker.flushAll();
+        MetricTracker.flushAll();
     }
 
     @Override
