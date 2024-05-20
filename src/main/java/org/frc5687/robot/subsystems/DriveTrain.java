@@ -199,7 +199,11 @@ public class DriveTrain extends OutliersSubsystem {
         readModules();
         setSetpointFromMeasuredModules();
 
-        // logMetrics("SE Current", "NE Current", "NW Current", "SW Current");
+        logMetrics(
+            "SE Current", "NE Current", "NW Current", "SW Current",
+            "SE Wheel MPS", "NE Wheel MPS", "NW Wheel MPS", "SW Wheel MPS",
+            "Drivetrain MPS"
+        );
 
         // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
@@ -433,6 +437,19 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Heading Controller Target", _headingController.getTargetHeading().getRadians());
         metric("Heading Controller Output", getRotationCorrection());
         metric("Is Red Alliance", isRedAlliance());
+
+        metric("SE Current", _modules[SOUTH_EAST_IDX].getDriveMotorCurrent());
+        metric("NE Current", _modules[NORTH_EAST_IDX].getDriveMotorCurrent());
+        metric("NW Current", _modules[NORTH_WEST_IDX].getDriveMotorCurrent());
+        metric("SW Current", _modules[SOUTH_WEST_IDX].getDriveMotorCurrent());
+
+        metric("SE Wheel MPS", _modules[SOUTH_EAST_IDX].getWheelVelocity());
+        metric("NE Wheel MPS", _modules[NORTH_EAST_IDX].getWheelVelocity());
+        metric("NW Wheel MPS", _modules[NORTH_WEST_IDX].getWheelVelocity());
+        metric("SW Wheel MPS", _modules[SOUTH_WEST_IDX].getWheelVelocity());
+
+        metric("Drivetrain MPS", Math.hypot(getMeasuredChassisSpeeds().vxMetersPerSecond, getMeasuredChassisSpeeds().vyMetersPerSecond));
+
         // moduleMetrics();
     }
 
