@@ -33,8 +33,8 @@ public class Constants {
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
 
-        public static final double WHEEL_RADIUS = Units.inchesToMeters(1.886); // new wheel tread measured by amory with calipers on 02/25/24
-        public static final double GEAR_RATIO_DRIVE = (52.0 / 13.0) * (52.0 / 44.0) * (16.0 / 36.0) * (45.0 / 15.0); // 6.3
+        public static final double WHEEL_RADIUS =  0.053975; //5/22/2025 larger wheel testing
+        public static final double GEAR_RATIO_DRIVE = (52.0 / 14.0) * (52.0 / 44.0) * (16.0 / 36.0) * (45.0 / 15.0); // 5.85
         public static final double GEAR_RATIO_STEER = (52.0 / 14.0) * (96.0 / 16.0); // 22.2857
 
         // this is the motor config for the swerve motors
@@ -199,7 +199,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.037109375;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.302490234375;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -210,7 +210,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.421875;
+            NORTH_EAST_CONFIG.encoderOffset = -0.101806640625;
         }
 
         public static final ModuleConfiguration NORTH_WEST_CONFIG = new ModuleConfiguration();
@@ -221,7 +221,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.158203125;
+            NORTH_WEST_CONFIG.encoderOffset = -0.283447265625;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
@@ -232,7 +232,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.413818359375;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.197998046875;
         }
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
