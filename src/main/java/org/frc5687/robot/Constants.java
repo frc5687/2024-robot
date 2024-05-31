@@ -221,7 +221,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.283447265625;
+            NORTH_WEST_CONFIG.encoderOffset =0.3984375;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
