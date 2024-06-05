@@ -45,11 +45,13 @@ import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.OutliersSubsystem;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersContainer;
+import org.frc5687.robot.util.PhotonObjectProcessor;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -82,6 +84,8 @@ public class RobotContainer extends OutliersContainer {
     private OI _oi;
     private SendableChooser<Command> _autoChooser;
     private VisionProcessor _visionProcessor;
+    private PhotonObjectProcessor _intakeCameraProcessor;
+    private PhotonPipelineResult _intakeCamera;
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
@@ -352,7 +356,7 @@ public class RobotContainer extends OutliersContainer {
         SmartDashboard.putData(_field);
         SmartDashboard.putData("Auto Chooser", _autoChooser);
 
-        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor);
+        _oi.initializeButtons(_driveTrain, _shooter, _dunker, _intake, _climber, _lights, _visionProcessor, _intakeCamera, _intakeCameraProcessor);
 
         // PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
@@ -494,19 +498,19 @@ public class RobotContainer extends OutliersContainer {
 
         // auto command groups
         NamedCommands.registerCommand("NoteEightCommand",
-                new ConditionalCommand(new NoteEightPickupYes(_shooter, _intake, _driveTrain),
-                        new NoteEightPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+                new ConditionalCommand(new NoteEightPickupYes(_shooter, _intake, _driveTrain, _intakeCamera, _intakeCameraProcessor),
+                        new NoteEightPickupNo(_shooter, _intake, _driveTrain, _intakeCamera, _intakeCameraProcessor), _intake::isNoteDetected));
         NamedCommands.registerCommand("NoteSevenCommand",
-                new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain),
-                        new NoteSevenPickupNo(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
+                new ConditionalCommand(new NoteSevenPickupYes(_shooter, _intake, _driveTrain, _intakeCamera, _intakeCameraProcessor),
+                        new NoteSevenPickupNo(_shooter, _intake, _driveTrain, _intakeCamera, _intakeCameraProcessor), _intake::isNoteDetected));
         NamedCommands.registerCommand("NoteSixCommand",
                 new ConditionalCommand(new NoteSixPickupYes(_shooter, _intake, _driveTrain),
                         new NoteSixPickupYes(_shooter, _intake, _driveTrain), _intake::isNoteDetected));
         NamedCommands.registerCommand("UnderStageBloopCommand",
-                new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0),
+                new ConditionalCommand(new UnderStageBloopPickup(_shooter, _intake, _driveTrain, _intakeCamera, _intakeCameraProcessor), new WaitCommand(0),
                         () -> _robotState.isNoteIntaked(7)));
         NamedCommands.registerCommand("NearSourceBloopCommand",
-                new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain), new WaitCommand(0),
+                new ConditionalCommand(new NearSourceBloopPickup(_shooter, _intake, _driveTrain, _intakeCamera, _intakeCameraProcessor), new WaitCommand(0),
                         () -> _robotState.isNoteIntaked(8)));
 
         // NamedCommands.registerCommand("NoteEightCommandChain", new

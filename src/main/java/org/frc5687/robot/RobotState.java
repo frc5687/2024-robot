@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.frc5687.lib.cheesystuff.InterpolatingDouble;
 import org.frc5687.robot.subsystems.DriveTrain;
+import org.frc5687.robot.util.PhotonObjectProcessor;
 import org.frc5687.robot.util.PhotonProcessor;
 import org.frc5687.robot.util.VisionProcessor;
 import org.frc5687.robot.util.VisionProcessor.DetectedNote;
@@ -61,6 +62,7 @@ public class RobotState {
 
     private DriveTrain _driveTrain;
     private PhotonProcessor _photonProcessor;
+    private PhotonObjectProcessor _photonObjectProcessor;
     private VisionProcessor _visionProcessor;
     private SwerveDrivePoseEstimator _poseEstimator;
 

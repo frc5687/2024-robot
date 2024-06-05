@@ -5,6 +5,9 @@ import org.frc5687.robot.RobotState;
 import org.frc5687.robot.commands.OutliersCommand;
 import org.frc5687.robot.subsystems.DriveTrain;
 import org.frc5687.robot.subsystems.Intake;
+import org.frc5687.robot.util.PhotonObjectProcessor;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -22,8 +25,10 @@ public class DriveToNote extends OutliersCommand {
     private final PIDController _yawController;
     private final RobotState _robotState = RobotState.getInstance();
     private final Intake _intake;
-
-    public DriveToNote(DriveTrain driveTrain,  Intake intake) {
+    private final PhotonPipelineResult _intakeCamera;
+    private final PhotonObjectProcessor _intakeCameraProcessor;
+    
+    public DriveToNote(DriveTrain driveTrain,  Intake intake, PhotonPipelineResult intakecamera, PhotonObjectProcessor intakeCameraProcessor) {
         _driveTrain = driveTrain;
         _xController = new ProfiledPIDController(2.5, 0.0, 0.0,
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
@@ -32,7 +37,9 @@ public class DriveToNote extends OutliersCommand {
                 new Constraints(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity,
                         Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveAcceleration));
         _yawController = new PIDController(4.0, 0.0, 0.0);
-        _intake = intake;
+        _intake = intake;        
+        _intakeCamera = intakecamera;
+        _intakeCameraProcessor = intakeCameraProcessor;
         addRequirements(_driveTrain);
     }
 
@@ -55,16 +62,14 @@ public class DriveToNote extends OutliersCommand {
             return;
         }
 
-        Optional<Pose3d> closestNoteRelativeField = _robotState.getClosestNoteRelativeRobotCenter();
-
-        if (closestNoteRelativeField.isPresent()) {
-            Pose2d notePose = closestNoteRelativeField.get().toPose2d();
+        if (_intakeCamera.hasTargets()) {
+            Pose2d notePose = _intakeCameraProcessor.getObjectPose().get();
             double x = notePose.getX();
             double y = notePose.getY();
 
             vx = -_xController.calculate(x);
             vy = -_yController.calculate(y);
-            double angleToNoteRadians = Math.atan2(y, x);
+            double angleToNoteRadians = _intakeCameraProcessor.getIntakeTargetYaw().get();
             rot = -_yawController.calculate(angleToNoteRadians);
 
             _driveTrain.setVelocity(new ChassisSpeeds(vx, vy, rot));

@@ -2,6 +2,8 @@ package org.frc5687.robot.commands.AutoCommands;
 
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.util.PhotonObjectProcessor;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -17,7 +19,7 @@ import org.frc5687.robot.commands.Shooter.RevShooter;
 
 public class NoteSevenPickupYes extends SequentialCommandGroup {
     
-    public NoteSevenPickupYes(Shooter shooter, Intake intake, DriveTrain driveTrain) {
+    public NoteSevenPickupYes(Shooter shooter, Intake intake, DriveTrain driveTrain, PhotonPipelineResult intakeCamera, PhotonObjectProcessor intakeCameraProcessor) {
         addCommands(  
             new NoteIntakedCommand(7,true),
             new ParallelDeadlineGroup(
@@ -26,7 +28,7 @@ public class NoteSevenPickupYes extends SequentialCommandGroup {
             ),
             new AutoPassthrough(shooter, intake, 250),
             new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_SIX_PICKUP),
-            new DriveToNote(driveTrain, intake)
+            new DriveToNote(driveTrain, intake, intakeCamera, intakeCameraProcessor)
         );
     }
 }

@@ -2,6 +2,8 @@ package org.frc5687.robot.commands.AutoCommands;
 
 import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Shooter;
+import org.frc5687.robot.util.PhotonObjectProcessor;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -16,10 +18,10 @@ import org.frc5687.robot.commands.Shooter.RevShooter;
 
 public class UnderStageBloopPickup extends SequentialCommandGroup {
     
-    public UnderStageBloopPickup(Shooter shooter, Intake intake, DriveTrain driveTrain) {
+    public UnderStageBloopPickup(Shooter shooter, Intake intake, DriveTrain driveTrain, PhotonPipelineResult intakeCamera, PhotonObjectProcessor intakeCameraProcessor) {
         addCommands(
                 new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_NOTE_FUIC_UNDER_STAGE),
-                new DriveToNote(driveTrain, intake),
+                new DriveToNote(driveTrain, intake, intakeCamera, intakeCameraProcessor),
                 new ParallelDeadlineGroup(
                     new DriveToPose(driveTrain, Constants.DriveTrain.AUTO_POSE_SHOOT_AMP),
                     new RevShooter(shooter)

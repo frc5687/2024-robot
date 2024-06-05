@@ -30,7 +30,9 @@ import org.frc5687.robot.subsystems.Intake;
 import org.frc5687.robot.subsystems.Lights;
 import org.frc5687.robot.subsystems.Shooter;
 import org.frc5687.robot.util.OutliersProxy;
+import org.frc5687.robot.util.PhotonObjectProcessor;
 import org.frc5687.robot.util.VisionProcessor;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -99,9 +101,12 @@ public class OI extends OutliersProxy {
             Intake intake,
             Climber climber,
             Lights lights,
-            VisionProcessor visionProcessor) {
+            VisionProcessor visionProcessor,
+            PhotonPipelineResult intakeCamera,
+            PhotonObjectProcessor intakeCameraProcessor
+             ) {
 
-        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake));
+        _driverLeftTrigger.whileTrue(new DriveToNote(drivetrain, intake, intakeCamera, intakeCameraProcessor));
         _driverRightTrigger.whileTrue(new Shoot(shooter, intake, lights, this).alongWith(new AutoAimSetpoint(drivetrain)));
 
         // _driverGamepad.getAButton().onTrue(new AutoShoot(shooter, intake,
