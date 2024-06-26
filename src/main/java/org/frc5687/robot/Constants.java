@@ -199,7 +199,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = 0.366455078125;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.088623046875;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG = new ModuleConfiguration();
@@ -221,12 +221,13 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset =0.3984375;
+            NORTH_WEST_CONFIG.encoderOffset =0.47558593;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG = new ModuleConfiguration();
 
         static {
+            
             SOUTH_WEST_CONFIG.moduleName = "South West";
             SOUTH_WEST_CONFIG.canBus = CAN_BUS;
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
@@ -327,9 +328,9 @@ public class Constants {
             { 3.4, 2550}, // 4/17/24
             { 3.8, 2200}, // 4/17/24
             { 4.0, 2150}, // 4/17/24
-            { 4.2, 1960}, // 4/17/24
-            { 4.4, 1960}, // guess on 4/17/24
-            { 4.8, 1920}, // guess on 4/17/24
+            { 4.2, 1900}, // 4/17/24
+            { 4.4, 1860}, // guess on 4/17/24
+            { 4.8, 1840}, // guess on 4/17/24
         };
 
         public static final double IDLE_RPM = 2200;
@@ -526,11 +527,10 @@ public class Constants {
         public static final double ANGLE_SYNC_TOLERANCE = Units.degreesToRadians(1.0);
 
 
-        public static final double PREP_ANGLE = 2.27; // now 2.27
-        public static final double DUNK_ANGLE = 3.21;
-        public static final double STOWED_ANGLE = 5.15;
-        public static final double CLIMB_ANGLE = 3.37;
-        public static final double ANGLE_TOLERANCE = 0.03;
+        public static final double PREP_ANGLE = 2.17;
+        public static final double DUNK_ANGLE = 3.12;
+        public static final double STOWED_ANGLE = 5.04;
+        public static final double CLIMB_ANGLE = 3.28;        public static final double ANGLE_TOLERANCE = 0.03;
         public static final long EJECT_TIME = 750; // 1 second
         public static final double DUNKER_RPM_TOLERANCE = 100;
 
