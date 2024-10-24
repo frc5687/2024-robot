@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3802905082702637,
-      "y": 2.9974164962768555
+      "x": 1.4007201194763184,
+      "y": 3.31704044342041
     },
-    "rotation": 1.4051278298604437e-23
+    "rotation": 1.5018728062139202e-18
   },
   "command": {
     "type": "sequential",
@@ -51,6 +51,12 @@
           "type": "path",
           "data": {
             "pathName": "4Piece (1).4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
