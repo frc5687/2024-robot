@@ -324,13 +324,13 @@ public class Constants {
         public static final double VELOCITY_TOLERANCE = 20;
 
         public static double[][] kRPMValues = {
-            { 3.0, 3700}, // 4/3/24 FIXME maybe add a bit of rpm
-            { 3.4, 2550}, // 4/17/24
-            { 3.8, 2200}, // 4/17/24
-            { 4.0, 2150}, // 4/17/24
-            { 4.2, 1900}, // 4/17/24
-            { 4.4, 1860}, // guess on 4/17/24
-            { 4.8, 1840}, // guess on 4/17/24
+            { 3.0, 3900}, //10/30/24
+            { 3.4, 2550}, //10/30/24
+            { 3.8, 2200}, //10/30/24
+            { 4.0, 2150}, //10/30/24
+            { 4.2, 2050}, //10/30/24
+            { 4.4, 2010}, //10/30/24
+            { 4.8, 1870}, // 10/30/24
         };
 
         public static final double IDLE_RPM = 2200;

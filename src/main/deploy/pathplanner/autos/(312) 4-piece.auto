@@ -5,7 +5,7 @@
       "x": 1.4007201194763184,
       "y": 3.31704044342041
     },
-    "rotation": 5.274808400023924e-23
+    "rotation": 7.354660028308086e-22
   },
   "command": {
     "type": "sequential",
@@ -51,6 +51,12 @@
           "type": "path",
           "data": {
             "pathName": "4Piece (1).4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
